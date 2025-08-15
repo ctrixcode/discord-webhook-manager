@@ -1,6 +1,6 @@
 import fp from 'fastify-plugin';
 
-const sanitizeObject = (obj: any): any => {
+const sanitizeObject = (obj: Sanitizable): Sanitizable => {
   if (typeof obj === 'string') {
     return sanitizeString(obj);
   }
@@ -8,7 +8,7 @@ const sanitizeObject = (obj: any): any => {
     return obj.map(item => sanitizeObject(item));
   }
   if (obj && typeof obj === 'object') {
-    const sanitized: any = {};
+    const sanitized: { [key: string]: Sanitizable } = {};
     for (const [key, value] of Object.entries(obj)) {
       sanitized[key] = sanitizeObject(value);
     }

@@ -1,9 +1,8 @@
-import { FastifyInstance, FastifyPluginOptions } from 'fastify';
+import { FastifyInstance } from 'fastify';
 import * as userController from '../controllers/user.controller';
 
 const userRoutes = async (
-  fastify: FastifyInstance,
-  opts: FastifyPluginOptions
+  fastify: FastifyInstance
 ) => {
   fastify.post('/', userController.createUser);
   fastify.get('/', userController.getUsers);

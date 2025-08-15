@@ -1,8 +1,8 @@
-import { FastifyInstance, FastifyPluginOptions } from 'fastify';
+import { FastifyInstance} from 'fastify';
 import { logger } from '../utils';
 import userRoutes from './user.routes';
 
-const routes = async (fastify: FastifyInstance, opts: FastifyPluginOptions) => {
+const routes = async (fastify: FastifyInstance) => {
   fastify.get('/healthz', async (request, reply) => {
     logger.info('Health check requested');
     reply.status(200).send({
