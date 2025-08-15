@@ -1,19 +1,15 @@
-import { FastifyPluginAsync } from 'fastify';
-import { MongoClient, ObjectId } from 'mongodb';
+import mongoose from 'mongoose';
+import { logger } from '../utils';
 
-const mongoDBPlugin: FastifyPluginAsync = async (fastify, _opts) => {
-  const uri = process.env.MONGO_URL || 'mongodb://localhost:27017/fastify_db';
-  const client = new MongoClient(uri);
-  await client.connect();
-  const db = client.db();
-
-  // Decorate Fastify instance
-  fastify.decorate('mongo', { client, db, ObjectId });
-
-  fastify.addHook('onClose', async instance => {
-    await client.close();
-  });
+const connectDB = async () => {
+  try {
+    const mongoUri = process.env.MONGO_URL || 'mongodb://localhost:27017/fastify_db';
+    await mongoose.connect(mongoUri);
+    logger.info('MongoDB connected successfully');
+  } catch (error) {
+    logger.error('MongoDB connection error:', error);
+    process.exit(1);
+  }
 };
 
-// export { mongoPlugin };
-export default mongoDBPlugin;
+export default connectDB;

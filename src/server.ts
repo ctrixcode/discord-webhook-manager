@@ -3,10 +3,12 @@ dotenv.config();
 
 import app from './app';
 import { logger } from './utils';
+import connectDB from './config/db';
 
 const PORT = process.env.PORT || 4000;
 
 (async () => {
+  await connectDB();
   await app.listen({ port: Number(PORT), host: '0.0.0.0' }, (err, address) => {
     if (err) {
       logger.error(address, err);
