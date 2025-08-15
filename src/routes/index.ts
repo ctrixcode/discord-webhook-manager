@@ -1,6 +1,6 @@
 import { FastifyInstance, FastifyPluginOptions } from 'fastify';
 import { logger } from '../utils';
-import exampleRoutes from './example.routes';
+import userRoutes from './user.routes';
 
 const routes = async (fastify: FastifyInstance, opts: FastifyPluginOptions) => {
   fastify.get('/healthz', async (request, reply) => {
@@ -13,7 +13,7 @@ const routes = async (fastify: FastifyInstance, opts: FastifyPluginOptions) => {
     });
   });
 
-  fastify.register(exampleRoutes, { prefix: '/examples' });
+  fastify.register(userRoutes, { prefix: '/users' });
 };
 
 export default routes;
