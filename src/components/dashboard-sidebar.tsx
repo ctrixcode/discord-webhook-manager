@@ -1,22 +1,22 @@
-"use client"
+'use client';
 
-import { cn } from "@/lib/utils"
-import { Button } from "@/components/ui/button"
-import { DiscordLogo } from "@/components/discord-logo"
-import { Home, Webhook, Clock, FileText, Settings, Plus } from "lucide-react"
-import Link from "next/link"
-import { usePathname } from "next/navigation"
+import { cn } from '@/lib/utils';
+import { Button } from '@/components/ui/button';
+import { DiscordLogo } from '@/components/discord-logo';
+import { Home, Webhook, Clock, FileText, Settings, Plus } from 'lucide-react';
+import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 
 const navigation = [
-  { name: "Home", href: "/dashboard", icon: Home },
-  { name: "Webhooks", href: "/dashboard/webhooks", icon: Webhook },
-  { name: "Scheduled", href: "/dashboard/scheduled", icon: Clock },
-  { name: "Templates", href: "/dashboard/templates", icon: FileText },
-  { name: "Settings", href: "/dashboard/settings", icon: Settings },
-]
+  { name: 'Home', href: '/dashboard', icon: Home },
+  { name: 'Webhooks', href: '/dashboard/webhooks', icon: Webhook },
+  { name: 'Scheduled', href: '/dashboard/scheduled', icon: Clock },
+  { name: 'Templates', href: '/dashboard/templates', icon: FileText },
+  { name: 'Settings', href: '/dashboard/settings', icon: Settings },
+];
 
 export function DashboardSidebar() {
-  const pathname = usePathname()
+  const pathname = usePathname();
 
   return (
     <div className="flex h-full w-64 flex-col bg-card border-r border-border">
@@ -35,22 +35,25 @@ export function DashboardSidebar() {
 
         <nav className="space-y-1">
           {navigation.map((item) => {
-            const isActive = pathname === item.href
+            const isActive = pathname === item.href;
             return (
               <Link key={item.name} href={item.href}>
                 <Button
-                  variant={isActive ? "secondary" : "ghost"}
-                  className={cn("w-full justify-start", isActive && "bg-secondary text-secondary-foreground")}
+                  variant={isActive ? 'secondary' : 'ghost'}
+                  className={cn(
+                    'w-full justify-start',
+                    isActive && 'bg-secondary text-secondary-foreground',
+                  )}
                   size="sm"
                 >
                   <item.icon className="w-4 h-4 mr-3" />
                   {item.name}
                 </Button>
               </Link>
-            )
+            );
           })}
         </nav>
       </div>
     </div>
-  )
+  );
 }

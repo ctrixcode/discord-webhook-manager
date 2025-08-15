@@ -1,10 +1,15 @@
-"use client"
+'use client';
 
-import { useState } from "react"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { Badge } from "@/components/ui/badge"
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
+import { useState } from 'react';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -14,81 +19,95 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-} from "@/components/ui/alert-dialog"
+} from '@/components/ui/alert-dialog';
 import {
   type ScheduledMessage,
   cancelScheduledMessage,
   deleteScheduledMessage,
   formatScheduledTime,
-} from "@/lib/scheduled-storage"
-import { MoreHorizontal, Clock, X, Trash2, AlertCircle, CheckCircle, XCircle } from "lucide-react"
-import { useToast } from "@/hooks/use-toast"
+} from '@/lib/scheduled-storage';
+import {
+  MoreHorizontal,
+  Clock,
+  X,
+  Trash2,
+  AlertCircle,
+  CheckCircle,
+  XCircle,
+} from 'lucide-react';
+import { useToast } from '@/hooks/use-toast';
 
 interface ScheduledMessageCardProps {
-  message: ScheduledMessage
-  onMessageUpdated: () => void
+  message: ScheduledMessage;
+  onMessageUpdated: () => void;
 }
 
-export function ScheduledMessageCard({ message, onMessageUpdated }: ScheduledMessageCardProps) {
-  const { toast } = useToast()
-  const [showDeleteDialog, setShowDeleteDialog] = useState(false)
-  const [showCancelDialog, setShowCancelDialog] = useState(false)
+export function ScheduledMessageCard({
+  message,
+  onMessageUpdated,
+}: ScheduledMessageCardProps) {
+  const { toast } = useToast();
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+  const [showCancelDialog, setShowCancelDialog] = useState(false);
 
   const handleCancel = () => {
-    cancelScheduledMessage(message.id)
-    onMessageUpdated()
+    cancelScheduledMessage(message.id);
+    onMessageUpdated();
     toast({
-      title: "Message cancelled",
-      description: "The scheduled message has been cancelled",
-    })
-  }
+      title: 'Message cancelled',
+      description: 'The scheduled message has been cancelled',
+    });
+  };
 
   const handleDelete = () => {
-    deleteScheduledMessage(message.id)
-    onMessageUpdated()
+    deleteScheduledMessage(message.id);
+    onMessageUpdated();
     toast({
-      title: "Message deleted",
-      description: "The scheduled message has been removed",
-    })
-  }
+      title: 'Message deleted',
+      description: 'The scheduled message has been removed',
+    });
+  };
 
   const getStatusIcon = () => {
     switch (message.status) {
-      case "pending":
-        return <Clock className="w-3 h-3 mr-1" />
-      case "sent":
-        return <CheckCircle className="w-3 h-3 mr-1" />
-      case "failed":
-        return <XCircle className="w-3 h-3 mr-1" />
-      case "cancelled":
-        return <X className="w-3 h-3 mr-1" />
+      case 'pending':
+        return <Clock className="w-3 h-3 mr-1" />;
+      case 'sent':
+        return <CheckCircle className="w-3 h-3 mr-1" />;
+      case 'failed':
+        return <XCircle className="w-3 h-3 mr-1" />;
+      case 'cancelled':
+        return <X className="w-3 h-3 mr-1" />;
       default:
-        return null
+        return null;
     }
-  }
+  };
 
   const getStatusVariant = () => {
     switch (message.status) {
-      case "pending":
-        return "default"
-      case "sent":
-        return "default"
-      case "failed":
-        return "destructive"
-      case "cancelled":
-        return "secondary"
+      case 'pending':
+        return 'default';
+      case 'sent':
+        return 'default';
+      case 'failed':
+        return 'destructive';
+      case 'cancelled':
+        return 'secondary';
       default:
-        return "secondary"
+        return 'secondary';
     }
-  }
+  };
 
-  const canCancel = message.status === "pending" && new Date(message.scheduledFor) > new Date()
+  const canCancel =
+    message.status === 'pending' && new Date(message.scheduledFor) > new Date();
 
   return (
     <>
       <Card>
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle className="text-base font-medium">{message.webhookName}</CardTitle>
+          <CardTitle className="text-base font-medium">
+            {message.webhookName}
+          </CardTitle>
           <div className="flex items-center gap-2">
             <Badge variant={getStatusVariant()}>
               {getStatusIcon()}
@@ -102,12 +121,18 @@ export function ScheduledMessageCard({ message, onMessageUpdated }: ScheduledMes
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">
                 {canCancel && (
-                  <DropdownMenuItem onClick={() => setShowCancelDialog(true)} className="text-destructive">
+                  <DropdownMenuItem
+                    onClick={() => setShowCancelDialog(true)}
+                    className="text-destructive"
+                  >
                     <X className="mr-2 h-4 w-4" />
                     Cancel
                   </DropdownMenuItem>
                 )}
-                <DropdownMenuItem onClick={() => setShowDeleteDialog(true)} className="text-destructive">
+                <DropdownMenuItem
+                  onClick={() => setShowDeleteDialog(true)}
+                  className="text-destructive"
+                >
                   <Trash2 className="mr-2 h-4 w-4" />
                   Delete
                 </DropdownMenuItem>
@@ -120,38 +145,50 @@ export function ScheduledMessageCard({ message, onMessageUpdated }: ScheduledMes
             <div className="text-sm">
               <div className="font-medium mb-1">Message:</div>
               <div className="text-muted-foreground bg-muted p-2 rounded text-xs">
-                {message.content.length > 100 ? `${message.content.substring(0, 100)}...` : message.content}
+                {message.content.length > 100
+                  ? `${message.content.substring(0, 100)}...`
+                  : message.content}
               </div>
             </div>
 
             <div className="flex items-center justify-between text-sm">
               <div>
                 <span className="font-medium">Scheduled: </span>
-                <span className="text-muted-foreground">{new Date(message.scheduledFor).toLocaleString()}</span>
+                <span className="text-muted-foreground">
+                  {new Date(message.scheduledFor).toLocaleString()}
+                </span>
               </div>
-              {message.status === "pending" && (
-                <span className="text-primary font-medium">{formatScheduledTime(message.scheduledFor)}</span>
+              {message.status === 'pending' && (
+                <span className="text-primary font-medium">
+                  {formatScheduledTime(message.scheduledFor)}
+                </span>
               )}
             </div>
 
-            {message.status === "sent" && message.sentAt && (
+            {message.status === 'sent' && message.sentAt && (
               <div className="text-sm">
                 <span className="font-medium">Sent: </span>
-                <span className="text-muted-foreground">{new Date(message.sentAt).toLocaleString()}</span>
+                <span className="text-muted-foreground">
+                  {new Date(message.sentAt).toLocaleString()}
+                </span>
               </div>
             )}
 
-            {message.status === "failed" && message.errorMessage && (
+            {message.status === 'failed' && message.errorMessage && (
               <div className="text-sm">
                 <div className="flex items-center gap-1 text-destructive mb-1">
                   <AlertCircle className="w-3 h-3" />
                   <span className="font-medium">Error:</span>
                 </div>
-                <div className="text-destructive text-xs bg-destructive/10 p-2 rounded">{message.errorMessage}</div>
+                <div className="text-destructive text-xs bg-destructive/10 p-2 rounded">
+                  {message.errorMessage}
+                </div>
               </div>
             )}
 
-            <div className="text-xs text-muted-foreground">Created: {new Date(message.createdAt).toLocaleString()}</div>
+            <div className="text-xs text-muted-foreground">
+              Created: {new Date(message.createdAt).toLocaleString()}
+            </div>
           </div>
         </CardContent>
       </Card>
@@ -161,7 +198,8 @@ export function ScheduledMessageCard({ message, onMessageUpdated }: ScheduledMes
           <AlertDialogHeader>
             <AlertDialogTitle>Cancel scheduled message?</AlertDialogTitle>
             <AlertDialogDescription>
-              This will cancel the scheduled message. It will not be sent to Discord.
+              This will cancel the scheduled message. It will not be sent to
+              Discord.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
@@ -181,7 +219,8 @@ export function ScheduledMessageCard({ message, onMessageUpdated }: ScheduledMes
           <AlertDialogHeader>
             <AlertDialogTitle>Delete scheduled message?</AlertDialogTitle>
             <AlertDialogDescription>
-              This action cannot be undone. This will permanently delete the scheduled message from your account.
+              This action cannot be undone. This will permanently delete the
+              scheduled message from your account.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
@@ -196,5 +235,5 @@ export function ScheduledMessageCard({ message, onMessageUpdated }: ScheduledMes
         </AlertDialogContent>
       </AlertDialog>
     </>
-  )
+  );
 }

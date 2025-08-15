@@ -15,5 +15,5 @@ export default function SendMessageLoading() {
         </div>
       </div>
     </div>
-  )
+  );
 }

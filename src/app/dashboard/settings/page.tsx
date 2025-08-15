@@ -1,36 +1,44 @@
-"use client"
+'use client';
 
-import { Separator } from "@/components/ui/separator"
-import { Palette, Bell, Shield, Trash2 } from "lucide-react"
-import { useEffect, useState } from "react"
-import { SettingsCard } from "@/components/settings/settings-card"
-import { ThemeSelector } from "@/components/settings/theme-selector"
-import { NotificationToggle } from "@/components/settings/notification-toggle"
-import { DangerAction } from "@/components/settings/danger-action"
+import { Separator } from '@/components/ui/separator';
+import { Palette, Bell, Shield, Trash2 } from 'lucide-react';
+import { useEffect, useState } from 'react';
+import { SettingsCard } from '@/components/settings/settings-card';
+import { ThemeSelector } from '@/components/settings/theme-selector';
+import { NotificationToggle } from '@/components/settings/notification-toggle';
+import { DangerAction } from '@/components/settings/danger-action';
 
 export default function SettingsPage() {
-  const [mounted, setMounted] = useState(false)
+  const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
-    setMounted(true)
-  }, [])
+    setMounted(true);
+  }, []);
 
   if (!mounted) {
-    return null
+    return null;
   }
 
   const handleClearData = () => {
-    if (confirm("Are you sure you want to clear all data? This action cannot be undone.")) {
-      localStorage.clear()
-      window.location.reload()
+    if (
+      confirm(
+        'Are you sure you want to clear all data? This action cannot be undone.',
+      )
+    ) {
+      localStorage.clear();
+      window.location.reload();
     }
-  }
+  };
 
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="text-3xl font-bold tracking-tight text-white">Settings</h2>
-        <p className="text-slate-300">Manage your account and application preferences</p>
+        <h2 className="text-3xl font-bold tracking-tight text-white">
+          Settings
+        </h2>
+        <p className="text-slate-300">
+          Manage your account and application preferences
+        </p>
       </div>
 
       <SettingsCard
@@ -95,5 +103,5 @@ export default function SettingsPage() {
         />
       </SettingsCard>
     </div>
-  )
+  );
 }

@@ -1,9 +1,9 @@
-"use client"
+'use client';
 
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { Webhook, Clock, FileText, Zap } from "lucide-react"
-import Link from "next/link"
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Webhook, Clock, FileText, Zap } from 'lucide-react';
+import Link from 'next/link';
 
 export default function DashboardPage() {
   return (
@@ -13,7 +13,9 @@ export default function DashboardPage() {
           <h2 className="text-4xl font-bold tracking-tight bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">
             Welcome back!
           </h2>
-          <p className="text-slate-300 text-lg">Manage your Discord webhooks and messages</p>
+          <p className="text-slate-300 text-lg">
+            Manage your Discord webhooks and messages
+          </p>
         </div>
 
         <Card className="bg-slate-800/50 backdrop-blur-xl border-slate-700/50 shadow-2xl">
@@ -59,7 +61,9 @@ export default function DashboardPage() {
         <Card className="bg-slate-800/50 backdrop-blur-xl border-slate-700/50 shadow-2xl">
           <CardHeader>
             <CardTitle className="text-white">Getting Started</CardTitle>
-            <p className="text-slate-300">New to webhook management? Here's how to get started quickly.</p>
+            <p className="text-slate-300">
+              New to webhook management? Here's how to get started quickly.
+            </p>
           </CardHeader>
           <CardContent>
             <div className="space-y-6">
@@ -68,8 +72,12 @@ export default function DashboardPage() {
                   1
                 </div>
                 <div>
-                  <h4 className="font-semibold text-white mb-1">Connect your first webhook</h4>
-                  <p className="text-slate-300">Add a Discord webhook URL to start sending messages</p>
+                  <h4 className="font-semibold text-white mb-1">
+                    Connect your first webhook
+                  </h4>
+                  <p className="text-slate-300">
+                    Add a Discord webhook URL to start sending messages
+                  </p>
                 </div>
               </div>
               <div className="flex items-start gap-4">
@@ -77,8 +85,13 @@ export default function DashboardPage() {
                   2
                 </div>
                 <div>
-                  <h4 className="font-semibold text-white mb-1">Send your first message</h4>
-                  <p className="text-slate-300">Test your webhook by sending a message to your Discord channel</p>
+                  <h4 className="font-semibold text-white mb-1">
+                    Send your first message
+                  </h4>
+                  <p className="text-slate-300">
+                    Test your webhook by sending a message to your Discord
+                    channel
+                  </p>
                 </div>
               </div>
               <div className="flex items-start gap-4">
@@ -86,8 +99,12 @@ export default function DashboardPage() {
                   3
                 </div>
                 <div>
-                  <h4 className="font-semibold text-white mb-1">Create templates and schedule</h4>
-                  <p className="text-slate-300">Build reusable templates and schedule messages for later</p>
+                  <h4 className="font-semibold text-white mb-1">
+                    Create templates and schedule
+                  </h4>
+                  <p className="text-slate-300">
+                    Build reusable templates and schedule messages for later
+                  </p>
                 </div>
               </div>
             </div>
@@ -95,5 +112,5 @@ export default function DashboardPage() {
         </Card>
       </div>
     </div>
-  )
+  );
 }

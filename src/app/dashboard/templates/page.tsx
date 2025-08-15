@@ -1,12 +1,17 @@
-"use client"
+'use client';
 
-import { useState, useEffect } from "react"
-import { useRouter } from "next/navigation"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Badge } from "@/components/ui/badge"
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
+import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Badge } from '@/components/ui/badge';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -16,92 +21,110 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-} from "@/components/ui/alert-dialog"
-import { useAuth } from "@/contexts/auth-context"
+} from '@/components/ui/alert-dialog';
+import { useAuth } from '@/contexts/auth-context';
 import {
   getTemplates,
   deleteTemplate,
   duplicateTemplate,
   incrementTemplateUsage,
   type MessageTemplate,
-} from "@/lib/template-storage"
-import { Search, FileText, MoreHorizontal, Edit, Copy, Trash2, Plus } from "lucide-react"
-import { useToast } from "@/hooks/use-toast"
+} from '@/lib/template-storage';
+import {
+  Search,
+  FileText,
+  MoreHorizontal,
+  Edit,
+  Copy,
+  Trash2,
+  Plus,
+} from 'lucide-react';
+import { useToast } from '@/hooks/use-toast';
 
 export default function TemplatesPage() {
-  const router = useRouter()
-  const { user } = useAuth()
-  const { toast } = useToast()
-  const [templates, setTemplates] = useState<MessageTemplate[]>([])
-  const [searchQuery, setSearchQuery] = useState("")
-  const [filteredTemplates, setFilteredTemplates] = useState<MessageTemplate[]>([])
-  const [deleteDialogTemplate, setDeleteDialogTemplate] = useState<MessageTemplate | null>(null)
+  const router = useRouter();
+  const { user } = useAuth();
+  const { toast } = useToast();
+  const [templates, setTemplates] = useState<MessageTemplate[]>([]);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [filteredTemplates, setFilteredTemplates] = useState<MessageTemplate[]>(
+    [],
+  );
+  const [deleteDialogTemplate, setDeleteDialogTemplate] =
+    useState<MessageTemplate | null>(null);
 
   const loadTemplates = () => {
     if (user) {
-      const userTemplates = getTemplates(user.id)
-      setTemplates(userTemplates)
+      const userTemplates = getTemplates(user.id);
+      setTemplates(userTemplates);
     }
-  }
+  };
 
   useEffect(() => {
-    loadTemplates()
-  }, [user])
+    loadTemplates();
+  }, [user]);
 
   useEffect(() => {
     const filtered = templates.filter(
       (template) =>
         template.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        (template.description && template.description.toLowerCase().includes(searchQuery.toLowerCase())) ||
+        (template.description &&
+          template.description
+            .toLowerCase()
+            .includes(searchQuery.toLowerCase())) ||
         template.content.toLowerCase().includes(searchQuery.toLowerCase()),
-    )
-    setFilteredTemplates(filtered)
-  }, [templates, searchQuery])
+    );
+    setFilteredTemplates(filtered);
+  }, [templates, searchQuery]);
 
   const handleDuplicate = (template: MessageTemplate) => {
-    const duplicated = duplicateTemplate(template.id)
+    const duplicated = duplicateTemplate(template.id);
     if (duplicated) {
-      loadTemplates()
+      loadTemplates();
       toast({
-        title: "Template duplicated",
+        title: 'Template duplicated',
         description: `Created a copy of "${template.name}"`,
-      })
+      });
     }
-  }
+  };
 
   const handleDelete = (template: MessageTemplate) => {
-    deleteTemplate(template.id)
-    loadTemplates()
-    setDeleteDialogTemplate(null)
+    deleteTemplate(template.id);
+    loadTemplates();
+    setDeleteDialogTemplate(null);
     toast({
-      title: "Template deleted",
+      title: 'Template deleted',
       description: `"${template.name}" has been removed`,
-    })
-  }
+    });
+  };
 
   const handleUseTemplate = (template: MessageTemplate) => {
-    incrementTemplateUsage(template.id)
-    loadTemplates()
+    incrementTemplateUsage(template.id);
+    loadTemplates();
     toast({
-      title: "Template used",
-      description: "Usage count updated",
-    })
-  }
+      title: 'Template used',
+      description: 'Usage count updated',
+    });
+  };
 
   const handleCreateTemplate = () => {
-    router.push("/dashboard/templates/create")
-  }
+    router.push('/dashboard/templates/create');
+  };
 
   const handleEditTemplate = (templateId: string) => {
-    router.push(`/dashboard/templates/create?edit=${templateId}`)
-  }
+    router.push(`/dashboard/templates/create?edit=${templateId}`);
+  };
 
   return (
     <div className="space-y-8">
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-3xl font-bold tracking-tight text-white">Message Templates</h2>
-          <p className="text-gray-300">Create and manage reusable message templates</p>
+          <h2 className="text-3xl font-bold tracking-tight text-white">
+            Message Templates
+          </h2>
+          <p className="text-gray-300">
+            Create and manage reusable message templates
+          </p>
         </div>
         <Button
           onClick={handleCreateTemplate}
@@ -134,14 +157,22 @@ export default function TemplatesPage() {
               className="bg-white/10 backdrop-blur-md border-white/20 hover:bg-white/15 transition-all duration-200 hover:shadow-lg hover:shadow-purple-500/10"
             >
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-base font-medium text-white">{template.name}</CardTitle>
+                <CardTitle className="text-base font-medium text-white">
+                  {template.name}
+                </CardTitle>
                 <div className="flex items-center gap-2">
-                  <Badge variant="secondary" className="bg-purple-500/20 text-purple-200 border-purple-500/30">
+                  <Badge
+                    variant="secondary"
+                    className="bg-purple-500/20 text-purple-200 border-purple-500/30"
+                  >
                     {template.usageCount} uses
                   </Badge>
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
-                      <Button variant="ghost" className="h-8 w-8 p-0 text-gray-300 hover:text-white hover:bg-white/10">
+                      <Button
+                        variant="ghost"
+                        className="h-8 w-8 p-0 text-gray-300 hover:text-white hover:bg-white/10"
+                      >
                         <MoreHorizontal className="h-4 w-4" />
                       </Button>
                     </DropdownMenuTrigger>
@@ -183,24 +214,36 @@ export default function TemplatesPage() {
               </CardHeader>
               <CardContent>
                 <div className="space-y-3">
-                  {template.description && <p className="text-sm text-gray-300">{template.description}</p>}
+                  {template.description && (
+                    <p className="text-sm text-gray-300">
+                      {template.description}
+                    </p>
+                  )}
 
                   <div className="text-sm">
-                    <div className="font-medium mb-2 text-white">Content Preview:</div>
+                    <div className="font-medium mb-2 text-white">
+                      Content Preview:
+                    </div>
                     <div className="text-gray-300 bg-black/20 border border-white/10 p-3 rounded text-xs font-mono">
                       {template.content.length > 120
                         ? `${template.content.substring(0, 120)}...`
-                        : template.content || "No content"}
+                        : template.content || 'No content'}
                     </div>
                   </div>
 
                   <div className="flex items-center justify-between">
                     {template.embeds && template.embeds.length > 0 && (
-                      <Badge variant="outline" className="text-xs bg-blue-500/20 text-blue-200 border-blue-500/30">
-                        {template.embeds.length} embed{template.embeds.length > 1 ? "s" : ""}
+                      <Badge
+                        variant="outline"
+                        className="text-xs bg-blue-500/20 text-blue-200 border-blue-500/30"
+                      >
+                        {template.embeds.length} embed
+                        {template.embeds.length > 1 ? 's' : ''}
                       </Badge>
                     )}
-                    <div className="text-xs text-gray-400">{new Date(template.updatedAt).toLocaleDateString()}</div>
+                    <div className="text-xs text-gray-400">
+                      {new Date(template.updatedAt).toLocaleDateString()}
+                    </div>
                   </div>
                 </div>
               </CardContent>
@@ -211,8 +254,12 @@ export default function TemplatesPage() {
         <Card className="bg-white/10 backdrop-blur-md border-white/20">
           <CardContent className="flex flex-col items-center justify-center py-16">
             <FileText className="h-12 w-12 text-purple-400 mb-4" />
-            <h3 className="text-lg font-semibold mb-2 text-white">No templates yet</h3>
-            <p className="text-gray-300 text-center mb-4">Create your first message template to get started</p>
+            <h3 className="text-lg font-semibold mb-2 text-white">
+              No templates yet
+            </h3>
+            <p className="text-gray-300 text-center mb-4">
+              Create your first message template to get started
+            </p>
             <Button
               onClick={handleCreateTemplate}
               className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white border-0"
@@ -226,19 +273,28 @@ export default function TemplatesPage() {
         <Card className="bg-white/10 backdrop-blur-md border-white/20">
           <CardContent className="flex flex-col items-center justify-center py-16">
             <Search className="h-12 w-12 text-purple-400 mb-4" />
-            <h3 className="text-lg font-semibold mb-2 text-white">No templates found</h3>
-            <p className="text-gray-300 text-center">Try adjusting your search query</p>
+            <h3 className="text-lg font-semibold mb-2 text-white">
+              No templates found
+            </h3>
+            <p className="text-gray-300 text-center">
+              Try adjusting your search query
+            </p>
           </CardContent>
         </Card>
       )}
 
-      <AlertDialog open={!!deleteDialogTemplate} onOpenChange={() => setDeleteDialogTemplate(null)}>
+      <AlertDialog
+        open={!!deleteDialogTemplate}
+        onOpenChange={() => setDeleteDialogTemplate(null)}
+      >
         <AlertDialogContent className="bg-slate-800/95 backdrop-blur-md border-white/20 text-white">
           <AlertDialogHeader>
-            <AlertDialogTitle className="text-white">Delete template?</AlertDialogTitle>
+            <AlertDialogTitle className="text-white">
+              Delete template?
+            </AlertDialogTitle>
             <AlertDialogDescription className="text-gray-300">
-              This action cannot be undone. This will permanently delete the template "{deleteDialogTemplate?.name}"
-              from your account.
+              This action cannot be undone. This will permanently delete the
+              template "{deleteDialogTemplate?.name}" from your account.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
@@ -246,7 +302,9 @@ export default function TemplatesPage() {
               Cancel
             </AlertDialogCancel>
             <AlertDialogAction
-              onClick={() => deleteDialogTemplate && handleDelete(deleteDialogTemplate)}
+              onClick={() =>
+                deleteDialogTemplate && handleDelete(deleteDialogTemplate)
+              }
               className="bg-red-600 text-white hover:bg-red-700"
             >
               Delete
@@ -255,5 +313,5 @@ export default function TemplatesPage() {
         </AlertDialogContent>
       </AlertDialog>
     </div>
-  )
+  );
 }

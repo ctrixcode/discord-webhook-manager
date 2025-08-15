@@ -1,111 +1,120 @@
-"use client"
+'use client';
 
-import { useState, useEffect } from "react"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Label } from "@/components/ui/label"
-import { Textarea } from "@/components/ui/textarea"
-import { Checkbox } from "@/components/ui/checkbox"
-import { Badge } from "@/components/ui/badge"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Send, Webhook } from "lucide-react"
-import { getWebhooks, type Webhook as WebhookType } from "@/lib/webhook-storage"
-import type { PredefinedAvatar } from "@/lib/avatar-storage"
-import { AvatarSelector } from "@/components/avatars/avatar-selector"
-import { DiscordMessagePreview } from "@/components/discord-message-preview"
-import type { DiscordEmbed } from "@/lib/template-storage"
-import { toast } from "sonner"
+import { useState, useEffect } from 'react';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
+import { Checkbox } from '@/components/ui/checkbox';
+import { Badge } from '@/components/ui/badge';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Send, Webhook } from 'lucide-react';
+import {
+  getWebhooks,
+  type Webhook as WebhookType,
+} from '@/lib/webhook-storage';
+import type { PredefinedAvatar } from '@/lib/avatar-storage';
+import { AvatarSelector } from '@/components/avatars/avatar-selector';
+import { DiscordMessagePreview } from '@/components/discord-message-preview';
+import type { DiscordEmbed } from '@/lib/template-storage';
+import { toast } from 'sonner';
 
 export default function SendMessagePage() {
-  const [webhooks, setWebhooks] = useState<WebhookType[]>([])
-  const [selectedWebhooks, setSelectedWebhooks] = useState<string[]>([])
+  const [webhooks, setWebhooks] = useState<WebhookType[]>([]);
+  const [selectedWebhooks, setSelectedWebhooks] = useState<string[]>([]);
   const [message, setMessage] = useState({
-    content: "",
-    username: "",
-    avatarUrl: "",
+    content: '',
+    username: '',
+    avatarUrl: '',
     tts: false,
-    threadName: "", // Added threadName to message state
+    threadName: '', // Added threadName to message state
     embeds: [] as DiscordEmbed[],
-  })
-  const [isSending, setIsSending] = useState(false)
-  const [sendResults, setSendResults] = useState<{ webhookId: string; success: boolean; error?: string }[]>([])
-  const [avatarMode, setAvatarMode] = useState<"predefined" | "custom">("predefined")
+  });
+  const [isSending, setIsSending] = useState(false);
+  const [sendResults, setSendResults] = useState<
+    { webhookId: string; success: boolean; error?: string }[]
+  >([]);
+  const [avatarMode, setAvatarMode] = useState<'predefined' | 'custom'>(
+    'predefined',
+  );
 
   useEffect(() => {
-    setWebhooks(getWebhooks())
-  }, [])
+    setWebhooks(getWebhooks());
+  }, []);
 
   const handleWebhookToggle = (webhookId: string) => {
     setSelectedWebhooks((prev) =>
-      prev.includes(webhookId) ? prev.filter((id) => id !== webhookId) : [...prev, webhookId],
-    )
-  }
+      prev.includes(webhookId)
+        ? prev.filter((id) => id !== webhookId)
+        : [...prev, webhookId],
+    );
+  };
 
   const handleSelectAll = () => {
     if (selectedWebhooks.length === webhooks.length) {
-      setSelectedWebhooks([])
+      setSelectedWebhooks([]);
     } else {
-      setSelectedWebhooks(webhooks.map((w) => w.id))
+      setSelectedWebhooks(webhooks.map((w) => w.id));
     }
-  }
+  };
 
   const handleAvatarSelect = (avatar: PredefinedAvatar) => {
     setMessage((prev) => ({
       ...prev,
       username: avatar.username,
       avatarUrl: avatar.avatarUrl,
-    }))
-  }
+    }));
+  };
 
   const clearAvatar = () => {
-    setMessage((prev) => ({ ...prev, username: "", avatarUrl: "" }))
-  }
+    setMessage((prev) => ({ ...prev, username: '', avatarUrl: '' }));
+  };
 
   const addEmbed = () => {
     const newEmbed: DiscordEmbed = {
-      title: "",
-      description: "",
+      title: '',
+      description: '',
       color: 5814783, // Discord's default blurple color
       fields: [],
-    }
+    };
     setMessage((prev) => ({
       ...prev,
       embeds: [...prev.embeds, newEmbed],
-    }))
-  }
+    }));
+  };
 
   const updateEmbed = (index: number, embed: DiscordEmbed) => {
     setMessage((prev) => ({
       ...prev,
       embeds: prev.embeds.map((e, i) => (i === index ? embed : e)),
-    }))
-  }
+    }));
+  };
 
   const removeEmbed = (index: number) => {
     setMessage((prev) => ({
       ...prev,
       embeds: prev.embeds.filter((_, i) => i !== index),
-    }))
-  }
+    }));
+  };
 
   const handleSendMessage = async () => {
     if (selectedWebhooks.length === 0) {
-      toast.error("Please select at least one webhook")
-      return
+      toast.error('Please select at least one webhook');
+      return;
     }
 
     if (!message.content.trim() && message.embeds.length === 0) {
-      toast.error("Please enter a message or add an embed")
-      return
+      toast.error('Please enter a message or add an embed');
+      return;
     }
 
-    setIsSending(true)
-    setSendResults([])
+    setIsSending(true);
+    setSendResults([]);
 
-    const results = []
+    const results = [];
     for (const webhookId of selectedWebhooks) {
-      const webhook = webhooks.find((w) => w.id === webhookId)
-      if (!webhook) continue
+      const webhook = webhooks.find((w) => w.id === webhookId);
+      if (!webhook) continue;
 
       try {
         const payload = {
@@ -115,41 +124,47 @@ export default function SendMessagePage() {
           tts: message.tts,
           thread_name: message.threadName || undefined, // Added thread_name to payload
           embeds: message.embeds.length > 0 ? message.embeds : undefined,
-        }
+        };
 
         const response = await fetch(webhook.url, {
-          method: "POST",
+          method: 'POST',
           headers: {
-            "Content-Type": "application/json",
+            'Content-Type': 'application/json',
           },
           body: JSON.stringify(payload),
-        })
+        });
 
         if (response.ok) {
-          results.push({ webhookId, success: true })
+          results.push({ webhookId, success: true });
         } else {
-          const errorText = await response.text()
-          results.push({ webhookId, success: false, error: errorText })
+          const errorText = await response.text();
+          results.push({ webhookId, success: false, error: errorText });
         }
       } catch (error) {
-        results.push({ webhookId, success: false, error: String(error) })
+        results.push({ webhookId, success: false, error: String(error) });
       }
     }
 
-    setSendResults(results)
-    setIsSending(false)
+    setSendResults(results);
+    setIsSending(false);
 
-    const successCount = results.filter((r) => r.success).length
-    const failCount = results.filter((r) => !r.success).length
+    const successCount = results.filter((r) => r.success).length;
+    const failCount = results.filter((r) => !r.success).length;
 
     if (failCount === 0) {
-      toast.success(`Message sent successfully to ${successCount} webhook${successCount > 1 ? "s" : ""}`)
+      toast.success(
+        `Message sent successfully to ${successCount} webhook${successCount > 1 ? 's' : ''}`,
+      );
     } else if (successCount === 0) {
-      toast.error(`Failed to send message to all ${failCount} webhook${failCount > 1 ? "s" : ""}`)
+      toast.error(
+        `Failed to send message to all ${failCount} webhook${failCount > 1 ? 's' : ''}`,
+      );
     } else {
-      toast.warning(`Message sent to ${successCount} webhook${successCount > 1 ? "s" : ""}, failed on ${failCount}`)
+      toast.warning(
+        `Message sent to ${successCount} webhook${successCount > 1 ? 's' : ''}, failed on ${failCount}`,
+      );
     }
-  }
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 p-6">
@@ -158,7 +173,9 @@ export default function SendMessagePage() {
         <div className="flex items-center justify-between">
           <div>
             <h1 className="text-3xl font-bold text-white">Send Message</h1>
-            <p className="text-slate-300 mt-1">Send messages immediately to one or multiple webhooks</p>
+            <p className="text-slate-300 mt-1">
+              Send messages immediately to one or multiple webhooks
+            </p>
           </div>
           <Button
             onClick={handleSendMessage}
@@ -167,8 +184,8 @@ export default function SendMessagePage() {
           >
             <Send className="w-4 h-4 mr-2" />
             {isSending
-              ? "Sending..."
-              : `Send to ${selectedWebhooks.length} webhook${selectedWebhooks.length !== 1 ? "s" : ""}`}
+              ? 'Sending...'
+              : `Send to ${selectedWebhooks.length} webhook${selectedWebhooks.length !== 1 ? 's' : ''}`}
           </Button>
         </div>
 
@@ -188,12 +205,16 @@ export default function SendMessagePage() {
                   onClick={handleSelectAll}
                   className="w-fit border-slate-600 text-slate-300 hover:bg-slate-700 bg-transparent"
                 >
-                  {selectedWebhooks.length === webhooks.length ? "Deselect All" : "Select All"}
+                  {selectedWebhooks.length === webhooks.length
+                    ? 'Deselect All'
+                    : 'Select All'}
                 </Button>
               </CardHeader>
               <CardContent className="space-y-3">
                 {webhooks.length === 0 ? (
-                  <p className="text-slate-400 text-center py-4">No webhooks available. Add some webhooks first.</p>
+                  <p className="text-slate-400 text-center py-4">
+                    No webhooks available. Add some webhooks first.
+                  </p>
                 ) : (
                   webhooks.map((webhook) => (
                     <div
@@ -207,12 +228,19 @@ export default function SendMessagePage() {
                       />
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-2">
-                          <span className="font-medium text-white">{webhook.name}</span>
-                          <Badge variant={webhook.isActive ? "default" : "secondary"} className="text-xs">
-                            {webhook.isActive ? "Active" : "Inactive"}
+                          <span className="font-medium text-white">
+                            {webhook.name}
+                          </span>
+                          <Badge
+                            variant={webhook.isActive ? 'default' : 'secondary'}
+                            className="text-xs"
+                          >
+                            {webhook.isActive ? 'Active' : 'Inactive'}
                           </Badge>
                         </div>
-                        <p className="text-sm text-slate-400 truncate">{webhook.url}</p>
+                        <p className="text-sm text-slate-400 truncate">
+                          {webhook.url}
+                        </p>
                       </div>
                     </div>
                   ))
@@ -228,13 +256,22 @@ export default function SendMessagePage() {
               <CardContent>
                 <Tabs defaultValue="content" className="w-full">
                   <TabsList className="grid w-full grid-cols-3 bg-slate-700/50">
-                    <TabsTrigger value="content" className="data-[state=active]:bg-purple-600">
+                    <TabsTrigger
+                      value="content"
+                      className="data-[state=active]:bg-purple-600"
+                    >
                       Content
                     </TabsTrigger>
-                    <TabsTrigger value="settings" className="data-[state=active]:bg-purple-600">
+                    <TabsTrigger
+                      value="settings"
+                      className="data-[state=active]:bg-purple-600"
+                    >
                       Settings
                     </TabsTrigger>
-                    <TabsTrigger value="embeds" className="data-[state=active]:bg-purple-600">
+                    <TabsTrigger
+                      value="embeds"
+                      className="data-[state=active]:bg-purple-600"
+                    >
                       Embeds
                     </TabsTrigger>
                   </TabsList>
@@ -248,40 +285,55 @@ export default function SendMessagePage() {
                         id="content"
                         placeholder="Enter your message content..."
                         value={message.content}
-                        onChange={(e) => setMessage((prev) => ({ ...prev, content: e.target.value }))}
+                        onChange={(e) =>
+                          setMessage((prev) => ({
+                            ...prev,
+                            content: e.target.value,
+                          }))
+                        }
                         className="mt-1 bg-slate-700/50 border-slate-600 text-white placeholder:text-slate-400 focus:border-purple-500 min-h-[120px]"
                       />
-                      <p className="text-xs text-slate-400 mt-1">{message.content.length}/2000 characters</p>
+                      <p className="text-xs text-slate-400 mt-1">
+                        {message.content.length}/2000 characters
+                      </p>
                     </div>
 
                     <div className="space-y-4">
                       <div>
-                        <Label className="text-slate-200">Message Appearance</Label>
-                        <p className="text-sm text-slate-400">Choose how the webhook message will appear in Discord</p>
+                        <Label className="text-slate-200">
+                          Message Appearance
+                        </Label>
+                        <p className="text-sm text-slate-400">
+                          Choose how the webhook message will appear in Discord
+                        </p>
                       </div>
 
                       {/* Avatar Mode Toggle */}
                       <div className="flex gap-2">
                         <Button
-                          variant={avatarMode === "predefined" ? "default" : "outline"}
+                          variant={
+                            avatarMode === 'predefined' ? 'default' : 'outline'
+                          }
                           size="sm"
-                          onClick={() => setAvatarMode("predefined")}
+                          onClick={() => setAvatarMode('predefined')}
                           className={
-                            avatarMode === "predefined"
-                              ? "bg-purple-600 hover:bg-purple-700 text-white"
-                              : "border-slate-600 text-slate-300 hover:bg-slate-700 bg-transparent"
+                            avatarMode === 'predefined'
+                              ? 'bg-purple-600 hover:bg-purple-700 text-white'
+                              : 'border-slate-600 text-slate-300 hover:bg-slate-700 bg-transparent'
                           }
                         >
                           Predefined Avatar
                         </Button>
                         <Button
-                          variant={avatarMode === "custom" ? "default" : "outline"}
+                          variant={
+                            avatarMode === 'custom' ? 'default' : 'outline'
+                          }
                           size="sm"
-                          onClick={() => setAvatarMode("custom")}
+                          onClick={() => setAvatarMode('custom')}
                           className={
-                            avatarMode === "custom"
-                              ? "bg-purple-600 hover:bg-purple-700 text-white"
-                              : "border-slate-600 text-slate-300 hover:bg-slate-700 bg-transparent"
+                            avatarMode === 'custom'
+                              ? 'bg-purple-600 hover:bg-purple-700 text-white'
+                              : 'border-slate-600 text-slate-300 hover:bg-slate-700 bg-transparent'
                           }
                         >
                           Custom Avatar
@@ -289,21 +341,28 @@ export default function SendMessagePage() {
                       </div>
 
                       {/* Predefined Avatar Selection */}
-                      {avatarMode === "predefined" && (
+                      {avatarMode === 'predefined' && (
                         <div className="flex items-center justify-between p-4 rounded-lg bg-slate-700/30 border border-slate-600/50">
                           <div>
-                            <p className="text-slate-200 font-medium">Select Predefined Avatar</p>
-                            <p className="text-sm text-slate-400">Choose from your saved avatar profiles</p>
+                            <p className="text-slate-200 font-medium">
+                              Select Predefined Avatar
+                            </p>
+                            <p className="text-sm text-slate-400">
+                              Choose from your saved avatar profiles
+                            </p>
                           </div>
                           <AvatarSelector onSelect={handleAvatarSelect} />
                         </div>
                       )}
 
                       {/* Custom Avatar Input */}
-                      {avatarMode === "custom" && (
+                      {avatarMode === 'custom' && (
                         <div className="space-y-4 p-4 rounded-lg bg-slate-700/30 border border-slate-600/50">
                           <div>
-                            <Label htmlFor="custom-username" className="text-slate-200">
+                            <Label
+                              htmlFor="custom-username"
+                              className="text-slate-200"
+                            >
                               Custom Username
                             </Label>
                             <input
@@ -311,12 +370,20 @@ export default function SendMessagePage() {
                               type="text"
                               placeholder="Enter custom username"
                               value={message.username}
-                              onChange={(e) => setMessage((prev) => ({ ...prev, username: e.target.value }))}
+                              onChange={(e) =>
+                                setMessage((prev) => ({
+                                  ...prev,
+                                  username: e.target.value,
+                                }))
+                              }
                               className="mt-1 w-full px-3 py-2 bg-slate-600/50 border border-slate-500 rounded-md text-white placeholder:text-slate-400 focus:border-purple-500 focus:outline-none"
                             />
                           </div>
                           <div>
-                            <Label htmlFor="custom-avatar" className="text-slate-200">
+                            <Label
+                              htmlFor="custom-avatar"
+                              className="text-slate-200"
+                            >
                               Custom Avatar URL
                             </Label>
                             <input
@@ -324,7 +391,12 @@ export default function SendMessagePage() {
                               type="url"
                               placeholder="Enter custom avatar URL"
                               value={message.avatarUrl}
-                              onChange={(e) => setMessage((prev) => ({ ...prev, avatarUrl: e.target.value }))}
+                              onChange={(e) =>
+                                setMessage((prev) => ({
+                                  ...prev,
+                                  avatarUrl: e.target.value,
+                                }))
+                              }
                               className="mt-1 w-full px-3 py-2 bg-slate-600/50 border border-slate-500 rounded-md text-white placeholder:text-slate-400 focus:border-purple-500 focus:outline-none"
                             />
                           </div>
@@ -337,12 +409,18 @@ export default function SendMessagePage() {
                     <div className="space-y-4">
                       <div className="flex items-center justify-between p-4 rounded-lg bg-slate-700/30 border border-slate-600/50">
                         <div>
-                          <Label className="text-slate-200 font-medium">Text-to-Speech</Label>
-                          <p className="text-sm text-slate-400">Enable TTS for this message</p>
+                          <Label className="text-slate-200 font-medium">
+                            Text-to-Speech
+                          </Label>
+                          <p className="text-sm text-slate-400">
+                            Enable TTS for this message
+                          </p>
                         </div>
                         <Checkbox
                           checked={message.tts}
-                          onCheckedChange={(checked) => setMessage((prev) => ({ ...prev, tts: !!checked }))}
+                          onCheckedChange={(checked) =>
+                            setMessage((prev) => ({ ...prev, tts: !!checked }))
+                          }
                           className="border-slate-500"
                         />
                       </div>
@@ -355,8 +433,13 @@ export default function SendMessagePage() {
                           id="thread-name"
                           type="text"
                           placeholder="Create a new thread with this name"
-                          value={message.threadName || ""}
-                          onChange={(e) => setMessage((prev) => ({ ...prev, threadName: e.target.value }))}
+                          value={message.threadName || ''}
+                          onChange={(e) =>
+                            setMessage((prev) => ({
+                              ...prev,
+                              threadName: e.target.value,
+                            }))
+                          }
                           className="mt-1 w-full px-3 py-2 bg-slate-600/50 border border-slate-500 rounded-md text-white placeholder:text-slate-400 focus:border-purple-500 focus:outline-none"
                         />
                         <p className="text-xs text-slate-400 mt-1">
@@ -370,8 +453,12 @@ export default function SendMessagePage() {
                     <div className="space-y-4">
                       <div className="flex items-center justify-between">
                         <div>
-                          <Label className="text-slate-200 font-medium">Discord Embeds</Label>
-                          <p className="text-sm text-slate-400">Add rich embeds to your message (max 10)</p>
+                          <Label className="text-slate-200 font-medium">
+                            Discord Embeds
+                          </Label>
+                          <p className="text-sm text-slate-400">
+                            Add rich embeds to your message (max 10)
+                          </p>
                         </div>
                         <Button
                           onClick={addEmbed}
@@ -386,14 +473,21 @@ export default function SendMessagePage() {
                       {message.embeds.length === 0 ? (
                         <div className="text-center py-8 text-slate-400">
                           <p>No embeds added yet</p>
-                          <p className="text-sm">Click "Add Embed" to create rich message content</p>
+                          <p className="text-sm">
+                            Click "Add Embed" to create rich message content
+                          </p>
                         </div>
                       ) : (
                         <div className="space-y-4">
                           {message.embeds.map((embed, index) => (
-                            <div key={index} className="p-4 rounded-lg bg-slate-700/30 border border-slate-600/50">
+                            <div
+                              key={index}
+                              className="p-4 rounded-lg bg-slate-700/30 border border-slate-600/50"
+                            >
                               <div className="flex items-center justify-between mb-4">
-                                <Label className="text-slate-200 font-medium">Embed {index + 1}</Label>
+                                <Label className="text-slate-200 font-medium">
+                                  Embed {index + 1}
+                                </Label>
                                 <Button
                                   onClick={() => removeEmbed(index)}
                                   variant="outline"
@@ -406,36 +500,55 @@ export default function SendMessagePage() {
 
                               <div className="space-y-3">
                                 <div>
-                                  <Label className="text-slate-300 text-sm">Title</Label>
+                                  <Label className="text-slate-300 text-sm">
+                                    Title
+                                  </Label>
                                   <input
                                     type="text"
                                     placeholder="Embed title"
-                                    value={embed.title || ""}
-                                    onChange={(e) => updateEmbed(index, { ...embed, title: e.target.value })}
+                                    value={embed.title || ''}
+                                    onChange={(e) =>
+                                      updateEmbed(index, {
+                                        ...embed,
+                                        title: e.target.value,
+                                      })
+                                    }
                                     className="mt-1 w-full px-3 py-2 bg-slate-600/50 border border-slate-500 rounded-md text-white placeholder:text-slate-400 focus:border-purple-500 focus:outline-none"
                                   />
                                 </div>
 
                                 <div>
-                                  <Label className="text-slate-300 text-sm">Description</Label>
+                                  <Label className="text-slate-300 text-sm">
+                                    Description
+                                  </Label>
                                   <Textarea
                                     placeholder="Embed description"
-                                    value={embed.description || ""}
-                                    onChange={(e) => updateEmbed(index, { ...embed, description: e.target.value })}
+                                    value={embed.description || ''}
+                                    onChange={(e) =>
+                                      updateEmbed(index, {
+                                        ...embed,
+                                        description: e.target.value,
+                                      })
+                                    }
                                     className="mt-1 bg-slate-600/50 border-slate-500 text-white placeholder:text-slate-400 focus:border-purple-500"
                                     rows={3}
                                   />
                                 </div>
 
                                 <div>
-                                  <Label className="text-slate-300 text-sm">Color</Label>
+                                  <Label className="text-slate-300 text-sm">
+                                    Color
+                                  </Label>
                                   <input
                                     type="color"
-                                    value={`#${(embed.color || 5814783).toString(16).padStart(6, "0")}`}
+                                    value={`#${(embed.color || 5814783).toString(16).padStart(6, '0')}`}
                                     onChange={(e) =>
                                       updateEmbed(index, {
                                         ...embed,
-                                        color: Number.parseInt(e.target.value.slice(1), 16),
+                                        color: Number.parseInt(
+                                          e.target.value.slice(1),
+                                          16,
+                                        ),
                                       })
                                     }
                                     className="mt-1 w-full h-10 bg-slate-600/50 border border-slate-500 rounded-md"
@@ -465,5 +578,5 @@ export default function SendMessagePage() {
         </div>
       </div>
     </div>
-  )
+  );
 }

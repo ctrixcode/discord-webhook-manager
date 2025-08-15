@@ -1,5 +1,5 @@
-@import "tailwindcss";
-@import "tw-animate-css";
+@import 'tailwindcss';
+@import 'tw-animate-css';
 
 @custom-variant dark (&:is(.dark *));
 
@@ -40,9 +40,21 @@
   --sidebar-ring: oklch(0.6 0.2 280);
 
   /* Added gradient variables for modern backgrounds */
-  --gradient-primary: linear-gradient(135deg, oklch(0.6 0.2 280) 0%, oklch(0.55 0.2 240) 100%);
-  --gradient-secondary: linear-gradient(135deg, oklch(0.65 0.25 320) 0%, oklch(0.6 0.2 280) 100%);
-  --gradient-background: linear-gradient(135deg, oklch(0.98 0.005 264) 0%, oklch(0.96 0.01 264) 100%);
+  --gradient-primary: linear-gradient(
+    135deg,
+    oklch(0.6 0.2 280) 0%,
+    oklch(0.55 0.2 240) 100%
+  );
+  --gradient-secondary: linear-gradient(
+    135deg,
+    oklch(0.65 0.25 320) 0%,
+    oklch(0.6 0.2 280) 100%
+  );
+  --gradient-background: linear-gradient(
+    135deg,
+    oklch(0.98 0.005 264) 0%,
+    oklch(0.96 0.01 264) 100%
+  );
 }
 
 .dark {

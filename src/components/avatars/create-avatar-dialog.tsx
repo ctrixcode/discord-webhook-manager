@@ -1,57 +1,79 @@
-"use client"
+'use client';
 
-import { useState } from "react"
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { type PredefinedAvatar, saveAvatar, updateAvatar } from "@/lib/avatar-storage"
+import { useState } from 'react';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import {
+  type PredefinedAvatar,
+  saveAvatar,
+  updateAvatar,
+} from '@/lib/avatar-storage';
 
 interface CreateAvatarDialogProps {
-  open: boolean
-  onOpenChange: (open: boolean) => void
-  onSave: () => void
-  editingAvatar?: PredefinedAvatar | null
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  onSave: () => void;
+  editingAvatar?: PredefinedAvatar | null;
 }
 
-export function CreateAvatarDialog({ open, onOpenChange, onSave, editingAvatar }: CreateAvatarDialogProps) {
-  const [name, setName] = useState(editingAvatar?.name || "")
-  const [username, setUsername] = useState(editingAvatar?.username || "")
-  const [avatarUrl, setAvatarUrl] = useState(editingAvatar?.avatarUrl || "")
+export function CreateAvatarDialog({
+  open,
+  onOpenChange,
+  onSave,
+  editingAvatar,
+}: CreateAvatarDialogProps) {
+  const [name, setName] = useState(editingAvatar?.name || '');
+  const [username, setUsername] = useState(editingAvatar?.username || '');
+  const [avatarUrl, setAvatarUrl] = useState(editingAvatar?.avatarUrl || '');
 
   const handleSave = () => {
-    if (!name.trim() || !username.trim()) return
+    if (!name.trim() || !username.trim()) return;
 
     if (editingAvatar) {
-      updateAvatar(editingAvatar.id, { name: name.trim(), username: username.trim(), avatarUrl: avatarUrl.trim() })
+      updateAvatar(editingAvatar.id, {
+        name: name.trim(),
+        username: username.trim(),
+        avatarUrl: avatarUrl.trim(),
+      });
     } else {
-      saveAvatar({ name: name.trim(), username: username.trim(), avatarUrl: avatarUrl.trim() })
+      saveAvatar({
+        name: name.trim(),
+        username: username.trim(),
+        avatarUrl: avatarUrl.trim(),
+      });
     }
 
     // Reset form
-    setName("")
-    setUsername("")
-    setAvatarUrl("")
-    onSave()
-    onOpenChange(false)
-  }
+    setName('');
+    setUsername('');
+    setAvatarUrl('');
+    onSave();
+    onOpenChange(false);
+  };
 
   const handleClose = () => {
     if (!editingAvatar) {
-      setName("")
-      setUsername("")
-      setAvatarUrl("")
+      setName('');
+      setUsername('');
+      setAvatarUrl('');
     }
-    onOpenChange(false)
-  }
+    onOpenChange(false);
+  };
 
   return (
     <Dialog open={open} onOpenChange={handleClose}>
       <DialogContent className="bg-slate-800 border-slate-700 text-white">
         <DialogHeader>
           <DialogTitle className="text-xl font-semibold">
-            {editingAvatar ? "Edit Avatar" : "Create New Avatar"}
+            {editingAvatar ? 'Edit Avatar' : 'Create New Avatar'}
           </DialogTitle>
         </DialogHeader>
 
@@ -59,9 +81,12 @@ export function CreateAvatarDialog({ open, onOpenChange, onSave, editingAvatar }
           {/* Preview */}
           <div className="flex items-center justify-center">
             <Avatar className="w-20 h-20 ring-2 ring-purple-500/20">
-              <AvatarImage src={avatarUrl || "/placeholder.svg"} alt={username} />
+              <AvatarImage
+                src={avatarUrl || '/placeholder.svg'}
+                alt={username}
+              />
               <AvatarFallback className="bg-purple-500/20 text-purple-300 text-lg">
-                {username.slice(0, 2).toUpperCase() || "??"}
+                {username.slice(0, 2).toUpperCase() || '??'}
               </AvatarFallback>
             </Avatar>
           </div>
@@ -122,11 +147,11 @@ export function CreateAvatarDialog({ open, onOpenChange, onSave, editingAvatar }
               disabled={!name.trim() || !username.trim()}
               className="flex-1 bg-purple-600 hover:bg-purple-700 text-white"
             >
-              {editingAvatar ? "Update Avatar" : "Create Avatar"}
+              {editingAvatar ? 'Update Avatar' : 'Create Avatar'}
             </Button>
           </div>
         </div>
       </DialogContent>
     </Dialog>
-  )
+  );
 }

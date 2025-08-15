@@ -1,11 +1,11 @@
-import { Label } from "@/components/ui/label"
-import { Switch } from "@/components/ui/switch"
+import { Label } from '@/components/ui/label';
+import { Switch } from '@/components/ui/switch';
 
 interface NotificationToggleProps {
-  title: string
-  description: string
-  defaultChecked?: boolean
-  onCheckedChange?: (checked: boolean) => void
+  title: string;
+  description: string;
+  defaultChecked?: boolean;
+  onCheckedChange?: (checked: boolean) => void;
 }
 
 export function NotificationToggle({
@@ -26,5 +26,5 @@ export function NotificationToggle({
         className="data-[state=checked]:bg-purple-600"
       />
     </div>
-  )
+  );
 }

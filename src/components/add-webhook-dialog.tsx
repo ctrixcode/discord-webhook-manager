@@ -1,9 +1,9 @@
-"use client"
+'use client';
 
-import type React from "react"
+import type React from 'react';
 
-import { useState } from "react"
-import { Button } from "@/components/ui/button"
+import { useState } from 'react';
+import { Button } from '@/components/ui/button';
 import {
   Dialog,
   DialogContent,
@@ -12,52 +12,52 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "@/components/ui/dialog"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Textarea } from "@/components/ui/textarea"
-import { useAuth } from "@/contexts/auth-context"
-import { addWebhook, validateWebhookUrl } from "@/lib/webhook-storage"
-import { Plus, AlertCircle } from "lucide-react"
-import { Alert, AlertDescription } from "@/components/ui/alert"
+} from '@/components/ui/dialog';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
+import { useAuth } from '@/contexts/auth-context';
+import { addWebhook, validateWebhookUrl } from '@/lib/webhook-storage';
+import { Plus, AlertCircle } from 'lucide-react';
+import { Alert, AlertDescription } from '@/components/ui/alert';
 
 interface AddWebhookDialogProps {
-  onWebhookAdded: () => void
+  onWebhookAdded: () => void;
 }
 
 export function AddWebhookDialog({ onWebhookAdded }: AddWebhookDialogProps) {
-  const { user } = useAuth()
-  const [open, setOpen] = useState(false)
-  const [name, setName] = useState("")
-  const [url, setUrl] = useState("")
-  const [description, setDescription] = useState("")
-  const [error, setError] = useState("")
-  const [isLoading, setIsLoading] = useState(false)
+  const { user } = useAuth();
+  const [open, setOpen] = useState(false);
+  const [name, setName] = useState('');
+  const [url, setUrl] = useState('');
+  const [description, setDescription] = useState('');
+  const [error, setError] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    if (!user) return
+    e.preventDefault();
+    if (!user) return;
 
-    setError("")
-    setIsLoading(true)
+    setError('');
+    setIsLoading(true);
 
     // Validation
     if (!name.trim()) {
-      setError("Webhook name is required")
-      setIsLoading(false)
-      return
+      setError('Webhook name is required');
+      setIsLoading(false);
+      return;
     }
 
     if (!url.trim()) {
-      setError("Webhook URL is required")
-      setIsLoading(false)
-      return
+      setError('Webhook URL is required');
+      setIsLoading(false);
+      return;
     }
 
     if (!validateWebhookUrl(url)) {
-      setError("Invalid Discord webhook URL format")
-      setIsLoading(false)
-      return
+      setError('Invalid Discord webhook URL format');
+      setIsLoading(false);
+      return;
     }
 
     try {
@@ -66,20 +66,20 @@ export function AddWebhookDialog({ onWebhookAdded }: AddWebhookDialogProps) {
         url: url.trim(),
         userId: user.id,
         isActive: true,
-      })
+      });
 
       // Reset form
-      setName("")
-      setUrl("")
-      setDescription("")
-      setOpen(false)
-      onWebhookAdded()
+      setName('');
+      setUrl('');
+      setDescription('');
+      setOpen(false);
+      onWebhookAdded();
     } catch (err) {
-      setError("Failed to add webhook")
+      setError('Failed to add webhook');
     } finally {
-      setIsLoading(false)
+      setIsLoading(false);
     }
-  }
+  };
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
@@ -93,7 +93,8 @@ export function AddWebhookDialog({ onWebhookAdded }: AddWebhookDialogProps) {
         <DialogHeader>
           <DialogTitle className="text-white">Add New Webhook</DialogTitle>
           <DialogDescription className="text-slate-300">
-            Add a Discord webhook to start sending messages. You can find webhook URLs in your Discord server settings.
+            Add a Discord webhook to start sending messages. You can find
+            webhook URLs in your Discord server settings.
           </DialogDescription>
         </DialogHeader>
         <form onSubmit={handleSubmit}>
@@ -138,9 +139,14 @@ export function AddWebhookDialog({ onWebhookAdded }: AddWebhookDialogProps) {
               />
             </div>
             {error && (
-              <Alert variant="destructive" className="bg-red-900/20 border-red-500/50 text-red-200">
+              <Alert
+                variant="destructive"
+                className="bg-red-900/20 border-red-500/50 text-red-200"
+              >
                 <AlertCircle className="h-4 w-4 text-red-400" />
-                <AlertDescription className="text-red-200">{error}</AlertDescription>
+                <AlertDescription className="text-red-200">
+                  {error}
+                </AlertDescription>
               </Alert>
             )}
           </div>
@@ -158,11 +164,11 @@ export function AddWebhookDialog({ onWebhookAdded }: AddWebhookDialogProps) {
               disabled={isLoading}
               className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white border-0"
             >
-              {isLoading ? "Adding..." : "Add Webhook"}
+              {isLoading ? 'Adding...' : 'Add Webhook'}
             </Button>
           </DialogFooter>
         </form>
       </DialogContent>
     </Dialog>
-  )
+  );
 }

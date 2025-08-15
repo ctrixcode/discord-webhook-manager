@@ -1,81 +1,91 @@
-"use client"
+'use client';
 
-import type React from "react"
-import { useState, useEffect } from "react"
-import { useRouter, useSearchParams } from "next/navigation"
-import { Button } from "@/components/ui/button"
-import { Switch } from "@/components/ui/switch"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Textarea } from "@/components/ui/textarea"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { ScrollArea } from "@/components/ui/scroll-area"
-import { EmbedBuilder } from "@/components/embed-builder"
-import { DiscordMessagePreview } from "@/components/discord-message-preview"
-import { AvatarSelector } from "@/components/avatars/avatar-selector"
-import { useAuth } from "@/contexts/auth-context"
+import type React from 'react';
+import { useState, useEffect } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { Button } from '@/components/ui/button';
+import { Switch } from '@/components/ui/switch';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { ScrollArea } from '@/components/ui/scroll-area';
+import { EmbedBuilder } from '@/components/embed-builder';
+import { DiscordMessagePreview } from '@/components/discord-message-preview';
+import { AvatarSelector } from '@/components/avatars/avatar-selector';
+import { useAuth } from '@/contexts/auth-context';
 import {
   addTemplate,
   updateTemplate,
   getTemplate,
   type MessageTemplate,
   type DiscordEmbed,
-} from "@/lib/template-storage"
-import { ArrowLeft, Save, FileText, Settings, Plus, AlertCircle, MessageSquare, Layers, Users } from "lucide-react"
-import { Alert, AlertDescription } from "@/components/ui/alert"
+} from '@/lib/template-storage';
+import {
+  ArrowLeft,
+  Save,
+  FileText,
+  Settings,
+  Plus,
+  AlertCircle,
+  MessageSquare,
+  Layers,
+  Users,
+} from 'lucide-react';
+import { Alert, AlertDescription } from '@/components/ui/alert';
 
 export default function CreateTemplatePage() {
-  const router = useRouter()
-  const searchParams = useSearchParams()
-  const templateId = searchParams.get("edit")
-  const { user } = useAuth()
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const templateId = searchParams.get('edit');
+  const { user } = useAuth();
 
-  const [template, setTemplate] = useState<MessageTemplate | null>(null)
-  const [name, setName] = useState("")
-  const [description, setDescription] = useState("")
-  const [content, setContent] = useState("")
-  const [username, setUsername] = useState("")
-  const [avatarUrl, setAvatarUrl] = useState("")
-  const [tts, setTts] = useState(false)
-  const [threadName, setThreadName] = useState("")
-  const [embeds, setEmbeds] = useState<DiscordEmbed[]>([])
-  const [error, setError] = useState("")
-  const [isLoading, setIsLoading] = useState(false)
+  const [template, setTemplate] = useState<MessageTemplate | null>(null);
+  const [name, setName] = useState('');
+  const [description, setDescription] = useState('');
+  const [content, setContent] = useState('');
+  const [username, setUsername] = useState('');
+  const [avatarUrl, setAvatarUrl] = useState('');
+  const [tts, setTts] = useState(false);
+  const [threadName, setThreadName] = useState('');
+  const [embeds, setEmbeds] = useState<DiscordEmbed[]>([]);
+  const [error, setError] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     if (templateId) {
-      const existingTemplate = getTemplate(templateId)
+      const existingTemplate = getTemplate(templateId);
       if (existingTemplate) {
-        setTemplate(existingTemplate)
-        setName(existingTemplate.name)
-        setDescription(existingTemplate.description || "")
-        setContent(existingTemplate.content)
-        setUsername(existingTemplate.username || "")
-        setAvatarUrl(existingTemplate.avatarUrl || "")
-        setTts(existingTemplate.tts || false)
-        setThreadName(existingTemplate.threadName || "")
-        setEmbeds(existingTemplate.embeds || [])
+        setTemplate(existingTemplate);
+        setName(existingTemplate.name);
+        setDescription(existingTemplate.description || '');
+        setContent(existingTemplate.content);
+        setUsername(existingTemplate.username || '');
+        setAvatarUrl(existingTemplate.avatarUrl || '');
+        setTts(existingTemplate.tts || false);
+        setThreadName(existingTemplate.threadName || '');
+        setEmbeds(existingTemplate.embeds || []);
       }
     }
-  }, [templateId])
+  }, [templateId]);
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    if (!user) return
+    e.preventDefault();
+    if (!user) return;
 
-    setError("")
-    setIsLoading(true)
+    setError('');
+    setIsLoading(true);
 
     if (!name.trim()) {
-      setError("Template name is required")
-      setIsLoading(false)
-      return
+      setError('Template name is required');
+      setIsLoading(false);
+      return;
     }
 
     if (!content.trim() && (!embeds || embeds.length === 0)) {
-      setError("Template must have either content or embeds")
-      setIsLoading(false)
-      return
+      setError('Template must have either content or embeds');
+      setIsLoading(false);
+      return;
     }
 
     try {
@@ -88,38 +98,38 @@ export default function CreateTemplatePage() {
         tts: tts || undefined,
         threadName: threadName.trim() || undefined,
         embeds: embeds.length > 0 ? embeds : undefined,
-      }
+      };
 
       if (template) {
-        updateTemplate(template.id, templateData)
+        updateTemplate(template.id, templateData);
       } else {
         addTemplate({
           ...templateData,
           userId: user.id,
-        })
+        });
       }
 
-      router.push("/dashboard/templates")
+      router.push('/dashboard/templates');
     } catch (err) {
-      setError("Failed to save template")
+      setError('Failed to save template');
     } finally {
-      setIsLoading(false)
+      setIsLoading(false);
     }
-  }
+  };
 
   const addEmbed = () => {
-    setEmbeds([...embeds, { title: "New Embed", color: 0x5865f2 }])
-  }
+    setEmbeds([...embeds, { title: 'New Embed', color: 0x5865f2 }]);
+  };
 
   const updateEmbed = (index: number, embed: DiscordEmbed) => {
-    const newEmbeds = [...embeds]
-    newEmbeds[index] = embed
-    setEmbeds(newEmbeds)
-  }
+    const newEmbeds = [...embeds];
+    newEmbeds[index] = embed;
+    setEmbeds(newEmbeds);
+  };
 
   const removeEmbed = (index: number) => {
-    setEmbeds(embeds.filter((_, i) => i !== index))
-  }
+    setEmbeds(embeds.filter((_, i) => i !== index));
+  };
 
   return (
     <div className="h-screen flex flex-col bg-gradient-to-br from-slate-900 via-slate-800 to-purple-900">
@@ -127,13 +137,22 @@ export default function CreateTemplatePage() {
       <div className="border-b border-slate-700/50 bg-slate-900/50 backdrop-blur-sm sticky top-0 z-10">
         <div className="flex items-center justify-between p-4">
           <div className="flex items-center gap-4">
-            <Button variant="ghost" size="sm" onClick={() => router.back()} className="text-white hover:bg-slate-700">
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => router.back()}
+              className="text-white hover:bg-slate-700"
+            >
               <ArrowLeft className="w-4 h-4 mr-2" />
               Back
             </Button>
             <div>
-              <h1 className="text-xl font-semibold text-white">{template ? "Edit Template" : "Create Template"}</h1>
-              <p className="text-sm text-slate-300">Design your Discord message with live preview</p>
+              <h1 className="text-xl font-semibold text-white">
+                {template ? 'Edit Template' : 'Create Template'}
+              </h1>
+              <p className="text-sm text-slate-300">
+                Design your Discord message with live preview
+              </p>
             </div>
           </div>
           <Button
@@ -142,7 +161,7 @@ export default function CreateTemplatePage() {
             className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700"
           >
             <Save className="w-4 h-4 mr-2" />
-            {isLoading ? "Saving..." : template ? "Update" : "Save"}
+            {isLoading ? 'Saving...' : template ? 'Update' : 'Save'}
           </Button>
         </div>
       </div>
@@ -189,7 +208,9 @@ export default function CreateTemplatePage() {
               <ScrollArea className="h-full">
                 <div className="space-y-6">
                   <div className="space-y-4">
-                    <h3 className="text-lg font-semibold text-white">Template Information</h3>
+                    <h3 className="text-lg font-semibold text-white">
+                      Template Information
+                    </h3>
 
                     <div className="space-y-2">
                       <Label htmlFor="name" className="text-slate-200">
@@ -221,7 +242,10 @@ export default function CreateTemplatePage() {
                   </div>
 
                   {error && (
-                    <Alert variant="destructive" className="bg-red-900/50 border-red-700 text-red-200">
+                    <Alert
+                      variant="destructive"
+                      className="bg-red-900/50 border-red-700 text-red-200"
+                    >
                       <AlertCircle className="h-4 w-4" />
                       <AlertDescription>{error}</AlertDescription>
                     </Alert>
@@ -234,7 +258,9 @@ export default function CreateTemplatePage() {
               <ScrollArea className="h-full">
                 <div className="space-y-6">
                   <div className="space-y-4">
-                    <h3 className="text-lg font-semibold text-white">Message Content</h3>
+                    <h3 className="text-lg font-semibold text-white">
+                      Message Content
+                    </h3>
                     <div className="space-y-2">
                       <Label htmlFor="content" className="text-slate-200">
                         Message Text
@@ -248,17 +274,21 @@ export default function CreateTemplatePage() {
                         maxLength={2000}
                         className="resize-none bg-slate-800/50 border-slate-600 text-white placeholder:text-slate-400 focus:border-purple-500"
                       />
-                      <div className="text-xs text-slate-400">{content.length}/2000 characters</div>
+                      <div className="text-xs text-slate-400">
+                        {content.length}/2000 characters
+                      </div>
                     </div>
                   </div>
 
                   <div className="space-y-4">
                     <div className="flex items-center justify-between">
-                      <h3 className="text-lg font-semibold text-white">Message Appearance</h3>
+                      <h3 className="text-lg font-semibold text-white">
+                        Message Appearance
+                      </h3>
                       <AvatarSelector
                         onSelect={(avatar) => {
-                          setUsername(avatar.username)
-                          setAvatarUrl(avatar.avatarUrl)
+                          setUsername(avatar.username);
+                          setAvatarUrl(avatar.avatarUrl);
                         }}
                       >
                         <Button
@@ -306,7 +336,9 @@ export default function CreateTemplatePage() {
               <ScrollArea className="h-full">
                 <div className="space-y-6">
                   <div className="space-y-4">
-                    <h3 className="text-lg font-semibold text-white">Advanced Settings</h3>
+                    <h3 className="text-lg font-semibold text-white">
+                      Advanced Settings
+                    </h3>
                     <div className="grid grid-cols-1 gap-4">
                       <div className="space-y-2">
                         <Label htmlFor="threadName" className="text-slate-200">
@@ -321,7 +353,11 @@ export default function CreateTemplatePage() {
                         />
                       </div>
                       <div className="flex items-center space-x-2">
-                        <Switch id="tts" checked={tts} onCheckedChange={setTts} />
+                        <Switch
+                          id="tts"
+                          checked={tts}
+                          onCheckedChange={setTts}
+                        />
                         <Label htmlFor="tts" className="text-slate-200">
                           Text-to-Speech (TTS)
                         </Label>
@@ -337,7 +373,9 @@ export default function CreateTemplatePage() {
                 <div className="space-y-6">
                   <div className="space-y-4">
                     <div className="flex items-center justify-between">
-                      <h3 className="text-lg font-semibold text-white">Discord Embeds (Max 10)</h3>
+                      <h3 className="text-lg font-semibold text-white">
+                        Discord Embeds (Max 10)
+                      </h3>
                       <Button
                         type="button"
                         variant="outline"
@@ -354,14 +392,17 @@ export default function CreateTemplatePage() {
                       <EmbedBuilder
                         key={index}
                         embed={embed}
-                        onEmbedChange={(newEmbed) => updateEmbed(index, newEmbed)}
+                        onEmbedChange={(newEmbed) =>
+                          updateEmbed(index, newEmbed)
+                        }
                         onRemove={() => removeEmbed(index)}
                       />
                     ))}
 
                     {embeds.length === 0 && (
                       <div className="text-center py-8 text-slate-400">
-                        No embeds added yet. Click "Add Embed" to create rich formatted content.
+                        No embeds added yet. Click "Add Embed" to create rich
+                        formatted content.
                       </div>
                     )}
                   </div>
@@ -375,7 +416,9 @@ export default function CreateTemplatePage() {
         <div className="w-1/2 flex flex-col">
           <div className="border-b border-slate-700/50 px-4 py-3 bg-slate-800/30">
             <h2 className="font-semibold text-white">Live Preview</h2>
-            <p className="text-sm text-slate-300">See how your message will appear in Discord</p>
+            <p className="text-sm text-slate-300">
+              See how your message will appear in Discord
+            </p>
           </div>
           <div className="flex-1 p-4 bg-[#36393f]">
             <ScrollArea className="h-full">
@@ -390,5 +433,5 @@ export default function CreateTemplatePage() {
         </div>
       </div>
     </div>
-  )
+  );
 }

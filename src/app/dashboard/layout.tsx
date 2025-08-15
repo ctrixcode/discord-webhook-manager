@@ -1,12 +1,12 @@
-import type React from "react"
-import { ProtectedRoute } from "@/components/protected-route"
-import { DashboardHeader } from "@/components/dashboard-header"
-import { FloatingNavigation } from "@/components/floating-navigation"
+import type React from 'react';
+import { ProtectedRoute } from '@/components/protected-route';
+import { DashboardHeader } from '@/components/dashboard-header';
+import { FloatingNavigation } from '@/components/floating-navigation';
 
 export default function DashboardLayout({
   children,
 }: {
-  children: React.ReactNode
+  children: React.ReactNode;
 }) {
   return (
     <ProtectedRoute>
@@ -16,5 +16,5 @@ export default function DashboardLayout({
         <FloatingNavigation />
       </div>
     </ProtectedRoute>
-  )
+  );
 }
