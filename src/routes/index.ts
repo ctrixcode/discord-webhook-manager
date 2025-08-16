@@ -14,7 +14,7 @@ const routes = async (fastify: FastifyInstance) => {
     });
   });
 
-  fastify.register(userRoutes, { prefix: '/users' });
+  fastify.register(userRoutes, { prefix: '/user' });
   fastify.register(authRoutes, { prefix: '/auth' });
 };
 

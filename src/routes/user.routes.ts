@@ -11,7 +11,7 @@ const userRoutes = async (fastify: FastifyInstance) => {
   fastify.get<{ Querystring: UserQuery }>(
     '/',
     { preHandler: [authenticate] },
-    userController.getUsers
+    userController.getCurrentUser
   );
   fastify.get<{ Params: UserParams }>(
     '/:id',

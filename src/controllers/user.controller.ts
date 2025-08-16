@@ -11,6 +11,50 @@ import {
  * Get all users with pagination
  * GET /api/users
  */
+/**
+ * Get current authenticated user
+ * GET /api/users/me
+ */
+export const getCurrentUser = async (
+  request: FastifyRequest,
+  reply: FastifyReply
+): Promise<void> => {
+  try {
+    if (!request.user || !request.user.userId) {
+      reply.status(401).send({
+        success: false,
+        message: 'Unauthorized: User information not found in request',
+      });
+      return;
+    }
+    const user = await userService.getUserById(request.user.userId);
+    if (!user) {
+      reply.status(404).send({
+        success: false,
+        message: 'Current user not found',
+      });
+      return;
+    }
+    reply.status(200).send({
+      success: true,
+      data: user,
+    });
+  } catch (error: unknown) {
+    logger.error('Error in getCurrentUser controller:', error);
+    if (error instanceof Error) {
+      reply.status(500).send({
+        success: false,
+        message: error.message,
+      });
+    } else {
+      reply.status(500).send({
+        success: false,
+        message: 'Internal server error',
+      });
+    }
+  }
+};
+
 export const getUsers = async (
   request: FastifyRequest<{ Querystring: UserQuery }>,
   reply: FastifyReply
