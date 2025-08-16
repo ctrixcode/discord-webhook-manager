@@ -14,57 +14,6 @@ export interface UpdateWebhookData {
   is_active?: boolean;
 }
 
-export const createWebhookSchema = {
-  body: {
-    type: 'object',
-    required: ['name', 'url'],
-    properties: {
-      name: { type: 'string' },
-      description: { type: 'string' },
-      url: { type: 'string', format: 'uri' },
-    },
-  },
-};
-
-export const updateWebhookSchema = {
-  body: {
-    type: 'object',
-    properties: {
-      name: { type: 'string' },
-      description: { type: 'string' },
-      url: { type: 'string', format: 'uri' },
-      is_active: { type: 'boolean' },
-    },
-  },
-  params: {
-    type: 'object',
-    required: ['id'],
-    properties: {
-      id: { type: 'string' },
-    },
-  },
-};
-
-export const webhookParamsSchema = {
-  params: {
-    type: 'object',
-    required: ['id'],
-    properties: {
-      id: { type: 'string' },
-    },
-  },
-};
-
-export const getWebhooksQuerySchema = {
-  querystring: {
-    type: 'object',
-    properties: {
-      page: { type: 'string' },
-      limit: { type: 'string' },
-    },
-  },
-};
-
 /**
  * Create a new webhook
  */
@@ -93,17 +42,11 @@ export const getWebhooksByUserId = async (
 ): Promise<{ webhooks: IWebhook[]; total: number }> => {
   try {
     const skip = (page - 1) * limit;
-    const webhooks = await WebhookModel.find({
-      user_id: userId,
-      deleted_at: null,
-    })
+    const webhooks = await WebhookModel.find({ user_id: userId, deleted_at: null })
       .skip(skip)
       .limit(limit)
       .sort({ createdAt: -1 });
-    const total = await WebhookModel.countDocuments({
-      user_id: userId,
-      deleted_at: null,
-    });
+    const total = await WebhookModel.countDocuments({ user_id: userId, deleted_at: null });
     logger.info('Webhooks retrieved successfully for user', {
       userId,
       count: webhooks.length,
@@ -125,11 +68,7 @@ export const getWebhookById = async (
   userId: string
 ): Promise<IWebhook | null> => {
   try {
-    const webhook = await WebhookModel.findOne({
-      _id: webhookId,
-      user_id: userId,
-      deleted_at: null,
-    });
+    const webhook = await WebhookModel.findOne({ _id: webhookId, user_id: userId, deleted_at: null });
     if (!webhook) {
       logger.warn('Webhook not found', { webhookId, userId });
       return null;

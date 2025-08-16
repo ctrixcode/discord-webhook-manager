@@ -19,15 +19,6 @@ export interface UpdateUserData {
   guilds?: { id: string; name: string; icon: string }[];
 }
 
-export interface UserParams {
-  id?: string;
-}
-
-export interface UserQuery {
-  page?: string;
-  limit?: string;
-}
-
 /**
  * Create a new user
  */

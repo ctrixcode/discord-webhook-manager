@@ -1,31 +1,32 @@
 import { FastifyInstance } from 'fastify';
 import * as userController from '../controllers/user.controller';
-import { authenticate } from '../middlewares/auth';
+import { authenticate } from '../middlewares';
+import { UpdateUserData } from '../services/user.service';
 import {
-  UserQuery,
-  UserParams,
-  UpdateUserData,
-} from '../services/user.service';
+  updateUserSchema,
+  userParamsSchema,
+  getUsersQuerySchema,
+} from '../schemas/user.schema';
 
 const userRoutes = async (fastify: FastifyInstance) => {
-  fastify.get<{ Querystring: UserQuery }>(
+  fastify.get(
     '/',
-    { preHandler: [authenticate] },
+    { schema: getUsersQuerySchema, preHandler: [authenticate] },
     userController.getCurrentUser
   );
-  fastify.get<{ Params: UserParams }>(
+  fastify.get<{ Params: { id: string } }>(
     '/:id',
-    { preHandler: [authenticate] },
+    { schema: userParamsSchema, preHandler: [authenticate] },
     userController.getUserById
   );
-  fastify.put<{ Params: UserParams; Body: UpdateUserData }>(
+  fastify.put<{ Body: UpdateUserData, Params: { id: string } }>(
     '/:id',
-    { preHandler: [authenticate] },
+    { schema: updateUserSchema, preHandler: [authenticate] },
     userController.updateUser
   );
-  fastify.delete<{ Params: UserParams }>(
+  fastify.delete<{ Params: { id: string } }>(
     '/:id',
-    { preHandler: [authenticate] },
+    { schema: userParamsSchema, preHandler: [authenticate] },
     userController.deleteUser
   );
 };

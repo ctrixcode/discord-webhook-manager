@@ -1,16 +1,8 @@
 import { FastifyRequest, FastifyReply } from 'fastify';
 import * as userService from '../services/user.service';
 import { logger } from '../utils';
-import {
-  UpdateUserData,
-  UserParams,
-  UserQuery,
-} from '../services/user.service';
+import { UpdateUserData } from '../services/user.service';
 
-/**
- * Get all users with pagination
- * GET /api/users
- */
 /**
  * Get current authenticated user
  * GET /api/users/me
@@ -56,7 +48,7 @@ export const getCurrentUser = async (
 };
 
 export const getUsers = async (
-  request: FastifyRequest<{ Querystring: UserQuery }>,
+  request: FastifyRequest<{ Querystring: { page?: string, limit?: string } }>,
   reply: FastifyReply
 ): Promise<void> => {
   try {
@@ -94,7 +86,7 @@ export const getUsers = async (
  * GET /api/users/:id
  */
 export const getUserById = async (
-  request: FastifyRequest<{ Params: UserParams }>,
+  request: FastifyRequest<{ Params: { id: string } }>,
   reply: FastifyReply
 ): Promise<void> => {
   try {
@@ -139,7 +131,7 @@ export const getUserById = async (
  * PUT /api/users/:id
  */
 export const updateUser = async (
-  request: FastifyRequest<{ Params: UserParams; Body: UpdateUserData }>,
+  request: FastifyRequest<{ Params: { id: string }; Body: UpdateUserData }>,
   reply: FastifyReply
 ): Promise<void> => {
   try {
@@ -186,7 +178,7 @@ export const updateUser = async (
  * DELETE /api/users/:id
  */
 export const deleteUser = async (
-  request: FastifyRequest<{ Params: UserParams }>,
+  request: FastifyRequest<{ Params: { id: string } }>,
   reply: FastifyReply
 ): Promise<void> => {
   try {
