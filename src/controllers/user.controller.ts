@@ -48,7 +48,7 @@ export const getCurrentUser = async (
 };
 
 export const getUsers = async (
-  request: FastifyRequest<{ Querystring: { page?: string, limit?: string } }>,
+  request: FastifyRequest<{ Querystring: { page?: string; limit?: string } }>,
   reply: FastifyReply
 ): Promise<void> => {
   try {

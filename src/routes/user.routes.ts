@@ -19,7 +19,7 @@ const userRoutes = async (fastify: FastifyInstance) => {
     { schema: userParamsSchema, preHandler: [authenticate] },
     userController.getUserById
   );
-  fastify.put<{ Body: UpdateUserData, Params: { id: string } }>(
+  fastify.put<{ Body: UpdateUserData; Params: { id: string } }>(
     '/:id',
     { schema: updateUserSchema, preHandler: [authenticate] },
     userController.updateUser
