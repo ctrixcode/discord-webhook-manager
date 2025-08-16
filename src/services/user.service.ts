@@ -4,14 +4,24 @@ import { logger } from '../utils';
 export interface CreateUserData {
   email: string;
   password?: string;
-  username?: string;
   discord_id?: string;
+  username?: string;
 }
 
 export interface UpdateUserData {
   email?: string;
   password?: string;
   discord_id?: string;
+  username?: string;
+}
+
+export interface UserParams {
+  id?: string;
+}
+
+export interface UserQuery {
+  page?: string;
+  limit?: string;
 }
 
 /**
