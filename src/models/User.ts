@@ -10,15 +10,17 @@ export interface IUser extends Document {
   deleted_at?: Date | null;
 }
 
-const UserSchema = new Schema<IUser>({
-  deleted_at: { type: Date, default: null },
-  email: { type: String, required: true, unique: true },
-  password: { type: String, required: false },
-  discord_id: { type: String, required: false, unique: true, sparse: true },
-},
-{
-  timestamps: true,
-});
+const UserSchema = new Schema<IUser>(
+  {
+    deleted_at: { type: Date, default: null },
+    email: { type: String, required: true, unique: true },
+    password: { type: String, required: false },
+    discord_id: { type: String, required: false, unique: true, sparse: true },
+  },
+  {
+    timestamps: true,
+  }
+);
 
 const UserModel = model<IUser>('User', UserSchema);
 

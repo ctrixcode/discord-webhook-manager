@@ -17,9 +17,7 @@ export interface UpdateUserData {
 /**
  * Create a new user
  */
-export const createUser = async (
-  userData: CreateUserData,
-): Promise<IUser> => {
+export const createUser = async (userData: CreateUserData): Promise<IUser> => {
   try {
     logger.info('Creating new user', { email: userData.email });
     const user = new UserModel(userData);
@@ -36,7 +34,7 @@ export const createUser = async (
  */
 export const getUsers = async (
   page: number = 1,
-  limit: number = 10,
+  limit: number = 10
 ): Promise<{ users: IUser[]; total: number }> => {
   try {
     const skip = (page - 1) * limit;
@@ -60,9 +58,7 @@ export const getUsers = async (
 /**
  * Get user by ID
  */
-export const getUserById = async (
-  userId: string,
-): Promise<IUser | null> => {
+export const getUserById = async (userId: string): Promise<IUser | null> => {
   try {
     const user = await UserModel.findById(userId);
     if (!user) {
@@ -82,7 +78,7 @@ export const getUserById = async (
  */
 export const updateUser = async (
   userId: string,
-  updateData: UpdateUserData,
+  updateData: UpdateUserData
 ): Promise<IUser | null> => {
   try {
     const user = await UserModel.findByIdAndUpdate(userId, updateData, {
@@ -103,11 +99,13 @@ export const updateUser = async (
 /**
  * Soft delete user by setting deleted_at timestamp
  */
-export const deleteUser = async (
-  userId: string,
-): Promise<boolean> => {
+export const deleteUser = async (userId: string): Promise<boolean> => {
   try {
-    const result = await UserModel.findByIdAndUpdate(userId, { deleted_at: new Date() }, { new: true });
+    const result = await UserModel.findByIdAndUpdate(
+      userId,
+      { deleted_at: new Date() },
+      { new: true }
+    );
     if (!result) {
       logger.warn('User not found for deletion', { userId });
       return false;
@@ -123,9 +121,7 @@ export const deleteUser = async (
 /**
  * Get user by email
  */
-export const getUserByEmail = async (
-  email: string,
-): Promise<IUser | null> => {
+export const getUserByEmail = async (email: string): Promise<IUser | null> => {
   try {
     const user = await UserModel.findOne({ email: email });
     if (!user) {
@@ -144,10 +140,13 @@ export const getUserByEmail = async (
  * Get user by discord_id
  */
 export const getUserByDiscordId = async (
-  discordId: string,
+  discordId: string
 ): Promise<IUser | null> => {
   try {
-    const user = await UserModel.findOne({ discord_id: discordId, deleted_at: null });
+    const user = await UserModel.findOne({
+      discord_id: discordId,
+      deleted_at: null,
+    });
     if (!user) {
       logger.warn('User not found by discord_id', { discordId });
       return null;

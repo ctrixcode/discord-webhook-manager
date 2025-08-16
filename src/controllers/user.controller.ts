@@ -1,10 +1,7 @@
 import { FastifyRequest, FastifyReply } from 'fastify';
 import * as userService from '../services/user.service';
 import { logger } from '../utils';
-import {
-  CreateUserData,
-  UpdateUserData,
-} from '../services/user.service';
+import { UpdateUserData } from '../services/user.service';
 
 interface UserParams {
   id?: string;
@@ -14,45 +11,6 @@ interface UserQuery {
   page?: string;
   limit?: string;
 }
-
-/**
- * Create a new user
- * POST /api/users
- */
-export const createUser = async (
-  request: FastifyRequest<{ Body: CreateUserData }>,
-  reply: FastifyReply
-): Promise<void> => {
-  try {
-    const userData = request.body;
-    if (!userData.email) {
-      reply.status(400).send({
-        success: false,
-        message: 'Missing required field: email',
-      });
-      return;
-    }
-    const user = await userService.createUser(userData);
-    reply.status(201).send({
-      success: true,
-      data: user,
-      message: 'User created successfully',
-    });
-  } catch (error: unknown) {
-    logger.error('Error in createUser controller:', error);
-    if (error instanceof Error) {
-      reply.status(500).send({
-        success: false,
-        message: error.message,
-      });
-    } else {
-      reply.status(500).send({
-        success: false,
-        message: 'Internal server error',
-      });
-    }
-  }
-};
 
 /**
  * Get all users with pagination

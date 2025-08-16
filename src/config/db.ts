@@ -3,7 +3,8 @@ import { logger } from '../utils';
 
 const connectDB = async () => {
   try {
-    const mongoUri = process.env.MONGO_URL || 'mongodb://localhost:27017/fastify_db';
+    const mongoUri =
+      process.env.MONGO_URL || 'mongodb://localhost:27017/fastify_db';
     await mongoose.connect(mongoUri);
     logger.info('MongoDB connected successfully');
   } catch (error) {

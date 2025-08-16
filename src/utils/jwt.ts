@@ -1,8 +1,10 @@
 import jwt, { SignOptions } from 'jsonwebtoken';
 
 const JWT_SECRET = process.env.JWT_SECRET || 'supersecretjwtkey'; // Should be a strong, unique secret
-const JWT_ACCESS_TOKEN_EXPIRES_IN: string | number = process.env.JWT_ACCESS_TOKEN_EXPIRES_IN || '15m';
-const JWT_REFRESH_TOKEN_EXPIRES_IN: string | number = process.env.JWT_REFRESH_TOKEN_EXPIRES_IN || '7d';
+const JWT_ACCESS_TOKEN_EXPIRES_IN: string | number =
+  process.env.JWT_ACCESS_TOKEN_EXPIRES_IN || '15m';
+const JWT_REFRESH_TOKEN_EXPIRES_IN: string | number =
+  process.env.JWT_REFRESH_TOKEN_EXPIRES_IN || '7d';
 
 interface TokenPayload {
   userId: string;
@@ -16,7 +18,9 @@ interface TokenPayload {
  * @returns The generated access token string.
  */
 export const generateAccessToken = (payload: TokenPayload): string => {
-  const options: SignOptions = { expiresIn: JWT_ACCESS_TOKEN_EXPIRES_IN as jwt.SignOptions['expiresIn'] };
+  const options: SignOptions = {
+    expiresIn: JWT_ACCESS_TOKEN_EXPIRES_IN as jwt.SignOptions['expiresIn'],
+  };
   return jwt.sign(payload, JWT_SECRET, options);
 };
 
@@ -26,7 +30,9 @@ export const generateAccessToken = (payload: TokenPayload): string => {
  * @returns The generated refresh token string.
  */
 export const generateRefreshToken = (payload: TokenPayload): string => {
-  const options: SignOptions = { expiresIn: JWT_REFRESH_TOKEN_EXPIRES_IN as jwt.SignOptions['expiresIn'] };
+  const options: SignOptions = {
+    expiresIn: JWT_REFRESH_TOKEN_EXPIRES_IN as jwt.SignOptions['expiresIn'],
+  };
   return jwt.sign(payload, JWT_SECRET, options);
 };
 
