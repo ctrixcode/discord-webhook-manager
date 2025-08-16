@@ -1,20 +1,29 @@
 import { FastifyInstance } from 'fastify';
 import * as userController from '../controllers/user.controller';
 import { authenticate } from '../middlewares/auth';
+import {
+  UserQuery,
+  UserParams,
+  UpdateUserData,
+} from '../services/user.service';
 
 const userRoutes = async (fastify: FastifyInstance) => {
-  fastify.get('/', { preHandler: [authenticate] }, userController.getUsers);
-  fastify.get(
+  fastify.get<{ Querystring: UserQuery }>(
+    '/',
+    { preHandler: [authenticate] },
+    userController.getUsers
+  );
+  fastify.get<{ Params: UserParams }>(
     '/:id',
     { preHandler: [authenticate] },
     userController.getUserById
   );
-  fastify.put(
+  fastify.put<{ Params: UserParams; Body: UpdateUserData }>(
     '/:id',
     { preHandler: [authenticate] },
     userController.updateUser
   );
-  fastify.delete(
+  fastify.delete<{ Params: UserParams }>(
     '/:id',
     { preHandler: [authenticate] },
     userController.deleteUser
