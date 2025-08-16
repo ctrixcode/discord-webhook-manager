@@ -23,12 +23,7 @@ export const authenticate = async (
   done: () => void
 ) => {
   try {
-    let token = request.headers.authorization;
-
-    if (!token || !token.startsWith('Bearer ')) {
-      // Try to get token from cookies if not in headers (for refresh token flow)
-      token = request.cookies.accessToken; // Assuming access token might also be in cookies
-    }
+    const token = request.cookies.accessToken; // Prioritize access token from cookie
 
     if (!token) {
       return reply
@@ -36,13 +31,11 @@ export const authenticate = async (
         .send({ success: false, message: 'No token provided' });
     }
 
-    const actualToken = token.replace('Bearer ', '');
-
     try {
-      const decoded = verifyToken(actualToken);
-      request.user = decoded; // Attach user payload to request
+      const decoded = verifyToken(token);
+      request.user = decoded;
       done();
-    } catch (error) {
+    } catch (_error: unknown) {
       // Access token expired or invalid, try to use refresh token
       const refreshToken = request.cookies.refreshToken;
 
@@ -55,6 +48,7 @@ export const authenticate = async (
       }
 
       try {
+        // If refresh token is valid, decode and get user
         const decodedRefreshToken = verifyToken(refreshToken);
         const user = await userService.getUserById(decodedRefreshToken.userId);
 
@@ -82,16 +76,21 @@ export const authenticate = async (
         // Send new access token in response header for client to update
         reply.header('X-Access-Token', newAccessToken);
         done();
-      } catch (refreshError) {
+      } catch (refreshError: unknown) {
         clearRefreshTokenCookie(reply);
+        logger.error(
+          `Error refreshing token: ${(refreshError as Error).message}`
+        );
         return reply.status(401).send({
           success: false,
           message: 'Invalid or expired refresh token',
         });
       }
     }
-  } catch (error) {
-    logger.error('Authentication middleware error:', error);
+  } catch (error: unknown) {
+    logger.error(
+      `Authentication middleware error: ${(error as Error).message}`
+    ); // Use template literal
     return reply
       .status(500)
       .send({ success: false, message: 'Internal server error' });
