@@ -6,6 +6,8 @@ export interface CreateUserData {
   password?: string;
   discord_id?: string;
   username?: string;
+  discord_avatar?: string;
+  guilds?: { id: string; name: string; icon: string }[];
 }
 
 export interface UpdateUserData {
@@ -13,6 +15,8 @@ export interface UpdateUserData {
   password?: string;
   discord_id?: string;
   username?: string;
+  discord_avatar?: string;
+  guilds?: { id: string; name: string; icon: string }[];
 }
 
 export interface UserParams {
