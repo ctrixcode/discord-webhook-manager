@@ -17,7 +17,7 @@ declare module 'fastify' {
   }
 }
 
-export const authenticate = async (
+const authenticate = async (
   request: FastifyRequest,
   reply: FastifyReply,
   done: () => void
@@ -96,3 +96,5 @@ export const authenticate = async (
       .send({ success: false, message: 'Internal server error' });
   }
 };
+
+export default authenticate;

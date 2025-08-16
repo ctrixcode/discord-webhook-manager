@@ -2,6 +2,7 @@ import { FastifyInstance } from 'fastify';
 import { logger } from '../utils';
 import userRoutes from './user.routes';
 import authRoutes from './auth.routes';
+import webhookRoutes from './webhook.routes';
 
 const routes = async (fastify: FastifyInstance) => {
   fastify.get('/healthz', async (request, reply) => {
@@ -16,6 +17,7 @@ const routes = async (fastify: FastifyInstance) => {
 
   fastify.register(userRoutes, { prefix: '/user' });
   fastify.register(authRoutes, { prefix: '/auth' });
+  fastify.register(webhookRoutes, { prefix: '/webhook' });
 };
 
 export default routes;
