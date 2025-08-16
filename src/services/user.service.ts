@@ -4,6 +4,7 @@ import { logger } from '../utils';
 export interface CreateUserData {
   email: string;
   password?: string;
+  username?: string;
   discord_id?: string;
 }
 
@@ -100,13 +101,13 @@ export const updateUser = async (
 };
 
 /**
- * Delete user (hard delete)
+ * Soft delete user by setting deleted_at timestamp
  */
 export const deleteUser = async (
   userId: string,
 ): Promise<boolean> => {
   try {
-    const result = await UserModel.findByIdAndDelete(userId);
+    const result = await UserModel.findByIdAndUpdate(userId, { deleted_at: new Date() }, { new: true });
     if (!result) {
       logger.warn('User not found for deletion', { userId });
       return false;
