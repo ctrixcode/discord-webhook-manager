@@ -10,7 +10,7 @@ export interface IDiscordToken extends Document {
   updatedAt: Date;
 }
 
-const UserSchema = new Schema<IDiscordToken>(
+const DiscordTokenSchema = new Schema<IDiscordToken>(
   {
     user_id: { type: Schema.Types.ObjectId, required: true, ref: 'User' },
     access_token: { type: String, required: true },
@@ -23,6 +23,9 @@ const UserSchema = new Schema<IDiscordToken>(
   }
 );
 
-const UserModel = model<IDiscordToken>('discord-token', UserSchema);
+const DiscordTokenModel = model<IDiscordToken>(
+  'DiscordToken',
+  DiscordTokenSchema
+);
 
-export default UserModel;
+export default DiscordTokenModel;
