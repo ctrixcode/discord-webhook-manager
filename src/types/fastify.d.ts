@@ -1,5 +1,6 @@
 import 'fastify';
 import { MongoClient, Db, ObjectId } from 'mongodb';
+import '@fastify/cookie'; // Import to extend FastifyRequest
 
 declare module 'fastify' {
   interface FastifyInstance {
@@ -8,5 +9,9 @@ declare module 'fastify' {
       db: Db;
       ObjectId: typeof ObjectId;
     };
+  }
+
+  interface FastifyRequest {
+    cookies: { [key: string]: string | undefined };
   }
 }
