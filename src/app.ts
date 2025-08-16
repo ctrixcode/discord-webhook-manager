@@ -2,6 +2,7 @@ import Fastify from 'fastify';
 import helmet from '@fastify/helmet';
 import multipart from '@fastify/multipart';
 import dotenv from 'dotenv';
+import cookie from '@fastify/cookie';
 import {
   corsPlugin,
   rateLimiterPlugin,
@@ -23,6 +24,7 @@ app.register(corsPlugin);
 app.register(rateLimiterPlugin);
 app.register(sanitizerPlugin);
 app.register(errorHandlerPlugin);
+app.register(cookie);
 
 // Register routes
 app.register(routes, { prefix: '/api' });
