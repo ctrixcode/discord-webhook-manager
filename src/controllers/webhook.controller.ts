@@ -15,7 +15,7 @@ export const createWebhookHandler = async (
   reply: FastifyReply
 ) => {
   try {
-    const userId = request.user?.userId
+    const userId = request.user?.userId;
     if (!userId) {
       return reply.code(401).send({ message: 'Unauthorized' });
     }
@@ -32,7 +32,7 @@ export const getWebhooksHandler = async (
   reply: FastifyReply
 ) => {
   try {
-    const userId = request.user?.userId
+    const userId = request.user?.userId;
     if (!userId) {
       return reply.code(401).send({ message: 'Unauthorized' });
     }
@@ -51,7 +51,7 @@ export const getWebhookHandler = async (
   reply: FastifyReply
 ) => {
   try {
-    const userId = request.user?.userId
+    const userId = request.user?.userId;
     if (!userId) {
       return reply.code(401).send({ message: 'Unauthorized' });
     }
@@ -71,7 +71,7 @@ export const updateWebhookHandler = async (
   reply: FastifyReply
 ) => {
   try {
-    const userId = request.user?.userId
+    const userId = request.user?.userId;
     if (!userId) {
       return reply.code(401).send({ message: 'Unauthorized' });
     }
@@ -95,7 +95,7 @@ export const deleteWebhookHandler = async (
   reply: FastifyReply
 ) => {
   try {
-    const userId = request.user?.userId
+    const userId = request.user?.userId;
     if (!userId) {
       return reply.code(401).send({ message: 'Unauthorized' });
     }
