@@ -1,16 +1,11 @@
 import { FastifyRequest, FastifyReply } from 'fastify';
 import * as userService from '../services/user.service';
 import { logger } from '../utils';
-import { UpdateUserData } from '../services/user.service';
-
-interface UserParams {
-  id?: string;
-}
-
-interface UserQuery {
-  page?: string;
-  limit?: string;
-}
+import {
+  UpdateUserData,
+  UserParams,
+  UserQuery,
+} from '../services/user.service';
 
 /**
  * Get all users with pagination
