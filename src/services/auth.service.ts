@@ -1,5 +1,4 @@
 import * as userService from './user.service';
-import { hashPassword, comparePassword } from '../utils/auth';
 import {
   generateAccessToken,
   generateRefreshToken,
@@ -8,47 +7,37 @@ import {
 import { clearRefreshTokenCookie } from '../utils/cookie';
 import { FastifyReply } from 'fastify';
 import { logger } from '../utils';
-import { CreateUserData } from './user.service';
 
-export const register = async (userData: CreateUserData) => {
-  const { email, password, username } = userData;
+export const loginWithDiscord = async (
+  discordId: string,
+  username: string,
+  email: string,
+  avatar: string,
+  guilds: { id: string; name: string; icon: string | null }[]
+) => {
+  let user = await userService.getUserByDiscordId(discordId);
 
-  if (!email || !password || !username) {
-    throw new Error('Missing required fields: email, password, username');
+  if (!user) {
+    // User does not exist, create a new one
+    user = await userService.createUser({
+      discord_id: discordId,
+      username: username,
+      email: email,
+      discord_avatar: avatar,
+      guilds: guilds,
+    });
+  } else {
+    // User exists, update their information
+    user = await userService.updateUser(user.id, {
+      username: username,
+      email: email,
+      discord_avatar: avatar,
+      guilds: guilds,
+    });
   }
 
-  const hashedPassword = await hashPassword(password);
-  const user = await userService.createUser({
-    email,
-    password: hashedPassword,
-    username,
-  });
-
-  const accessToken = generateAccessToken({
-    userId: user.id,
-    email: user.email,
-  });
-  const refreshToken = generateRefreshToken({
-    userId: user.id,
-    email: user.email,
-  });
-
-  return { user, accessToken, refreshToken };
-};
-
-export const login = async (email: string, password: string) => {
-  if (!email || !password) {
-    throw new Error('Missing required fields: email, password');
-  }
-
-  const user = await userService.getUserByEmail(email);
-
-  if (
-    !user ||
-    !user.password ||
-    !(await comparePassword(password, user.password))
-  ) {
-    throw new Error('Invalid credentials');
+  if (!user) {
+    throw new Error('Failed to create or update user with Discord info');
   }
 
   const accessToken = generateAccessToken({

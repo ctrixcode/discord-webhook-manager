@@ -7,7 +7,7 @@ export interface CreateUserData {
   discord_id?: string;
   username?: string;
   discord_avatar?: string;
-  guilds?: { id: string; name: string; icon: string }[];
+  guilds?: { id: string; name: string; icon: string | null }[];
 }
 
 export interface UpdateUserData {
@@ -16,7 +16,7 @@ export interface UpdateUserData {
   discord_id?: string;
   username?: string;
   discord_avatar?: string;
-  guilds?: { id: string; name: string; icon: string }[];
+  guilds?: { id: string; name: string; icon: string | null }[];
 }
 
 /**

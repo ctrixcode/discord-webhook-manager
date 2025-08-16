@@ -6,7 +6,7 @@ export interface IUser extends Document {
   password?: string;
   discord_id?: string;
   discord_avatar?: string;
-  guilds?: { id: string; name: string; icon: string }[];
+  guilds?: { id: string; name: string; icon: string | null }[];
   createdAt: Date;
   updatedAt: Date;
   deleted_at?: Date | null;
@@ -24,7 +24,7 @@ const UserSchema = new Schema<IUser>(
       {
         id: { type: String, required: true },
         name: { type: String, required: true },
-        icon: { type: String, required: true },
+        icon: { type: String, required: false },
       },
     ],
   },
