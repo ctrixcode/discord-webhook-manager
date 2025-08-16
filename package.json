@@ -19,10 +19,12 @@
   "license": "ISC",
   "description": "",
   "dependencies": {
+    "@fastify/cookie": "^11.0.2",
     "@fastify/cors": "^11.0.1",
     "@fastify/helmet": "^13.0.1",
     "@fastify/multipart": "^9.0.3",
     "@fastify/rate-limit": "^10.3.0",
+    "bcryptjs": "^3.0.2",
     "body-parser": "^2.2.0",
     "cookie-parser": "^1.4.7",
     "cors": "^2.8.5",
