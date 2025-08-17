@@ -25,12 +25,22 @@ import {
 
 interface TemplateFormProps {
   initialData?: MessageTemplate | null;
-  onSave: (data: Omit<MessageTemplate, 'id' | 'createdAt' | 'updatedAt' | 'usageCount' | 'userId'>) => void;
+  onSave: (
+    data: Omit<
+      MessageTemplate,
+      'id' | 'createdAt' | 'updatedAt' | 'usageCount' | 'userId'
+    >,
+  ) => void;
   isSaving: boolean;
   saveError: Error | null;
 }
 
-export function TemplateForm({ initialData, onSave, isSaving, saveError }: TemplateFormProps) {
+export function TemplateForm({
+  initialData,
+  onSave,
+  isSaving,
+  saveError,
+}: TemplateFormProps) {
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
   const [content, setContent] = useState('');
@@ -62,8 +72,6 @@ export function TemplateForm({ initialData, onSave, isSaving, saveError }: Templ
     }
   }, [initialData]);
 
-  
-
   const addEmbed = () => {
     setEmbeds([...embeds, { title: 'New Embed', color: 0x5865f2 }]);
   };
@@ -79,7 +87,6 @@ export function TemplateForm({ initialData, onSave, isSaving, saveError }: Templ
   };
 
   return (
-    return (
     <div className="flex-1 flex overflow-hidden">
       {/* Left Side - Editor */}
       <div className="w-1/2 border-r border-slate-700/50 flex flex-col">
@@ -262,11 +269,7 @@ export function TemplateForm({ initialData, onSave, isSaving, saveError }: Templ
                       />
                     </div>
                     <div className="flex items-center space-x-2">
-                      <Switch
-                        id="tts"
-                        checked={tts}
-                        onCheckedChange={setTts}
-                      />
+                      <Switch id="tts" checked={tts} onCheckedChange={setTts} />
                       <Label htmlFor="tts" className="text-slate-200">
                         Text-to-Speech (TTS)
                       </Label>
@@ -301,17 +304,15 @@ export function TemplateForm({ initialData, onSave, isSaving, saveError }: Templ
                     <EmbedBuilder
                       key={index}
                       embed={embed}
-                      onEmbedChange={(newEmbed) =>
-                        updateEmbed(index, newEmbed)
-                      }
+                      onEmbedChange={(newEmbed) => updateEmbed(index, newEmbed)}
                       onRemove={() => removeEmbed(index)}
                     />
                   ))}
 
                   {embeds.length === 0 && (
                     <div className="text-center py-8 text-slate-400">
-                      No embeds added yet. Click &quot;Add Embed&quot; to
-                      create rich formatted content.
+                      No embeds added yet. Click &quot;Add Embed&quot; to create
+                      rich formatted content.
                     </div>
                   )}
                 </div>

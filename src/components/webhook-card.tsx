@@ -25,7 +25,7 @@ import {
   sendTestMessage,
 } from '@/lib/discord-utils';
 import { api } from '@/lib/api';
-import { useMutation } from '@/hooks/useApi';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import {
   MoreHorizontal,
   Send,
@@ -35,6 +35,7 @@ import {
   XCircle,
 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import type { UpdateWebhookRequest } from '@/lib/api/types';
 
 interface WebhookCardProps {
   webhook: Webhook;
@@ -45,9 +46,28 @@ export function WebhookCard({ webhook, onWebhookUpdated }: WebhookCardProps) {
   const { toast } = useToast();
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [isTestingWebhook, setIsTestingWebhook] = useState(false);
-  
-  const { execute: updateWebhook } = useMutation(api.webhook.updateWebhook);
-  const { execute: deleteWebhook } = useMutation(api.webhook.deleteWebhook);
+  const queryClient = useQueryClient();
+
+  const { mutate: updateWebhook } = useMutation({
+    mutationFn: ({ id, data }: { id: string; data: UpdateWebhookRequest }) => api.webhook.updateWebhook(id, data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['webhooks'] });
+      onWebhookUpdated();
+    },
+  });
+
+ const { mutate: deleteWebhook } = useMutation({
+    mutationFn: (id: string) => api.webhook.deleteWebhook(id),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['webhooks'] });
+      onWebhookUpdated();
+      toast({
+        title: 'Webhook deleted',
+        description: 'The webhook has been removed from your account',
+      });
+    },
+  });
+
 
   const handleCopyUrl = () => {
     navigator.clipboard.writeText(webhook.url);
@@ -67,11 +87,10 @@ export function WebhookCard({ webhook, onWebhookUpdated }: WebhookCardProps) {
 
       if (success) {
         // Update last used timestamp and message count
-        await updateWebhook(webhook.id, {
+        updateWebhook({id: webhook.id, data: {
           lastUsed: new Date().toISOString(),
           messageCount: (webhook.messageCount || 0) + 1,
-        });
-        onWebhookUpdated();
+        }});
 
         toast({
           title: 'Test successful!',
@@ -96,19 +115,11 @@ export function WebhookCard({ webhook, onWebhookUpdated }: WebhookCardProps) {
   };
 
   const handleDelete = async () => {
-    const result = await deleteWebhook(webhook.id);
-    if (result) {
-      onWebhookUpdated();
-      toast({
-        title: 'Webhook deleted',
-        description: 'The webhook has been removed from your account',
-      });
-    }
+    deleteWebhook(webhook.id);
   };
 
   const toggleActive = async () => {
-    await updateWebhook(webhook.id, { isActive: !webhook.isActive });
-    onWebhookUpdated();
+    updateWebhook({id: webhook.id, data: { isActive: !webhook.isActive }});
   };
 
   return (

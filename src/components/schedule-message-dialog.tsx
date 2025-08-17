@@ -25,8 +25,8 @@ import {
 } from '@/components/ui/select';
 
 import { getAllWebhooks } from '@/lib/api/queries/webhook';
-import { createScheduledMessage } from '@/lib/api/queries/scheduled-message';
-import type { Webhook, ApiError } from '@/lib/api/types';
+import { scheduledMessageQueries } from '@/lib/api/queries/scheduled-message';
+import type { Webhook, ApiError, ScheduledMessage } from '@/lib/api/types';
 import { Clock, AlertCircle } from 'lucide-react';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 
@@ -51,7 +51,7 @@ export function ScheduleMessageDialog({ triggerButton }: ScheduleMessageDialogPr
   });
 
   const { mutate: scheduleMessage, isPending, error } = useMutation<ScheduledMessage, ApiError, Omit<ScheduledMessage, 'id' | 'createdAt' | 'userId' | 'status'>>({
-    mutationFn: createScheduledMessage,
+    mutationFn: scheduledMessageQueries.createScheduledMessage,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['scheduled-messages'] });
       setOpen(false);

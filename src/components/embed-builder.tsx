@@ -16,6 +16,8 @@ import {
   CollapsibleTrigger,
 } from '@/components/ui/collapsible';
 
+type DiscordEmbedField = { name: string; value: string; inline?: boolean; };
+
 interface EmbedBuilderProps {
   embed: DiscordEmbed;
   onEmbedChange: (embed: DiscordEmbed) => void;
@@ -45,9 +47,9 @@ export function EmbedBuilder({
 
   const updateField = (
     index: number,
-    updates: Partial<DiscordEmbed['fields'][number]>,
+    updates: Partial<DiscordEmbedField>,
   ) => {
-    const currentFields = (embed.fields || []) as DiscordEmbed['fields'];
+    const currentFields: Array<{ name: string; value: string; inline?: boolean; }> = embed.fields || [];
     const newFields = [...currentFields];
 
     if (newFields[index]) {

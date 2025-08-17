@@ -1,3 +1,13 @@
+export interface Webhook {
+  id: string;
+  name: string;
+  url: string;
+  isActive: boolean;
+  messageCount?: number;
+  createdAt: string;
+  lastUsed?: string;
+}
+
 // Discord utility functions
 
 // Convert hex color to Discord color integer

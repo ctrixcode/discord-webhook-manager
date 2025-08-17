@@ -48,6 +48,9 @@ export interface UpdateWebhookRequest {
   name?: string;
   url?: string;
   description?: string;
+  lastUsed?: string;
+  messageCount?: number;
+  isActive?: boolean;
 }
 
 // Discord Token Types
