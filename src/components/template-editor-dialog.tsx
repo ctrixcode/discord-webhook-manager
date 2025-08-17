@@ -1,8 +1,8 @@
 'use client';
 
 import type React from 'react';
-
 import { useState, useEffect } from 'react';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { Button } from '@/components/ui/button';
 import { Switch } from '@/components/ui/switch';
 import {
@@ -21,19 +21,16 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { EmbedBuilder } from '@/components/embed-builder';
 import { DiscordMessagePreview } from '@/components/discord-message-preview';
-import { useAuth } from '@/contexts/auth-context';
-import {
-  addTemplate,
-  updateTemplate,
-  type MessageTemplate,
-  type DiscordEmbed,
-} from '@/lib/template-storage';
+
+import { templateQueries } from '@/lib/api/queries/template';
+import type { MessageTemplate, DiscordEmbed } from '@/lib/api/types';
+import { TemplateForm } from '@/components/template-form';
 import { Plus, FileText, AlertCircle, Eye, Settings } from 'lucide-react';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 
 interface TemplateEditorDialogProps {
   template?: MessageTemplate;
-  onTemplateSaved: () => void;
+  onTemplateSaved?: () => void;
   triggerButton?: React.ReactNode;
 }
 
@@ -42,103 +39,23 @@ export function TemplateEditorDialog({
   onTemplateSaved,
   triggerButton,
 }: TemplateEditorDialogProps) {
-  const { user } = useAuth();
+  
+  const queryClient = useQueryClient();
   const [open, setOpen] = useState(false);
-  const [name, setName] = useState('');
-  const [description, setDescription] = useState('');
-  const [content, setContent] = useState('');
-  const [username, setUsername] = useState('');
-  const [avatarUrl, setAvatarUrl] = useState('');
-  const [tts, setTts] = useState(false);
-  const [threadName, setThreadName] = useState('');
-  const [embeds, setEmbeds] = useState<DiscordEmbed[]>([]);
-  const [error, setError] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
 
-  useEffect(() => {
-    if (template && open) {
-      setName(template.name);
-      setDescription(template.description || '');
-      setContent(template.content);
-      setUsername(template.username || '');
-      setAvatarUrl(template.avatarUrl || '');
-      setTts(template.tts || false);
-      setThreadName(template.threadName || '');
-      setEmbeds(template.embeds || []);
-    } else if (!template && open) {
-      setName('');
-      setDescription('');
-      setContent('');
-      setUsername('');
-      setAvatarUrl('');
-      setTts(false);
-      setThreadName('');
-      setEmbeds([]);
-    }
-  }, [template, open]);
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!user) return;
-
-    setError('');
-    setIsLoading(true);
-
-    if (!name.trim()) {
-      setError('Template name is required');
-      setIsLoading(false);
-      return;
-    }
-
-    if (!content.trim() && (!embeds || embeds.length === 0)) {
-      setError('Template must have either content or embeds');
-      setIsLoading(false);
-      return;
-    }
-
-    try {
-      const templateData = {
-        name: name.trim(),
-        description: description.trim() || undefined,
-        content: content.trim(),
-        username: username.trim() || undefined,
-        avatarUrl: avatarUrl.trim() || undefined,
-        tts: tts || undefined,
-        threadName: threadName.trim() || undefined,
-        embeds: embeds.length > 0 ? embeds : undefined,
-      };
-
+  const { mutate: saveTemplate, isPending, error } = useMutation({
+    mutationFn: (templateData: Omit<MessageTemplate, 'id' | 'createdAt' | 'updatedAt' | 'usageCount' | 'userId'>) => {
       if (template) {
-        updateTemplate(template.id, templateData);
-      } else {
-        addTemplate({
-          ...templateData,
-          userId: user.id,
-        });
+        return templateQueries.updateTemplate(template.id, templateData);
       }
-
+      return templateQueries.createTemplate(templateData);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['templates'] });
       setOpen(false);
-      onTemplateSaved();
-    } catch (err) {
-      setError('Failed to save template');
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const addEmbed = () => {
-    setEmbeds([...embeds, { title: 'New Embed', color: 0x5865f2 }]);
-  };
-
-  const updateEmbed = (index: number, embed: DiscordEmbed) => {
-    const newEmbeds = [...embeds];
-    newEmbeds[index] = embed;
-    setEmbeds(newEmbeds);
-  };
-
-  const removeEmbed = (index: number) => {
-    setEmbeds(embeds.filter((_, i) => i !== index));
-  };
+      onTemplateSaved?.();
+    },
+  });
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
@@ -160,222 +77,12 @@ export function TemplateEditorDialog({
           </DialogDescription>
         </DialogHeader>
 
-        <Tabs defaultValue="content" className="flex-1">
-          <TabsList className="grid w-full grid-cols-4 bg-slate-800/50 border-slate-700/50">
-            <TabsTrigger
-              value="content"
-              className="data-[state=active]:bg-purple-600/20 data-[state=active]:text-purple-200 text-slate-300"
-            >
-              <FileText className="w-4 h-4 mr-2" />
-              Content
-            </TabsTrigger>
-            <TabsTrigger
-              value="settings"
-              className="data-[state=active]:bg-purple-600/20 data-[state=active]:text-purple-200 text-slate-300"
-            >
-              <Settings className="w-4 h-4 mr-2" />
-              Settings
-            </TabsTrigger>
-            <TabsTrigger
-              value="embeds"
-              className="data-[state=active]:bg-purple-600/20 data-[state=active]:text-purple-200 text-slate-300"
-            >
-              <Plus className="w-4 h-4 mr-2" />
-              Embeds
-            </TabsTrigger>
-            <TabsTrigger
-              value="preview"
-              className="data-[state=active]:bg-purple-600/20 data-[state=active]:text-purple-200 text-slate-300"
-            >
-              <Eye className="w-4 h-4 mr-2" />
-              Preview
-            </TabsTrigger>
-          </TabsList>
-
-          <TabsContent value="content" className="mt-4">
-            <form onSubmit={handleSubmit}>
-              <ScrollArea className="h-[60vh] pr-4">
-                <div className="space-y-6">
-                  <div className="grid grid-cols-2 gap-4">
-                    <div className="space-y-2">
-                      <Label htmlFor="name" className="text-slate-200">
-                        Template Name
-                      </Label>
-                      <Input
-                        id="name"
-                        value={name}
-                        onChange={(e) => setName(e.target.value)}
-                        placeholder="My Awesome Template"
-                        required
-                        className="bg-slate-800/50 border-slate-600/50 text-white placeholder:text-slate-400 focus:border-purple-500/50 focus:ring-purple-500/20"
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="description" className="text-slate-200">
-                        Description (Optional)
-                      </Label>
-                      <Input
-                        id="description"
-                        value={description}
-                        onChange={(e) => setDescription(e.target.value)}
-                        placeholder="What is this template for?"
-                        className="bg-slate-800/50 border-slate-600/50 text-white placeholder:text-slate-400 focus:border-purple-500/50 focus:ring-purple-500/20"
-                      />
-                    </div>
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label htmlFor="content" className="text-slate-200">
-                      Message Content
-                    </Label>
-                    <Textarea
-                      id="content"
-                      value={content}
-                      onChange={(e) => setContent(e.target.value)}
-                      placeholder="Enter your message content here... (Max 2000 characters)"
-                      rows={6}
-                      maxLength={2000}
-                      className="bg-slate-800/50 border-slate-600/50 text-white placeholder:text-slate-400 focus:border-purple-500/50 focus:ring-purple-500/20 resize-none"
-                    />
-                    <div className="text-xs text-slate-400">
-                      {content.length}/2000 characters
-                    </div>
-                  </div>
-
-                  {error && (
-                    <Alert
-                      variant="destructive"
-                      className="bg-red-900/20 border-red-500/50 text-red-200"
-                    >
-                      <AlertCircle className="h-4 w-4 text-red-400" />
-                      <AlertDescription className="text-red-200">
-                        {error}
-                      </AlertDescription>
-                    </Alert>
-                  )}
-                </div>
-              </ScrollArea>
-            </form>
-          </TabsContent>
-
-          <TabsContent value="settings" className="mt-4">
-            <ScrollArea className="h-[60vh] pr-4">
-              <div className="space-y-6">
-                <div className="space-y-4">
-                  <h3 className="text-lg font-semibold text-white">
-                    Webhook Settings
-                  </h3>
-
-                  <div className="grid grid-cols-2 gap-4">
-                    <div className="space-y-2">
-                      <Label htmlFor="username" className="text-slate-200">
-                        Custom Username
-                      </Label>
-                      <Input
-                        id="username"
-                        value={username}
-                        onChange={(e) => setUsername(e.target.value)}
-                        placeholder="Override webhook username"
-                        className="bg-slate-800/50 border-slate-600/50 text-white placeholder:text-slate-400 focus:border-purple-500/50 focus:ring-purple-500/20"
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="avatarUrl" className="text-slate-200">
-                        Custom Avatar URL
-                      </Label>
-                      <Input
-                        id="avatarUrl"
-                        value={avatarUrl}
-                        onChange={(e) => setAvatarUrl(e.target.value)}
-                        placeholder="https://example.com/avatar.png"
-                        className="bg-slate-800/50 border-slate-600/50 text-white placeholder:text-slate-400 focus:border-purple-500/50 focus:ring-purple-500/20"
-                      />
-                    </div>
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label htmlFor="threadName" className="text-slate-200">
-                      Thread Name (Forum Channels)
-                    </Label>
-                    <Input
-                      id="threadName"
-                      value={threadName}
-                      onChange={(e) => setThreadName(e.target.value)}
-                      placeholder="Create new thread with this name"
-                      className="bg-slate-800/50 border-slate-600/50 text-white placeholder:text-slate-400 focus:border-purple-500/50 focus:ring-purple-500/20"
-                    />
-                  </div>
-
-                  <div className="flex items-center space-x-2">
-                    <Switch
-                      id="tts"
-                      checked={tts}
-                      onCheckedChange={setTts}
-                      className="data-[state=checked]:bg-purple-600"
-                    />
-                    <Label htmlFor="tts" className="text-slate-200">
-                      Text-to-Speech (TTS)
-                    </Label>
-                  </div>
-                </div>
-              </div>
-            </ScrollArea>
-          </TabsContent>
-
-          <TabsContent value="embeds" className="mt-4">
-            <ScrollArea className="h-[60vh] pr-4">
-              <div className="space-y-4">
-                <div className="flex items-center justify-between">
-                  <Label className="text-slate-200">
-                    Discord Embeds (Max 10)
-                  </Label>
-                  <Button
-                    type="button"
-                    variant="outline"
-                    onClick={addEmbed}
-                    disabled={embeds.length >= 10}
-                    className="bg-slate-800/50 border-slate-600/50 text-slate-200 hover:bg-slate-700/50 hover:text-white"
-                  >
-                    <Plus className="w-4 h-4 mr-2" />
-                    Add Embed ({embeds.length}/10)
-                  </Button>
-                </div>
-
-                {embeds.map((embed, index) => (
-                  <EmbedBuilder
-                    key={index}
-                    embed={embed}
-                    onEmbedChange={(newEmbed) => updateEmbed(index, newEmbed)}
-                    onRemove={() => removeEmbed(index)}
-                  />
-                ))}
-
-                {embeds.length === 0 && (
-                  <div className="text-center py-8 text-slate-400">
-                    No embeds added yet. Click "Add Embed" to create rich
-                    formatted content.
-                  </div>
-                )}
-              </div>
-            </ScrollArea>
-          </TabsContent>
-
-          <TabsContent value="preview" className="mt-4">
-            <ScrollArea className="h-[60vh]">
-              <div className="space-y-4">
-                <div className="text-sm text-slate-400">
-                  Preview of how your message will appear in Discord:
-                </div>
-                <DiscordMessagePreview
-                  content={content}
-                  username={username}
-                  avatarUrl={avatarUrl}
-                  embeds={embeds.length > 0 ? embeds : undefined}
-                />
-              </div>
-            </ScrollArea>
-          </TabsContent>
-        </Tabs>
+        <TemplateForm
+          initialData={template}
+          onSave={saveTemplate}
+          isSaving={isPending}
+          saveError={error}
+        />
 
         <DialogFooter className="mt-6">
           <Button
@@ -388,11 +95,11 @@ export function TemplateEditorDialog({
           </Button>
           <Button
             type="submit"
-            disabled={isLoading}
+            disabled={isPending}
             onClick={handleSubmit}
             className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white border-0"
           >
-            {isLoading
+            {isPending
               ? 'Saving...'
               : template
                 ? 'Update Template'

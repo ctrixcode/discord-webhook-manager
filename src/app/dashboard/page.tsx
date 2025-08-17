@@ -62,7 +62,7 @@ export default function DashboardPage() {
           <CardHeader>
             <CardTitle className="text-white">Getting Started</CardTitle>
             <p className="text-slate-300">
-              New to webhook management? Here's how to get started quickly.
+              New to webhook management? Here&apos;s how to get started quickly.
             </p>
           </CardHeader>
           <CardContent>

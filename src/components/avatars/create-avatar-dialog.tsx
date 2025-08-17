@@ -1,6 +1,7 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import {
   Dialog,
   DialogContent,
@@ -11,60 +12,63 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import {
-  type PredefinedAvatar,
-  saveAvatar,
-  updateAvatar,
-} from '@/lib/avatar-storage';
+import { createAvatar, updateAvatar } from '@/lib/api/queries/avatar';
+import type { PredefinedAvatar } from '@/lib/api/types';
 
 interface CreateAvatarDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  onSave: () => void;
+  onSaveSuccess: () => void;
   editingAvatar?: PredefinedAvatar | null;
 }
 
 export function CreateAvatarDialog({
   open,
   onOpenChange,
-  onSave,
+  onSaveSuccess,
   editingAvatar,
 }: CreateAvatarDialogProps) {
-  const [name, setName] = useState(editingAvatar?.name || '');
-  const [username, setUsername] = useState(editingAvatar?.username || '');
-  const [avatarUrl, setAvatarUrl] = useState(editingAvatar?.avatarUrl || '');
+  const queryClient = useQueryClient();
+  const [name, setName] = useState('');
+  const [username, setUsername] = useState('');
+  const [avatarUrl, setAvatarUrl] = useState('');
 
-  const handleSave = () => {
-    if (!name.trim() || !username.trim()) return;
-
+  useEffect(() => {
     if (editingAvatar) {
-      updateAvatar(editingAvatar.id, {
-        name: name.trim(),
-        username: username.trim(),
-        avatarUrl: avatarUrl.trim(),
-      });
+      setName(editingAvatar.name);
+      setUsername(editingAvatar.username);
+      setAvatarUrl(editingAvatar.avatarUrl || '');
     } else {
-      saveAvatar({
-        name: name.trim(),
-        username: username.trim(),
-        avatarUrl: avatarUrl.trim(),
-      });
-    }
-
-    // Reset form
-    setName('');
-    setUsername('');
-    setAvatarUrl('');
-    onSave();
-    onOpenChange(false);
-  };
-
-  const handleClose = () => {
-    if (!editingAvatar) {
       setName('');
       setUsername('');
       setAvatarUrl('');
     }
+  }, [editingAvatar]);
+
+  const { mutate: saveAvatar, isPending } = useMutation({
+    mutationFn: (avatarData: Omit<PredefinedAvatar, 'id' | 'createdAt' | 'updatedAt' | 'userId'>) => {
+      if (editingAvatar) {
+        return updateAvatar(editingAvatar.id, avatarData);
+      }
+      return createAvatar(avatarData);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['avatars'] });
+      onSaveSuccess();
+    },
+  });
+
+  const handleSave = () => {
+    if (!name.trim() || !username.trim()) return;
+
+    saveAvatar({
+      name: name.trim(),
+      username: username.trim(),
+      avatarUrl: avatarUrl.trim(),
+    });
+  };
+
+  const handleClose = () => {
     onOpenChange(false);
   };
 
@@ -144,10 +148,10 @@ export function CreateAvatarDialog({
             </Button>
             <Button
               onClick={handleSave}
-              disabled={!name.trim() || !username.trim()}
+              disabled={isPending || !name.trim() || !username.trim()}
               className="flex-1 bg-purple-600 hover:bg-purple-700 text-white"
             >
-              {editingAvatar ? 'Update Avatar' : 'Create Avatar'}
+              {isPending ? (editingAvatar ? 'Updating...' : 'Creating...') : (editingAvatar ? 'Update Avatar' : 'Create Avatar')}
             </Button>
           </div>
         </div>

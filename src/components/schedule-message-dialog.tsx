@@ -1,8 +1,8 @@
 'use client';
 
 import type React from 'react';
-
 import { useState, useEffect } from 'react';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Button } from '@/components/ui/button';
 import {
   Dialog,
@@ -23,115 +23,80 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { useAuth } from '@/contexts/auth-context';
-import { getWebhooks, type Webhook } from '@/lib/webhook-storage';
-import { addScheduledMessage } from '@/lib/scheduled-storage';
+
+import { getAllWebhooks } from '@/lib/api/queries/webhook';
+import { createScheduledMessage } from '@/lib/api/queries/scheduled-message';
+import type { Webhook, ApiError } from '@/lib/api/types';
 import { Clock, AlertCircle } from 'lucide-react';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 
 interface ScheduleMessageDialogProps {
-  onMessageScheduled: () => void;
   triggerButton?: React.ReactNode;
 }
 
-export function ScheduleMessageDialog({
-  onMessageScheduled,
-  triggerButton,
-}: ScheduleMessageDialogProps) {
-  const { user } = useAuth();
+export function ScheduleMessageDialog({ triggerButton }: ScheduleMessageDialogProps) {
+  
+  const queryClient = useQueryClient();
   const [open, setOpen] = useState(false);
-  const [webhooks, setWebhooks] = useState<Webhook[]>([]);
   const [selectedWebhookId, setSelectedWebhookId] = useState('');
   const [content, setContent] = useState('');
   const [scheduledDate, setScheduledDate] = useState('');
   const [scheduledTime, setScheduledTime] = useState('');
-  const [error, setError] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
+  const [formError, setFormError] = useState('');
+
+  const { data: webhooks = [] } = useQuery<Webhook[]>({
+    queryKey: ['webhooks'],
+    queryFn: getAllWebhooks,
+    enabled: open,
+  });
+
+  const { mutate: scheduleMessage, isPending, error } = useMutation<ScheduledMessage, ApiError, Omit<ScheduledMessage, 'id' | 'createdAt' | 'userId' | 'status'>>({
+    mutationFn: createScheduledMessage,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['scheduled-messages'] });
+      setOpen(false);
+    },
+  });
 
   useEffect(() => {
-    if (user && open) {
-      const userWebhooks = getWebhooks(user.id).filter((w) => w.isActive);
-      setWebhooks(userWebhooks);
-    }
-  }, [user, open]);
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!user) return;
-
-    setError('');
-    setIsLoading(true);
-
-    // Validation
-    if (!selectedWebhookId) {
-      setError('Please select a webhook');
-      setIsLoading(false);
-      return;
-    }
-
-    if (!content.trim()) {
-      setError('Message content is required');
-      setIsLoading(false);
-      return;
-    }
-
-    if (!scheduledDate || !scheduledTime) {
-      setError('Please select a date and time');
-      setIsLoading(false);
-      return;
-    }
-
-    const scheduledDateTime = new Date(`${scheduledDate}T${scheduledTime}`);
-    const now = new Date();
-
-    if (scheduledDateTime <= now) {
-      setError('Scheduled time must be in the future');
-      setIsLoading(false);
-      return;
-    }
-
-    try {
-      const selectedWebhook = webhooks.find((w) => w.id === selectedWebhookId);
-      if (!selectedWebhook) {
-        setError('Selected webhook not found');
-        setIsLoading(false);
-        return;
-      }
-
-      addScheduledMessage({
-        webhookId: selectedWebhook.id,
-        webhookName: selectedWebhook.name,
-        webhookUrl: selectedWebhook.url,
-        content: content.trim(),
-        scheduledFor: scheduledDateTime.toISOString(),
-        status: 'pending',
-        userId: user.id,
-      });
-
-      // Reset form
+    if (!open) {
+      // Reset form when dialog closes
       setSelectedWebhookId('');
       setContent('');
       setScheduledDate('');
       setScheduledTime('');
-      setOpen(false);
-      onMessageScheduled();
-    } catch (err) {
-      setError('Failed to schedule message');
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  // Set default date/time to 1 hour from now
-  useEffect(() => {
-    if (open && !scheduledDate && !scheduledTime) {
+      setFormError('');
+    } else {
+      // Set default date/time to 1 hour from now when dialog opens
       const now = new Date();
       const oneHourLater = new Date(now.getTime() + 60 * 60 * 1000);
-
       setScheduledDate(oneHourLater.toISOString().split('T')[0]);
       setScheduledTime(oneHourLater.toTimeString().slice(0, 5));
     }
-  }, [open, scheduledDate, scheduledTime]);
+  }, [open]);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setFormError('');
+
+    if (!selectedWebhookId) return setFormError('Please select a webhook.');
+    if (!content.trim()) return setFormError('Message content is required.');
+    if (!scheduledDate || !scheduledTime) return setFormError('Please select a date and time.');
+
+    const scheduledDateTime = new Date(`${scheduledDate}T${scheduledTime}`);
+    if (scheduledDateTime <= new Date()) return setFormError('Scheduled time must be in the future.');
+
+    const selectedWebhook = webhooks.find((w) => w.id === selectedWebhookId);
+    if (!selectedWebhook) return setFormError('Selected webhook not found.');
+
+    scheduleMessage({
+      webhookId: selectedWebhook.id,
+      webhookName: selectedWebhook.name,
+      webhookUrl: selectedWebhook.url,
+      content: content.trim(),
+      scheduledFor: scheduledDateTime.toISOString(),
+    });
+  };
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
@@ -227,13 +192,13 @@ export function ScheduleMessageDialog({
               </div>
             </div>
 
-            {error && (
+            {(formError || error) && (
               <Alert
                 variant="destructive"
                 className="bg-red-900/50 border-red-700 text-red-200"
               >
                 <AlertCircle className="h-4 w-4" />
-                <AlertDescription>{error}</AlertDescription>
+                <AlertDescription>{formError || error?.message}</AlertDescription>
               </Alert>
             )}
           </div>
@@ -248,10 +213,10 @@ export function ScheduleMessageDialog({
             </Button>
             <Button
               type="submit"
-              disabled={isLoading || webhooks.length === 0}
+              disabled={isPending || webhooks.length === 0}
               className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700"
             >
-              {isLoading ? 'Scheduling...' : 'Schedule Message'}
+              {isPending ? 'Scheduling...' : 'Schedule Message'}
             </Button>
           </DialogFooter>
         </form>

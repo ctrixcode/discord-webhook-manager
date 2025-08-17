@@ -1,8 +1,8 @@
 'use client';
 
 import type React from 'react';
-
 import { useState } from 'react';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { Button } from '@/components/ui/button';
 import {
   Dialog,
@@ -16,69 +16,44 @@ import {
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
-import { useAuth } from '@/contexts/auth-context';
-import { addWebhook, validateWebhookUrl } from '@/lib/webhook-storage';
+import { createWebhook } from '@/lib/api/queries/webhook';
+import { validateWebhookUrl } from '@/lib/discord-utils';
 import { Plus, AlertCircle } from 'lucide-react';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 
-interface AddWebhookDialogProps {
-  onWebhookAdded: () => void;
-}
-
-export function AddWebhookDialog({ onWebhookAdded }: AddWebhookDialogProps) {
-  const { user } = useAuth();
+export function AddWebhookDialog() {
+  const queryClient = useQueryClient();
   const [open, setOpen] = useState(false);
   const [name, setName] = useState('');
   const [url, setUrl] = useState('');
   const [description, setDescription] = useState('');
-  const [error, setError] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!user) return;
-
-    setError('');
-    setIsLoading(true);
-
-    // Validation
-    if (!name.trim()) {
-      setError('Webhook name is required');
-      setIsLoading(false);
-      return;
-    }
-
-    if (!url.trim()) {
-      setError('Webhook URL is required');
-      setIsLoading(false);
-      return;
-    }
-
-    if (!validateWebhookUrl(url)) {
-      setError('Invalid Discord webhook URL format');
-      setIsLoading(false);
-      return;
-    }
-
-    try {
-      addWebhook({
-        name: name.trim(),
-        url: url.trim(),
-        userId: user.id,
-        isActive: true,
-      });
-
+  const { mutate: createWebhookMutation, isPending: isLoading, error: apiError } = useMutation({
+    mutationFn: createWebhook,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['webhooks'] });
       // Reset form
       setName('');
       setUrl('');
       setDescription('');
       setOpen(false);
-      onWebhookAdded();
-    } catch (err) {
-      setError('Failed to add webhook');
-    } finally {
-      setIsLoading(false);
+    },
+  });
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    // Validation
+    if (!name.trim() || !url.trim() || !validateWebhookUrl(url)) {
+      // Basic validation, can be improved with a form library
+      return;
     }
+
+    createWebhookMutation({
+      name: name.trim(),
+      url: url.trim(),
+      description: description.trim() || undefined,
+    });
   };
 
   return (
@@ -138,14 +113,14 @@ export function AddWebhookDialog({ onWebhookAdded }: AddWebhookDialogProps) {
                 className="bg-slate-800/50 border-slate-600/50 text-white placeholder:text-slate-400 focus:border-purple-500/50 focus:ring-purple-500/20 resize-none"
               />
             </div>
-            {error && (
+            {apiError && (
               <Alert
                 variant="destructive"
                 className="bg-red-900/20 border-red-500/50 text-red-200"
               >
                 <AlertCircle className="h-4 w-4 text-red-400" />
                 <AlertDescription className="text-red-200">
-                  {error}
+                  {apiError.message}
                 </AlertDescription>
               </Alert>
             )}

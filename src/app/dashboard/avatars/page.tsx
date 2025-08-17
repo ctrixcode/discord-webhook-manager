@@ -1,43 +1,53 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useMemo } from 'react';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Plus, Search, Users } from 'lucide-react';
-import { type PredefinedAvatar, getAvatars } from '@/lib/avatar-storage';
+import { getAllAvatars } from '@/lib/api/queries/avatar';
+import { type PredefinedAvatar } from '@/lib/api/types';
+import { useAuth } from '@/contexts/auth-context';
 import { AvatarCard } from '@/components/avatars/avatar-card';
 import { CreateAvatarDialog } from '@/components/avatars/create-avatar-dialog';
+import { Card, CardContent } from '@/components/ui/card';
+import { Skeleton } from '@/components/ui/skeleton';
 
 export default function AvatarsPage() {
-  const [avatars, setAvatars] = useState<PredefinedAvatar[]>([]);
+  const { user } = useAuth();
+  const queryClient = useQueryClient();
   const [searchQuery, setSearchQuery] = useState('');
   const [showCreateDialog, setShowCreateDialog] = useState(false);
-  const [editingAvatar, setEditingAvatar] = useState<PredefinedAvatar | null>(
-    null,
-  );
+  const [editingAvatar, setEditingAvatar] = useState<PredefinedAvatar | null>(null);
 
-  useEffect(() => {
-    loadAvatars();
-  }, []);
+  const { data: avatars = [], isLoading } = useQuery<PredefinedAvatar[]>({
+    queryKey: ['avatars'],
+    queryFn: getAllAvatars,
+    enabled: !!user,
+  });
 
-  const loadAvatars = () => {
-    setAvatars(getAvatars());
-  };
-
-  const filteredAvatars = avatars.filter(
-    (avatar) =>
-      avatar.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      avatar.username.toLowerCase().includes(searchQuery.toLowerCase()),
-  );
+  const filteredAvatars = useMemo(() => {
+    return avatars.filter(
+      (avatar) =>
+        avatar.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        avatar.username.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+  }, [avatars, searchQuery]);
 
   const handleEdit = (avatar: PredefinedAvatar) => {
     setEditingAvatar(avatar);
     setShowCreateDialog(true);
   };
 
-  const handleSave = () => {
-    loadAvatars();
+  const handleMutationSuccess = () => {
+    queryClient.invalidateQueries({ queryKey: ['avatars'] });
     setEditingAvatar(null);
+    setShowCreateDialog(false);
+  };
+
+  const handleOpenCreateDialog = () => {
+    setEditingAvatar(null);
+    setShowCreateDialog(true);
   };
 
   const handleCloseDialog = () => {
@@ -59,7 +69,7 @@ export default function AvatarsPage() {
             </p>
           </div>
           <Button
-            onClick={() => setShowCreateDialog(true)}
+            onClick={handleOpenCreateDialog}
             className="bg-purple-600 hover:bg-purple-700 text-white"
           >
             <Plus className="w-4 h-4 mr-2" />
@@ -79,7 +89,27 @@ export default function AvatarsPage() {
         </div>
 
         {/* Content */}
-        {filteredAvatars.length === 0 ? (
+        {isLoading ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {[...Array(3)].map((_, i) => (
+              <Card key={i} className="bg-slate-900/50 backdrop-blur-sm border-slate-700/50">
+                <CardContent className="p-4">
+                  <div className="flex items-start justify-between mb-3">
+                    <div className="flex items-center gap-3">
+                      <Skeleton className="w-12 h-12 rounded-full" />
+                      <div>
+                        <Skeleton className="h-5 w-24 mb-1" />
+                        <Skeleton className="h-4 w-16" />
+                      </div>
+                    </div>
+                    <Skeleton className="w-8 h-8" />
+                  </div>
+                  <Skeleton className="h-4 w-32" />
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        ) : filteredAvatars.length === 0 ? (
           <div className="text-center py-12">
             <div className="bg-slate-800/50 backdrop-blur-sm border border-slate-700/50 rounded-lg p-8 max-w-md mx-auto">
               <Users className="w-12 h-12 text-slate-400 mx-auto mb-4" />
@@ -93,7 +123,7 @@ export default function AvatarsPage() {
               </p>
               {!searchQuery && (
                 <Button
-                  onClick={() => setShowCreateDialog(true)}
+                  onClick={handleOpenCreateDialog}
                   className="bg-purple-600 hover:bg-purple-700 text-white"
                 >
                   <Plus className="w-4 h-4 mr-2" />
@@ -109,7 +139,7 @@ export default function AvatarsPage() {
                 key={avatar.id}
                 avatar={avatar}
                 onEdit={handleEdit}
-                onDelete={loadAvatars}
+                onDeleteSuccess={handleMutationSuccess}
               />
             ))}
           </div>
@@ -119,7 +149,7 @@ export default function AvatarsPage() {
         <CreateAvatarDialog
           open={showCreateDialog}
           onOpenChange={handleCloseDialog}
-          onSave={handleSave}
+          onSaveSuccess={handleMutationSuccess}
           editingAvatar={editingAvatar}
         />
       </div>

@@ -5,6 +5,7 @@ import { GeistMono } from 'geist/font/mono';
 import './globals.css';
 import { AuthProvider } from '@/contexts/auth-context';
 import { ThemeProvider } from '@/components/theme-provider';
+import Providers from '@/lib/providers';
 
 export const metadata: Metadata = {
   title: 'Discord Webhook Manager',
@@ -34,7 +35,9 @@ html {
           enableSystem
           disableTransitionOnChange
         >
-          <AuthProvider>{children}</AuthProvider>
+          <Providers>
+            <AuthProvider>{children}</AuthProvider>
+          </Providers>
         </ThemeProvider>
       </body>
     </html>

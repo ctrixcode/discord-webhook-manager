@@ -22,10 +22,10 @@ import {
 } from '@/components/ui/alert-dialog';
 import {
   type Webhook,
-  deleteWebhook,
   sendTestMessage,
-  updateWebhook,
-} from '@/lib/webhook-storage';
+} from '@/lib/discord-utils';
+import { api } from '@/lib/api';
+import { useMutation } from '@/hooks/useApi';
 import {
   MoreHorizontal,
   Send,
@@ -45,6 +45,9 @@ export function WebhookCard({ webhook, onWebhookUpdated }: WebhookCardProps) {
   const { toast } = useToast();
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [isTestingWebhook, setIsTestingWebhook] = useState(false);
+  
+  const { execute: updateWebhook } = useMutation(api.webhook.updateWebhook);
+  const { execute: deleteWebhook } = useMutation(api.webhook.deleteWebhook);
 
   const handleCopyUrl = () => {
     navigator.clipboard.writeText(webhook.url);
@@ -64,9 +67,9 @@ export function WebhookCard({ webhook, onWebhookUpdated }: WebhookCardProps) {
 
       if (success) {
         // Update last used timestamp and message count
-        updateWebhook(webhook.id, {
+        await updateWebhook(webhook.id, {
           lastUsed: new Date().toISOString(),
-          messageCount: webhook.messageCount + 1,
+          messageCount: (webhook.messageCount || 0) + 1,
         });
         onWebhookUpdated();
 
@@ -81,7 +84,7 @@ export function WebhookCard({ webhook, onWebhookUpdated }: WebhookCardProps) {
           variant: 'destructive',
         });
       }
-    } catch (error) {
+    } catch {
       toast({
         title: 'Test failed',
         description: 'An error occurred while testing the webhook',
@@ -92,17 +95,19 @@ export function WebhookCard({ webhook, onWebhookUpdated }: WebhookCardProps) {
     }
   };
 
-  const handleDelete = () => {
-    deleteWebhook(webhook.id);
-    onWebhookUpdated();
-    toast({
-      title: 'Webhook deleted',
-      description: 'The webhook has been removed from your account',
-    });
+  const handleDelete = async () => {
+    const result = await deleteWebhook(webhook.id);
+    if (result) {
+      onWebhookUpdated();
+      toast({
+        title: 'Webhook deleted',
+        description: 'The webhook has been removed from your account',
+      });
+    }
   };
 
-  const toggleActive = () => {
-    updateWebhook(webhook.id, { isActive: !webhook.isActive });
+  const toggleActive = async () => {
+    await updateWebhook(webhook.id, { isActive: !webhook.isActive });
     onWebhookUpdated();
   };
 
@@ -215,7 +220,7 @@ export function WebhookCard({ webhook, onWebhookUpdated }: WebhookCardProps) {
             </AlertDialogTitle>
             <AlertDialogDescription className="text-slate-300">
               This action cannot be undone. This will permanently delete the
-              webhook "{webhook.name}" from your account.
+              webhook &quot;{webhook.name}&quot; from your account.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>

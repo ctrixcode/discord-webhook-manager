@@ -1,39 +1,37 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useMemo } from 'react';
+import { useQuery } from '@tanstack/react-query';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { AddWebhookDialog } from '@/components/add-webhook-dialog';
 import { WebhookCard } from '@/components/webhook-card';
 import { useAuth } from '@/contexts/auth-context';
-import { getWebhooks, type Webhook } from '@/lib/webhook-storage';
+import { getAllWebhooks, type Webhook } from '@/lib/api/queries/webhook';
 import { Search, WebhookIcon } from 'lucide-react';
+import { Skeleton } from '@/components/ui/skeleton';
 
 export default function WebhooksPage() {
   const { user } = useAuth();
-  const [webhooks, setWebhooks] = useState<Webhook[]>([]);
+  
   const [searchQuery, setSearchQuery] = useState('');
-  const [filteredWebhooks, setFilteredWebhooks] = useState<Webhook[]>([]);
 
-  const loadWebhooks = () => {
-    if (user) {
-      const userWebhooks = getWebhooks(user.id);
-      setWebhooks(userWebhooks);
-    }
-  };
+  const { data: webhooks = [], isLoading } = useQuery<Webhook[]>({
+    queryKey: ['webhooks'],
+    queryFn: getAllWebhooks,
+    enabled: !!user,
+  });
 
-  useEffect(() => {
-    loadWebhooks();
-  }, [user]);
-
-  useEffect(() => {
-    const filtered = webhooks.filter(
+  const filteredWebhooks = useMemo(() => {
+    if (!webhooks) return [];
+    return webhooks.filter(
       (webhook) =>
         webhook.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        webhook.url.toLowerCase().includes(searchQuery.toLowerCase()),
+        webhook.url.toLowerCase().includes(searchQuery.toLowerCase())
     );
-    setFilteredWebhooks(filtered);
   }, [webhooks, searchQuery]);
+
+  
 
   const activeWebhooks = webhooks.filter((w) => w.isActive).length;
   const totalMessages = webhooks.reduce((sum, w) => sum + w.messageCount, 0);
@@ -47,7 +45,7 @@ export default function WebhooksPage() {
           </h2>
           <p className="text-slate-300">Manage your Discord webhooks</p>
         </div>
-        <AddWebhookDialog onWebhookAdded={loadWebhooks} />
+        <AddWebhookDialog />
       </div>
 
       {/* Stats */}
@@ -60,9 +58,13 @@ export default function WebhooksPage() {
             <WebhookIcon className="h-4 w-4 text-purple-400" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-white">
-              {webhooks.length}
-            </div>
+            {isLoading ? (
+              <Skeleton className="h-8 w-1/4" />
+            ) : (
+              <div className="text-2xl font-bold text-white">
+                {webhooks.length}
+              </div>
+            )}
             <p className="text-xs text-slate-400">{activeWebhooks} active</p>
           </CardContent>
         </Card>
@@ -75,7 +77,11 @@ export default function WebhooksPage() {
             <WebhookIcon className="h-4 w-4 text-blue-400" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-white">{totalMessages}</div>
+            {isLoading ? (
+              <Skeleton className="h-8 w-1/4" />
+            ) : (
+              <div className="text-2xl font-bold text-white">{totalMessages}</div>
+            )}
             <p className="text-xs text-slate-400">Total across all webhooks</p>
           </CardContent>
         </Card>
@@ -88,9 +94,13 @@ export default function WebhooksPage() {
             <WebhookIcon className="h-4 w-4 text-green-400" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-white">
-              {activeWebhooks}
-            </div>
+            {isLoading ? (
+              <Skeleton className="h-8 w-1/4" />
+            ) : (
+              <div className="text-2xl font-bold text-white">
+                {activeWebhooks}
+              </div>
+            )}
             <p className="text-xs text-slate-400">Ready to send messages</p>
           </CardContent>
         </Card>
@@ -110,13 +120,30 @@ export default function WebhooksPage() {
       </div>
 
       {/* Webhooks List */}
-      {filteredWebhooks.length > 0 ? (
+      {isLoading ? (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {[...Array(3)].map((_, i) => (
+            <Card key={i} className="bg-slate-900/50 backdrop-blur-xl border-slate-700/50">
+              <CardHeader>
+                <Skeleton className="h-6 w-3/4" />
+                <Skeleton className="h-4 w-1/2" />
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <Skeleton className="h-4 w-full" />
+                <Skeleton className="h-4 w-full" />
+                <div className="flex justify-end pt-4">
+                  <Skeleton className="h-8 w-20" />
+                </div>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      ) : filteredWebhooks.length > 0 ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {filteredWebhooks.map((webhook) => (
             <WebhookCard
               key={webhook.id}
               webhook={webhook}
-              onWebhookUpdated={loadWebhooks}
             />
           ))}
         </div>
@@ -130,7 +157,7 @@ export default function WebhooksPage() {
             <p className="text-slate-300 text-center mb-4">
               Get started by adding your first Discord webhook
             </p>
-            <AddWebhookDialog onWebhookAdded={loadWebhooks} />
+            <AddWebhookDialog />
           </CardContent>
         </Card>
       ) : (

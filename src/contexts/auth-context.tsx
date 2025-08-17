@@ -7,19 +7,14 @@ import {
   useState,
   type ReactNode,
 } from 'react';
-
-export interface User {
-  id: string;
-  username: string;
-  avatar?: string;
-  discriminator?: string;
-}
+import { api, apiClient, type User } from '@/lib/api';
 
 interface AuthContextType {
   user: User | null;
-  login: (user: User) => void;
+  login: () => void;
   logout: () => void;
   isLoading: boolean;
+  isAuthenticated: boolean;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -29,29 +24,41 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    // Check for stored user on mount
-    const storedUser = localStorage.getItem('discord-webhook-user');
-    if (storedUser) {
-      setUser(JSON.parse(storedUser));
-    }
-    setIsLoading(false);
+    // Initialize and check authentication on mount
+    const initAuth = async () => {
+      try {
+        // Check if we have a token
+        if (api.auth.isAuthenticated()) {
+          // Try to get current user to verify token is valid
+          const currentUser = await api.user.getCurrentUser();
+          setUser(currentUser);
+        }
+      } catch {
+        // Token is invalid, clear it
+        console.log('Token invalid, clearing auth');
+        apiClient.clearAccessToken();
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    initAuth();
   }, []);
 
-  const login = (userData: User) => {
-    setUser(userData);
-    localStorage.setItem('discord-webhook-user', JSON.stringify(userData));
+  const login = () => {
+    // Redirect to Discord OAuth
+    api.auth.loginWithDiscord();
   };
 
   const logout = () => {
     setUser(null);
-    localStorage.removeItem('discord-webhook-user');
-    localStorage.removeItem('discord-webhook-webhooks');
-    localStorage.removeItem('discord-webhook-scheduled');
-    localStorage.removeItem('discord-webhook-templates');
+    api.auth.logout();
   };
 
+  const isAuthenticated = !!user && api.auth.isAuthenticated();
+
   return (
-    <AuthContext.Provider value={{ user, login, logout, isLoading }}>
+    <AuthContext.Provider value={{ user, login, logout, isLoading, isAuthenticated }}>
       {children}
     </AuthContext.Provider>
   );

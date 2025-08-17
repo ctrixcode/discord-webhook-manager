@@ -1,6 +1,7 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useMemo } from 'react';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -14,11 +15,8 @@ import {
 import { ScheduleMessageDialog } from '@/components/schedule-message-dialog';
 import { ScheduledMessageCard } from '@/components/scheduled-message-card';
 import { useAuth } from '@/contexts/auth-context';
-import {
-  getScheduledMessages,
-  processScheduledMessages,
-  type ScheduledMessage,
-} from '@/lib/scheduled-storage';
+import { getAllScheduledMessages, processScheduledMessages } from '@/lib/api/queries/scheduled-message';
+import type { ScheduledMessage } from '@/lib/api/types';
 import {
   Search,
   Clock,
@@ -26,75 +24,53 @@ import {
   CheckCircle,
   RefreshCw,
 } from 'lucide-react';
-import { useToast } from '@/hooks/use-toast';
+import { useToast } from '@/components/ui/use-toast';
+import { Skeleton } from '@/components/ui/skeleton';
 
 export default function ScheduledPage() {
   const { user } = useAuth();
   const { toast } = useToast();
-  const [messages, setMessages] = useState<ScheduledMessage[]>([]);
+  const queryClient = useQueryClient();
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState<string>('all');
-  const [filteredMessages, setFilteredMessages] = useState<ScheduledMessage[]>(
-    [],
-  );
-  const [isProcessing, setIsProcessing] = useState(false);
 
-  const loadMessages = () => {
-    if (user) {
-      const userMessages = getScheduledMessages(user.id);
-      setMessages(userMessages);
-    }
-  };
+  const { data: messages = [], isLoading } = useQuery<ScheduledMessage[]>({
+    queryKey: ['scheduled-messages'],
+    queryFn: getAllScheduledMessages,
+    enabled: !!user,
+  });
 
-  useEffect(() => {
-    loadMessages();
-  }, [user]);
+  const { mutate: processMessages, isPending: isProcessing } = useMutation({
+    mutationFn: processScheduledMessages,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['scheduled-messages'] });
+      toast({
+        title: 'Processing triggered',
+        description: 'Checking for messages ready to send.',
+      });
+    },
+  });
 
-  useEffect(() => {
+  const filteredMessages = useMemo(() => {
     let filtered = messages;
 
-    // Filter by search query
     if (searchQuery) {
       filtered = filtered.filter(
         (message) =>
           message.content.toLowerCase().includes(searchQuery.toLowerCase()) ||
-          message.webhookName.toLowerCase().includes(searchQuery.toLowerCase()),
+          message.webhookName.toLowerCase().includes(searchQuery.toLowerCase())
       );
     }
 
-    // Filter by status
     if (statusFilter !== 'all') {
       filtered = filtered.filter((message) => message.status === statusFilter);
     }
 
-    // Sort by scheduled time (newest first)
-    filtered.sort(
+    return filtered.sort(
       (a, b) =>
-        new Date(b.scheduledFor).getTime() - new Date(a.scheduledFor).getTime(),
+        new Date(b.scheduledFor).getTime() - new Date(a.scheduledFor).getTime()
     );
-
-    setFilteredMessages(filtered);
   }, [messages, searchQuery, statusFilter]);
-
-  const handleProcessMessages = async () => {
-    setIsProcessing(true);
-    try {
-      await processScheduledMessages();
-      loadMessages();
-      toast({
-        title: 'Messages processed',
-        description: 'Checked for messages ready to send',
-      });
-    } catch (error) {
-      toast({
-        title: 'Processing failed',
-        description: 'Failed to process scheduled messages',
-        variant: 'destructive',
-      });
-    } finally {
-      setIsProcessing(false);
-    }
-  };
 
   const pendingMessages = messages.filter((m) => m.status === 'pending').length;
   const sentMessages = messages.filter((m) => m.status === 'sent').length;
@@ -114,7 +90,7 @@ export default function ScheduledPage() {
         <div className="flex items-center gap-2">
           <Button
             variant="outline"
-            onClick={handleProcessMessages}
+            onClick={() => processMessages()}
             disabled={isProcessing}
           >
             <RefreshCw
@@ -122,12 +98,13 @@ export default function ScheduledPage() {
             />
             {isProcessing ? 'Processing...' : 'Process Messages'}
           </Button>
-          <ScheduleMessageDialog onMessageScheduled={loadMessages} />
+          <ScheduleMessageDialog />
         </div>
       </div>
 
       {/* Stats */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+        {/* Total Scheduled */}
         <Card className="bg-slate-900/20 backdrop-blur-sm border-slate-700/50">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium text-slate-200">
@@ -136,12 +113,10 @@ export default function ScheduledPage() {
             <Clock className="h-4 w-4 text-purple-400" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-white">
-              {messages.length}
-            </div>
+            {isLoading ? <Skeleton className="h-8 w-1/4" /> : <div className="text-2xl font-bold text-white">{messages.length}</div>}
           </CardContent>
         </Card>
-
+        {/* Pending */}
         <Card className="bg-slate-900/20 backdrop-blur-sm border-slate-700/50">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium text-slate-200">
@@ -150,12 +125,10 @@ export default function ScheduledPage() {
             <Clock className="h-4 w-4 text-blue-400" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-white">
-              {pendingMessages}
-            </div>
+            {isLoading ? <Skeleton className="h-8 w-1/4" /> : <div className="text-2xl font-bold text-white">{pendingMessages}</div>}
           </CardContent>
         </Card>
-
+        {/* Sent */}
         <Card className="bg-slate-900/20 backdrop-blur-sm border-slate-700/50">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium text-slate-200">
@@ -164,10 +137,10 @@ export default function ScheduledPage() {
             <CheckCircle className="h-4 w-4 text-green-400" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-white">{sentMessages}</div>
+            {isLoading ? <Skeleton className="h-8 w-1/4" /> : <div className="text-2xl font-bold text-white">{sentMessages}</div>}
           </CardContent>
         </Card>
-
+        {/* Failed */}
         <Card className="bg-slate-900/20 backdrop-blur-sm border-slate-700/50">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium text-slate-200">
@@ -176,9 +149,7 @@ export default function ScheduledPage() {
             <AlertCircle className="h-4 w-4 text-red-400" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-white">
-              {failedMessages}
-            </div>
+            {isLoading ? <Skeleton className="h-8 w-1/4" /> : <div className="text-2xl font-bold text-white">{failedMessages}</div>}
           </CardContent>
         </Card>
       </div>
@@ -199,74 +170,41 @@ export default function ScheduledPage() {
             <SelectValue placeholder="Filter by status" />
           </SelectTrigger>
           <SelectContent className="bg-slate-900/95 backdrop-blur-sm border-slate-700/50">
-            <SelectItem
-              value="all"
-              className="text-white hover:bg-slate-800/50"
-            >
-              All statuses
-            </SelectItem>
-            <SelectItem
-              value="pending"
-              className="text-white hover:bg-slate-800/50"
-            >
-              Pending
-            </SelectItem>
-            <SelectItem
-              value="sent"
-              className="text-white hover:bg-slate-800/50"
-            >
-              Sent
-            </SelectItem>
-            <SelectItem
-              value="failed"
-              className="text-white hover:bg-slate-800/50"
-            >
-              Failed
-            </SelectItem>
-            <SelectItem
-              value="cancelled"
-              className="text-white hover:bg-slate-800/50"
-            >
-              Cancelled
-            </SelectItem>
+            <SelectItem value="all" className="text-white hover:bg-slate-800/50">All statuses</SelectItem>
+            <SelectItem value="pending" className="text-white hover:bg-slate-800/50">Pending</SelectItem>
+            <SelectItem value="sent" className="text-white hover:bg-slate-800/50">Sent</SelectItem>
+            <SelectItem value="failed" className="text-white hover:bg-slate-800/50">Failed</SelectItem>
+            <SelectItem value="cancelled" className="text-white hover:bg-slate-800/50">Cancelled</SelectItem>
           </SelectContent>
         </Select>
       </div>
 
       {/* Messages List */}
-      {filteredMessages.length > 0 ? (
+      {isLoading ? (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {[...Array(3)].map((_, i) => <Skeleton key={i} className="h-64 w-full rounded-lg" />)}
+        </div>
+      ) : filteredMessages.length > 0 ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {filteredMessages.map((message) => (
-            <ScheduledMessageCard
-              key={message.id}
-              message={message}
-              onMessageUpdated={loadMessages}
-            />
+            <ScheduledMessageCard key={message.id} message={message} />
           ))}
         </div>
       ) : messages.length === 0 ? (
         <Card className="bg-slate-900/20 backdrop-blur-sm border-slate-700/50">
           <CardContent className="flex flex-col items-center justify-center py-16">
             <Clock className="h-12 w-12 text-purple-400 mb-4" />
-            <h3 className="text-lg font-semibold mb-2 text-white">
-              No scheduled messages
-            </h3>
-            <p className="text-slate-300 text-center mb-4">
-              Schedule your first message to get started
-            </p>
-            <ScheduleMessageDialog onMessageScheduled={loadMessages} />
+            <h3 className="text-lg font-semibold mb-2 text-white">No scheduled messages</h3>
+            <p className="text-slate-300 text-center mb-4">Schedule your first message to get started</p>
+            <ScheduleMessageDialog />
           </CardContent>
         </Card>
       ) : (
         <Card className="bg-slate-900/20 backdrop-blur-sm border-slate-700/50">
           <CardContent className="flex flex-col items-center justify-center py-16">
             <Search className="h-12 w-12 text-purple-400 mb-4" />
-            <h3 className="text-lg font-semibold mb-2 text-white">
-              No messages found
-            </h3>
-            <p className="text-slate-300 text-center">
-              Try adjusting your search or filter criteria
-            </p>
+            <h3 className="text-lg font-semibold mb-2 text-white">No messages found</h3>
+            <p className="text-slate-300 text-center">Try adjusting your search or filter criteria</p>
           </CardContent>
         </Card>
       )}

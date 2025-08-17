@@ -9,18 +9,14 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Send, Webhook } from 'lucide-react';
-import {
-  getWebhooks,
-  type Webhook as WebhookType,
-} from '@/lib/webhook-storage';
-import type { PredefinedAvatar } from '@/lib/avatar-storage';
+import { api, apiClient, type PredefinedAvatar } from '@/lib/api';
+import { useApi } from '@/hooks/useApi';
 import { AvatarSelector } from '@/components/avatars/avatar-selector';
 import { DiscordMessagePreview } from '@/components/discord-message-preview';
-import type { DiscordEmbed } from '@/lib/template-storage';
+import type { DiscordEmbed } from '@/lib/api/types';
 import { toast } from 'sonner';
 
 export default function SendMessagePage() {
-  const [webhooks, setWebhooks] = useState<WebhookType[]>([]);
   const [selectedWebhooks, setSelectedWebhooks] = useState<string[]>([]);
   const [message, setMessage] = useState({
     content: '',
@@ -31,16 +27,15 @@ export default function SendMessagePage() {
     embeds: [] as DiscordEmbed[],
   });
   const [isSending, setIsSending] = useState(false);
-  const [sendResults, setSendResults] = useState<
-    { webhookId: string; success: boolean; error?: string }[]
-  >([]);
   const [avatarMode, setAvatarMode] = useState<'predefined' | 'custom'>(
     'predefined',
   );
 
+  const { data: webhooks = [], execute: loadWebhooks } = useApi(api.webhook.getAllWebhooks);
+
   useEffect(() => {
-    setWebhooks(getWebhooks());
-  }, []);
+    loadWebhooks();
+  }, [loadWebhooks]);
 
   const handleWebhookToggle = (webhookId: string) => {
     setSelectedWebhooks((prev) =>
@@ -66,9 +61,9 @@ export default function SendMessagePage() {
     }));
   };
 
-  const clearAvatar = () => {
-    setMessage((prev) => ({ ...prev, username: '', avatarUrl: '' }));
-  };
+  // const clearAvatar = () => {
+  //   setMessage((prev) => ({ ...prev, username: '', avatarUrl: '' }));
+  // };
 
   const addEmbed = () => {
     const newEmbed: DiscordEmbed = {
@@ -126,19 +121,12 @@ export default function SendMessagePage() {
           embeds: message.embeds.length > 0 ? message.embeds : undefined,
         };
 
-        const response = await fetch(webhook.url, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(payload),
-        });
+        const response = await apiClient.post(webhook.url, payload);
 
-        if (response.ok) {
+        if (response.status === 200 || response.status === 204) { // Discord webhooks return 204 No Content on success
           results.push({ webhookId, success: true });
         } else {
-          const errorText = await response.text();
-          results.push({ webhookId, success: false, error: errorText });
+          results.push({ webhookId, success: false, error: `HTTP Error: ${response.status}` });
         }
       } catch (error) {
         results.push({ webhookId, success: false, error: String(error) });
@@ -474,7 +462,7 @@ export default function SendMessagePage() {
                         <div className="text-center py-8 text-slate-400">
                           <p>No embeds added yet</p>
                           <p className="text-sm">
-                            Click "Add Embed" to create rich message content
+                            Click &quot;Add Embed&quot; to create rich message content
                           </p>
                         </div>
                       ) : (

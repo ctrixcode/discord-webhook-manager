@@ -15,7 +15,6 @@ import {
   Send,
 } from 'lucide-react';
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
 
 const navigation = [
   {
@@ -64,7 +63,6 @@ const navigation = [
 
 export function FloatingNavigation() {
   const [isOpen, setIsOpen] = useState(false);
-  const pathname = usePathname();
 
   const toggleMenu = () => setIsOpen(!isOpen);
 
@@ -99,7 +97,6 @@ export function FloatingNavigation() {
         {isOpen && (
           <div className="absolute inset-0">
             {navigation.map((item, index) => {
-              const isActive = pathname === item.href;
               const { x, y } = getRadialPosition(index, navigation.length);
 
               return (

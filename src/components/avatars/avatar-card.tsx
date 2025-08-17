@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -21,12 +22,13 @@ import {
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
 import { MoreHorizontal, Edit, Trash2, Copy } from 'lucide-react';
-import { type PredefinedAvatar, deleteAvatar } from '@/lib/avatar-storage';
+import { deleteAvatar } from '@/lib/api/queries/avatar';
+import type { PredefinedAvatar } from '@/lib/api/types';
 
 interface AvatarCardProps {
   avatar: PredefinedAvatar;
   onEdit: (avatar: PredefinedAvatar) => void;
-  onDelete: () => void;
+  onDeleteSuccess: () => void;
   onSelect?: (avatar: PredefinedAvatar) => void;
   selectable?: boolean;
 }
@@ -34,16 +36,24 @@ interface AvatarCardProps {
 export function AvatarCard({
   avatar,
   onEdit,
-  onDelete,
+  onDeleteSuccess,
   onSelect,
   selectable = false,
 }: AvatarCardProps) {
+  const queryClient = useQueryClient();
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
 
+  const { mutate: deleteAvatarMutation } = useMutation({
+    mutationFn: deleteAvatar,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['avatars'] });
+      setShowDeleteDialog(false);
+      onDeleteSuccess();
+    },
+  });
+
   const handleDelete = () => {
-    deleteAvatar(avatar.id);
-    onDelete();
-    setShowDeleteDialog(false);
+    deleteAvatarMutation(avatar.id);
   };
 
   const handleCopyUrl = () => {
@@ -129,7 +139,7 @@ export function AvatarCard({
               Delete Avatar
             </AlertDialogTitle>
             <AlertDialogDescription className="text-slate-400">
-              Are you sure you want to delete "{avatar.name}"? This action
+              Are you sure you want to delete &quot;{avatar.name}&quot;? This action
               cannot be undone.
             </AlertDialogDescription>
           </AlertDialogHeader>

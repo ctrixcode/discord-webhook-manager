@@ -62,9 +62,7 @@ export function DashboardHeader() {
                   <p className="text-sm font-medium leading-none text-white">
                     {user?.username}
                   </p>
-                  <p className="text-xs leading-none text-slate-400">
-                    #{user?.discriminator}
-                  </p>
+                  
                 </div>
               </DropdownMenuLabel>
               <DropdownMenuSeparator className="bg-slate-700" />

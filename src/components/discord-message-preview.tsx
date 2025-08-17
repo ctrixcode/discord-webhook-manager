@@ -1,6 +1,7 @@
 'use client';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { type DiscordEmbed, discordColorToHex } from '@/lib/template-storage';
+import { type DiscordEmbed } from '@/lib/api/types';
+import { discordColorToHex } from '@/lib/discord-utils';
 import type { ReactNode } from 'react';
 
 interface DiscordMessagePreviewProps {
@@ -14,7 +15,6 @@ function parseDiscordMarkdown(text: string): ReactNode[] {
   if (!text) return [];
 
   const parts: ReactNode[] = [];
-  const currentIndex = 0;
 
   // Discord markdown patterns in order of precedence
   const patterns = [

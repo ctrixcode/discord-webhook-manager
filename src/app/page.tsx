@@ -24,15 +24,7 @@ export default function HomePage() {
   }, [user, router]);
 
   const handleDiscordLogin = () => {
-    // Mock Discord OAuth - in production this would redirect to Discord
-    const mockUser = {
-      id: '123456789012345678',
-      username: 'WebhookManager',
-      discriminator: '0001',
-      avatar: 'https://cdn.discordapp.com/embed/avatars/0.png',
-    };
-
-    login(mockUser);
+    login(); // This will redirect to Discord OAuth
   };
 
   if (isLoading) {
@@ -62,8 +54,8 @@ export default function HomePage() {
           <Card className="max-w-md mx-auto">
             <CardHeader className="text-center">
               <CardTitle className="flex items-center justify-center gap-2">
-                <div className="w-8 h-8 bg-primary rounded-full flex items-center justify-center">
-                  <DiscordLogo className="w-5 h-5 text-primary-foreground" />
+                <div className="w-8 h-8 bg-[#5865F2] rounded-full flex items-center justify-center">
+                  <DiscordLogo className="w-5 h-5 text-white" />
                 </div>
                 Sign in with Discord
               </CardTitle>
@@ -72,7 +64,11 @@ export default function HomePage() {
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <Button onClick={handleDiscordLogin} className="w-full" size="lg">
+              <Button 
+                onClick={handleDiscordLogin} 
+                className="w-full bg-[#5865F2] hover:bg-[#4752C4] text-white" 
+                size="lg"
+              >
                 <DiscordLogo className="w-5 h-5 mr-2" />
                 Continue with Discord
               </Button>

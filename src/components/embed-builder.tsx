@@ -7,7 +7,8 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Checkbox } from '@/components/ui/checkbox';
-import { type DiscordEmbed, hexToDiscordColor } from '@/lib/template-storage';
+import { type DiscordEmbed } from '@/lib/api/types';
+import { hexToDiscordColor } from '@/lib/discord-utils';
 import { Plus, Trash2, ChevronDown, ChevronUp, Calendar } from 'lucide-react';
 import {
   Collapsible,
@@ -44,12 +45,15 @@ export function EmbedBuilder({
 
   const updateField = (
     index: number,
-    updates: Partial<DiscordEmbed['fields'][0]>,
+    updates: Partial<DiscordEmbed['fields'][number]>,
   ) => {
-    const fields = embed.fields || [];
-    const newFields = [...fields];
-    newFields[index] = { ...newFields[index], ...updates };
-    updateEmbed({ fields: newFields });
+    const currentFields = (embed.fields || []) as DiscordEmbed['fields'];
+    const newFields = [...currentFields];
+
+    if (newFields[index]) {
+      newFields[index] = { ...newFields[index], ...updates };
+      updateEmbed({ fields: newFields });
+    }
   };
 
   const removeField = (index: number) => {

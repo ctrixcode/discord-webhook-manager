@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -20,12 +21,9 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
-import {
-  type ScheduledMessage,
-  cancelScheduledMessage,
-  deleteScheduledMessage,
-  formatScheduledTime,
-} from '@/lib/scheduled-storage';
+import { formatScheduledTime } from '@/lib/discord-utils';
+import { scheduledMessageQueries } from '@/lib/api/queries/scheduled-message';
+import type { ScheduledMessage } from '@/lib/api/types';
 import {
   MoreHorizontal,
   Clock,
@@ -35,38 +33,41 @@ import {
   CheckCircle,
   XCircle,
 } from 'lucide-react';
-import { useToast } from '@/hooks/use-toast';
+import { useToast } from '@/components/ui/use-toast';
 
 interface ScheduledMessageCardProps {
   message: ScheduledMessage;
-  onMessageUpdated: () => void;
 }
 
-export function ScheduledMessageCard({
-  message,
-  onMessageUpdated,
-}: ScheduledMessageCardProps) {
+export function ScheduledMessageCard({ message }: ScheduledMessageCardProps) {
   const { toast } = useToast();
+  const queryClient = useQueryClient();
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [showCancelDialog, setShowCancelDialog] = useState(false);
 
-  const handleCancel = () => {
-    cancelScheduledMessage(message.id);
-    onMessageUpdated();
-    toast({
-      title: 'Message cancelled',
-      description: 'The scheduled message has been cancelled',
-    });
-  };
+  const { mutate: cancelMessage } = useMutation({
+    mutationFn: scheduledMessageQueries.cancelScheduledMessage,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['scheduled-messages'] });
+      toast({
+        title: 'Message Cancelled',
+        description: 'The scheduled message will not be sent.',
+      });
+      setShowCancelDialog(false);
+    },
+  });
 
-  const handleDelete = () => {
-    deleteScheduledMessage(message.id);
-    onMessageUpdated();
-    toast({
-      title: 'Message deleted',
-      description: 'The scheduled message has been removed',
-    });
-  };
+  const { mutate: deleteMessage } = useMutation({
+    mutationFn: scheduledMessageQueries.deleteScheduledMessage,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['scheduled-messages'] });
+      toast({
+        title: 'Message Deleted',
+        description: 'The scheduled message has been permanently removed.',
+      });
+      setShowDeleteDialog(false);
+    },
+  });
 
   const getStatusIcon = () => {
     switch (message.status) {
@@ -98,8 +99,7 @@ export function ScheduledMessageCard({
     }
   };
 
-  const canCancel =
-    message.status === 'pending' && new Date(message.scheduledFor) > new Date();
+  const canCancel = message.status === 'pending' && new Date(message.scheduledFor) > new Date();
 
   return (
     <>
@@ -205,7 +205,7 @@ export function ScheduledMessageCard({
           <AlertDialogFooter>
             <AlertDialogCancel>Keep scheduled</AlertDialogCancel>
             <AlertDialogAction
-              onClick={handleCancel}
+              onClick={() => cancelMessage(message.id)}
               className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
             >
               Cancel message
@@ -226,7 +226,7 @@ export function ScheduledMessageCard({
           <AlertDialogFooter>
             <AlertDialogCancel>Cancel</AlertDialogCancel>
             <AlertDialogAction
-              onClick={handleDelete}
+              onClick={() => deleteMessage(message.id)}
               className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
             >
               Delete

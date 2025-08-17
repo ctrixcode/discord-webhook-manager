@@ -2,7 +2,8 @@
 
 import type React from 'react';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
+import { useQuery } from '@tanstack/react-query';
 import { Button } from '@/components/ui/button';
 import {
   Dialog,
@@ -14,7 +15,9 @@ import {
 import { Input } from '@/components/ui/input';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Search, Users } from 'lucide-react';
-import { type PredefinedAvatar, getAvatars } from '@/lib/avatar-storage';
+import { getAllAvatars } from '@/lib/api/queries/avatar';
+import type { PredefinedAvatar } from '@/lib/api/types';
+import { useAuth } from '@/contexts/auth-context';
 
 interface AvatarSelectorProps {
   onSelect: (avatar: PredefinedAvatar) => void;
@@ -22,18 +25,18 @@ interface AvatarSelectorProps {
 }
 
 export function AvatarSelector({ onSelect, children }: AvatarSelectorProps) {
+  const { user } = useAuth();
   const [open, setOpen] = useState(false);
-  const [avatars, setAvatars] = useState<PredefinedAvatar[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
 
-  useEffect(() => {
-    if (open) {
-      setAvatars(getAvatars());
-    }
-  }, [open]);
+  const { data: avatars = [] } = useQuery<PredefinedAvatar[]>({
+    queryKey: ['avatars'],
+    queryFn: getAllAvatars,
+    enabled: !!user && open,
+  });
 
   const filteredAvatars = avatars.filter(
-    (avatar) =>
+    (avatar: PredefinedAvatar) =>
       avatar.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
       avatar.username.toLowerCase().includes(searchQuery.toLowerCase()),
   );
