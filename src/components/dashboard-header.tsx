@@ -45,7 +45,7 @@ export function DashboardHeader() {
                 className="relative h-10 w-10 rounded-full hover:bg-purple-500/20"
               >
                 <Avatar className="h-10 w-10 ring-2 ring-purple-500/30">
-                  <AvatarImage src={user?.avatar || '/placeholder.svg'} />
+                  <AvatarImage src={user?.discord_avatar} />
                   <AvatarFallback className="bg-purple-600 text-white">
                     {user?.username?.charAt(0).toUpperCase()}
                   </AvatarFallback>

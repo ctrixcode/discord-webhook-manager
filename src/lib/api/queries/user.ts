@@ -4,8 +4,12 @@ import { User, UpdateUserRequest, ApiResponse } from '../types';
 export const userQueries = {
   // Get current authenticated user
   getCurrentUser: async (): Promise<User> => {
-    const response = await apiClient.get<User>('/user');
-    return response.data;
+    type rawResponse = {
+      success: boolean;
+      data: User;
+    }
+    const response = await apiClient.get<rawResponse>('/user');
+    return response.data.data;
   },
 
   // Get user by ID
