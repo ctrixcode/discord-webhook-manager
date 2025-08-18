@@ -4,7 +4,8 @@ import { logger } from '../utils';
 const connectDB = async () => {
   try {
     const mongoUri =
-      process.env.MONGO_URL || 'mongodb://localhost:27017/fastify_db';
+      process.env.MONGO_URL ||
+      'mongodb://localhost:27017/discord-webhook-manager-test';
     await mongoose.connect(mongoUri);
     logger.info('MongoDB connected successfully');
   } catch (error) {
