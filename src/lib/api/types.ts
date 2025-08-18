@@ -16,8 +16,8 @@ export interface User {
   id: string;
   username: string;
   email: string;
-  discordId?: string;
-  avatar?: string;
+  discord_id?: string;
+  discord_avatar?: string;
   createdAt: string;
   updatedAt: string;
 }
