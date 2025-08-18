@@ -216,14 +216,15 @@ export const discordCallback = async (
     }
 
     setRefreshTokenCookie(reply, refreshToken);
-    reply.status(200).send({
-      success: true,
-      data: {
-        user: { id: user.id, email: user.email, username: user.username },
-        accessToken,
-      },
-      message: 'Logged in with Discord successfully',
-    });
+    reply.redirect(`http://localhost:3000/auth/callback?token=${accessToken}`);
+    // reply.status(200).send({
+    //   success: true,
+    //   data: {
+    //     user: { id: user.id, email: user.email, username: user.username },
+    //     accessToken,
+    //   },
+    //   message: 'Logged in with Discord successfully',
+    // });
   } catch (error: unknown) {
     logger.error('Error in discordCallback controller:', error);
     if (error instanceof Error) {

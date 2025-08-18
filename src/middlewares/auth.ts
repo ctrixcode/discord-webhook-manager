@@ -1,100 +1,55 @@
 import { FastifyRequest, FastifyReply } from 'fastify';
-import {
-  verifyToken,
-  generateAccessToken,
-  generateRefreshToken,
-} from '../utils/jwt';
-import {
-  setRefreshTokenCookie,
-  clearRefreshTokenCookie,
-} from '../utils/cookie';
-import { logger } from '../utils';
-import * as userService from '../services/user.service';
+import { TokenExpiredError } from 'jsonwebtoken';
+import * as AuthService from '../services/auth.service';
+import { setRefreshTokenCookie } from '../utils/cookie';
+import { verifyToken } from '../utils/jwt';
 
-declare module 'fastify' {
-  interface FastifyRequest {
-    user?: { userId: string; email: string };
+const authenticate = async (request: FastifyRequest, reply: FastifyReply) => {
+  const authHeader = request.headers.authorization;
+
+  if (!authHeader) {
+    return reply.status(401).send({ message: 'No token provided' });
   }
-}
 
-const authenticate = async (
-  request: FastifyRequest,
-  reply: FastifyReply,
-  done: () => void
-) => {
+  const token = authHeader.split(' ')[1];
+
+  if (!token) {
+    return reply.status(401).send({ message: 'No token provided' });
+  }
+
   try {
-    const token = request.cookies.accessToken; // Prioritize access token from cookie
-
-    if (!token) {
-      return reply
-        .status(401)
-        .send({ success: false, message: 'No token provided' });
-    }
-
-    try {
-      const decoded = verifyToken(token);
-      request.user = decoded;
-      done();
-    } catch (_error: unknown) {
-      // Access token expired or invalid, try to use refresh token
-      const refreshToken = request.cookies.refreshToken;
-
-      if (!refreshToken) {
-        clearRefreshTokenCookie(reply);
-        return reply.status(401).send({
-          success: false,
-          message: 'Invalid or expired token, no refresh token',
-        });
-      }
-
+    const decoded = verifyToken(token);
+    request.user = decoded;
+  } catch (error) {
+    if (error instanceof TokenExpiredError) {
       try {
-        // If refresh token is valid, decode and get user
-        const decodedRefreshToken = verifyToken(refreshToken);
-        const user = await userService.getUserById(decodedRefreshToken.userId);
-
-        if (!user) {
-          clearRefreshTokenCookie(reply);
+        const refreshToken = request.cookies.refreshToken;
+        if (!refreshToken) {
           return reply.status(401).send({
-            success: false,
-            message: 'Invalid refresh token: User not found',
+            message: 'Access token expired and no refresh token provided',
           });
         }
 
-        // Generate new access and refresh tokens
-        const newAccessToken = generateAccessToken({
-          userId: user.id,
-          email: user.email,
-        });
-        const newRefreshToken = generateRefreshToken({
-          userId: user.id,
-          email: user.email,
-        });
+        const newTokens = await AuthService.refreshTokens(refreshToken);
+        if (!newTokens) {
+          return reply
+            .status(401)
+            .send({ message: 'Invalid or expired refresh token' });
+        }
+
+        const { newAccessToken, newRefreshToken } = newTokens;
 
         setRefreshTokenCookie(reply, newRefreshToken);
-        request.user = { userId: user.id, email: user.email };
-
-        // Send new access token in response header for client to update
         reply.header('X-Access-Token', newAccessToken);
-        done();
-      } catch (refreshError: unknown) {
-        clearRefreshTokenCookie(reply);
-        logger.error(
-          `Error refreshing token: ${(refreshError as Error).message}`
-        );
-        return reply.status(401).send({
-          success: false,
-          message: 'Invalid or expired refresh token',
-        });
+
+        const decoded = verifyToken(newAccessToken);
+        request.user = decoded;
+      } catch (_refreshError) {
+        return reply.status(401).send({ message: 'Failed to refresh token' });
       }
+    } else {
+      return reply.status(401).send({ message: 'Invalid token' });
     }
-  } catch (error: unknown) {
-    logger.error(
-      `Authentication middleware error: ${(error as Error).message}`
-    ); // Use template literal
-    return reply
-      .status(500)
-      .send({ success: false, message: 'Internal server error' });
   }
 };
-
 export default authenticate;
