@@ -9,6 +9,7 @@ export const userQueries = {
       data: User;
     }
     const response = await apiClient.get<rawResponse>('/user');
+    if (!response.data.success) throw new Error('Failed to get user');
     return response.data.data;
   },
 
