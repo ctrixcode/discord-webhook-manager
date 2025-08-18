@@ -24,18 +24,18 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    // Initialize and check authentication on mount
     const initAuth = async () => {
+      setIsLoading(true);
       try {
-        // Check if we have a token
         if (api.auth.isAuthenticated()) {
-          // Try to get current user to verify token is valid
           const currentUser = await api.user.getCurrentUser();
           setUser(currentUser);
+        } else {
+          setUser(null);
         }
-      } catch {
-        // Token is invalid, clear it
-        console.log('Token invalid, clearing auth');
+      } catch (error) {
+        console.error('Authentication check failed, logging out.', error);
+        setUser(null);
         apiClient.clearAccessToken();
       } finally {
         setIsLoading(false);
