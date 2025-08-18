@@ -2,7 +2,10 @@ import { FastifyRequest, FastifyReply } from 'fastify';
 import * as userService from '../services/user.service';
 import { logger } from '../utils';
 import { UpdateUserData } from '../services/user.service';
-import { getDiscordAvatarURL } from '../utils/discord-api';
+import {
+  getDiscordAvatarURL,
+  getDiscordGuildIconURL,
+} from '../utils/discord-api';
 import { toUserPayload } from '../utils/mappers';
 
 /**
@@ -39,7 +42,7 @@ export const getCurrentUser = async (
     if (user.guilds) {
       user.guilds = user.guilds.map(guild => {
         guild.icon = guild.icon
-          ? getDiscordAvatarURL(guild.id, guild.icon)
+          ? getDiscordGuildIconURL(guild.id, guild.icon)
           : guild.icon;
         return guild;
       });

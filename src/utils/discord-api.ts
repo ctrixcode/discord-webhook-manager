@@ -8,3 +8,7 @@ export const getDiscordAvatarURL = (
   }
   return `https://cdn.discordapp.com/avatars/${discordID}/${avatar}.png`;
 };
+
+export const getDiscordGuildIconURL = (guildID: string, guildIcon: string) => {
+  return `https://cdn.discordapp.com/icons/${guildID}/${guildIcon}.png`;
+};
