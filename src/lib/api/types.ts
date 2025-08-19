@@ -29,13 +29,13 @@ export interface UpdateUserRequest {
 
 // Webhook Types
 export interface Webhook {
-  id: string;
+  user_id: string;
   name: string;
-  url: string;
   description?: string;
-  userId: string;
-  createdAt: string;
-  updatedAt: string;
+  url: string;
+  is_active: boolean;
+  createdAt: Date;
+  updatedAt: Date;
 }
 
 export interface CreateWebhookRequest {

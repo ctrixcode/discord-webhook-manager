@@ -4,8 +4,14 @@ import { Webhook, CreateWebhookRequest, UpdateWebhookRequest, ApiResponse } from
 export const webhookQueries = {
   // Get all webhooks
   getAllWebhooks: async (): Promise<Webhook[]> => {
-    const response = await apiClient.get<Webhook[]>('/webhook');
-    return response.data;
+    type rawResponse = {
+      webhooks: Webhook[];
+      total: number;
+      page: number;
+      limit: number
+    }
+    const response = await apiClient.get<rawResponse>('/webhook');
+    return response.data.webhooks;
   },
 
   // Get webhook by ID
