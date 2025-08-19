@@ -14,7 +14,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 
 export default function WebhooksPage() {
   const { user } = useAuth();
-  
+
   const [searchQuery, setSearchQuery] = useState('');
 
   const { data: webhooks = [], isLoading } = useQuery<Webhook[]>({
@@ -28,14 +28,11 @@ export default function WebhooksPage() {
     return webhooks.filter(
       (webhook) =>
         webhook.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        webhook.url.toLowerCase().includes(searchQuery.toLowerCase())
+        webhook.url.toLowerCase().includes(searchQuery.toLowerCase()),
     );
   }, [webhooks, searchQuery]);
 
-  
-
   const activeWebhooks = webhooks.filter((w) => w.is_active).length;
-  
 
   return (
     <div className="space-y-8">
@@ -69,8 +66,6 @@ export default function WebhooksPage() {
             <p className="text-xs text-slate-400">{activeWebhooks} active</p>
           </CardContent>
         </Card>
-
-        
 
         <Card className="bg-slate-900/50 backdrop-blur-xl border-slate-700/50 hover:bg-slate-800/50 transition-all duration-300">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
@@ -109,7 +104,10 @@ export default function WebhooksPage() {
       {isLoading ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {[...Array(3)].map((_, i) => (
-            <Card key={i} className="bg-slate-900/50 backdrop-blur-xl border-slate-700/50">
+            <Card
+              key={i}
+              className="bg-slate-900/50 backdrop-blur-xl border-slate-700/50"
+            >
               <CardHeader>
                 <Skeleton className="h-6 w-3/4" />
                 <Skeleton className="h-4 w-1/2" />
@@ -127,10 +125,7 @@ export default function WebhooksPage() {
       ) : filteredWebhooks.length > 0 ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {filteredWebhooks.map((webhook) => (
-            <WebhookCard
-              key={webhook.id}
-              webhook={webhook}
-            />
+            <WebhookCard key={webhook.id} webhook={webhook} />
           ))}
         </div>
       ) : webhooks.length === 0 ? (
