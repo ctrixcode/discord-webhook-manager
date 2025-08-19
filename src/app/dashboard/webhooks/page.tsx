@@ -7,7 +7,8 @@ import { Input } from '@/components/ui/input';
 import { AddWebhookDialog } from '@/components/add-webhook-dialog';
 import { WebhookCard } from '@/components/webhook-card';
 import { useAuth } from '@/contexts/auth-context';
-import { getAllWebhooks, type Webhook } from '@/lib/api/queries/webhook';
+import { getAllWebhooks } from '@/lib/api/queries/webhook';
+import { type Webhook } from '@/lib/api/types';
 import { Search, WebhookIcon } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
 
@@ -33,8 +34,8 @@ export default function WebhooksPage() {
 
   
 
-  const activeWebhooks = webhooks.filter((w) => w.isActive).length;
-  const totalMessages = webhooks.reduce((sum, w) => sum + w.messageCount, 0);
+  const activeWebhooks = webhooks.filter((w) => w.is_active).length;
+  
 
   return (
     <div className="space-y-8">
@@ -69,22 +70,7 @@ export default function WebhooksPage() {
           </CardContent>
         </Card>
 
-        <Card className="bg-slate-900/50 backdrop-blur-xl border-slate-700/50 hover:bg-slate-800/50 transition-all duration-300">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium text-slate-200">
-              Messages Sent
-            </CardTitle>
-            <WebhookIcon className="h-4 w-4 text-blue-400" />
-          </CardHeader>
-          <CardContent>
-            {isLoading ? (
-              <Skeleton className="h-8 w-1/4" />
-            ) : (
-              <div className="text-2xl font-bold text-white">{totalMessages}</div>
-            )}
-            <p className="text-xs text-slate-400">Total across all webhooks</p>
-          </CardContent>
-        </Card>
+        
 
         <Card className="bg-slate-900/50 backdrop-blur-xl border-slate-700/50 hover:bg-slate-800/50 transition-all duration-300">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">

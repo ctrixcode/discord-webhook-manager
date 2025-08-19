@@ -20,10 +20,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
-import {
-  type Webhook,
-  sendTestMessage,
-} from '@/lib/discord-utils';
+import type { Webhook } from '@/lib/api/types';
 import { api } from '@/lib/api';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import {
@@ -36,38 +33,36 @@ import {
 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import type { UpdateWebhookRequest } from '@/lib/api/types';
+import { sendTestMessage } from '@/lib/discord-utils';
 
 interface WebhookCardProps {
   webhook: Webhook;
-  onWebhookUpdated: () => void;
 }
 
-export function WebhookCard({ webhook, onWebhookUpdated }: WebhookCardProps) {
+export function WebhookCard({ webhook }: WebhookCardProps) {
   const { toast } = useToast();
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [isTestingWebhook, setIsTestingWebhook] = useState(false);
   const queryClient = useQueryClient();
 
   const { mutate: updateWebhook } = useMutation({
-    mutationFn: ({ id, data }: { id: string; data: UpdateWebhookRequest }) => api.webhook.updateWebhook(id, data),
+    mutationFn: ({ id, data }: { id: string; data: UpdateWebhookRequest }) =>
+      api.webhook.updateWebhook(id, data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['webhooks'] });
-      onWebhookUpdated();
     },
   });
 
- const { mutate: deleteWebhook } = useMutation({
+  const { mutate: deleteWebhook } = useMutation({
     mutationFn: (id: string) => api.webhook.deleteWebhook(id),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['webhooks'] });
-      onWebhookUpdated();
       toast({
         title: 'Webhook deleted',
         description: 'The webhook has been removed from your account',
       });
     },
   });
-
 
   const handleCopyUrl = () => {
     navigator.clipboard.writeText(webhook.url);
@@ -86,12 +81,6 @@ export function WebhookCard({ webhook, onWebhookUpdated }: WebhookCardProps) {
       );
 
       if (success) {
-        // Update last used timestamp and message count
-        updateWebhook({id: webhook.id, data: {
-          lastUsed: new Date().toISOString(),
-          messageCount: (webhook.messageCount || 0) + 1,
-        }});
-
         toast({
           title: 'Test successful!',
           description: 'Test message sent to Discord',
@@ -119,7 +108,7 @@ export function WebhookCard({ webhook, onWebhookUpdated }: WebhookCardProps) {
   };
 
   const toggleActive = async () => {
-    updateWebhook({id: webhook.id, data: { isActive: !webhook.isActive }});
+    updateWebhook({ id: webhook.id, data: { isActive: !webhook.is_active } });
   };
 
   return (
@@ -131,14 +120,14 @@ export function WebhookCard({ webhook, onWebhookUpdated }: WebhookCardProps) {
           </CardTitle>
           <div className="flex items-center gap-2">
             <Badge
-              variant={webhook.isActive ? 'default' : 'secondary'}
+              variant={webhook.is_active ? 'default' : 'secondary'}
               className={
-                webhook.isActive
+                webhook.is_active
                   ? 'bg-green-500/20 text-green-400 border-green-500/30'
                   : 'bg-slate-500/20 text-slate-400 border-slate-500/30'
               }
             >
-              {webhook.isActive ? (
+              {webhook.is_active ? (
                 <>
                   <CheckCircle className="w-3 h-3 mr-1" />
                   Active
@@ -182,12 +171,12 @@ export function WebhookCard({ webhook, onWebhookUpdated }: WebhookCardProps) {
                   onClick={toggleActive}
                   className="hover:bg-slate-700/50 focus:bg-slate-700/50"
                 >
-                  {webhook.isActive ? (
+                  {webhook.is_active ? (
                     <XCircle className="mr-2 h-4 w-4" />
                   ) : (
                     <CheckCircle className="mr-2 h-4 w-4" />
                   )}
-                  {webhook.isActive ? 'Deactivate' : 'Activate'}
+                  {webhook.is_active ? 'Deactivate' : 'Activate'}
                 </DropdownMenuItem>
                 <DropdownMenuItem
                   onClick={() => setShowDeleteDialog(true)}
@@ -208,17 +197,6 @@ export function WebhookCard({ webhook, onWebhookUpdated }: WebhookCardProps) {
                 {webhook.url}
               </div>
             </div>
-            <div className="flex items-center justify-between text-sm text-slate-400">
-              <span>Messages sent: {webhook.messageCount}</span>
-              <span>
-                Created: {new Date(webhook.createdAt).toLocaleDateString()}
-              </span>
-            </div>
-            {webhook.lastUsed && (
-              <div className="text-sm text-slate-400">
-                Last used: {new Date(webhook.lastUsed).toLocaleString()}
-              </div>
-            )}
           </div>
         </CardContent>
       </Card>

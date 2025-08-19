@@ -29,6 +29,7 @@ export interface UpdateUserRequest {
 
 // Webhook Types
 export interface Webhook {
+  id: string;
   user_id: string;
   name: string;
   description?: string;
