@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
@@ -10,7 +10,7 @@ import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Send, Webhook } from 'lucide-react';
 import { api, apiClient, type PredefinedAvatar } from '@/lib/api';
-import { useApi } from '@/hooks/useApi';
+import { useQuery } from '@tanstack/react-query';
 import { AvatarSelector } from '@/components/avatars/avatar-selector';
 import { DiscordMessagePreview } from '@/components/discord-message-preview';
 import type { DiscordEmbed } from '@/lib/api/types';
@@ -27,15 +27,12 @@ export default function SendMessagePage() {
     embeds: [] as DiscordEmbed[],
   });
   const [isSending, setIsSending] = useState(false);
+  const [sendResults, setSendResults] = useState<any[]>([]);
   const [avatarMode, setAvatarMode] = useState<'predefined' | 'custom'>(
     'predefined',
   );
 
-  const { data: webhooks = [], execute: loadWebhooks } = useApi(api.webhook.getAllWebhooks);
-
-  useEffect(() => {
-    loadWebhooks();
-  }, [loadWebhooks]);
+  const { data: webhooks = [], isLoading: isLoadingWebhooks } = useQuery({ queryKey: ['webhooks'], queryFn: api.webhook.getAllWebhooks });
 
   const handleWebhookToggle = (webhookId: string) => {
     setSelectedWebhooks((prev) =>
@@ -199,7 +196,11 @@ export default function SendMessagePage() {
                 </Button>
               </CardHeader>
               <CardContent className="space-y-3">
-                {webhooks.length === 0 ? (
+                {isLoadingWebhooks ? (
+                  <p className="text-slate-400 text-center py-4">
+                    Loading webhooks...
+                  </p>
+                ) : webhooks.length === 0 ? (
                   <p className="text-slate-400 text-center py-4">
                     No webhooks available. Add some webhooks first.
                   </p>
@@ -220,10 +221,10 @@ export default function SendMessagePage() {
                             {webhook.name}
                           </span>
                           <Badge
-                            variant={webhook.isActive ? 'default' : 'secondary'}
+                            variant={webhook.is_active ? 'default' : 'secondary'}
                             className="text-xs"
                           >
-                            {webhook.isActive ? 'Active' : 'Inactive'}
+                            {webhook.is_active ? 'Active' : 'Inactive'}
                           </Badge>
                         </div>
                         <p className="text-sm text-slate-400 truncate">
