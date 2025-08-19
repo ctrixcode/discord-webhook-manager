@@ -21,7 +21,7 @@ export const createWebhookHandler = async (
     }
     const webhook = await createWebhook(request.body, userId);
     reply.code(201).send({
-      id: webhook._id,
+      id: String(webhook._id),
       user_id: webhook.user_id,
       name: webhook.name,
       description: webhook.description,
