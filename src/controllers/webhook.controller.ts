@@ -20,7 +20,15 @@ export const createWebhookHandler = async (
       return reply.code(401).send({ message: 'Unauthorized' });
     }
     const webhook = await createWebhook(request.body, userId);
-    reply.code(201).send(webhook);
+    reply.code(201).send({
+      user_id: webhook.user_id,
+      name: webhook.name,
+      description: webhook.description,
+      url: webhook.url,
+      is_active: webhook.is_active,
+      createdAt: webhook.createdAt,
+      updatedAt: webhook.updatedAt,
+    });
   } catch (error) {
     logger.error('Error creating webhook:', error);
     reply.code(500).send({ message: 'Internal Server Error' });
@@ -103,7 +111,11 @@ export const deleteWebhookHandler = async (
     if (!success) {
       return reply.code(404).send({ message: 'Webhook not found' });
     }
-    reply.code(204).send();
+    reply.code(204).send({
+      success: true,
+      message: 'Webhook deleted successfully',
+      data: null,
+    });
   } catch (error) {
     logger.error('Error deleting webhook:', error);
     reply.code(500).send({ message: 'Internal Server Error' });
