@@ -8,7 +8,7 @@ import {
   CreateWebhookData,
   UpdateWebhookData,
 } from '../services/webhook.service';
-import { logger } from '../utils';
+import { logger, toWebhookDto } from '../utils';
 
 export const createWebhookHandler = async (
   request: FastifyRequest<{ Body: CreateWebhookData }>,
@@ -20,16 +20,7 @@ export const createWebhookHandler = async (
       return reply.code(401).send({ message: 'Unauthorized' });
     }
     const webhook = await createWebhook(request.body, userId);
-    reply.code(201).send({
-      id: String(webhook._id),
-      user_id: webhook.user_id,
-      name: webhook.name,
-      description: webhook.description,
-      url: webhook.url,
-      is_active: webhook.is_active,
-      createdAt: webhook.createdAt,
-      updatedAt: webhook.updatedAt,
-    });
+    reply.code(201).send(toWebhookDto(webhook));
   } catch (error) {
     logger.error('Error creating webhook:', error);
     reply.code(500).send({ message: 'Internal Server Error' });
@@ -48,7 +39,7 @@ export const getWebhooksHandler = async (
     const page = request.query.page ? parseInt(request.query.page, 10) : 1;
     const limit = request.query.limit ? parseInt(request.query.limit, 10) : 10;
     const { webhooks, total } = await getWebhooksByUserId(userId, page, limit);
-    reply.send({ webhooks, total, page, limit });
+    reply.send({ webhooks: webhooks.map(toWebhookDto), total, page, limit });
   } catch (error) {
     logger.error('Error getting webhooks:', error);
     reply.code(500).send({ message: 'Internal Server Error' });
@@ -68,7 +59,7 @@ export const getWebhookHandler = async (
     if (!webhook) {
       return reply.code(404).send({ message: 'Webhook not found' });
     }
-    reply.send(webhook);
+    reply.send(toWebhookDto(webhook));
   } catch (error) {
     logger.error('Error getting webhook:', error);
     reply.code(500).send({ message: 'Internal Server Error' });
@@ -92,7 +83,7 @@ export const updateWebhookHandler = async (
     if (!webhook) {
       return reply.code(404).send({ message: 'Webhook not found' });
     }
-    reply.send(webhook);
+    reply.send(toWebhookDto(webhook));
   } catch (error) {
     logger.error('Error updating webhook:', error);
     reply.code(500).send({ message: 'Internal Server Error' });

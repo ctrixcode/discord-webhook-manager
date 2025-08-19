@@ -1,5 +1,6 @@
 import mongoose from 'mongoose';
 import { IUser } from '../models/User';
+import { IWebhook } from '../models/Webhook';
 
 export interface UserPayload {
   id: string;
@@ -12,6 +13,18 @@ export interface UserPayload {
   updatedAt: string;
 }
 
+export interface WebhookDto {
+  id: string;
+  user_id: string;
+  name: string;
+  description?: string;
+  url: string;
+  is_active: boolean;
+  createdAt: Date;
+  updatedAt: Date;
+  last_used?: Date | null;
+}
+
 export const toUserPayload = (user: IUser): UserPayload => {
   return {
     id: (user._id as mongoose.Types.ObjectId).toString(),
@@ -22,5 +35,19 @@ export const toUserPayload = (user: IUser): UserPayload => {
     guilds: user.guilds,
     createdAt: user.createdAt.toISOString(),
     updatedAt: user.updatedAt.toISOString(),
+  };
+};
+
+export const toWebhookDto = (webhook: IWebhook): WebhookDto => {
+  return {
+    id: String(webhook._id),
+    user_id: webhook.user_id,
+    name: webhook.name,
+    description: webhook.description,
+    url: webhook.url,
+    is_active: webhook.is_active,
+    createdAt: webhook.createdAt,
+    updatedAt: webhook.updatedAt,
+    last_used: webhook.last_used,
   };
 };

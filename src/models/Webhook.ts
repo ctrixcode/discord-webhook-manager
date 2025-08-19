@@ -9,6 +9,7 @@ export interface IWebhook extends Document {
   createdAt: Date;
   updatedAt: Date;
   deleted_at?: Date | null;
+  last_used?: Date | null;
 }
 
 const UserSchema = new Schema<IWebhook>(
@@ -19,6 +20,7 @@ const UserSchema = new Schema<IWebhook>(
     description: { type: String, required: false },
     is_active: { type: Boolean, required: true, default: true },
     deleted_at: { type: Date, default: null },
+    last_used: { type: Date, default: null },
   },
   {
     timestamps: true,
