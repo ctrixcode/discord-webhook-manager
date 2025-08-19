@@ -15,14 +15,23 @@ export const userQueries = {
 
   // Get user by ID
   getUserById: async (id: string): Promise<User> => {
-    const response = await apiClient.get<User>(`/user/${id}`);
-    return response.data;
+   type rawResponse = {
+      success: boolean;
+      data: User;
+    }
+    const response = await apiClient.get<rawResponse>(`/user/${id}`);
+    return response.data.data;
   },
 
   // Update user
   updateUser: async (id: string, data: UpdateUserRequest): Promise<User> => {
-    const response = await apiClient.put<User>(`/user/${id}`, data);
-    return response.data;
+    type rawResponse = {
+      success: boolean;
+      data: User;
+      message: string;
+    }
+    const response = await apiClient.put<rawResponse>(`/user/${id}`, data);
+    return response.data.data;
   },
 
   // Delete user
