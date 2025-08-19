@@ -207,7 +207,7 @@ export function WebhookCard({ webhook, onWebhookUpdated }: WebhookCardProps) {
               </div>
             </div>
             <div className="flex items-center justify-between text-sm text-slate-400">
-              <span>Messages sent: {webhook.messageCount}</span>
+              <span>Messages sent: TODO</span>
               <span>
                 Created: {new Date(webhook.createdAt).toLocaleDateString()}
               </span>

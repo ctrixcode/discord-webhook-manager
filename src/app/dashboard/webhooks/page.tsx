@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useMemo } from 'react';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { AddWebhookDialog } from '@/components/add-webhook-dialog';
@@ -16,6 +16,8 @@ export default function WebhooksPage() {
   const { user } = useAuth();
 
   const [searchQuery, setSearchQuery] = useState('');
+
+  const queryClient = useQueryClient();
 
   const { data: webhooks = [], isLoading } = useQuery<Webhook[]>({
     queryKey: ['webhooks'],
@@ -125,7 +127,11 @@ export default function WebhooksPage() {
       ) : filteredWebhooks.length > 0 ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {filteredWebhooks.map((webhook) => (
-            <WebhookCard key={webhook.id} webhook={webhook} />
+            <WebhookCard
+              key={webhook.id}
+              webhook={webhook}
+              onWebhookUpdated={() => queryClient.invalidateQueries({ queryKey: ['webhooks'] })}
+            />
           ))}
         </div>
       ) : webhooks.length === 0 ? (
