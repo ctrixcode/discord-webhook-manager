@@ -35,6 +35,7 @@ export interface Webhook {
   description?: string;
   url: string;
   is_active: boolean;
+  last_used?: string;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -49,9 +50,9 @@ export interface UpdateWebhookRequest {
   name?: string;
   url?: string;
   description?: string;
-  lastUsed?: string;
+  last_used?: string;
   messageCount?: number;
-  isActive?: boolean;
+  is_active?: boolean;
 }
 
 // Discord Token Types

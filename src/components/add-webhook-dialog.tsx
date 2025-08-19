@@ -43,16 +43,20 @@ export function AddWebhookDialog() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
+    const trimmedName = name.trim();
+    const trimmedUrl = url.trim();
+    const trimmedDescription = description.trim() || undefined;
+
     // Validation
-    if (!name.trim() || !url.trim() || !validateWebhookUrl(url)) {
+    if (!trimmedName || !trimmedUrl || !validateWebhookUrl(trimmedUrl)) {
       // Basic validation, can be improved with a form library
       return;
     }
 
     createWebhookMutation({
-      name: name.trim(),
-      url: url.trim(),
-      description: description.trim() || undefined,
+      name: trimmedName,
+      url: trimmedUrl,
+      description: trimmedDescription,
     });
   };
 

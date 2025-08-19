@@ -20,8 +20,8 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
-import type { Webhook } from '@/lib/api/types';
-import { api } from '@/lib/api';
+import { type Webhook } from "@/lib/api/types";
+import { api, UpdateWebhookRequest } from '@/lib/api';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import {
   MoreHorizontal,
@@ -32,14 +32,15 @@ import {
   XCircle,
 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
-import type { UpdateWebhookRequest } from '@/lib/api/types';
+
 import { sendTestMessage } from '@/lib/discord-utils';
 
 interface WebhookCardProps {
   webhook: Webhook;
+  onWebhookUpdated: () => void;
 }
 
-export function WebhookCard({ webhook }: WebhookCardProps) {
+export function WebhookCard({ webhook, onWebhookUpdated }: WebhookCardProps) {
   const { toast } = useToast();
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [isTestingWebhook, setIsTestingWebhook] = useState(false);
@@ -50,6 +51,7 @@ export function WebhookCard({ webhook }: WebhookCardProps) {
       api.webhook.updateWebhook(id, data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['webhooks'] });
+      onWebhookUpdated();
     },
   });
 
@@ -57,6 +59,7 @@ export function WebhookCard({ webhook }: WebhookCardProps) {
     mutationFn: (id: string) => api.webhook.deleteWebhook(id),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['webhooks'] });
+      onWebhookUpdated();
       toast({
         title: 'Webhook deleted',
         description: 'The webhook has been removed from your account',
@@ -81,6 +84,12 @@ export function WebhookCard({ webhook }: WebhookCardProps) {
       );
 
       if (success) {
+        // Update last used timestamp and message count
+        updateWebhook({id: webhook.id, data: {
+          last_used: new Date().toISOString(),
+          // messageCount: (webhook.messageCount || 0) + 1,
+        }});
+
         toast({
           title: 'Test successful!',
           description: 'Test message sent to Discord',
@@ -108,7 +117,7 @@ export function WebhookCard({ webhook }: WebhookCardProps) {
   };
 
   const toggleActive = async () => {
-    updateWebhook({ id: webhook.id, data: { isActive: !webhook.is_active } });
+    updateWebhook({id: webhook.id, data: { is_active: !webhook.is_active }});
   };
 
   return (
@@ -197,6 +206,17 @@ export function WebhookCard({ webhook }: WebhookCardProps) {
                 {webhook.url}
               </div>
             </div>
+            <div className="flex items-center justify-between text-sm text-slate-400">
+              <span>Messages sent: {webhook.messageCount}</span>
+              <span>
+                Created: {new Date(webhook.createdAt).toLocaleDateString()}
+              </span>
+            </div>
+            {webhook.last_used && (
+              <div className="text-sm text-slate-400">
+                Last used: {new Date(webhook.last_used).toLocaleString()}
+              </div>
+            )}
           </div>
         </CardContent>
       </Card>
