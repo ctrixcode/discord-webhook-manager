@@ -44,3 +44,13 @@ export const templateQueries = {
     return response.data;
   },
 };
+
+export const {
+  getAllTemplates,
+  getTemplateById,
+  createTemplate,
+  updateTemplate,
+  deleteTemplate,
+  incrementTemplateUsage,
+  duplicateTemplate,
+} = templateQueries;
