@@ -15,7 +15,7 @@ export const avatarQueries = {
   },
 
   // Create avatar
-  createAvatar: async (data: Omit<PredefinedAvatar, 'id' | 'createdAt' | 'updatedAt' | 'userId'>): Promise<PredefinedAvatar> => {
+  createAvatar: async (data: Omit<PredefinedAvatar, 'id' | 'createdAt' | 'updatedAt' | 'user_id'>): Promise<PredefinedAvatar> => {
     const response = await apiClient.post<PredefinedAvatar>('/avatar', data);
     return response.data;
   },

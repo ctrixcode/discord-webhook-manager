@@ -25,12 +25,7 @@ import {
 
 interface TemplateFormProps {
   initialData?: MessageTemplate | null;
-  onSave: (
-    data: Omit<
-      MessageTemplate,
-      'id' | 'createdAt' | 'updatedAt' | 'usageCount' | 'userId'
-    >,
-  ) => void;
+  onSave: (data: Omit<MessageTemplate, 'id' | 'createdAt' | 'updatedAt' | 'usageCount' | 'user_id'>) => void;
   isSaving: boolean;
   saveError: Error | null;
 }
@@ -45,7 +40,8 @@ export function TemplateForm({
   const [description, setDescription] = useState('');
   const [content, setContent] = useState('');
   const [username, setUsername] = useState('');
-  const [avatarUrl, setAvatarUrl] = useState('');
+  const [avatar_url, setAvatar_url] = useState('');
+  const [avatar_icon_url, setAvatar_icon_url] = useState('');
   const [tts, setTts] = useState(false);
   const [threadName, setThreadName] = useState('');
   const [embeds, setEmbeds] = useState<DiscordEmbed[]>([]);
@@ -56,7 +52,8 @@ export function TemplateForm({
       setDescription(initialData.description || '');
       setContent(initialData.content);
       setUsername(initialData.username || '');
-      setAvatarUrl(initialData.avatarUrl || '');
+      setAvatar_url(initialData.avatar_url || '');
+      setAvatar_icon_url(initialData.avatar_icon_url || '');
       setTts(initialData.tts || false);
       setThreadName(initialData.threadName || '');
       setEmbeds(initialData.embeds || []);
@@ -65,7 +62,8 @@ export function TemplateForm({
       setDescription('');
       setContent('');
       setUsername('');
-      setAvatarUrl('');
+      setAvatar_url('');
+      setAvatar_icon_url('');
       setTts(false);
       setThreadName('');
       setEmbeds([]);
@@ -204,7 +202,8 @@ export function TemplateForm({
                     <AvatarSelector
                       onSelect={(avatar) => {
                         setUsername(avatar.username);
-                        setAvatarUrl(avatar.avatarUrl);
+                        setAvatar_url(avatar.avatar_url);
+                        setAvatar_icon_url(avatar.avatar_icon_url);
                       }}
                     >
                       <Button
@@ -231,13 +230,13 @@ export function TemplateForm({
                       />
                     </div>
                     <div className="space-y-2">
-                      <Label htmlFor="avatarUrl" className="text-slate-200">
+                      <Label htmlFor="avatar_url" className="text-slate-200">
                         Custom Avatar URL
                       </Label>
                       <Input
-                        id="avatarUrl"
-                        value={avatarUrl}
-                        onChange={(e) => setAvatarUrl(e.target.value)}
+                        id="avatar_url"
+                        value={avatar_url}
+                        onChange={(e) => setAvatar_url(e.target.value)}
                         placeholder="https://example.com/avatar.png"
                         className="bg-slate-800/50 border-slate-600 text-white placeholder:text-slate-400 focus:border-purple-500"
                       />
@@ -335,7 +334,8 @@ export function TemplateForm({
             <DiscordMessagePreview
               content={content}
               username={username}
-              avatarUrl={avatarUrl}
+              avatar_url={avatar_url}
+              avatar_icon_url={avatar_icon_url}
               embeds={embeds.length > 0 ? embeds : undefined}
             />
           </ScrollArea>

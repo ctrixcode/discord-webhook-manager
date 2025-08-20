@@ -15,7 +15,7 @@ export const scheduledMessageQueries = {
   },
 
   // Create scheduled message
-  createScheduledMessage: async (data: Omit<ScheduledMessage, 'id' | 'createdAt' | 'userId' | 'status'>): Promise<ScheduledMessage> => {
+  createScheduledMessage: async (data: Omit<ScheduledMessage, 'id' | 'createdAt' | 'user_id' | 'status'>): Promise<ScheduledMessage> => {
     const response = await apiClient.post<ScheduledMessage>('/scheduled-message', data);
     return response.data;
   },

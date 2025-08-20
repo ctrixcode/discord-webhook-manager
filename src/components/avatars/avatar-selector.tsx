@@ -91,7 +91,7 @@ export function AvatarSelector({ onSelect, children }: AvatarSelectorProps) {
                   >
                     <Avatar className="w-10 h-10 ring-2 ring-purple-500/20">
                       <AvatarImage
-                        src={avatar.avatarUrl || '/placeholder.svg'}
+                        src={avatar.avatar_icon_url || avatar.avatar_url || '/placeholder.svg'}
                         alt={avatar.username}
                       />
                       <AvatarFallback className="bg-purple-500/20 text-purple-300">

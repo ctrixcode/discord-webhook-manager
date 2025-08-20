@@ -57,7 +57,7 @@ export function AvatarCard({
   };
 
   const handleCopyUrl = () => {
-    navigator.clipboard.writeText(avatar.avatarUrl);
+    navigator.clipboard.writeText(avatar.avatar_url);
   };
 
   return (
@@ -68,7 +68,7 @@ export function AvatarCard({
             <div className="flex items-center gap-3">
               <Avatar className="w-12 h-12 ring-2 ring-purple-500/20">
                 <AvatarImage
-                  src={avatar.avatarUrl || '/placeholder.svg'}
+                  src={avatar.avatar_icon_url || avatar.avatar_url || '/placeholder.svg'}
                   alt={avatar.username}
                 />
                 <AvatarFallback className="bg-purple-500/20 text-purple-300">

@@ -8,7 +8,8 @@ interface DiscordMessagePreviewProps {
   content: string;
   embeds?: DiscordEmbed[];
   username?: string;
-  avatarUrl?: string;
+  avatar_url?: string;
+  avatar_icon_url?: string;
 }
 
 function parseDiscordMarkdown(text: string): ReactNode[] {
@@ -106,13 +107,14 @@ export function DiscordMessagePreview({
   content,
   embeds,
   username = 'Webhook Manager',
-  avatarUrl,
+  avatar_url,
+  avatar_icon_url,
 }: DiscordMessagePreviewProps) {
   return (
     <div className="bg-[#313338] text-white p-4 rounded-lg font-sans text-[15px] leading-[1.375]">
       <div className="flex items-start gap-4">
         <Avatar className="w-10 h-10 mt-0.5 flex-shrink-0">
-          <AvatarImage src={avatarUrl || '/placeholder.svg'} />
+          <AvatarImage src={avatar_icon_url || avatar_url || '/placeholder.svg'} />
           <AvatarFallback className="bg-[#5865f2] text-white text-sm font-medium">
             {username.charAt(0).toUpperCase()}
           </AvatarFallback>

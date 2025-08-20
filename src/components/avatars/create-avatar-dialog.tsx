@@ -31,22 +31,25 @@ export function CreateAvatarDialog({
   const queryClient = useQueryClient();
   const [name, setName] = useState('');
   const [username, setUsername] = useState('');
-  const [avatarUrl, setAvatarUrl] = useState('');
+  const [avatar_url, setAvatar_url] = useState('');
+  const [avatar_icon_url, setAvatar_icon_url] = useState('');
 
   useEffect(() => {
     if (editingAvatar) {
       setName(editingAvatar.name);
       setUsername(editingAvatar.username);
-      setAvatarUrl(editingAvatar.avatarUrl || '');
+      setAvatar_url(editingAvatar.avatar_url || '');
+      setAvatar_icon_url(editingAvatar.avatar_icon_url || '');
     } else {
       setName('');
       setUsername('');
-      setAvatarUrl('');
+      setAvatar_url('');
+      setAvatar_icon_url('');
     }
   }, [editingAvatar]);
 
   const { mutate: saveAvatar, isPending } = useMutation({
-    mutationFn: (avatarData: Omit<PredefinedAvatar, 'id' | 'createdAt' | 'updatedAt' | 'userId'>) => {
+    mutationFn: (avatarData: Omit<PredefinedAvatar, 'id' | 'createdAt' | 'updatedAt' | 'user_id'>) => {
       if (editingAvatar) {
         return updateAvatar(editingAvatar.id, avatarData);
       }
@@ -64,7 +67,8 @@ export function CreateAvatarDialog({
     saveAvatar({
       name: name.trim(),
       username: username.trim(),
-      avatarUrl: avatarUrl.trim(),
+      avatar_url: avatar_url.trim(),
+      avatar_icon_url: avatar_icon_url.trim(),
     });
   };
 
@@ -86,7 +90,7 @@ export function CreateAvatarDialog({
           <div className="flex items-center justify-center">
             <Avatar className="w-20 h-20 ring-2 ring-purple-500/20">
               <AvatarImage
-                src={avatarUrl || '/placeholder.svg'}
+                src={avatar_url || '/placeholder.svg'}
                 alt={username}
               />
               <AvatarFallback className="bg-purple-500/20 text-purple-300 text-lg">
@@ -124,14 +128,27 @@ export function CreateAvatarDialog({
             </div>
 
             <div>
-              <Label htmlFor="avatarUrl" className="text-slate-300">
+              <Label htmlFor="avatar_url" className="text-slate-300">
                 Avatar URL (Optional)
               </Label>
               <Input
-                id="avatarUrl"
-                value={avatarUrl}
-                onChange={(e) => setAvatarUrl(e.target.value)}
+                id="avatar_url"
+                value={avatar_url}
+                onChange={(e) => setAvatar_url(e.target.value)}
                 placeholder="https://example.com/avatar.png"
+                className="bg-slate-700/50 border-slate-600 text-white placeholder:text-slate-400 focus:border-purple-500"
+              />
+            </div>
+
+            <div>
+              <Label htmlFor="avatar_icon_url" className="text-slate-300">
+                Avatar Icon URL (Optional)
+              </Label>
+              <Input
+                id="avatar_icon_url"
+                value={avatar_icon_url}
+                onChange={(e) => setAvatar_icon_url(e.target.value)}
+                placeholder="https://example.com/icon.png"
                 className="bg-slate-700/50 border-slate-600 text-white placeholder:text-slate-400 focus:border-purple-500"
               />
             </div>

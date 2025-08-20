@@ -15,7 +15,7 @@ export const templateQueries = {
   },
 
   // Create template
-  createTemplate: async (data: Omit<MessageTemplate, 'id' | 'createdAt' | 'updatedAt' | 'usageCount' | 'userId'>): Promise<MessageTemplate> => {
+  createTemplate: async (data: Omit<MessageTemplate, 'id' | 'createdAt' | 'updatedAt' | 'usageCount' | 'user_id'>): Promise<MessageTemplate> => {
     const response = await apiClient.post<MessageTemplate>('/template', data);
     return response.data;
   },

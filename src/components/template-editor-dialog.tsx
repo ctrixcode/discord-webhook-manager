@@ -48,7 +48,7 @@ export function TemplateEditorDialog({
   const [description, setDescription] = useState('');
   const [content, setContent] = useState('');
   const [username, setUsername] = useState('');
-  const [avatarUrl, setAvatarUrl] = useState('');
+  const [avatar_url, setAvatar_url] = useState('');
   const [tts, setTts] = useState(false);
   const [threadName, setThreadName] = useState('');
   const [embeds, setEmbeds] = useState<DiscordEmbed[]>([]);
@@ -61,7 +61,7 @@ export function TemplateEditorDialog({
       setDescription(template.description || '');
       setContent(template.content);
       setUsername(template.username || '');
-      setAvatarUrl(template.avatarUrl || '');
+      setAvatar_url(template.avatar_url || '');
       setTts(template.tts || false);
       setThreadName(template.threadName || '');
       setEmbeds(template.embeds || []);
@@ -70,7 +70,7 @@ export function TemplateEditorDialog({
       setDescription('');
       setContent('');
       setUsername('');
-      setAvatarUrl('');
+      setAvatar_url('');
       setTts(false);
       setThreadName('');
       setEmbeds([]);
@@ -102,7 +102,7 @@ export function TemplateEditorDialog({
         description: description.trim() || undefined,
         content: content.trim(),
         username: username.trim() || undefined,
-        avatarUrl: avatarUrl.trim() || undefined,
+        avatar_url: avatar_url.trim() || undefined,
         tts: tts || undefined,
         threadName: threadName.trim() || undefined,
         embeds: embeds.length > 0 ? embeds : undefined,
@@ -280,13 +280,13 @@ export function TemplateEditorDialog({
                       />
                     </div>
                     <div className="space-y-2">
-                      <Label htmlFor="avatarUrl" className="text-slate-200">
+                      <Label htmlFor="avatar_url" className="text-slate-200">
                         Custom Avatar URL
                       </Label>
                       <Input
-                        id="avatarUrl"
-                        value={avatarUrl}
-                        onChange={(e) => setAvatarUrl(e.target.value)}
+                        id="avatar_url"
+                        value={avatar_url}
+                        onChange={(e) => setAvatar_url(e.target.value)}
                         placeholder="https://example.com/avatar.png"
                         className="bg-slate-800/50 border-slate-600/50 text-white placeholder:text-slate-400 focus:border-purple-500/50 focus:ring-purple-500/20"
                       />
@@ -369,7 +369,7 @@ export function TemplateEditorDialog({
                 <DiscordMessagePreview
                   content={content}
                   username={username}
-                  avatarUrl={avatarUrl}
+                  avatar_url={avatar_url}
                   embeds={embeds.length > 0 ? embeds : undefined}
                 />
               </div>

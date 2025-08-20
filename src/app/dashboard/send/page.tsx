@@ -21,7 +21,8 @@ export default function SendMessagePage() {
   const [message, setMessage] = useState({
     content: '',
     username: '',
-    avatarUrl: '',
+    avatar_url: '',
+    avatar_icon_url: '',
     tts: false,
     threadName: '', // Added threadName to message state
     embeds: [] as DiscordEmbed[],
@@ -54,7 +55,8 @@ export default function SendMessagePage() {
     setMessage((prev) => ({
       ...prev,
       username: avatar.username,
-      avatarUrl: avatar.avatarUrl,
+      avatar_url: avatar.avatar_url,
+      avatar_icon_url: avatar.avatar_icon_url,
     }));
   };
 
@@ -112,7 +114,8 @@ export default function SendMessagePage() {
         const payload = {
           content: message.content || undefined,
           username: message.username || undefined,
-          avatar_url: message.avatarUrl || undefined,
+          avatar_url: message.avatar_url || undefined,
+          avatar_icon_url: message.avatar_icon_url || undefined,
           tts: message.tts,
           thread_name: message.threadName || undefined, // Added thread_name to payload
           embeds: message.embeds.length > 0 ? message.embeds : undefined,
@@ -379,11 +382,11 @@ export default function SendMessagePage() {
                               id="custom-avatar"
                               type="url"
                               placeholder="Enter custom avatar URL"
-                              value={message.avatarUrl}
+                              value={message.avatar_url}
                               onChange={(e) =>
                                 setMessage((prev) => ({
                                   ...prev,
-                                  avatarUrl: e.target.value,
+                                  avatar_url: e.target.value,
                                 }))
                               }
                               className="mt-1 w-full px-3 py-2 bg-slate-600/50 border border-slate-500 rounded-md text-white placeholder:text-slate-400 focus:border-purple-500 focus:outline-none"
@@ -561,7 +564,7 @@ export default function SendMessagePage() {
               content={message.content}
               embeds={message.embeds}
               username={message.username}
-              avatarUrl={message.avatarUrl}
+              avatar_url={message.avatar_url}
             />
           </div>
         </div>

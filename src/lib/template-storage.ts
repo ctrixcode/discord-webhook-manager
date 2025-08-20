@@ -32,11 +32,12 @@ export interface MessageTemplate {
   description?: string;
   content: string;
   username?: string;
-  avatarUrl?: string;
+  avatar_url?: string;
+  avatar_icon_url?: string;
   tts?: boolean;
   threadName?: string;
   embeds?: DiscordEmbed[];
-  userId: string;
+  user_id: string;
 }
 
 const TEMPLATES_STORAGE_KEY = 'discord-webhook-templates';
@@ -60,7 +61,7 @@ export function addTemplate(template: Omit<MessageTemplate, 'id'>): MessageTempl
   const templates = getTemplates();
   const newTemplate: MessageTemplate = {
     ...template,
-    id: new Date().toISOString(),
+    user_id: template.user_id,
   };
   const updatedTemplates = [...templates, newTemplate];
   saveTemplates(updatedTemplates);
