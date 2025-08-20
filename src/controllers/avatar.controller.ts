@@ -25,12 +25,10 @@ export const createAvatar = async (
         .code(500)
         .send({ message: 'Error creating avatar', error: error.message });
     } else {
-      reply
-        .code(500)
-        .send({
-          message: 'Error creating avatar',
-          error: 'An unknown error occurred.',
-        });
+      reply.code(500).send({
+        message: 'Error creating avatar',
+        error: 'An unknown error occurred.',
+      });
     }
   }
 };
@@ -60,12 +58,10 @@ export const getAvatar = async (
         .code(500)
         .send({ message: 'Error fetching avatar', error: error.message });
     } else {
-      reply
-        .code(500)
-        .send({
-          message: 'Error fetching avatar',
-          error: 'An unknown error occurred.',
-        });
+      reply.code(500).send({
+        message: 'Error fetching avatar',
+        error: 'An unknown error occurred.',
+      });
     }
   }
 };
@@ -89,12 +85,10 @@ export const getAvatars = async (
         .code(500)
         .send({ message: 'Error fetching avatars', error: error.message });
     } else {
-      reply
-        .code(500)
-        .send({
-          message: 'Error fetching avatars',
-          error: 'An unknown error occurred.',
-        });
+      reply.code(500).send({
+        message: 'Error fetching avatars',
+        error: 'An unknown error occurred.',
+      });
     }
   }
 };
@@ -129,12 +123,10 @@ export const updateAvatar = async (
         .code(500)
         .send({ message: 'Error updating avatar', error: error.message });
     } else {
-      reply
-        .code(500)
-        .send({
-          message: 'Error updating avatar',
-          error: 'An unknown error occurred.',
-        });
+      reply.code(500).send({
+        message: 'Error updating avatar',
+        error: 'An unknown error occurred.',
+      });
     }
   }
 };
@@ -164,12 +156,10 @@ export const deleteAvatar = async (
         .code(500)
         .send({ message: 'Error deleting avatar', error: error.message });
     } else {
-      reply
-        .code(500)
-        .send({
-          message: 'Error deleting avatar',
-          error: 'An unknown error occurred.',
-        });
+      reply.code(500).send({
+        message: 'Error deleting avatar',
+        error: 'An unknown error occurred.',
+      });
     }
   }
 };
