@@ -131,7 +131,6 @@ export interface ScheduledMessage {
 // Avatar Types
 export interface PredefinedAvatar {
   id: string;
-  name: string;
   username: string;
   avatar_url: string;
   avatar_icon_url: string;

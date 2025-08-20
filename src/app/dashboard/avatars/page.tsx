@@ -29,7 +29,6 @@ export default function AvatarsPage() {
   const filteredAvatars = useMemo(() => {
     return avatars.filter(
       (avatar) =>
-        avatar.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
         avatar.username.toLowerCase().includes(searchQuery.toLowerCase())
     );
   }, [avatars, searchQuery]);

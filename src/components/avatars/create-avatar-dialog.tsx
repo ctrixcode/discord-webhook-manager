@@ -14,6 +14,7 @@ import { Label } from '@/components/ui/label';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { createAvatar, updateAvatar } from '@/lib/api/queries/avatar';
 import type { PredefinedAvatar } from '@/lib/api/types';
+import { toast } from 'sonner';
 
 interface CreateAvatarDialogProps {
   open: boolean;
@@ -29,19 +30,16 @@ export function CreateAvatarDialog({
   editingAvatar,
 }: CreateAvatarDialogProps) {
   const queryClient = useQueryClient();
-  const [name, setName] = useState('');
   const [username, setUsername] = useState('');
   const [avatar_url, setAvatar_url] = useState('');
   const [avatar_icon_url, setAvatar_icon_url] = useState('');
 
   useEffect(() => {
     if (editingAvatar) {
-      setName(editingAvatar.name);
       setUsername(editingAvatar.username);
       setAvatar_url(editingAvatar.avatar_url || '');
       setAvatar_icon_url(editingAvatar.avatar_icon_url || '');
     } else {
-      setName('');
       setUsername('');
       setAvatar_url('');
       setAvatar_icon_url('');
@@ -62,10 +60,9 @@ export function CreateAvatarDialog({
   });
 
   const handleSave = () => {
-    if (!name.trim() || !username.trim()) return;
+    if (!username.trim()) return;
 
     saveAvatar({
-      name: name.trim(),
       username: username.trim(),
       avatar_url: avatar_url.trim(),
       avatar_icon_url: avatar_icon_url.trim(),
@@ -102,19 +99,6 @@ export function CreateAvatarDialog({
           {/* Form */}
           <div className="space-y-4">
             <div>
-              <Label htmlFor="name" className="text-slate-300">
-                Display Name
-              </Label>
-              <Input
-                id="name"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                placeholder="e.g., Bot Assistant, Announcements"
-                className="bg-slate-700/50 border-slate-600 text-white placeholder:text-slate-400 focus:border-purple-500"
-              />
-            </div>
-
-            <div>
               <Label htmlFor="username" className="text-slate-300">
                 Username
               </Label>
@@ -129,7 +113,7 @@ export function CreateAvatarDialog({
 
             <div>
               <Label htmlFor="avatar_url" className="text-slate-300">
-                Avatar URL (Optional)
+                Avatar Icon
               </Label>
               <Input
                 id="avatar_url"
@@ -140,18 +124,6 @@ export function CreateAvatarDialog({
               />
             </div>
 
-            <div>
-              <Label htmlFor="avatar_icon_url" className="text-slate-300">
-                Avatar Icon URL (Optional)
-              </Label>
-              <Input
-                id="avatar_icon_url"
-                value={avatar_icon_url}
-                onChange={(e) => setAvatar_icon_url(e.target.value)}
-                placeholder="https://example.com/icon.png"
-                className="bg-slate-700/50 border-slate-600 text-white placeholder:text-slate-400 focus:border-purple-500"
-              />
-            </div>
           </div>
 
           {/* Actions */}
@@ -165,7 +137,7 @@ export function CreateAvatarDialog({
             </Button>
             <Button
               onClick={handleSave}
-              disabled={isPending || !name.trim() || !username.trim()}
+              disabled={isPending || !username.trim()}
               className="flex-1 bg-purple-600 hover:bg-purple-700 text-white"
             >
               {isPending ? (editingAvatar ? 'Updating...' : 'Creating...') : (editingAvatar ? 'Update Avatar' : 'Create Avatar')}
