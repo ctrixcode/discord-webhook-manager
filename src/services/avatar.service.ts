@@ -1,75 +1,73 @@
 import AvatarModel, { IAvatar } from '../models/avatar';
 import { Types } from 'mongoose';
 
-export class AvatarService {
-  /**
-   * Creates a new avatar for a specific user.
-   * @param userId The ID of the user creating the avatar.
-   * @param avatarData The data for the new avatar.
-   * @returns The created avatar document.
-   */
-  public async createAvatar(
-    userId: string,
-    avatarData: Partial<IAvatar>
-  ): Promise<IAvatar> {
-    const newAvatar = new AvatarModel({
-      ...avatarData,
-      user_id: new Types.ObjectId(userId),
-    });
-    return newAvatar.save();
-  }
+/**
+ * Creates a new avatar for a specific user.
+ * @param userId The ID of the user creating the avatar.
+ * @param avatarData The data for the new avatar.
+ * @returns The created avatar document.
+ */
+export const createAvatar = async (
+  userId: string,
+  avatarData: Partial<IAvatar>
+): Promise<IAvatar> => {
+  const newAvatar = new AvatarModel({
+    ...avatarData,
+    user_id: new Types.ObjectId(userId),
+  });
+  return newAvatar.save();
+};
 
-  /**
-   * Retrieves a single avatar by its ID, ensuring it belongs to the specified user.
-   * @param userId The ID of the user.
-   * @param avatarId The ID of the avatar to retrieve.
-   * @returns The avatar document, or null if not found or not owned by the user.
-   */
-  public async getAvatar(
-    userId: string,
-    avatarId: string
-  ): Promise<IAvatar | null> {
-    return AvatarModel.findOne({ _id: avatarId, user_id: userId });
-  }
+/**
+ * Retrieves a single avatar by its ID, ensuring it belongs to the specified user.
+ * @param userId The ID of the user.
+ * @param avatarId The ID of the avatar to retrieve.
+ * @returns The avatar document, or null if not found or not owned by the user.
+ */
+export const getAvatar = async (
+  userId: string,
+  avatarId: string
+): Promise<IAvatar | null> => {
+  return AvatarModel.findOne({ _id: avatarId, user_id: userId });
+};
 
-  /**
-   * Retrieves all avatars belonging to a specific user.
-   * @param userId The ID of the user.
-   * @returns An array of avatar documents.
-   */
-  public async getAvatars(userId: string): Promise<IAvatar[]> {
-    return AvatarModel.find({ user_id: userId });
-  }
+/**
+ * Retrieves all avatars belonging to a specific user.
+ * @param userId The ID of the user.
+ * @returns An array of avatar documents.
+ */
+export const getAvatars = async (userId: string): Promise<IAvatar[]> => {
+  return AvatarModel.find({ user_id: userId });
+};
 
-  /**
-   * Updates an existing avatar by its ID, ensuring it belongs to the specified user.
-   * @param userId The ID of the user.
-   * @param avatarId The ID of the avatar to update.
-   * @param updateData The data to update the avatar with.
-   * @returns The updated avatar document, or null if not found or not owned by the user.
-   */
-  public async updateAvatar(
-    userId: string,
-    avatarId: string,
-    updateData: Partial<IAvatar>
-  ): Promise<IAvatar | null> {
-    return AvatarModel.findOneAndUpdate(
-      { _id: avatarId, user_id: userId },
-      { $set: updateData },
-      { new: true }
-    );
-  }
+/**
+ * Updates an existing avatar by its ID, ensuring it belongs to the specified user.
+ * @param userId The ID of the user.
+ * @param avatarId The ID of the avatar to update.
+ * @param updateData The data to update the avatar with.
+ * @returns The updated avatar document, or null if not found or not owned by the user.
+ */
+export const updateAvatar = async (
+  userId: string,
+  avatarId: string,
+  updateData: Partial<IAvatar>
+): Promise<IAvatar | null> => {
+  return AvatarModel.findOneAndUpdate(
+    { _id: avatarId, user_id: userId },
+    { $set: updateData },
+    { new: true }
+  );
+};
 
-  /**
-   * Deletes an avatar by its ID, ensuring it belongs to the specified user.
-   * @param userId The ID of the user.
-   * @param avatarId The ID of the avatar to delete.
-   * @returns The deleted avatar document, or null if not found or not owned by the user.
-   */
-  public async deleteAvatar(
-    userId: string,
-    avatarId: string
-  ): Promise<IAvatar | null> {
-    return AvatarModel.findOneAndDelete({ _id: avatarId, user_id: userId });
-  }
-}
+/**
+ * Deletes an avatar by its ID, ensuring it belongs to the specified user.
+ * @param userId The ID of the user.
+ * @param avatarId The ID of the avatar to delete.
+ * @returns The deleted avatar document, or null if not found or not owned by the user.
+ */
+export const deleteAvatar = async (
+  userId: string,
+  avatarId: string
+): Promise<IAvatar | null> => {
+  return AvatarModel.findOneAndDelete({ _id: avatarId, user_id: userId });
+};

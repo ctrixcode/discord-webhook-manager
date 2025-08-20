@@ -1,9 +1,13 @@
 import { FastifyRequest, FastifyReply } from 'fastify';
-import { AvatarService } from '../services/avatar.service';
+import {
+  createAvatar as createAvatarService,
+  getAvatar as getAvatarService,
+  getAvatars as getAvatarsService,
+  updateAvatar as updateAvatarService,
+  deleteAvatar as deleteAvatarService,
+} from '../services/avatar.service';
 import { IAvatarParams } from '../schemas/avatar.schema';
 import { IAvatar } from '../models/avatar';
-
-const avatarService = new AvatarService();
 
 export const createAvatar = async (
   request: FastifyRequest,
@@ -17,7 +21,7 @@ export const createAvatar = async (
     }
     const userId = request.user.userId;
     const avatarData = request.body as Partial<IAvatar>;
-    const avatar = await avatarService.createAvatar(userId, avatarData);
+    const avatar = await createAvatarService(userId, avatarData);
     reply.code(201).send(avatar);
   } catch (error: unknown) {
     if (error instanceof Error) {
@@ -45,7 +49,7 @@ export const getAvatar = async (
     }
     const userId = request.user.userId;
     const { id } = request.params as IAvatarParams;
-    const avatar = await avatarService.getAvatar(userId, id);
+    const avatar = await getAvatarService(userId, id);
     if (!avatar) {
       return reply
         .code(404)
@@ -77,7 +81,7 @@ export const getAvatars = async (
         .send({ message: 'Unauthorized: User not authenticated.' });
     }
     const userId = request.user.userId;
-    const avatars = await avatarService.getAvatars(userId);
+    const avatars = await getAvatarsService(userId);
     reply.code(200).send(avatars);
   } catch (error: unknown) {
     if (error instanceof Error) {
@@ -106,11 +110,7 @@ export const updateAvatar = async (
     const userId = request.user.userId;
     const { id } = request.params as IAvatarParams;
     const updateData = request.body as Partial<IAvatar>;
-    const updatedAvatar = await avatarService.updateAvatar(
-      userId,
-      id,
-      updateData
-    );
+    const updatedAvatar = await updateAvatarService(userId, id, updateData);
     if (!updatedAvatar) {
       return reply
         .code(404)
@@ -143,7 +143,7 @@ export const deleteAvatar = async (
     }
     const userId = request.user.userId;
     const { id } = request.params as IAvatarParams;
-    const deletedAvatar = await avatarService.deleteAvatar(userId, id);
+    const deletedAvatar = await deleteAvatarService(userId, id);
     if (!deletedAvatar) {
       return reply
         .code(404)
