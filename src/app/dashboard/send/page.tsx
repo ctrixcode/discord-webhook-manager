@@ -14,9 +14,10 @@ import { useQuery } from '@tanstack/react-query';
 import { AvatarSelector } from '@/components/avatars/avatar-selector';
 import { DiscordMessagePreview } from '@/components/discord-message-preview';
 import type { DiscordEmbed } from '@/lib/api/types';
-import { toast } from 'sonner';
+import { useToast } from "@/hooks/use-toast";
 
 export default function SendMessagePage() {
+  const { toast } = useToast();
   const [selectedWebhooks, setSelectedWebhooks] = useState<string[]>([]);
   const [message, setMessage] = useState({
     content: '',
@@ -93,12 +94,12 @@ export default function SendMessagePage() {
 
   const handleSendMessage = async () => {
     if (selectedWebhooks.length === 0) {
-      toast.error('Please select at least one webhook');
+      toast({ variant: "destructive", title: "Error", description: "Please select at least one webhook" });
       return;
     }
 
     if (!message.content.trim() && message.embeds.length === 0) {
-      toast.error('Please enter a message or add an embed');
+      toast({ variant: "destructive", title: "Error", description: "Please enter a message or add an embed" });
       return;
     }
 
@@ -140,17 +141,11 @@ export default function SendMessagePage() {
     const failCount = results.filter((r) => !r.success).length;
 
     if (failCount === 0) {
-      toast.success(
-        `Message sent successfully to ${successCount} webhook${successCount > 1 ? 's' : ''}`,
-      );
+      toast({ title: "Success", description: `Message sent successfully to ${successCount} webhook${successCount > 1 ? 's' : ''}` });
     } else if (successCount === 0) {
-      toast.error(
-        `Failed to send message to all ${failCount} webhook${failCount > 1 ? 's' : ''}`,
-      );
+      toast({ variant: "destructive", title: "Error", description: `Failed to send message to all ${failCount} webhook${failCount > 1 ? 's' : ''}` });
     } else {
-      toast.warning(
-        `Message sent to ${successCount} webhook${successCount > 1 ? 's' : ''}, failed on ${failCount}`,
-      );
+      toast({ title: "Warning", description: `Message sent to ${successCount} webhook${successCount > 1 ? 's' : ''}, failed on ${failCount}` });
     }
   };
 

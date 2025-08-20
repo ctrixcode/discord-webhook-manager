@@ -6,6 +6,7 @@ import './globals.css';
 import { AuthProvider } from '@/contexts/auth-context';
 import { ThemeProvider } from '@/components/theme-provider';
 import Providers from '@/lib/providers';
+import { Toaster } from '@/components/ui/toaster';
 
 export const metadata: Metadata = {
   title: 'Discord Webhook Manager',
@@ -38,6 +39,7 @@ html {
           <Providers>
             <AuthProvider>{children}</AuthProvider>
           </Providers>
+          <Toaster />
         </ThemeProvider>
       </body>
     </html>

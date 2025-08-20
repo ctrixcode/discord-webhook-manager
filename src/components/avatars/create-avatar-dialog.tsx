@@ -14,7 +14,7 @@ import { Label } from '@/components/ui/label';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { createAvatar, updateAvatar } from '@/lib/api/queries/avatar';
 import type { PredefinedAvatar } from '@/lib/api/types';
-import { toast } from 'sonner';
+
 
 interface CreateAvatarDialogProps {
   open: boolean;
