@@ -1,42 +1,24 @@
 'use client';
 
 import type React from 'react';
-import { useState, useEffect } from 'react';
+
 import { useRouter, useSearchParams } from 'next/navigation';
+import { useRef } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Button } from '@/components/ui/button';
-import { Switch } from '@/components/ui/switch';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { ScrollArea } from '@/components/ui/scroll-area';
-import { EmbedBuilder } from '@/components/embed-builder';
-import { DiscordMessagePreview } from '@/components/discord-message-preview';
-import { AvatarSelector } from '@/components/avatars/avatar-selector';
 
 import { templateQueries } from '@/lib/api/queries/template';
-import type { MessageTemplate, DiscordEmbed } from '@/lib/api/types';
+import type { MessageTemplate } from '@/lib/api/types';
 import { TemplateForm } from '@/components/template-form';
-import {
-  ArrowLeft,
-  Save,
-  FileText,
-  Settings,
-  Plus,
-  AlertCircle,
-  MessageSquare,
-  Layers,
-  Users,
-} from 'lucide-react';
-import { Alert, AlertDescription } from '@/components/ui/alert';
+import { ArrowLeft, Save } from 'lucide-react';
 
 export default function CreateTemplatePage() {
   const router = useRouter();
   const queryClient = useQueryClient();
   const searchParams = useSearchParams();
   const templateId = searchParams.get('edit');
-  
+
+  const templateFormRef = useRef<any>(null);
 
   const { data: existingTemplate } = useQuery({
     queryKey: ['template', templateId],
@@ -44,8 +26,17 @@ export default function CreateTemplatePage() {
     enabled: !!templateId,
   });
 
-  const { mutate: saveTemplate, isPending, error } = useMutation({
-    mutationFn: (templateData: Omit<MessageTemplate, 'id' | 'createdAt' | 'updatedAt' | 'usageCount' | 'userId'>) => {
+  const {
+    mutate: saveTemplate,
+    isPending,
+    error,
+  } = useMutation({
+    mutationFn: (
+      templateData: Omit<
+        MessageTemplate,
+        'id' | 'createdAt' | 'updatedAt' | 'usageCount' | 'userId'
+      >,
+    ) => {
       if (templateId) {
         return templateQueries.updateTemplate(templateId, templateData);
       }
@@ -56,6 +47,12 @@ export default function CreateTemplatePage() {
       router.push('/dashboard/templates');
     },
   });
+
+  const handleSubmit = () => {
+    if (templateFormRef.current) {
+      templateFormRef.current.submit();
+    }
+  };
 
   return (
     <div className="h-screen flex flex-col bg-gradient-to-br from-slate-900 via-slate-800 to-purple-900">
@@ -93,6 +90,7 @@ export default function CreateTemplatePage() {
       </div>
 
       <TemplateForm
+        ref={templateFormRef}
         initialData={existingTemplate}
         onSave={saveTemplate}
         isSaving={isPending}

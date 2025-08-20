@@ -15,13 +15,13 @@ export const templateQueries = {
   },
 
   // Create template
-  createTemplate: async (data: Omit<MessageTemplate, 'id' | 'createdAt' | 'updatedAt' | 'usageCount' | 'user_id'>): Promise<MessageTemplate> => {
+  createTemplate: async (data: Omit<MessageTemplate, 'id' | 'createdAt' | 'updatedAt' | 'usageCount' | 'userId'>): Promise<MessageTemplate> => {
     const response = await apiClient.post<MessageTemplate>('/template', data);
     return response.data;
   },
 
   // Update template
-  updateTemplate: async (id: string, data: Partial<MessageTemplate>): Promise<MessageTemplate> => {
+  updateTemplate: async (id: string, data: Partial<Omit<MessageTemplate, 'id' | 'createdAt' | 'updatedAt' | 'usageCount' | 'userId'>>): Promise<MessageTemplate> => {
     const response = await apiClient.put<MessageTemplate>(`/template/${id}`, data);
     return response.data;
   },

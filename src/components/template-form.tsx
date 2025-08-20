@@ -1,7 +1,6 @@
 'use client';
 
-import type React from 'react';
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Switch } from '@/components/ui/switch';
 import { Input } from '@/components/ui/input';
@@ -25,17 +24,20 @@ import {
 
 interface TemplateFormProps {
   initialData?: MessageTemplate | null;
-  onSave: (data: Omit<MessageTemplate, 'id' | 'createdAt' | 'updatedAt' | 'usageCount' | 'user_id'>) => void;
+  onSave: (
+    data: Omit<
+      MessageTemplate,
+      'id' | 'createdAt' | 'updatedAt' | 'usageCount' | 'user_id'
+    >,
+  ) => void;
   isSaving: boolean;
   saveError: Error | null;
 }
 
-export function TemplateForm({
-  initialData,
-  onSave,
-  isSaving,
-  saveError,
-}: TemplateFormProps) {
+export function TemplateForm(
+  { initialData, onSave, isSaving, saveError }: TemplateFormProps,
+  ref: React.Ref<any>,
+) {
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
   const [content, setContent] = useState('');
@@ -45,6 +47,22 @@ export function TemplateForm({
   const [tts, setTts] = useState(false);
   const [threadName, setThreadName] = useState('');
   const [embeds, setEmbeds] = useState<DiscordEmbed[]>([]);
+
+  React.useImperativeHandle(ref, () => ({
+    submit: () => {
+      onSave({
+        name,
+        description,
+        content,
+        username,
+        avatar_url,
+        avatar_icon_url,
+        tts,
+        threadName,
+        embeds,
+      });
+    },
+  }));
 
   useEffect(() => {
     if (initialData) {
