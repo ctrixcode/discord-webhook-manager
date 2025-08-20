@@ -133,7 +133,6 @@ export interface PredefinedAvatar {
   id: string;
   username: string;
   avatar_url: string;
-  avatar_icon_url: string;
   user_id: string;
   createdAt: string;
   updatedAt: string;

@@ -32,17 +32,14 @@ export function CreateAvatarDialog({
   const queryClient = useQueryClient();
   const [username, setUsername] = useState('');
   const [avatar_url, setAvatar_url] = useState('');
-  const [avatar_icon_url, setAvatar_icon_url] = useState('');
 
   useEffect(() => {
     if (editingAvatar) {
       setUsername(editingAvatar.username);
       setAvatar_url(editingAvatar.avatar_url || '');
-      setAvatar_icon_url(editingAvatar.avatar_icon_url || '');
     } else {
       setUsername('');
       setAvatar_url('');
-      setAvatar_icon_url('');
     }
   }, [editingAvatar]);
 
@@ -65,7 +62,6 @@ export function CreateAvatarDialog({
     saveAvatar({
       username: username.trim(),
       avatar_url: avatar_url.trim(),
-      avatar_icon_url: avatar_icon_url.trim(),
     });
   };
 
