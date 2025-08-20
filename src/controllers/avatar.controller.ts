@@ -8,6 +8,7 @@ import {
 } from '../services/avatar.service';
 import { IAvatarParams } from '../schemas/avatar.schema';
 import { IAvatar } from '../models/avatar';
+import { toAvatarDto } from '../utils/mappers';
 
 export const createAvatar = async (
   request: FastifyRequest,
@@ -22,7 +23,7 @@ export const createAvatar = async (
     const userId = request.user.userId;
     const avatarData = request.body as Partial<IAvatar>;
     const avatar = await createAvatarService(userId, avatarData);
-    reply.code(201).send(avatar);
+    reply.code(201).send(toAvatarDto(avatar));
   } catch (error: unknown) {
     if (error instanceof Error) {
       reply
@@ -55,7 +56,7 @@ export const getAvatar = async (
         .code(404)
         .send({ message: 'Avatar not found or not owned by user' });
     }
-    reply.code(200).send(avatar);
+    reply.code(200).send(toAvatarDto(avatar));
   } catch (error: unknown) {
     if (error instanceof Error) {
       reply
@@ -82,7 +83,7 @@ export const getAvatars = async (
     }
     const userId = request.user.userId;
     const avatars = await getAvatarsService(userId);
-    reply.code(200).send(avatars);
+    reply.code(200).send(avatars.map(toAvatarDto));
   } catch (error: unknown) {
     if (error instanceof Error) {
       reply
@@ -116,7 +117,7 @@ export const updateAvatar = async (
         .code(404)
         .send({ message: 'Avatar not found or not owned by user' });
     }
-    reply.code(200).send(updatedAvatar);
+    reply.code(200).send(toAvatarDto(updatedAvatar));
   } catch (error: unknown) {
     if (error instanceof Error) {
       reply
