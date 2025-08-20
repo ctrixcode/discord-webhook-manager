@@ -20,7 +20,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
-import { type Webhook } from "@/lib/api/types";
+import { type Webhook } from '@/lib/api/types';
 import { api, UpdateWebhookRequest } from '@/lib/api';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import {
@@ -33,7 +33,7 @@ import {
 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
-import { sendTestMessage } from '@/lib/discord-utils';
+import { testWebhook } from '@/lib/api/queries/webhook';
 
 interface WebhookCardProps {
   webhook: Webhook;
@@ -78,17 +78,17 @@ export function WebhookCard({ webhook, onWebhookUpdated }: WebhookCardProps) {
   const handleTestWebhook = async () => {
     setIsTestingWebhook(true);
     try {
-      const success = await sendTestMessage(
-        webhook.url,
-        '🎉 Test message from Webhook Manager!',
-      );
+      const success = await testWebhook(webhook.id);
 
       if (success) {
         // Update last used timestamp and message count
-        updateWebhook({id: webhook.id, data: {
-          last_used: new Date().toISOString(),
-          // messageCount: (webhook.messageCount || 0) + 1,
-        }});
+        updateWebhook({
+          id: webhook.id,
+          data: {
+            last_used: new Date().toISOString(),
+            // messageCount: (webhook.messageCount || 0) + 1,
+          },
+        });
 
         toast({
           title: 'Test successful!',
@@ -117,7 +117,7 @@ export function WebhookCard({ webhook, onWebhookUpdated }: WebhookCardProps) {
   };
 
   const toggleActive = async () => {
-    updateWebhook({id: webhook.id, data: { is_active: !webhook.is_active }});
+    updateWebhook({ id: webhook.id, data: { is_active: !webhook.is_active } });
   };
 
   return (

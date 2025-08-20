@@ -37,6 +37,12 @@ export const webhookQueries = {
     const response = await apiClient.delete<ApiResponse>(`/webhook/${id}`);
     return response.data;
   },
+
+  //test webhook
+  testWebhook: async (id: string): Promise<ApiResponse> => {
+    const response = await apiClient.post<ApiResponse>(`/webhook/${id}/test`);
+    return response.data;
+  },
 };
 
 export const {
@@ -45,4 +51,5 @@ export const {
   createWebhook,
   updateWebhook,
   deleteWebhook,
+  testWebhook,
 } = webhookQueries;

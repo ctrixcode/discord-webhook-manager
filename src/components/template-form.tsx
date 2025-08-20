@@ -34,7 +34,7 @@ interface TemplateFormProps {
   saveError: Error | null;
 }
 
-export function TemplateForm(
+export const TemplateForm = React.forwardRef(function TemplateForm(
   { initialData, onSave, isSaving, saveError }: TemplateFormProps,
   ref: React.Ref<any>,
 ) {
@@ -56,7 +56,6 @@ export function TemplateForm(
         content,
         username,
         avatar_url,
-        avatar_icon_url,
         tts,
         threadName,
         embeds,
@@ -361,4 +360,4 @@ export function TemplateForm(
       </div>
     </div>
   );
-}
+});
