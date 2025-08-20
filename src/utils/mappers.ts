@@ -31,7 +31,6 @@ export interface AvatarDto {
   user_id: string;
   username: string;
   avatar_url?: string;
-  avatar_icon_url: string;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -69,7 +68,6 @@ export const toAvatarDto = (avatar: IAvatar): AvatarDto => {
     user_id: String(avatar.user_id),
     username: avatar.username,
     avatar_url: avatar.avatar_url,
-    avatar_icon_url: avatar.avatar_icon_url,
     createdAt: avatar.createdAt,
     updatedAt: avatar.updatedAt,
   };

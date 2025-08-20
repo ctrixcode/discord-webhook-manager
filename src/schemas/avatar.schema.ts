@@ -1,11 +1,10 @@
 export const createAvatarSchema = {
   body: {
     type: 'object',
-    required: ['username', 'avatar_icon_url'],
+    required: ['username', 'avatar_url'],
     properties: {
       username: { type: 'string' },
       avatar_url: { type: 'string', format: 'uri' },
-      avatar_icon_url: { type: 'string', format: 'uri' },
     },
   },
 };
@@ -16,7 +15,6 @@ export const updateAvatarSchema = {
     properties: {
       username: { type: 'string' },
       avatar_url: { type: 'string', format: 'uri' },
-      avatar_icon_url: { type: 'string', format: 'uri' },
     },
   },
 };
