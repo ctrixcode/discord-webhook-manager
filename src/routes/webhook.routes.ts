@@ -5,6 +5,7 @@ import {
   getWebhookHandler,
   updateWebhookHandler,
   deleteWebhookHandler,
+  testWebhookHandler,
 } from '../controllers/webhook.controller';
 import { authenticate } from '../middlewares';
 import {
@@ -43,6 +44,11 @@ const webhookRoutes = async (server: FastifyInstance) => {
     '/:id',
     { schema: webhookParamsSchema, preHandler: [authenticate] },
     deleteWebhookHandler
+  );
+  server.post<{ Params: { id: string } }>(
+    '/:id/test',
+    { schema: webhookParamsSchema, preHandler: [authenticate] },
+    testWebhookHandler
   );
 };
 

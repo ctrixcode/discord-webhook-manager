@@ -7,6 +7,7 @@ import {
   deleteWebhook,
   CreateWebhookData,
   UpdateWebhookData,
+  testWebhook,
 } from '../services/webhook.service';
 import { logger, toWebhookDto } from '../utils';
 
@@ -110,6 +111,27 @@ export const deleteWebhookHandler = async (
     });
   } catch (error) {
     logger.error('Error deleting webhook:', error);
+    reply.code(500).send({ message: 'Internal Server Error' });
+  }
+};
+
+export const testWebhookHandler = async (
+  request: FastifyRequest<{ Params: { id: string } }>,
+  reply: FastifyReply
+) => {
+  try {
+    const userId = request.user?.userId;
+    if (!userId) {
+      return reply.code(401).send({ message: 'Unauthorized' });
+    }
+    const webhook = await getWebhookById(request.params.id, userId);
+    if (!webhook) {
+      return reply.code(404).send({ message: 'Webhook not found' });
+    }
+    await testWebhook(webhook);
+    reply.send({ success: true, message: 'Webhook tested successfully' });
+  } catch (error) {
+    logger.error('Error testing webhook:', error);
     reply.code(500).send({ message: 'Internal Server Error' });
   }
 };
