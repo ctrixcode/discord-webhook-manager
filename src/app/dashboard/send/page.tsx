@@ -141,11 +141,11 @@ export default function SendMessagePage() {
     const failCount = results.filter((r) => !r.success).length;
 
     if (failCount === 0) {
-      toast({ title: "Success", description: `Message sent successfully to ${successCount} webhook${successCount > 1 ? 's' : ''}` });
+      toast({ variant: "success", title: "Success", description: `Message sent successfully to ${successCount} webhook${successCount > 1 ? 's' : ''}` });
     } else if (successCount === 0) {
       toast({ variant: "destructive", title: "Error", description: `Failed to send message to all ${failCount} webhook${failCount > 1 ? 's' : ''}` });
     } else {
-      toast({ title: "Warning", description: `Message sent to ${successCount} webhook${successCount > 1 ? 's' : ''}, failed on ${failCount}` });
+      toast({ variant: "default", title: "Warning", description: `Message sent to ${successCount} webhook${successCount > 1 ? 's' : ''}, failed on ${failCount}` });
     }
   };
 
