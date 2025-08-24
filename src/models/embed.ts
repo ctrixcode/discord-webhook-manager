@@ -1,6 +1,6 @@
 import { Schema, Document } from 'mongoose';
 
-interface IEmbedSchemaDocument extends Document {
+export interface IEmbedSchemaDocument extends Document {
   title?: string;
   description?: string;
   url?: string;

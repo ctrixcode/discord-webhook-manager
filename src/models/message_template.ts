@@ -1,33 +1,5 @@
 import { Schema, model, Document } from 'mongoose';
-import { EmbedSchema } from '../models/embed';
-
-interface IEmbedInMessageTemplate {
-  title?: string;
-  description?: string;
-  url?: string;
-  color?: string;
-  timestamp?: Date;
-  image?: {
-    url: string;
-  };
-  thumbnail?: {
-    url: string;
-  };
-  author?: {
-    name: string;
-    url?: string;
-    icon_url?: string;
-  };
-  fields?: {
-    name: string;
-    value: string;
-    inline?: boolean;
-  }[];
-  footer?: {
-    text: string;
-    icon_url?: string;
-  };
-}
+import { EmbedSchema, IEmbedSchemaDocument } from '../models/embed';
 
 export interface IMessageTemplate extends Document {
   user_id: Schema.Types.ObjectId;
@@ -35,7 +7,7 @@ export interface IMessageTemplate extends Document {
   description?: string;
   content: string;
   avatar_ref: Schema.Types.ObjectId;
-  embeds: IEmbedInMessageTemplate[];
+  embeds: IEmbedSchemaDocument[];
   attachments: string[];
   createdAt: Date;
   updatedAt: Date;
