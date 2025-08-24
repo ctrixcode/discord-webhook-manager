@@ -6,7 +6,7 @@ export * from './types';
 import { authQueries } from './queries/auth';
 import { userQueries } from './queries/user';
 import { webhookQueries } from './queries/webhook';
-import { templateQueries } from './queries/template';
+import { templateQueries } from './queries/message-template';
 import { scheduledMessageQueries } from './queries/scheduled-message';
 import { avatarQueries } from './queries/avatar';
 
