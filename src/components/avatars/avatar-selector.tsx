@@ -16,7 +16,7 @@ import { Input } from '@/components/ui/input';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Search, Users } from 'lucide-react';
 import { getAllAvatars } from '@/lib/api/queries/avatar';
-import type { PredefinedAvatar } from '@/lib/api/types';
+import type { PredefinedAvatar } from '@/lib/api/types/avatar';
 import { useAuth } from '@/contexts/auth-context';
 
 interface AvatarSelectorProps {
@@ -36,9 +36,11 @@ export function AvatarSelector({ onSelect, children }: AvatarSelectorProps) {
   });
 
   const filteredAvatars = avatars.filter(
-    (avatar: PredefinedAvatar) =>
-      avatar.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      avatar.username.toLowerCase().includes(searchQuery.toLowerCase()),
+    (avatar: PredefinedAvatar) => {
+      const nameMatches = avatar.name && avatar.name.toLowerCase().includes(searchQuery.toLowerCase());
+      const usernameMatches = avatar.username && avatar.username.toLowerCase().includes(searchQuery.toLowerCase());
+      return nameMatches || usernameMatches;
+    }
   );
 
   const handleSelect = (avatar: PredefinedAvatar) => {

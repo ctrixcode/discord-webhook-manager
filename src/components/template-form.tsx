@@ -40,6 +40,7 @@ export const TemplateForm = React.forwardRef(function TemplateForm(
   const [username, setUsername] = useState('');
   const [avatar_ref_id, setAvatar_ref_id] = useState(''); // This will be the ID sent to backend
   const [avatar_display_url, setAvatar_display_url] = useState(''); // For frontend preview
+  const [isPredefinedAvatarSelected, setIsPredefinedAvatarSelected] = useState(false);
   const [embeds, setEmbeds] = useState<DiscordEmbed[]>([]);
 
   React.useImperativeHandle(ref, () => ({
@@ -62,6 +63,7 @@ export const TemplateForm = React.forwardRef(function TemplateForm(
       setContent(initialData.content);
       setUsername(initialData.username || '');
       setAvatar_ref_id(initialData.avatar_ref || '');
+      setIsPredefinedAvatarSelected(!!initialData.avatar_ref);
       // For display, if initialData has avatar_ref, we might need to fetch the actual URL
       // For now, assuming initialData.avatar_ref can be directly used as a URL for preview if it's a full URL
       // or we need a mechanism to resolve ID to URL.
@@ -77,6 +79,7 @@ export const TemplateForm = React.forwardRef(function TemplateForm(
       setUsername('');
       setAvatar_ref_id('');
       setAvatar_display_url('');
+      setIsPredefinedAvatarSelected(false);
       setEmbeds([]);
     }
   }, [initialData]);
@@ -203,22 +206,39 @@ export const TemplateForm = React.forwardRef(function TemplateForm(
                     <h3 className="text-lg font-semibold text-white">
                       Message Appearance
                     </h3>
-                    <AvatarSelector
-                      onSelect={(avatar) => {
-                        setUsername(avatar.username);
-                        setAvatar_ref_id(avatar.id);
-                        setAvatar_display_url(avatar.avatar_url);
-                      }}
-                    >
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        className="bg-slate-700 border-slate-600 text-white hover:bg-slate-600"
+                    <div className="flex items-center gap-2">
+                      <AvatarSelector
+                        onSelect={(avatar) => {
+                          setAvatar_ref_id(avatar.id);
+                          setAvatar_display_url(avatar.avatar_url);
+                          setUsername(''); // Clear custom username when predefined avatar is selected
+                          setIsPredefinedAvatarSelected(true);
+                        }}
                       >
-                        <Users className="w-4 h-4 mr-2" />
-                        Use Predefined Avatar
-                      </Button>
-                    </AvatarSelector>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          className="bg-slate-700 border-slate-600 text-white hover:bg-slate-600"
+                        >
+                          <Users className="w-4 h-4 mr-2" />
+                          Use Predefined Avatar
+                        </Button>
+                      </AvatarSelector>
+                      {isPredefinedAvatarSelected && (
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => {
+                            setIsPredefinedAvatarSelected(false);
+                            setAvatar_ref_id('');
+                            setAvatar_display_url('');
+                          }}
+                          className="bg-red-700 border-red-600 text-white hover:bg-red-600"
+                        >
+                          Clear Avatar
+                        </Button>
+                      )}
+                    </div>
                   </div>
                   <div className="grid grid-cols-1 gap-4">
                     <div className="space-y-2">
@@ -230,6 +250,7 @@ export const TemplateForm = React.forwardRef(function TemplateForm(
                         value={username}
                         onChange={(e) => setUsername(e.target.value)}
                         placeholder="Override webhook username"
+                        disabled={isPredefinedAvatarSelected}
                         className="bg-slate-800/50 border-slate-600 text-white placeholder:text-slate-400 focus:border-purple-500"
                       />
                     </div>
@@ -242,6 +263,7 @@ export const TemplateForm = React.forwardRef(function TemplateForm(
                         value={avatar_ref_id}
                         onChange={(e) => setAvatar_ref_id(e.target.value)}
                         placeholder="Enter Avatar ID or select from list"
+                        disabled={isPredefinedAvatarSelected}
                         className="bg-slate-800/50 border-slate-600 text-white placeholder:text-slate-400 focus:border-purple-500"
                       />
                     </div>

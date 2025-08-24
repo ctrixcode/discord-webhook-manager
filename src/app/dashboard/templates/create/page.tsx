@@ -8,7 +8,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Button } from '@/components/ui/button';
 
 import { templateQueries } from '@/lib/api/queries/message-template';
-import type { MessageTemplate, CreateMessageTemplateRequest, UpdateMessageTemplateRequest } from '@/lib/api/types';
+import type { MessageTemplate, CreateMessageTemplateRequest, UpdateMessageTemplateRequest } from '@/lib/api/types/message-template';
 import { TemplateForm } from '@/components/template-form';
 import { ArrowLeft, Save } from 'lucide-react';
 

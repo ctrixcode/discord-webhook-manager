@@ -8,7 +8,7 @@ import { AddWebhookDialog } from '@/components/add-webhook-dialog';
 import { WebhookCard } from '@/components/webhook-card';
 import { useAuth } from '@/contexts/auth-context';
 import { getAllWebhooks } from '@/lib/api/queries/webhook';
-import { type Webhook } from '@/lib/api/types';
+import { type Webhook } from '@/lib/api/types/webhook';
 import { Search, WebhookIcon } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
 
