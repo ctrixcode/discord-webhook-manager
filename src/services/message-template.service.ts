@@ -42,6 +42,7 @@ export const createMessageTemplate = async (
     const newMessageTemplate = new MessageTemplateModel({
       ...templateData,
       user_id: new Types.ObjectId(userId),
+      avatar_ref: new Types.ObjectId(templateData.avatar_ref),
     });
     await newMessageTemplate.save();
     return newMessageTemplate;

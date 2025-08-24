@@ -18,8 +18,8 @@ const MessageTemplate = new Schema<IMessageTemplate>(
     user_id: { type: Schema.Types.ObjectId, required: true, ref: 'User' },
     name: { type: String, required: true },
     description: { type: String },
-    content: { type: String, required: true },
-    avatar_ref: { type: Schema.Types.ObjectId, required: true, ref: 'Avatar' },
+    content: { type: String },
+    avatar_ref: { type: Schema.Types.ObjectId, ref: 'Avatar' },
     embeds: [EmbedSchema],
     attachments: [{ type: String }],
     createdAt: { type: Date, required: true, default: Date.now },
@@ -29,6 +29,17 @@ const MessageTemplate = new Schema<IMessageTemplate>(
     timestamps: true,
   }
 );
+
+MessageTemplate.pre('validate', function (next) {
+  if (!this.content && (!this.embeds || this.embeds.length === 0)) {
+    this.invalidate(
+      'content',
+      'Either content or embeds must be provided.',
+      null
+    );
+  }
+  next();
+});
 
 const MessageTemplateModel = model<IMessageTemplate>(
   'Message_template',

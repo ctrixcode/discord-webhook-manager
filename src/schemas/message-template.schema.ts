@@ -1,12 +1,11 @@
 export const createMessageTemplateSchema = {
   body: {
     type: 'object',
-    required: ['name', 'content', 'avatar_ref'],
     properties: {
       name: { type: 'string' },
       description: { type: 'string' },
       content: { type: 'string' },
-      avatar_ref: { type: 'string' }, // Assuming avatar_ref is a string (ObjectId)
+      avatar_ref: { type: 'string' },
       embeds: {
         type: 'array',
         items: {
@@ -15,7 +14,7 @@ export const createMessageTemplateSchema = {
             title: { type: 'string' },
             description: { type: 'string' },
             url: { type: 'string' },
-            color: { type: 'string' },
+            color: { type: 'number' },
             timestamp: { type: 'string', format: 'date-time' },
             image: { type: 'object', properties: { url: { type: 'string' } } },
             thumbnail: {
@@ -56,6 +55,8 @@ export const createMessageTemplateSchema = {
         items: { type: 'string' },
       },
     },
+    required: ['name'],
+    anyOf: [{ required: ['content'] }, { required: ['embeds'] }],
   },
 };
 
