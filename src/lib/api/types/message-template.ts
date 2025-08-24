@@ -7,12 +7,10 @@ export interface MessageTemplate {
   description?: string;
   content: string;
   avatar_ref?: string; // Reference to a predefined avatar ID
-  username?: string; // This is part of the Discord message, not the template itself in the backend schema
   embeds?: DiscordEmbed[];
   attachments?: string[]; // Array of attachment URLs/IDs
   createdAt: string;
   updatedAt: string;
-  usageCount: number; // This is a frontend-specific field, not from the backend schema
 }
 
 export interface CreateMessageTemplateRequest {

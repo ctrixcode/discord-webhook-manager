@@ -131,7 +131,7 @@ export default function TemplatesPage() {
                     variant="secondary"
                     className="bg-purple-500/20 text-purple-200 border-purple-500/30"
                   >
-                    {template.usageCount} uses
+                    TODO uses
                   </Badge>
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
@@ -254,7 +254,7 @@ export default function TemplatesPage() {
               Cancel
             </AlertDialogCancel>
             <AlertDialogAction
-              onClick={() => deleteDialogTemplate && deleteMutation.mutate(deleteDialogTemplate._id, { onSuccess: () => { /* handled in mutation */ }, onSettled: () => setDeleteDialogTemplate(null) })}
+              onClick={() => deleteDialogTemplate && deleteMutation.mutate(deleteDialogTemplate._id)}
               className="bg-red-600 text-white hover:bg-red-700"
             >
               Delete

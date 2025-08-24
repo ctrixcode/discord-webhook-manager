@@ -40,7 +40,6 @@ export const TemplateForm = React.forwardRef(function TemplateForm(
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
   const [content, setContent] = useState('');
-  const [username, setUsername] = useState('');
   const [selectedAvatar, setSelectedAvatar] = useState<PredefinedAvatar | null>(
     null,
   );
@@ -54,7 +53,7 @@ export const TemplateForm = React.forwardRef(function TemplateForm(
         name,
         description,
         content,
-        avatar_ref: selectedAvatar?.id, // Send the ID to the backend
+        avatar_ref: selectedAvatar?.id || "", // Send the ID to the backend
         embeds,
       });
     },
@@ -65,7 +64,6 @@ export const TemplateForm = React.forwardRef(function TemplateForm(
       setName(initialData.name);
       setDescription(initialData.description || '');
       setContent(initialData.content);
-      setUsername(initialData.username || '');
       setIsPredefinedAvatarSelected(!!initialData.avatar_ref);
       // For display, if initialData has avatar_ref, we might need to fetch the actual URL
       // For now, assuming initialData.avatar_ref can be directly used as a URL for preview if it's a full URL
@@ -78,7 +76,6 @@ export const TemplateForm = React.forwardRef(function TemplateForm(
       setName('');
       setDescription('');
       setContent('');
-      setUsername('');
       setIsPredefinedAvatarSelected(false);
       setEmbeds([]);
     }
@@ -210,7 +207,6 @@ export const TemplateForm = React.forwardRef(function TemplateForm(
                       <AvatarSelector
                         onSelect={(avatar) => {
                           setSelectedAvatar(avatar);
-                          setUsername(''); // Clear custom username when predefined avatar is selected
                           setIsPredefinedAvatarSelected(true);
                         }}
                       >
