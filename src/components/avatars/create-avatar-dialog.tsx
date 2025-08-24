@@ -13,7 +13,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { createAvatar, updateAvatar } from '@/lib/api/queries/avatar';
-import type { PredefinedAvatar } from '@/lib/api/types';
+import type { PredefinedAvatar } from '@/lib/api/types/avatar';
 
 
 interface CreateAvatarDialogProps {

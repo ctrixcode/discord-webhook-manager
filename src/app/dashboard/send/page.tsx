@@ -9,12 +9,19 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Send, Webhook } from 'lucide-react';
-import { api, apiClient, type PredefinedAvatar } from '@/lib/api';
+import { api, apiClient } from '@/lib/api';
+import type { PredefinedAvatar } from '@/lib/api/types/avatar';
 import { useQuery } from '@tanstack/react-query';
 import { AvatarSelector } from '@/components/avatars/avatar-selector';
 import { DiscordMessagePreview } from '@/components/discord-message-preview';
-import type { DiscordEmbed } from '@/lib/api/types';
+import type { DiscordEmbed } from '@/lib/api/types/discord';
 import { useToast } from "@/hooks/use-toast";
+
+interface SendResult {
+  webhookId: string;
+  success: boolean;
+  error?: string; // Optional error message
+}
 
 export default function SendMessagePage() {
   const { toast } = useToast();
@@ -29,7 +36,7 @@ export default function SendMessagePage() {
     embeds: [] as DiscordEmbed[],
   });
   const [isSending, setIsSending] = useState(false);
-  const [sendResults, setSendResults] = useState<any[]>([]);
+  const [sendResults, setSendResults] = useState<SendResult[]>([]);
   const [avatarMode, setAvatarMode] = useState<'predefined' | 'custom'>(
     'predefined',
   );
@@ -57,7 +64,6 @@ export default function SendMessagePage() {
       ...prev,
       username: avatar.username,
       avatar_url: avatar.avatar_url,
-      avatar_icon_url: avatar.avatar_icon_url,
     }));
   };
 
@@ -338,7 +344,15 @@ export default function SendMessagePage() {
                               Choose from your saved avatar profiles
                             </p>
                           </div>
-                          <AvatarSelector onSelect={handleAvatarSelect} />
+                          <AvatarSelector onSelect={handleAvatarSelect}>
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              className="bg-slate-700 border-slate-600 text-white hover:bg-slate-600"
+                            >
+                              Select Avatar
+                            </Button>
+                          </AvatarSelector>
                         </div>
                       )}
 

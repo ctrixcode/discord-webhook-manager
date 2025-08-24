@@ -113,7 +113,7 @@ export function TemplateEditorDialog({
       } else {
         addTemplate({
           ...templateData,
-          userId: user.id,
+          user_id: user.id,
         });
       }
 

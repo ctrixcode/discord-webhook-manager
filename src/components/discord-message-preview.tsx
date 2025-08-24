@@ -1,6 +1,6 @@
 'use client';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { type DiscordEmbed } from '@/lib/api/types';
+import { type DiscordEmbed } from '@/lib/api/types/discord';
 import { discordColorToHex } from '@/lib/discord-utils';
 import type { ReactNode } from 'react';
 

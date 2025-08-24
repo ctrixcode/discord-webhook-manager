@@ -23,7 +23,7 @@ import {
 } from '@/components/ui/alert-dialog';
 import { MoreHorizontal, Edit, Trash2, Copy } from 'lucide-react';
 import { deleteAvatar } from '@/lib/api/queries/avatar';
-import type { PredefinedAvatar } from '@/lib/api/types';
+import type { PredefinedAvatar } from '@/lib/api/types/avatar';
 
 interface AvatarCardProps {
   avatar: PredefinedAvatar;
@@ -68,7 +68,7 @@ export function AvatarCard({
             <div className="flex items-center gap-3">
               <Avatar className="w-12 h-12 ring-2 ring-purple-500/20">
                 <AvatarImage
-                  src={avatar.avatar_icon_url || avatar.avatar_url || '/placeholder.svg'}
+                  src={avatar.avatar_url || '/placeholder.svg'}
                   alt={avatar.username}
                 />
                 <AvatarFallback className="bg-purple-500/20 text-purple-300">
@@ -76,7 +76,7 @@ export function AvatarCard({
                 </AvatarFallback>
               </Avatar>
               <div>
-                <h3 className="font-semibold text-white">{avatar.name}</h3>
+                <h3 className="font-semibold text-white">{avatar.username}</h3>
                 <p className="text-sm text-slate-400">@{avatar.username}</p>
               </div>
             </div>
@@ -139,7 +139,7 @@ export function AvatarCard({
               Delete Avatar
             </AlertDialogTitle>
             <AlertDialogDescription className="text-slate-400">
-              Are you sure you want to delete &quot;{avatar.name}&quot;? This action
+              Are you sure you want to delete &quot;{avatar.username}&quot;? This action
               cannot be undone.
             </AlertDialogDescription>
           </AlertDialogHeader>

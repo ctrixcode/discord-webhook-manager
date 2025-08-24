@@ -23,7 +23,7 @@ import {
 } from '@/components/ui/alert-dialog';
 import { formatScheduledTime } from '@/lib/discord-utils';
 import { scheduledMessageQueries } from '@/lib/api/queries/scheduled-message';
-import type { ScheduledMessage } from '@/lib/api/types';
+import type { ScheduledMessage } from '@/lib/api/types/scheduled-message';
 import {
   MoreHorizontal,
   Clock,

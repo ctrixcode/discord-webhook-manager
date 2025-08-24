@@ -37,7 +37,7 @@ export function AvatarSelector({ onSelect, children }: AvatarSelectorProps) {
 
   const filteredAvatars = avatars.filter(
     (avatar: PredefinedAvatar) => {
-      const nameMatches = avatar.name && avatar.name.toLowerCase().includes(searchQuery.toLowerCase());
+      const nameMatches = avatar.username && avatar.username.toLowerCase().includes(searchQuery.toLowerCase());
       const usernameMatches = avatar.username && avatar.username.toLowerCase().includes(searchQuery.toLowerCase());
       return nameMatches || usernameMatches;
     }
@@ -93,7 +93,7 @@ export function AvatarSelector({ onSelect, children }: AvatarSelectorProps) {
                   >
                     <Avatar className="w-10 h-10 ring-2 ring-purple-500/20">
                       <AvatarImage
-                        src={avatar.avatar_icon_url || avatar.avatar_url || '/placeholder.svg'}
+                        src={avatar.avatar_url || '/placeholder.svg'}
                         alt={avatar.username}
                       />
                       <AvatarFallback className="bg-purple-500/20 text-purple-300">
@@ -102,7 +102,7 @@ export function AvatarSelector({ onSelect, children }: AvatarSelectorProps) {
                     </Avatar>
                     <div className="text-left">
                       <div className="font-medium text-white">
-                        {avatar.name}
+                        {avatar.username}
                       </div>
                       <div className="text-sm text-slate-400">
                         @{avatar.username}

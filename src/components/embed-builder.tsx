@@ -7,7 +7,7 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Checkbox } from '@/components/ui/checkbox';
-import { type DiscordEmbed } from '@/lib/api/types';
+import { type DiscordEmbed } from '@/lib/api/types/discord';
 import { hexToDiscordColor } from '@/lib/discord-utils';
 import { Plus, Trash2, ChevronDown, ChevronUp, Calendar } from 'lucide-react';
 import {

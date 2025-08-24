@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Plus, Search, Users } from 'lucide-react';
 import { getAllAvatars } from '@/lib/api/queries/avatar';
-import { type PredefinedAvatar } from '@/lib/api/types';
+import { type PredefinedAvatar } from '@/lib/api/types/avatar';
 import { useAuth } from '@/contexts/auth-context';
 import { AvatarCard } from '@/components/avatars/avatar-card';
 import { CreateAvatarDialog } from '@/components/avatars/create-avatar-dialog';

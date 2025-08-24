@@ -1,5 +1,5 @@
 import { apiClient } from '../client';
-import { PredefinedAvatar } from '../types';
+import { PredefinedAvatar } from '../types/avatar';
 
 export const avatarQueries = {
   // Get all avatars for current user

@@ -26,7 +26,9 @@ import {
 
 import { getAllWebhooks } from '@/lib/api/queries/webhook';
 import { scheduledMessageQueries } from '@/lib/api/queries/scheduled-message';
-import type { Webhook, ApiError, ScheduledMessage } from '@/lib/api/types';
+import type { Webhook } from '@/lib/api/types/webhook';
+import type { ApiError } from '@/lib/api/types/api';
+import type { ScheduledMessage } from '@/lib/api/types/scheduled-message';
 import { Clock, AlertCircle } from 'lucide-react';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 
