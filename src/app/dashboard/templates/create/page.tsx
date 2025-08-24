@@ -18,7 +18,10 @@ export default function CreateTemplatePage() {
   const searchParams = useSearchParams();
   const templateId = searchParams.get('edit');
 
-  const templateFormRef = useRef<any>(null);
+  interface TemplateFormRef {
+    submit: () => void;
+  }
+  const templateFormRef = useRef<TemplateFormRef>(null);
 
   const { data: existingTemplate } = useQuery<MessageTemplate>({
     queryKey: ['template', templateId],

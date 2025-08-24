@@ -1,13 +1,19 @@
 import { apiClient } from '../client';
-import { ScheduledMessage } from '../types';
+import { ScheduledMessage } from '../types/scheduled-message';
+
+// Get all scheduled messages for current user
+export const getAllScheduledMessages = async (): Promise<ScheduledMessage[]> => {
+  const response = await apiClient.get<ScheduledMessage[]>('/scheduled-message');
+  return response.data;
+};
+
+// Process scheduled messages (trigger manual processing)
+export const processScheduledMessages = async (): Promise<{ processed: number; message: string }> => {
+  const response = await apiClient.post<{ processed: number; message: string }>('/scheduled-message/process');
+  return response.data;
+};
 
 export const scheduledMessageQueries = {
-  // Get all scheduled messages for current user
-  getAllScheduledMessages: async (): Promise<ScheduledMessage[]> => {
-    const response = await apiClient.get<ScheduledMessage[]>('/scheduled-message');
-    return response.data;
-  },
-
   // Get scheduled message by ID
   getScheduledMessageById: async (id: string): Promise<ScheduledMessage> => {
     const response = await apiClient.get<ScheduledMessage>(`/scheduled-message/${id}`);
@@ -35,12 +41,6 @@ export const scheduledMessageQueries = {
   // Cancel scheduled message
   cancelScheduledMessage: async (id: string): Promise<ScheduledMessage> => {
     const response = await apiClient.post<ScheduledMessage>(`/scheduled-message/${id}/cancel`);
-    return response.data;
-  },
-
-  // Process scheduled messages (trigger manual processing)
-  processScheduledMessages: async (): Promise<{ processed: number; message: string }> => {
-    const response = await apiClient.post<{ processed: number; message: string }>('/scheduled-message/process');
     return response.data;
   },
 };

@@ -16,7 +16,7 @@ import { ScheduleMessageDialog } from '@/components/schedule-message-dialog';
 import { ScheduledMessageCard } from '@/components/scheduled-message-card';
 import { useAuth } from '@/contexts/auth-context';
 import { getAllScheduledMessages, processScheduledMessages } from '@/lib/api/queries/scheduled-message';
-import type { ScheduledMessage } from '@/lib/api/types';
+import type { ScheduledMessage } from '@/lib/api/types/scheduled-message';
 import {
   Search,
   Clock,
@@ -24,7 +24,7 @@ import {
   CheckCircle,
   RefreshCw,
 } from 'lucide-react';
-import { useToast } from '@/components/ui/use-toast';
+import { useToast } from '@/hooks/use-toast';
 import { Skeleton } from '@/components/ui/skeleton';
 
 export default function ScheduledPage() {
