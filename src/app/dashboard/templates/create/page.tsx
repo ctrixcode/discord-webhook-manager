@@ -7,8 +7,8 @@ import { useRef } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Button } from '@/components/ui/button';
 
-import { templateQueries } from '@/lib/api/queries/template';
-import type { MessageTemplate } from '@/lib/api/types';
+import { templateQueries } from '@/lib/api/queries/message-template';
+import type { MessageTemplate, CreateMessageTemplateRequest, UpdateMessageTemplateRequest } from '@/lib/api/types';
 import { TemplateForm } from '@/components/template-form';
 import { ArrowLeft, Save } from 'lucide-react';
 
@@ -20,7 +20,7 @@ export default function CreateTemplatePage() {
 
   const templateFormRef = useRef<any>(null);
 
-  const { data: existingTemplate } = useQuery({
+  const { data: existingTemplate } = useQuery<MessageTemplate>({
     queryKey: ['template', templateId],
     queryFn: () => templateQueries.getTemplateById(templateId!),
     enabled: !!templateId,
@@ -32,15 +32,12 @@ export default function CreateTemplatePage() {
     error,
   } = useMutation({
     mutationFn: (
-      templateData: Omit<
-        MessageTemplate,
-        'id' | 'createdAt' | 'updatedAt' | 'usageCount' | 'userId'
-      >,
+      templateData: CreateMessageTemplateRequest | UpdateMessageTemplateRequest,
     ) => {
       if (templateId) {
-        return templateQueries.updateTemplate(templateId, templateData);
+        return templateQueries.updateTemplate(templateId, templateData as UpdateMessageTemplateRequest);
       }
-      return templateQueries.createTemplate(templateData);
+      return templateQueries.createTemplate(templateData as CreateMessageTemplateRequest);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['templates'] });
@@ -59,34 +56,32 @@ export default function CreateTemplatePage() {
       {/* Header */}
       <div className="border-b border-slate-700/50 bg-slate-900/50 backdrop-blur-sm sticky top-0 z-10">
         <div className="flex items-center justify-between p-4">
-          <div className="flex items-center gap-4">
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => router.back()}
-              className="text-white hover:bg-slate-700"
-            >
-              <ArrowLeft className="w-4 h-4 mr-2" />
-              Back
-            </Button>
-            <div>
-              <h1 className="text-xl font-semibold text-white">
-                {templateId ? 'Edit Template' : 'Create Template'}
-              </h1>
-              <p className="text-sm text-slate-300">
-                Design your Discord message with live preview
-              </p>
-            </div>
-          </div>
           <Button
-            onClick={handleSubmit}
-            disabled={isPending}
-            className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700"
+            variant="ghost"
+            size="sm"
+            onClick={() => router.back()}
+            className="text-white hover:bg-slate-700"
           >
-            <Save className="w-4 h-4 mr-2" />
-            {isPending ? 'Saving...' : templateId ? 'Update' : 'Save'}
+            <ArrowLeft className="w-4 h-4 mr-2" />
+            Back
           </Button>
+          <div>
+            <h1 className="text-xl font-semibold text-white">
+              {templateId ? 'Edit Template' : 'Create Template'}
+            </h1>
+            <p className="text-sm text-slate-300">
+              Design your Discord message with live preview
+            </p>
+          </div>
         </div>
+        <Button
+          onClick={handleSubmit}
+          disabled={isPending}
+          className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700"
+        >
+          <Save className="w-4 h-4 mr-2" />
+          {isPending ? 'Saving...' : templateId ? 'Update' : 'Save'}
+        </Button>
       </div>
 
       <TemplateForm

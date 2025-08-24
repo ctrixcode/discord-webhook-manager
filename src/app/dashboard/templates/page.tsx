@@ -24,14 +24,13 @@ import {
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
 import { useAuth } from '@/contexts/auth-context';
-import { getAllTemplates, deleteTemplate, duplicateTemplate, incrementTemplateUsage } from '@/lib/api/queries/template';
+import { templateQueries } from '@/lib/api/queries/message-template';
 import type { MessageTemplate } from '@/lib/api/types';
 import {
   Search,
   FileText,
   MoreHorizontal,
   Edit,
-  Copy,
   Trash2,
   Plus,
 } from 'lucide-react';
@@ -48,32 +47,16 @@ export default function TemplatesPage() {
 
   const { data: templates = [], isLoading } = useQuery<MessageTemplate[]>({
     queryKey: ['templates'],
-    queryFn: getAllTemplates,
+    queryFn: templateQueries.getAllTemplates,
     enabled: !!user,
   });
 
   const deleteMutation = useMutation({
-    mutationFn: deleteTemplate,
-    onSuccess: (_, deletedTemplateName) => {
-      queryClient.invalidateQueries({ queryKey: ['templates'] });
-      toast({ title: 'Template deleted', description: `"${deletedTemplateName}" has been removed` });
-      setDeleteDialogTemplate(null);
-    },
-  });
-
-  const duplicateMutation = useMutation({
-    mutationFn: duplicateTemplate,
-    onSuccess: (data) => {
-      queryClient.invalidateQueries({ queryKey: ['templates'] });
-      toast({ title: 'Template duplicated', description: `Created a copy of "${data.name}"` });
-    },
-  });
-
-  const incrementUsageMutation = useMutation({
-    mutationFn: incrementTemplateUsage,
+    mutationFn: templateQueries.deleteTemplate,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['templates'] });
-      toast({ title: 'Template used', description: 'Usage count updated' });
+      toast({ title: 'Template deleted', description: `"${deleteDialogTemplate?.name}" has been removed` });
+      setDeleteDialogTemplate(null);
     },
   });
 
@@ -85,8 +68,6 @@ export default function TemplatesPage() {
         template.content.toLowerCase().includes(searchQuery.toLowerCase())
     );
   }, [templates, searchQuery]);
-
-  
 
   const handleCreateTemplate = () => {
     router.push('/dashboard/templates/create');
@@ -138,7 +119,7 @@ export default function TemplatesPage() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {filteredTemplates.map((template) => (
             <Card
-              key={template.id}
+              key={template._id}
               className="bg-white/10 backdrop-blur-md border-white/20 hover:bg-white/15 transition-all duration-200 hover:shadow-lg hover:shadow-purple-500/10"
             >
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
@@ -166,25 +147,11 @@ export default function TemplatesPage() {
                       className="bg-slate-800/95 backdrop-blur-md border-white/20 text-white"
                     >
                       <DropdownMenuItem
-                        onClick={() => incrementUsageMutation.mutate(template.id)}
-                        className="hover:bg-white/10 focus:bg-white/10"
-                      >
-                        <Plus className="mr-2 h-4 w-4" />
-                        Use Template
-                      </DropdownMenuItem>
-                      <DropdownMenuItem
-                        onClick={() => handleEditTemplate(template.id)}
+                        onClick={() => handleEditTemplate(template._id)}
                         className="hover:bg-white/10 focus:bg-white/10"
                       >
                         <Edit className="mr-2 h-4 w-4" />
                         Edit
-                      </DropdownMenuItem>
-                      <DropdownMenuItem
-                        onClick={() => duplicateMutation.mutate(template.id)}
-                        className="hover:bg-white/10 focus:bg-white/10"
-                      >
-                        <Copy className="mr-2 h-4 w-4" />
-                        Duplicate
                       </DropdownMenuItem>
                       <DropdownMenuItem
                         onClick={() => setDeleteDialogTemplate(template)}
@@ -287,7 +254,7 @@ export default function TemplatesPage() {
               Cancel
             </AlertDialogCancel>
             <AlertDialogAction
-              onClick={() => deleteDialogTemplate && deleteMutation.mutate(deleteDialogTemplate.id, { onSuccess: () => { /* handled in mutation */ }, onSettled: () => setDeleteDialogTemplate(null) })}
+              onClick={() => deleteDialogTemplate && deleteMutation.mutate(deleteDialogTemplate._id, { onSuccess: () => { /* handled in mutation */ }, onSettled: () => setDeleteDialogTemplate(null) })}
               className="bg-red-600 text-white hover:bg-red-700"
             >
               Delete

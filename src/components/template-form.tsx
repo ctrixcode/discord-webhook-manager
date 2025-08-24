@@ -2,7 +2,6 @@
 
 import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
-import { Switch } from '@/components/ui/switch';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
@@ -12,7 +11,7 @@ import { EmbedBuilder } from '@/components/embed-builder';
 import { DiscordMessagePreview } from '@/components/discord-message-preview';
 import { AvatarSelector } from '@/components/avatars/avatar-selector';
 
-import type { MessageTemplate, DiscordEmbed } from '@/lib/api/types';
+import type { MessageTemplate, DiscordEmbed, CreateMessageTemplateRequest, UpdateMessageTemplateRequest } from '@/lib/api/types';
 import {
   FileText,
   Settings,
@@ -25,10 +24,7 @@ import {
 interface TemplateFormProps {
   initialData?: MessageTemplate | null;
   onSave: (
-    data: Omit<
-      MessageTemplate,
-      'id' | 'createdAt' | 'updatedAt' | 'usageCount' | 'user_id'
-    >,
+    data: CreateMessageTemplateRequest | UpdateMessageTemplateRequest,
   ) => void;
   isSaving: boolean;
   saveError: Error | null;
@@ -42,10 +38,8 @@ export const TemplateForm = React.forwardRef(function TemplateForm(
   const [description, setDescription] = useState('');
   const [content, setContent] = useState('');
   const [username, setUsername] = useState('');
-  const [avatar_url, setAvatar_url] = useState('');
-  const [avatar_icon_url, setAvatar_icon_url] = useState('');
-  const [tts, setTts] = useState(false);
-  const [threadName, setThreadName] = useState('');
+  const [avatar_ref_id, setAvatar_ref_id] = useState(''); // This will be the ID sent to backend
+  const [avatar_display_url, setAvatar_display_url] = useState(''); // For frontend preview
   const [embeds, setEmbeds] = useState<DiscordEmbed[]>([]);
 
   React.useImperativeHandle(ref, () => ({
@@ -55,9 +49,7 @@ export const TemplateForm = React.forwardRef(function TemplateForm(
         description,
         content,
         username,
-        avatar_url,
-        tts,
-        threadName,
+        avatar_ref: avatar_ref_id, // Send the ID to the backend
         embeds,
       });
     },
@@ -69,20 +61,22 @@ export const TemplateForm = React.forwardRef(function TemplateForm(
       setDescription(initialData.description || '');
       setContent(initialData.content);
       setUsername(initialData.username || '');
-      setAvatar_url(initialData.avatar_url || '');
-      setAvatar_icon_url(initialData.avatar_icon_url || '');
-      setTts(initialData.tts || false);
-      setThreadName(initialData.threadName || '');
+      setAvatar_ref_id(initialData.avatar_ref || '');
+      // For display, if initialData has avatar_ref, we might need to fetch the actual URL
+      // For now, assuming initialData.avatar_ref can be directly used as a URL for preview if it's a full URL
+      // or we need a mechanism to resolve ID to URL.
+      // For simplicity, if avatar_ref is a URL, use it. Otherwise, it's an ID and needs resolution.
+      // Given the backend schema, avatar_ref is an ID. So, we need to fetch the URL for display.
+      // For now, I'll leave avatar_display_url as empty and it will be handled by AvatarSelector or a separate fetch.
+      setAvatar_display_url(initialData.avatar_ref || ''); // This needs to be resolved to an actual URL
       setEmbeds(initialData.embeds || []);
     } else {
       setName('');
       setDescription('');
       setContent('');
       setUsername('');
-      setAvatar_url('');
-      setAvatar_icon_url('');
-      setTts(false);
-      setThreadName('');
+      setAvatar_ref_id('');
+      setAvatar_display_url('');
       setEmbeds([]);
     }
   }, [initialData]);
@@ -107,7 +101,7 @@ export const TemplateForm = React.forwardRef(function TemplateForm(
       <div className="w-1/2 border-r border-slate-700/50 flex flex-col">
         <Tabs defaultValue="info" className="flex-1 flex flex-col">
           <div className="border-b border-slate-700/50 px-4 py-2 bg-slate-800/30">
-            <TabsList className="grid w-full grid-cols-4 bg-slate-800/50 border-slate-600">
+            <TabsList className="grid w-full grid-cols-3 bg-slate-800/50 border-slate-600">
               <TabsTrigger
                 value="info"
                 className="text-slate-300 data-[state=active]:bg-purple-600 data-[state=active]:text-white"
@@ -121,13 +115,6 @@ export const TemplateForm = React.forwardRef(function TemplateForm(
               >
                 <MessageSquare className="w-4 h-4 mr-2" />
                 Message
-              </TabsTrigger>
-              <TabsTrigger
-                value="settings"
-                className="text-slate-300 data-[state=active]:bg-purple-600 data-[state=active]:text-white"
-              >
-                <Settings className="w-4 h-4 mr-2" />
-                Settings
               </TabsTrigger>
               <TabsTrigger
                 value="embeds"
@@ -219,8 +206,8 @@ export const TemplateForm = React.forwardRef(function TemplateForm(
                     <AvatarSelector
                       onSelect={(avatar) => {
                         setUsername(avatar.username);
-                        setAvatar_url(avatar.avatar_url);
-                        setAvatar_icon_url(avatar.avatar_icon_url);
+                        setAvatar_ref_id(avatar.id);
+                        setAvatar_display_url(avatar.avatar_url);
                       }}
                     >
                       <Button
@@ -247,48 +234,16 @@ export const TemplateForm = React.forwardRef(function TemplateForm(
                       />
                     </div>
                     <div className="space-y-2">
-                      <Label htmlFor="avatar_url" className="text-slate-200">
-                        Custom Avatar URL
+                      <Label htmlFor="avatar_ref_id" className="text-slate-200">
+                        Avatar ID (from Predefined Avatars)
                       </Label>
                       <Input
-                        id="avatar_url"
-                        value={avatar_url}
-                        onChange={(e) => setAvatar_url(e.target.value)}
-                        placeholder="https://example.com/avatar.png"
+                        id="avatar_ref_id"
+                        value={avatar_ref_id}
+                        onChange={(e) => setAvatar_ref_id(e.target.value)}
+                        placeholder="Enter Avatar ID or select from list"
                         className="bg-slate-800/50 border-slate-600 text-white placeholder:text-slate-400 focus:border-purple-500"
                       />
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </ScrollArea>
-          </TabsContent>
-
-          <TabsContent value="settings" className="flex-1 p-4">
-            <ScrollArea className="h-full">
-              <div className="space-y-6">
-                <div className="space-y-4">
-                  <h3 className="text-lg font-semibold text-white">
-                    Advanced Settings
-                  </h3>
-                  <div className="grid grid-cols-1 gap-4">
-                    <div className="space-y-2">
-                      <Label htmlFor="threadName" className="text-slate-200">
-                        Thread Name (Forum Channels)
-                      </Label>
-                      <Input
-                        id="threadName"
-                        value={threadName}
-                        onChange={(e) => setThreadName(e.target.value)}
-                        placeholder="Create new thread with this name"
-                        className="bg-slate-800/50 border-slate-600 text-white placeholder:text-slate-400 focus:border-purple-500"
-                      />
-                    </div>
-                    <div className="flex items-center space-x-2">
-                      <Switch id="tts" checked={tts} onCheckedChange={setTts} />
-                      <Label htmlFor="tts" className="text-slate-200">
-                        Text-to-Speech (TTS)
-                      </Label>
                     </div>
                   </div>
                 </div>
@@ -351,8 +306,7 @@ export const TemplateForm = React.forwardRef(function TemplateForm(
             <DiscordMessagePreview
               content={content}
               username={username}
-              avatar_url={avatar_url}
-              avatar_icon_url={avatar_icon_url}
+              avatar_url={avatar_display_url}
               embeds={embeds.length > 0 ? embeds : undefined}
             />
           </ScrollArea>
