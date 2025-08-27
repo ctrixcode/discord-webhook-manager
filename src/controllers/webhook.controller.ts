@@ -31,7 +31,9 @@ export const createWebhookHandler = async (
 };
 
 export const getWebhooksHandler = async (
-  request: FastifyRequest<{ Querystring: { page?: string; limit?: string } }>,
+  request: FastifyRequest<{
+    Querystring: { page?: string; limit?: string; status?: string };
+  }>,
   reply: FastifyReply
 ) => {
   try {
@@ -41,7 +43,13 @@ export const getWebhooksHandler = async (
     }
     const page = request.query.page ? parseInt(request.query.page, 10) : 1;
     const limit = request.query.limit ? parseInt(request.query.limit, 10) : 10;
-    const { webhooks, total } = await getWebhooksByUserId(userId, page, limit);
+    const status = request.query.status;
+    const { webhooks, total } = await getWebhooksByUserId(
+      userId,
+      page,
+      limit,
+      status
+    );
     reply.send({ webhooks: webhooks.map(toWebhookDto), total, page, limit });
   } catch (error) {
     logger.error('Error getting webhooks:', error);

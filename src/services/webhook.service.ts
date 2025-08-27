@@ -24,6 +24,12 @@ export interface SendMessageData {
   embeds?: IEmbedSchemaDocument[];
 }
 
+interface IWebhookQuery {
+  user_id: string;
+  deleted_at: Date | null;
+  is_active?: boolean;
+}
+
 /**
  * Create a new webhook
  */
@@ -48,26 +54,31 @@ export const createWebhookService = async (
 export const getWebhooksByUserId = async (
   userId: string,
   page: number = 1,
-  limit: number = 10
+  limit: number = 10,
+  status?: string
 ): Promise<{ webhooks: IWebhook[]; total: number }> => {
   try {
     const skip = (page - 1) * limit;
-    const webhooks = await WebhookModel.find({
+    const query: IWebhookQuery = {
       user_id: userId,
       deleted_at: null,
-    })
+    };
+
+    if (status === 'active') {
+      query.is_active = true;
+    }
+
+    const webhooks = await WebhookModel.find(query)
       .skip(skip)
       .limit(limit)
       .sort({ createdAt: -1 });
-    const total = await WebhookModel.countDocuments({
-      user_id: userId,
-      deleted_at: null,
-    });
+    const total = await WebhookModel.countDocuments(query);
     logger.info('Webhooks retrieved successfully for user', {
       userId,
       count: webhooks.length,
       page,
       limit,
+      status,
     });
     return { webhooks, total };
   } catch (error) {
