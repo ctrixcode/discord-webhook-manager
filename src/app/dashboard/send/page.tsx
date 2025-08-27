@@ -125,7 +125,7 @@ export default function SendMessagePage() {
         if (response.success) { // Discord webhooks return 204 No Content on success
           results.push({ webhookId, success: true });
         } else {
-          results.push({ webhookId, success: false, error: `HTTP Error: ${response.status}` });
+          results.push({ webhookId, success: false, error: response.message });
         }
       } catch (error) {
         results.push({ webhookId, success: false, error: String(error) });
@@ -309,7 +309,7 @@ export default function SendMessagePage() {
                         >
                           Predefined Avatar
                         </Button>
-                        <Button
+                        {/* <Button
                           variant={
                             avatarMode === 'custom' ? 'default' : 'outline'
                           }
@@ -322,7 +322,7 @@ export default function SendMessagePage() {
                           }
                         >
                           Custom Avatar
-                        </Button>
+                        </Button> */}
                       </div>
 
                       {/* Predefined Avatar Selection */}
@@ -349,7 +349,7 @@ export default function SendMessagePage() {
                       )}
 
                       {/* Custom Avatar Input */}
-                      {avatarMode === 'custom' && (
+                      {/* {avatarMode === 'custom' && (
                         <div className="space-y-4 p-4 rounded-lg bg-slate-700/30 border border-slate-600/50">
                           <div>
                             <Label
@@ -394,7 +394,7 @@ export default function SendMessagePage() {
                             />
                           </div>
                         </div>
-                      )}
+                      )} */}
                     </div>
                   </TabsContent>
 
