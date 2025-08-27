@@ -191,6 +191,7 @@ export const sendMessage = async (
     if (messageData.avatarRefID) {
       avatar = await getAvatar(userId, messageData.avatarRefID);
       if (avatar) {
+        msg.setUsername(avatar.username);
         msg.setAvatarURL(avatar.avatar_url);
       }
     }
@@ -211,11 +212,6 @@ export const sendMessage = async (
           });
         if (embedData.image) embed.setImage(embedData.image.url);
         if (embedData.thumbnail) embed.setThumbnail(embedData.thumbnail.url);
-        if (embedData.author)
-          embed.setAuthor({
-            name: avatar?.username || '',
-            icon_url: avatar?.avatar_url || '',
-          });
         if (embedData.fields) {
           embedData.fields.forEach((field: IFields) => {
             embed.addField(
@@ -226,7 +222,7 @@ export const sendMessage = async (
         msg.addEmbed(embed);
       });
     }
-
+    webhookClient.addMessage(msg);
     await webhookClient.send();
   } catch (error) {
     logger.error('Error sending message:', error);
