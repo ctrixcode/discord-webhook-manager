@@ -16,6 +16,7 @@ import { AvatarSelector } from '@/components/avatars/avatar-selector';
 import { DiscordMessagePreview } from '@/components/discord-message-preview';
 import type { DiscordEmbed } from '@/lib/api/types/discord';
 import { useToast } from "@/hooks/use-toast";
+import { SendMessageData } from '@/lib/api/types/webhook';
 
 interface SendResult {
   webhookId: string;
@@ -28,11 +29,9 @@ export default function SendMessagePage() {
   const [selectedWebhooks, setSelectedWebhooks] = useState<string[]>([]);
   const [message, setMessage] = useState({
     content: '',
-    username: '',
-    avatar_url: '',
-    avatar_icon_url: '',
+    avatarRefID: '', // New field
     tts: false,
-    threadName: '', // Added threadName to message state
+    threadName: '',
     embeds: [] as DiscordEmbed[],
   });
   const [isSending, setIsSending] = useState(false);
@@ -62,14 +61,9 @@ export default function SendMessagePage() {
   const handleAvatarSelect = (avatar: PredefinedAvatar) => {
     setMessage((prev) => ({
       ...prev,
-      username: avatar.username,
-      avatar_url: avatar.avatar_url,
+      avatarRefID: avatar.id, // Use avatar.id as avatarRefID
     }));
   };
-
-  // const clearAvatar = () => {
-  //   setMessage((prev) => ({ ...prev, username: '', avatarUrl: '' }));
-  // };
 
   const addEmbed = () => {
     const newEmbed: DiscordEmbed = {
@@ -118,19 +112,17 @@ export default function SendMessagePage() {
       if (!webhook) continue;
 
       try {
-        const payload = {
-          content: message.content || undefined,
-          username: message.username || undefined,
-          avatar_url: message.avatar_url || undefined,
-          avatar_icon_url: message.avatar_icon_url || undefined,
-          tts: message.tts,
-          thread_name: message.threadName || undefined, // Added thread_name to payload
+        const payload:SendMessageData = {
+          message: message.content || "", // Renamed content to message
+          avatarRefID: message.avatarRefID || undefined, // Use avatarRefID
+          // tts: message.tts,
+          // thread_name: message.threadName || undefined,
           embeds: message.embeds.length > 0 ? message.embeds : undefined,
         };
 
-        const response = await apiClient.post(webhook.url, payload);
+        const response = await api.webhook.sendMessage(webhook.id, payload);
 
-        if (response.status === 200 || response.status === 204) { // Discord webhooks return 204 No Content on success
+        if (response.success) { // Discord webhooks return 204 No Content on success
           results.push({ webhookId, success: true });
         } else {
           results.push({ webhookId, success: false, error: `HTTP Error: ${response.status}` });
@@ -572,8 +564,6 @@ export default function SendMessagePage() {
             <DiscordMessagePreview
               content={message.content}
               embeds={message.embeds}
-              username={message.username}
-              avatar_url={message.avatar_url}
             />
           </div>
         </div>

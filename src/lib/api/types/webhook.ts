@@ -1,3 +1,5 @@
+import { DiscordEmbed } from "./discord";
+
 export interface Webhook {
   id: string;
   user_id: string;
@@ -23,4 +25,10 @@ export interface UpdateWebhookRequest {
   last_used?: string;
   messageCount?: number;
   is_active?: boolean;
+}
+
+export interface SendMessageData {
+  message: string;
+  avatarRefID?: string;
+  embeds?: DiscordEmbed[];
 }

@@ -1,5 +1,11 @@
 import { apiClient } from '../client';
-import { Webhook, CreateWebhookRequest, UpdateWebhookRequest, ApiResponse } from '../types';
+import {
+  Webhook,
+  CreateWebhookRequest,
+  UpdateWebhookRequest,
+  SendMessageData,
+} from '../types/webhook';
+import { ApiResponse } from '../types/api';
 
 export const webhookQueries = {
   // Get all webhooks
@@ -8,8 +14,8 @@ export const webhookQueries = {
       webhooks: Webhook[];
       total: number;
       page: number;
-      limit: number
-    }
+      limit: number;
+    };
     const response = await apiClient.get<rawResponse>('/webhook');
     return response.data.webhooks;
   },
@@ -27,7 +33,10 @@ export const webhookQueries = {
   },
 
   // Update webhook
-  updateWebhook: async (id: string, data: UpdateWebhookRequest): Promise<Webhook> => {
+  updateWebhook: async (
+    id: string,
+    data: UpdateWebhookRequest,
+  ): Promise<Webhook> => {
     const response = await apiClient.put<Webhook>(`/webhook/${id}`, data);
     return response.data;
   },
@@ -41,6 +50,15 @@ export const webhookQueries = {
   //test webhook
   testWebhook: async (id: string): Promise<ApiResponse> => {
     const response = await apiClient.post<ApiResponse>(`/webhook/${id}/test`);
+    return response.data;
+  },
+
+  // send message to webhook
+  sendMessage: async (id: string, data: SendMessageData): Promise<ApiResponse> => {
+    const response = await apiClient.post<ApiResponse>(
+      `/webhook/${id}/send-message`,
+      data,
+    );
     return response.data;
   },
 };
