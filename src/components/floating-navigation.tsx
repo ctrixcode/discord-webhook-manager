@@ -35,12 +35,12 @@ const navigation = [
     icon: Send,
     color: 'bg-cyan-500 hover:bg-cyan-600',
   },
-  {
-    name: 'Scheduled',
-    href: '/dashboard/scheduled',
-    icon: Clock,
-    color: 'bg-orange-500 hover:bg-orange-600',
-  },
+  // {
+  //   name: 'Scheduled',
+  //   href: '/dashboard/scheduled',
+  //   icon: Clock,
+  //   color: 'bg-orange-500 hover:bg-orange-600',
+  // },
   {
     name: 'Templates',
     href: '/dashboard/templates',
