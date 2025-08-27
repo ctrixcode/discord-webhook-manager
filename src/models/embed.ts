@@ -17,15 +17,16 @@ export interface IEmbedSchemaDocument extends Document {
     url?: string;
     icon_url?: string;
   };
-  fields?: {
-    name: string;
-    value: string;
-    inline?: boolean;
-  }[];
+  fields?: IFields[];
   footer?: {
     text: string;
     icon_url?: string;
   };
+}
+export interface IFields {
+  name: string;
+  value: string;
+  inline?: boolean;
 }
 
 export const EmbedSchema = new Schema<IEmbedSchemaDocument>({

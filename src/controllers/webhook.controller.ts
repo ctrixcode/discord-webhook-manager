@@ -8,6 +8,8 @@ import {
   CreateWebhookData,
   UpdateWebhookData,
   testWebhook,
+  sendMessage,
+  SendMessageData,
 } from '../services/webhook.service';
 import { logger, toWebhookDto } from '../utils';
 
@@ -132,6 +134,23 @@ export const testWebhookHandler = async (
     reply.send({ success: true, message: 'Webhook tested successfully' });
   } catch (error) {
     logger.error('Error testing webhook:', error);
+    reply.code(500).send({ message: 'Internal Server Error' });
+  }
+};
+
+export const sendMessageHandler = async (
+  request: FastifyRequest<{ Params: { id: string }; Body: SendMessageData }>,
+  reply: FastifyReply
+) => {
+  try {
+    const userId = request.user?.userId;
+    if (!userId) {
+      return reply.code(401).send({ message: 'Unauthorized' });
+    }
+    await sendMessage(request.params.id, userId, request.body);
+    reply.send({ success: true, message: 'Message sent successfully' });
+  } catch (error) {
+    logger.error('Error sending message:', error);
     reply.code(500).send({ message: 'Internal Server Error' });
   }
 };

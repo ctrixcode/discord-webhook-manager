@@ -48,3 +48,22 @@ export const getWebhooksQuerySchema = {
     },
   },
 };
+
+export const webhookSendMessageSchema = {
+  body: {
+    type: 'object',
+    required: ['message'],
+    properties: {
+      message: { type: 'string' },
+      avatarRefID: { type: 'string' },
+      embeds: { type: 'array', items: { type: 'object' } },
+    },
+  },
+  params: {
+    type: 'object',
+    required: ['id'],
+    properties: {
+      id: { type: 'string' },
+    },
+  },
+};

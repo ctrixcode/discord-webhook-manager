@@ -1,6 +1,9 @@
-import { createWebhook, Message, Embed } from 'discord-webhook-library';
+import { createWebhook, Message, Embed, Field } from 'discord-webhook-library';
 import WebhookModel, { IWebhook } from '../models/Webhook';
 import { logger } from '../utils';
+import { IAvatar } from '../models/avatar';
+import { IEmbedSchemaDocument, IFields } from '../models/embed';
+import { getAvatar } from './avatar.service';
 
 export interface CreateWebhookData {
   name: string;
@@ -13,6 +16,12 @@ export interface UpdateWebhookData {
   description?: string;
   url?: string;
   is_active?: boolean;
+}
+
+export interface SendMessageData {
+  message: string;
+  avatarRefID?: string;
+  embeds?: IEmbedSchemaDocument[];
 }
 
 /**
@@ -162,13 +171,63 @@ export const testWebhook = async (webhook: IWebhook) => {
   }
 };
 
-export const sendMessage = async (webkitURL: string, message: string) => {
+export const sendMessage = async (
+  webhookId: string,
+  userId: string,
+  messageData: SendMessageData
+) => {
   try {
-    const webhookClient = createWebhook(webkitURL);
+    const webhook = await getWebhookById(webhookId, userId);
+    if (!webhook) {
+      throw new Error('Webhook not found');
+    }
+
+    const webhookClient = createWebhook(webhook.url);
     const msg = new Message();
-    msg.setContent(message);
-    webhookClient.addMessage(msg);
-    webhookClient.send();
+    msg.setContent(messageData.message);
+
+    let avatar: IAvatar | null;
+
+    if (messageData.avatarRefID) {
+      avatar = await getAvatar(userId, messageData.avatarRefID);
+      if (avatar) {
+        msg.setAvatarURL(avatar.avatar_url);
+      }
+    }
+
+    if (messageData.embeds) {
+      messageData.embeds.forEach((embedData: IEmbedSchemaDocument) => {
+        const embed = new Embed();
+        if (embedData.title) embed.setTitle(embedData.title);
+        if (embedData.description) embed.setDescription(embedData.description);
+        if (embedData.url) embed.setURL(embedData.url);
+        if (embedData.timestamp)
+          embed.setTimestamp(new Date(embedData.timestamp));
+        if (embedData.color) embed.setColor(Number(embedData.color));
+        if (embedData.footer)
+          embed.setFooter({
+            text: embedData.footer.text,
+            icon_url: embedData.footer.icon_url,
+          });
+        if (embedData.image) embed.setImage(embedData.image.url);
+        if (embedData.thumbnail) embed.setThumbnail(embedData.thumbnail.url);
+        if (embedData.author)
+          embed.setAuthor({
+            name: avatar?.username || '',
+            icon_url: avatar?.avatar_url || '',
+          });
+        if (embedData.fields) {
+          embedData.fields.forEach((field: IFields) => {
+            embed.addField(
+              new Field(field.name, field.value, field.inline) as Field
+            );
+          });
+        }
+        msg.addEmbed(embed);
+      });
+    }
+
+    await webhookClient.send();
   } catch (error) {
     logger.error('Error sending message:', error);
     throw error;

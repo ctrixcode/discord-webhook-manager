@@ -6,17 +6,20 @@ import {
   updateWebhookHandler,
   deleteWebhookHandler,
   testWebhookHandler,
+  sendMessageHandler,
 } from '../controllers/webhook.controller';
 import { authenticate } from '../middlewares';
 import {
   CreateWebhookData,
   UpdateWebhookData,
+  SendMessageData,
 } from '../services/webhook.service';
 import {
   createWebhookSchema,
   updateWebhookSchema,
   webhookParamsSchema,
   getWebhooksQuerySchema,
+  webhookSendMessageSchema,
 } from '../schemas/webhook.schema';
 
 const webhookRoutes = async (server: FastifyInstance) => {
@@ -49,6 +52,11 @@ const webhookRoutes = async (server: FastifyInstance) => {
     '/:id/test',
     { schema: webhookParamsSchema, preHandler: [authenticate] },
     testWebhookHandler
+  );
+  server.post<{ Params: { id: string }; Body: SendMessageData }>(
+    '/:id/send-message',
+    { schema: webhookSendMessageSchema, preHandler: [authenticate] },
+    sendMessageHandler
   );
 };
 
