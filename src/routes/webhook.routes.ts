@@ -28,7 +28,9 @@ const webhookRoutes = async (server: FastifyInstance) => {
     { schema: createWebhookSchema, preHandler: [authenticate] },
     createWebhookHandler
   );
-  server.get<{ Querystring: { page?: string; limit?: string } }>(
+  server.get<{
+    Querystring: { page?: string; limit?: string; status?: string };
+  }>(
     '/',
     { schema: getWebhooksQuerySchema, preHandler: [authenticate] },
     getWebhooksHandler
