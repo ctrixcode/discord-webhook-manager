@@ -1,6 +1,6 @@
 import { FastifyRequest, FastifyReply } from 'fastify';
 import {
-  createWebhook,
+  createWebhookService as createWebhook,
   getWebhooksByUserId,
   getWebhookById,
   updateWebhook,

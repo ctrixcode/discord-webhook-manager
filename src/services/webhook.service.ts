@@ -1,4 +1,4 @@
-import * as DiscordWebhookLibrary from 'discord-webhook-library';
+import { createWebhook, Message, Embed } from 'discord-webhook-library';
 import WebhookModel, { IWebhook } from '../models/Webhook';
 import { logger } from '../utils';
 
@@ -18,7 +18,7 @@ export interface UpdateWebhookData {
 /**
  * Create a new webhook
  */
-export const createWebhook = async (
+export const createWebhookService = async (
   webhookData: CreateWebhookData,
   userId: string
 ): Promise<IWebhook> => {
@@ -145,19 +145,32 @@ export const deleteWebhook = async (
 
 export const testWebhook = async (webhook: IWebhook) => {
   try {
-    const webhookClient = DiscordWebhookLibrary.createWebhook(webhook.url);
-    const msg = new DiscordWebhookLibrary.Message();
+    const webhookClient = createWebhook(webhook.url);
+    const msg = new Message();
     msg.setUsername('Zoro Prasad');
     msg.setAvatarURL(
       'https://imgs.search.brave.com/rI8gzGw8eKnYbQyjE1WO4bjwAt39LMUWY1iSLNm-0Rw/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly9pLnBp/bmltZy5jb20vb3Jp/Z2luYWxzLzRmLzI0/L2FmLzRmMjRhZjEw/OTlhMWFjYzZhNDNj/MDgxMDViNmQ3NzYy/LmpwZw'
     );
     webhookClient.addMessage(msg);
-    const embed = new DiscordWebhookLibrary.Embed();
+    const embed = new Embed();
     embed.setDescription('Test message');
     msg.addEmbed(embed);
     await webhookClient.send();
   } catch (error) {
     logger.error('Error testing webhook:', error);
+    throw error;
+  }
+};
+
+export const sendMessage = async (webkitURL: string, message: string) => {
+  try {
+    const webhookClient = createWebhook(webkitURL);
+    const msg = new Message();
+    msg.setContent(message);
+    webhookClient.addMessage(msg);
+    webhookClient.send();
+  } catch (error) {
+    logger.error('Error sending message:', error);
     throw error;
   }
 };
