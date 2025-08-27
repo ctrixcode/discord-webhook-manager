@@ -9,14 +9,20 @@ import { ApiResponse } from '../types/api';
 
 export const webhookQueries = {
   // Get all webhooks
-  getAllWebhooks: async (): Promise<Webhook[]> => {
+  getAllWebhooks: async (filters?: { isActive?: boolean }): Promise<Webhook[]> => {
+    const params = new URLSearchParams();
+    if (filters?.isActive !== undefined) {
+      params.append('status', "active");
+    }
+    const queryString = params.toString();
+    const url = queryString ? `/webhook?${queryString}` : '/webhook';
     type rawResponse = {
       webhooks: Webhook[];
       total: number;
       page: number;
       limit: number;
     };
-    const response = await apiClient.get<rawResponse>('/webhook');
+    const response = await apiClient.get<rawResponse>(url);
     return response.data.webhooks;
   },
 

@@ -9,7 +9,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Send, Webhook } from 'lucide-react';
-import { api, apiClient } from '@/lib/api';
+import { api } from '@/lib/api';
 import type { PredefinedAvatar } from '@/lib/api/types/avatar';
 import { useQuery } from '@tanstack/react-query';
 import { AvatarSelector } from '@/components/avatars/avatar-selector';
@@ -40,7 +40,7 @@ export default function SendMessagePage() {
     'predefined',
   );
 
-  const { data: webhooks = [], isLoading: isLoadingWebhooks } = useQuery({ queryKey: ['webhooks'], queryFn: api.webhook.getAllWebhooks });
+  const { data: webhooks = [], isLoading: isLoadingWebhooks } = useQuery({ queryKey: ['webhooks', { isActive: true }], queryFn: () => api.webhook.getAllWebhooks({ isActive: true }) });
 
   const handleWebhookToggle = (webhookId: string) => {
     setSelectedWebhooks((prev) =>
@@ -119,7 +119,7 @@ export default function SendMessagePage() {
           // thread_name: message.threadName || undefined,
           embeds: message.embeds.length > 0 ? message.embeds : undefined,
         };
-
+  
         const response = await api.webhook.sendMessage(webhook.id, payload);
 
         if (response.success) { // Discord webhooks return 204 No Content on success
