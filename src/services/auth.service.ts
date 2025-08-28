@@ -7,6 +7,7 @@ import {
 import { clearRefreshTokenCookie } from '../utils/cookie';
 import { FastifyReply } from 'fastify';
 import { logger } from '../utils';
+import { getDiscordGuildIconURL } from '../utils/discord-api';
 
 export const loginWithDiscord = async (
   discordId: string,
@@ -15,6 +16,12 @@ export const loginWithDiscord = async (
   avatar: string,
   guilds: { id: string; name: string; icon: string | null }[]
 ) => {
+  // Transform guild icons from ID to URL
+  const transformedGuilds = guilds.map(guild => ({
+    ...guild,
+    icon: guild.icon ? getDiscordGuildIconURL(guild.id, guild.icon) : null,
+  }));
+
   let user = await userService.getUserByDiscordId(discordId);
 
   if (!user) {
@@ -24,7 +31,7 @@ export const loginWithDiscord = async (
       username: username,
       email: email,
       discord_avatar: avatar,
-      guilds: guilds,
+      guilds: transformedGuilds,
     });
   } else {
     // User exists, update their information
@@ -32,7 +39,7 @@ export const loginWithDiscord = async (
       username: username,
       email: email,
       discord_avatar: avatar,
-      guilds: guilds,
+      guilds: transformedGuilds,
     });
   }
 
