@@ -99,7 +99,7 @@ export function EmbedBuilder({
         </CardHeader>
 
         <CollapsibleContent>
-          <CardContent className="space-y-6 max-h-none overflow-visible">
+          <CardContent className="space-y-6 max-h-[600px] overflow-y-auto pr-4">
             {/* Basic Information */}
             <div className="space-y-4">
               <h4 className="text-sm font-semibold text-purple-300 border-b border-purple-500/30 pb-1">
@@ -392,7 +392,7 @@ export function EmbedBuilder({
                             text: e.target.value,
                             icon_url: embed.footer?.icon_url,
                           }
-                        : undefined,
+                          : undefined,
                     })
                   }
                   placeholder="Footer text"
@@ -404,7 +404,7 @@ export function EmbedBuilder({
                     updateEmbed({
                       footer: embed.footer?.text
                         ? { text: embed.footer.text, icon_url: e.target.value }
-                        : undefined,
+                          : undefined,
                     })
                   }
                   placeholder="Footer icon URL"
