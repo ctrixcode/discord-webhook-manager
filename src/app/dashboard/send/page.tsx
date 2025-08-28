@@ -697,7 +697,10 @@ export default function SendMessagePage() {
                                         onChange={(e) =>
                                           updateEmbed(index, {
                                             ...embed,
-                                            author: { ...embed.author, name: e.target.value },
+                                            author: {
+                                              ...(embed.author || { name: '' }),
+                                              name: e.target.value,
+                                            },
                                           })
                                         }
                                         className="mt-1 w-full px-3 py-2 bg-slate-600/50 border border-slate-500 rounded-md text-white placeholder:text-slate-400 focus:border-purple-500 focus:outline-none"
@@ -712,7 +715,10 @@ export default function SendMessagePage() {
                                         onChange={(e) =>
                                           updateEmbed(index, {
                                             ...embed,
-                                            author: { ...embed.author, icon_url: e.target.value },
+                                            author: {
+                                              ...(embed.author || { name: '' }),
+                                              icon_url: e.target.value,
+                                            },
                                           })
                                         }
                                         className="mt-1 w-full px-3 py-2 bg-slate-600/50 border border-slate-500 rounded-md text-white placeholder:text-slate-400 focus:border-purple-500 focus:outline-none"
@@ -728,7 +734,10 @@ export default function SendMessagePage() {
                                       onChange={(e) =>
                                         updateEmbed(index, {
                                           ...embed,
-                                          author: { ...embed.author, url: e.target.value },
+                                          author: {
+                                            ...(embed.author || { name: '' }),
+                                            url: e.target.value,
+                                          },
                                         })
                                       }
                                       className="mt-1 w-full px-3 py-2 bg-slate-600/50 border border-slate-500 rounded-md text-white placeholder:text-slate-400 focus:border-purple-500 focus:outline-none"
@@ -858,7 +867,10 @@ export default function SendMessagePage() {
                                         onChange={(e) =>
                                           updateEmbed(index, {
                                             ...embed,
-                                            footer: { ...embed.footer, text: e.target.value },
+                                            footer: {
+                                              ...(embed.footer || { text: '' }),
+                                              text: e.target.value,
+                                            },
                                           })
                                         }
                                         className="mt-1 w-full px-3 py-2 bg-slate-600/50 border border-slate-500 rounded-md text-white placeholder:text-slate-400 focus:border-purple-500 focus:outline-none"
@@ -873,7 +885,10 @@ export default function SendMessagePage() {
                                         onChange={(e) =>
                                           updateEmbed(index, {
                                             ...embed,
-                                            footer: { ...embed.footer, icon_url: e.target.value },
+                                            footer: {
+                                              ...(embed.footer || { text: '' }),
+                                              icon_url: e.target.value,
+                                            },
                                           })
                                         }
                                         className="mt-1 w-full px-3 py-2 bg-slate-600/50 border border-slate-500 rounded-md text-white placeholder:text-slate-400 focus:border-purple-500 focus:outline-none"
