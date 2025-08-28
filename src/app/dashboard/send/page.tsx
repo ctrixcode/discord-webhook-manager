@@ -39,8 +39,10 @@ export default function SendMessagePage() {
   const [avatarMode, setAvatarMode] = useState<'predefined' | 'custom'>(
     'predefined',
   );
+  const [selectedAvatar, setSelectedAvatar] = useState<PredefinedAvatar>();
 
   const { data: webhooks = [], isLoading: isLoadingWebhooks } = useQuery({ queryKey: ['webhooks', { isActive: true }], queryFn: () => api.webhook.getAllWebhooks({ isActive: true }) });
+  const { data: avatars = [], isLoading: isLoadingAvatars } = useQuery({ queryKey: ['avatars'], queryFn: () => api.avatar.getAllAvatars() });
 
   const handleWebhookToggle = (webhookId: string) => {
     setSelectedWebhooks((prev) =>
@@ -63,6 +65,7 @@ export default function SendMessagePage() {
       ...prev,
       avatarRefID: avatar.id, // Use avatar.id as avatarRefID
     }));
+    setSelectedAvatar(avatar);
   };
 
   const addEmbed = () => {
@@ -550,6 +553,7 @@ export default function SendMessagePage() {
             <DiscordMessagePreview
               content={message.content}
               embeds={message.embeds}
+              avatar={selectedAvatar}
             />
           </div>
         </div>
