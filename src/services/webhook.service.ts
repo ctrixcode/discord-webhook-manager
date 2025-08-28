@@ -182,61 +182,125 @@ export const testWebhook = async (webhook: IWebhook) => {
   }
 };
 
+/**
+ * Get multiple webhooks by their IDs for a user
+ */
+export const getWebhooksByIds = async (
+  webhookIds: string[],
+  userId: string
+): Promise<IWebhook[]> => {
+  try {
+    const webhooks = await WebhookModel.find({
+      _id: { $in: webhookIds },
+      user_id: userId,
+      deleted_at: null,
+    });
+    logger.info(`Retrieved ${webhooks.length} webhooks for user ${userId}`, {
+      webhookIds,
+    });
+    return webhooks;
+  } catch (error) {
+    logger.error('Error retrieving multiple webhooks:', error);
+    throw error;
+  }
+};
+
 export const sendMessage = async (
-  webhookId: string,
+  webhookIds: string[], // Keep this for initial query and results tracking
   userId: string,
   messageData: SendMessageData
 ) => {
-  try {
-    const webhook = await getWebhookById(webhookId, userId);
-    if (!webhook) {
-      throw new Error('Webhook not found');
-    }
+  const results: { webhookId: string; status: string; error?: string }[] = [];
 
-    const webhookClient = createWebhook(webhook.url);
-    const msg = new Message();
-    msg.setContent(messageData.message);
+  const fetchedWebhooks = await getWebhooksByIds(webhookIds, userId);
 
-    let avatar: IAvatar | null;
-
-    if (messageData.avatarRefID) {
-      avatar = await getAvatar(userId, messageData.avatarRefID);
-      if (avatar) {
-        msg.setUsername(avatar.username);
-        msg.setAvatarURL(avatar.avatar_url);
-      }
-    }
-
-    if (messageData.embeds) {
-      messageData.embeds.forEach((embedData: IEmbedSchemaDocument) => {
-        const embed = new Embed();
-        if (embedData.title) embed.setTitle(embedData.title);
-        if (embedData.description) embed.setDescription(embedData.description);
-        if (embedData.url) embed.setURL(embedData.url);
-        if (embedData.timestamp)
-          embed.setTimestamp(new Date(embedData.timestamp));
-        if (embedData.color) embed.setColor(Number(embedData.color));
-        if (embedData.footer)
-          embed.setFooter({
-            text: embedData.footer.text,
-            icon_url: embedData.footer.icon_url,
-          });
-        if (embedData.image) embed.setImage(embedData.image.url);
-        if (embedData.thumbnail) embed.setThumbnail(embedData.thumbnail.url);
-        if (embedData.fields) {
-          embedData.fields.forEach((field: IFields) => {
-            embed.addField(
-              new Field(field.name, field.value, field.inline) as Field
-            );
-          });
-        }
-        msg.addEmbed(embed);
+  // Track webhooks that were requested but not found/authorized
+  const foundWebhookIds = new Set(fetchedWebhooks.map(w => w.id));
+  for (const requestedWebhookId of webhookIds) {
+    if (!foundWebhookIds.has(requestedWebhookId)) {
+      results.push({
+        webhookId: requestedWebhookId,
+        status: 'failed',
+        error: 'Webhook not found or not authorized',
       });
     }
-    webhookClient.addMessage(msg);
-    await webhookClient.send();
-  } catch (error) {
-    logger.error('Error sending message:', error);
-    throw error;
   }
+
+  for (const webhook of fetchedWebhooks) {
+    // Loop directly over fetched webhooks
+    try {
+      // Existing message sending logic
+      const webhookClient = createWebhook(webhook.url);
+      const msg = new Message();
+      msg.setContent(messageData.message);
+
+      let avatar: IAvatar | null;
+
+      if (messageData.avatarRefID) {
+        avatar = await getAvatar(userId, messageData.avatarRefID);
+        if (avatar) {
+          msg.setUsername(avatar.username);
+          msg.setAvatarURL(avatar.avatar_url);
+        }
+      }
+
+      if (messageData.embeds) {
+        messageData.embeds.forEach((embedData: IEmbedSchemaDocument) => {
+          const embed = new Embed();
+          if (embedData.title) embed.setTitle(embedData.title);
+          if (embedData.description)
+            embed.setDescription(embedData.description);
+          if (embedData.url) embed.setURL(embedData.url);
+          if (embedData.timestamp)
+            embed.setTimestamp(new Date(embedData.timestamp));
+          if (embedData.color) embed.setColor(Number(embedData.color));
+          if (embedData.footer)
+            embed.setFooter({
+              text: embedData.footer.text,
+              icon_url: embedData.footer.icon_url,
+            });
+          if (embedData.image) embed.setImage(embedData.image.url);
+          if (embedData.thumbnail) embed.setThumbnail(embedData.thumbnail.url);
+          if (embedData.author)
+            embed.setAuthor({
+              name: embedData.author.name,
+              url: embedData.author.url,
+              icon_url: embedData.author.icon_url,
+            });
+          if (embedData.fields) {
+            embedData.fields.forEach((field: IFields) => {
+              embed.addField(
+                new Field(field.name, field.value, field.inline) as Field
+              );
+            });
+          }
+          msg.addEmbed(embed);
+        });
+      }
+      webhookClient.addMessage(msg);
+      logger.info(`Message sent successfully to webhook ID: ${webhook.id}`, {
+        userId,
+      });
+      results.push({ webhookId: webhook.id, status: 'success' });
+    } catch (error: unknown) {
+      logger.error(
+        `Error sending message to webhook ID: ${webhook.id}:`,
+        error instanceof Error ? error.message : error
+      );
+      results.push({
+        webhookId: webhook.id,
+        status: 'failed',
+        error: error instanceof Error ? error.message : String(error),
+      });
+    }
+  }
+
+  if (
+    results.every(result => result.status === 'failed') &&
+    webhookIds.length > 0
+  ) {
+    throw new Error('Failed to send message to any of the provided webhooks.');
+  }
+
+  return results;
 };
