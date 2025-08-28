@@ -3,6 +3,7 @@
 import { Separator } from '@/components/ui/separator';
 import { Palette, Bell, Shield, Trash2 } from 'lucide-react';
 import { useEffect, useState } from 'react';
+import { ConfirmationDialog } from '@/components/ui/confirmation-dialog';
 import { SettingsCard } from '@/components/settings/settings-card';
 import { ThemeSelector } from '@/components/settings/theme-selector';
 import { NotificationToggle } from '@/components/settings/notification-toggle';
@@ -10,6 +11,7 @@ import { DangerAction } from '@/components/settings/danger-action';
 
 export default function SettingsPage() {
   const [mounted, setMounted] = useState(false);
+  const [showClearDataDialog, setShowClearDataDialog] = useState(false);
 
   useEffect(() => {
     setMounted(true);
@@ -20,14 +22,12 @@ export default function SettingsPage() {
   }
 
   const handleClearData = () => {
-    if (
-      confirm(
-        'Are you sure you want to clear all data? This action cannot be undone.',
-      )
-    ) {
-      localStorage.clear();
-      window.location.reload();
-    }
+    setShowClearDataDialog(true);
+  };
+
+  const handleConfirmClearData = () => {
+    localStorage.clear();
+    window.location.reload();
   };
 
   return (
@@ -102,6 +102,14 @@ export default function SettingsPage() {
           onAction={handleClearData}
         />
       </SettingsCard>
+
+      <ConfirmationDialog
+        open={showClearDataDialog}
+        onOpenChange={setShowClearDataDialog}
+        title="Clear All Data?"
+        description="Are you sure you want to clear all data? This action cannot be undone."
+        onConfirm={handleConfirmClearData}
+        confirmButtonText="Clear Data"
+      />
     </div>
   );
-}
