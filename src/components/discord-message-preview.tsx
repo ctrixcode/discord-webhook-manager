@@ -148,14 +148,6 @@ export function DiscordMessagePreview({
             embeds.map((embed, index) => (
               <div key={index} className="max-w-lg mt-2">
                 <div className="flex">
-                  {embed.color && (
-                    <div
-                      className="w-1 rounded-l-md mr-3 flex-shrink-0"
-                      style={{
-                        backgroundColor: discordColorToHex(embed.color),
-                      }}
-                    />
-                  )}
                   <div
                     className="bg-[#2b2d31] rounded-r-md rounded-l-sm p-4 flex-1 border-l-4"
                     style={{
