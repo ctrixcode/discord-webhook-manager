@@ -400,8 +400,10 @@ export default function SendMessagePage() {
                         {message.content.length}/2000 characters
                       </p>
                     </div>
+                  </TabsContent>
 
-                    <div className="space-y-4">
+                  <TabsContent value="settings" className="space-y-4 mt-4">
+                     <div className="space-y-4">
                       <div>
                         <Label className="text-slate-200">
                           Message Appearance
@@ -514,9 +516,7 @@ export default function SendMessagePage() {
                         </div>
                       )} */}
                     </div>
-                  </TabsContent>
-
-                  <TabsContent value="settings" className="space-y-4 mt-4">
+                    
                     <div className="space-y-4">
                       <div className="flex items-center justify-between p-4 rounded-lg bg-slate-700/30 border border-slate-600/50">
                         <div>
