@@ -155,6 +155,47 @@ export default function SendMessagePage() {
     }));
   };
 
+  const addField = (embedIndex: number) => {
+    setMessage((prev) => {
+      const newEmbeds = [...prev.embeds];
+      if (newEmbeds[embedIndex]) {
+        newEmbeds[embedIndex].fields = [
+          ...(newEmbeds[embedIndex].fields || []),
+          { name: '', value: '', inline: false },
+        ];
+      }
+      return { ...prev, embeds: newEmbeds };
+    });
+  };
+
+  const updateField = (
+    embedIndex: number,
+    fieldIndex: number,
+    field: { name: string; value: string; inline?: boolean },
+  ) => {
+    setMessage((prev) => {
+      const newEmbeds = [...prev.embeds];
+      if (newEmbeds[embedIndex] && newEmbeds[embedIndex].fields) {
+        newEmbeds[embedIndex].fields = newEmbeds[embedIndex].fields!.map(
+          (f, i) => (i === fieldIndex ? field : f),
+        );
+      }
+      return { ...prev, embeds: newEmbeds };
+    });
+  };
+
+  const removeField = (embedIndex: number, fieldIndex: number) => {
+    setMessage((prev) => {
+      const newEmbeds = [...prev.embeds];
+      if (newEmbeds[embedIndex] && newEmbeds[embedIndex].fields) {
+        newEmbeds[embedIndex].fields = newEmbeds[embedIndex].fields!.filter(
+          (_, i) => i !== fieldIndex,
+        );
+      }
+      return { ...prev, embeds: newEmbeds };
+    });
+  };
+
   const handleSendMessage = async () => {
     if (selectedWebhooks.length === 0) {
       toast({
@@ -590,6 +631,24 @@ export default function SendMessagePage() {
 
                                 <div>
                                   <Label className="text-slate-300 text-sm">
+                                    URL
+                                  </Label>
+                                  <input
+                                    type="url"
+                                    placeholder="Embed URL"
+                                    value={embed.url || ''}
+                                    onChange={(e) =>
+                                      updateEmbed(index, {
+                                        ...embed,
+                                        url: e.target.value,
+                                      })
+                                    }
+                                    className="mt-1 w-full px-3 py-2 bg-slate-600/50 border border-slate-500 rounded-md text-white placeholder:text-slate-400 focus:border-purple-500 focus:outline-none"
+                                  />
+                                </div>
+
+                                <div>
+                                  <Label className="text-slate-300 text-sm">
                                     Description
                                   </Label>
                                   <Textarea
@@ -623,6 +682,212 @@ export default function SendMessagePage() {
                                       })
                                     }
                                     className="mt-1 w-full h-10 bg-slate-600/50 border border-slate-500 rounded-md"
+                                  />
+                                </div>
+
+                                <div className="space-y-2">
+                                  <Label className="text-slate-200 font-medium">Author</Label>
+                                  <div>
+                                    <Label className="text-slate-300 text-sm">Name</Label>
+                                    <input
+                                      type="text"
+                                      placeholder="Author name"
+                                      value={embed.author?.name || ''}
+                                      onChange={(e) =>
+                                        updateEmbed(index, {
+                                          ...embed,
+                                          author: { ...embed.author, name: e.target.value },
+                                        })
+                                      }
+                                      className="mt-1 w-full px-3 py-2 bg-slate-600/50 border border-slate-500 rounded-md text-white placeholder:text-slate-400 focus:border-purple-500 focus:outline-none"
+                                    />
+                                  </div>
+                                  <div>
+                                    <Label className="text-slate-300 text-sm">Icon URL</Label>
+                                    <input
+                                      type="url"
+                                      placeholder="Author icon URL"
+                                      value={embed.author?.icon_url || ''}
+                                      onChange={(e) =>
+                                        updateEmbed(index, {
+                                          ...embed,
+                                          author: { ...embed.author, icon_url: e.target.value },
+                                        })
+                                      }
+                                      className="mt-1 w-full px-3 py-2 bg-slate-600/50 border border-slate-500 rounded-md text-white placeholder:text-slate-400 focus:border-purple-500 focus:outline-none"
+                                    />
+                                  </div>
+                                  <div>
+                                    <Label className="text-slate-300 text-sm">URL</Label>
+                                    <input
+                                      type="url"
+                                      placeholder="Author URL"
+                                      value={embed.author?.url || ''}
+                                      onChange={(e) =>
+                                        updateEmbed(index, {
+                                          ...embed,
+                                          author: { ...embed.author, url: e.target.value },
+                                        })
+                                      }
+                                      className="mt-1 w-full px-3 py-2 bg-slate-600/50 border border-slate-500 rounded-md text-white placeholder:text-slate-400 focus:border-purple-500 focus:outline-none"
+                                    />
+                                  </div>
+                                </div>
+
+                                <div className="space-y-2">
+                                  <Label className="text-slate-200 font-medium">Fields</Label>
+                                  <Button
+                                    onClick={() => addField(index)}
+                                    size="sm"
+                                    className="bg-purple-600 hover:bg-purple-700 text-white"
+                                  >
+                                    Add Field
+                                  </Button>
+                                  {embed.fields && embed.fields.length > 0 && (
+                                    <div className="space-y-3 mt-2">
+                                      {embed.fields.map((field, fieldIndex) => (
+                                        <div
+                                          key={fieldIndex}
+                                          className="p-3 rounded-md bg-slate-600/50 border border-slate-500"
+                                        >
+                                          <div className="flex items-center justify-between mb-2">
+                                            <Label className="text-slate-200 text-sm">Field {fieldIndex + 1}</Label>
+                                            <Button
+                                              onClick={() => removeField(index, fieldIndex)}
+                                              variant="outline"
+                                              size="sm"
+                                              className="border-red-600 text-red-400 hover:bg-red-600 hover:text-white bg-transparent"
+                                            >
+                                              Remove
+                                            </Button>
+                                          </div>
+                                          <div>
+                                            <Label className="text-slate-300 text-sm">Name</Label>
+                                            <input
+                                              type="text"
+                                              placeholder="Field name"
+                                              value={field.name}
+                                              onChange={(e) =>
+                                                updateField(index, fieldIndex, {
+                                                  ...field,
+                                                  name: e.target.value,
+                                                })
+                                              }
+                                              className="mt-1 w-full px-3 py-2 bg-slate-700/50 border border-slate-600 rounded-md text-white placeholder:text-slate-400 focus:border-purple-500 focus:outline-none"
+                                            />
+                                          </div>
+                                          <div className="mt-2">
+                                            <Label className="text-slate-300 text-sm">Value</Label>
+                                            <Textarea
+                                              placeholder="Field value"
+                                              value={field.value}
+                                              onChange={(e) =>
+                                                updateField(index, fieldIndex, {
+                                                  ...field,
+                                                  value: e.target.value,
+                                                })
+                                              }
+                                              className="mt-1 bg-slate-700/50 border-slate-600 text-white placeholder:text-slate-400 focus:border-purple-500"
+                                              rows={2}
+                                            />
+                                          </div>
+                                          <div className="flex items-center space-x-2 mt-2">
+                                            <Checkbox
+                                              checked={field.inline}
+                                              onCheckedChange={(checked) =>
+                                                updateField(index, fieldIndex, {
+                                                  ...field,
+                                                  inline: !!checked,
+                                                })
+                                              }
+                                              className="border-slate-500"
+                                            />
+                                            <Label className="text-slate-300 text-sm">Inline</Label>
+                                          </div>
+                                        </div>
+                                      ))}
+                                    </div>
+                                  )}
+                                </div>
+
+                                <div className="space-y-2">
+                                  <Label className="text-slate-200 font-medium">Image</Label>
+                                  <input
+                                    type="url"
+                                    placeholder="Image URL"
+                                    value={embed.image?.url || ''}
+                                    onChange={(e) =>
+                                      updateEmbed(index, {
+                                        ...embed,
+                                        image: { url: e.target.value },
+                                      })
+                                    }
+                                    className="mt-1 w-full px-3 py-2 bg-slate-600/50 border border-slate-500 rounded-md text-white placeholder:text-slate-400 focus:border-purple-500 focus:outline-none"
+                                  />
+                                </div>
+
+                                <div className="space-y-2">
+                                  <Label className="text-slate-200 font-medium">Thumbnail</Label>
+                                  <input
+                                    type="url"
+                                    placeholder="Thumbnail URL"
+                                    value={embed.thumbnail?.url || ''}
+                                    onChange={(e) =>
+                                      updateEmbed(index, {
+                                        ...embed,
+                                        thumbnail: { url: e.target.value },
+                                      })
+                                    }
+                                    className="mt-1 w-full px-3 py-2 bg-slate-600/50 border border-slate-500 rounded-md text-white placeholder:text-slate-400 focus:border-purple-500 focus:outline-none"
+                                  />
+                                </div>
+
+                                <div className="space-y-2">
+                                  <Label className="text-slate-200 font-medium">Footer</Label>
+                                  <div>
+                                    <Label className="text-slate-300 text-sm">Text</Label>
+                                    <input
+                                      type="text"
+                                      placeholder="Footer text"
+                                      value={embed.footer?.text || ''}
+                                      onChange={(e) =>
+                                        updateEmbed(index, {
+                                          ...embed,
+                                          footer: { ...embed.footer, text: e.target.value },
+                                        })
+                                      }
+                                      className="mt-1 w-full px-3 py-2 bg-slate-600/50 border border-slate-500 rounded-md text-white placeholder:text-slate-400 focus:border-purple-500 focus:outline-none"
+                                    />
+                                  </div>
+                                  <div>
+                                    <Label className="text-slate-300 text-sm">Icon URL</Label>
+                                    <input
+                                      type="url"
+                                      placeholder="Footer icon URL"
+                                      value={embed.footer?.icon_url || ''}
+                                      onChange={(e) =>
+                                        updateEmbed(index, {
+                                          ...embed,
+                                          footer: { ...embed.footer, icon_url: e.target.value },
+                                        })
+                                      }
+                                      className="mt-1 w-full px-3 py-2 bg-slate-600/50 border border-slate-500 rounded-md text-white placeholder:text-slate-400 focus:border-purple-500 focus:outline-none"
+                                    />
+                                  </div>
+                                </div>
+
+                                <div className="space-y-2">
+                                  <Label className="text-slate-200 font-medium">Timestamp</Label>
+                                  <input
+                                    type="datetime-local"
+                                    value={embed.timestamp ? new Date(embed.timestamp).toISOString().slice(0, 16) : ''}
+                                    onChange={(e) =>
+                                      updateEmbed(index, {
+                                        ...embed,
+                                        timestamp: e.target.value ? new Date(e.target.value).toISOString() : undefined,
+                                      })
+                                    }
+                                    className="mt-1 w-full px-3 py-2 bg-slate-600/50 border border-slate-500 rounded-md text-white placeholder:text-slate-400 focus:border-purple-500 focus:outline-none"
                                   />
                                 </div>
                               </div>
