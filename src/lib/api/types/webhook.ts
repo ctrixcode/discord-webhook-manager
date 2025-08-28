@@ -5,7 +5,6 @@ export interface Webhook {
   user_id: string;
   name: string;
   description?: string;
-  url: string;
   is_active: boolean;
   last_used?: string;
   createdAt: Date;
@@ -20,7 +19,6 @@ export interface CreateWebhookRequest {
 
 export interface UpdateWebhookRequest {
   name?: string;
-  url?: string;
   description?: string;
   last_used?: string;
   messageCount?: number;
