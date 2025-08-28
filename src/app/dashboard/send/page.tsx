@@ -1,6 +1,8 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { XCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
@@ -39,9 +41,44 @@ export default function SendMessagePage() {
   const [avatarMode, setAvatarMode] = useState<'predefined' | 'custom'>(
     'predefined',
   );
-  const [selectedAvatar, setSelectedAvatar] = useState<PredefinedAvatar>();
+  const [selectedTemplateId, setSelectedTemplateId] = useState<string | undefined>(undefined);
+  const [selectedAvatar, setSelectedAvatar] = useState<PredefinedAvatar | undefined>();
+
+  const handleClearMessage = () => {
+    setMessage({
+      content: '',
+      avatarRefID: '',
+      tts: false,
+      threadName: '',
+      embeds: [],
+    });
+    setSelectedAvatar(undefined);
+    setSelectedTemplateId(undefined); 
+  };
+
+  const handleTemplateSelect = (templateId: string) => {
+    setSelectedTemplateId(templateId); 
+    const selectedTemplate = templates.find((t) => t._id === templateId);
+    if (selectedTemplate) {
+      setMessage({
+        content: selectedTemplate.content || '',
+        avatarRefID: selectedTemplate.avatar_ref || '',
+        tts:  false,
+        threadName:  '',
+        embeds: selectedTemplate.embeds || [],
+      });
+      if (selectedTemplate.avatar_ref) {
+        const avatar = avatars.find(a => a.id === selectedTemplate.avatar_ref);
+        setSelectedAvatar(avatar);
+      } else {
+        setSelectedAvatar(undefined);
+      }
+    }
+  };
 
   const { data: webhooks = [], isLoading: isLoadingWebhooks } = useQuery({ queryKey: ['webhooks', { isActive: true }], queryFn: () => api.webhook.getAllWebhooks({ isActive: true }) });
+  const { data: avatars = [], isLoading: isLoadingAvatars } = useQuery({ queryKey: ['avatars'], queryFn: () => api.avatar.getAllAvatars() });
+  const { data: templates = [], isLoading: isLoadingTemplates } = useQuery({ queryKey: ['messageTemplates'], queryFn: () => api.template.getAllTemplates() });
 
   const handleWebhookToggle = (webhookId: string) => {
     setSelectedWebhooks((prev) =>
@@ -227,6 +264,32 @@ export default function SendMessagePage() {
                 <CardTitle>Compose Message</CardTitle>
               </CardHeader>
               <CardContent>
+                <div className="flex items-center justify-between mb-4">
+                  <div className="flex-1 mr-4">
+                    <Label htmlFor="template-select" className="text-slate-200">Load Template</Label>
+                    <Select onValueChange={handleTemplateSelect} value={selectedTemplateId} disabled={isLoadingTemplates || templates.length === 0}>
+                      <SelectTrigger id="template-select" className="mt-1 bg-slate-700/50 border-slate-600 text-white placeholder:text-slate-400">
+                        <SelectValue placeholder="Select a template" />
+                      </SelectTrigger>
+                      <SelectContent className="bg-slate-800 border-slate-700 text-white">
+                        {templates.map((template) => (
+                          <SelectItem key={template._id} value={template._id} className="flex items-center gap-2">
+                            {template.name}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={handleClearMessage}
+                    className="mt-auto border-red-600 text-red-400 hover:bg-red-600 hover:text-white bg-transparent"
+                  >
+                    <XCircle className="w-4 h-4 mr-2" />
+                    Clear
+                  </Button>
+                </div>
                 <Tabs defaultValue="content" className="w-full">
                   <TabsList className="grid w-full grid-cols-3 bg-slate-700/50">
                     <TabsTrigger

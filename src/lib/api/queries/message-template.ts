@@ -3,7 +3,7 @@ import {
   MessageTemplate,
   CreateMessageTemplateRequest,
   UpdateMessageTemplateRequest,
-} from '../types';
+} from '../types/message-template';
 
 export const templateQueries = {
   // Get all templates for current user
