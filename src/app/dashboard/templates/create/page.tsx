@@ -58,7 +58,7 @@ export default function CreateTemplatePage() {
     <div className="h-screen flex flex-col bg-gradient-to-br from-slate-900 via-slate-800 to-purple-900">
       {/* Header */}
       <div className="flex justify-between items-center p-4 border-b border-slate-700/50 bg-slate-900/50 backdrop-blur-sm sticky top-0 z-10">
-        <div className="flex justify-center items-center justify-between p-4 gap-4">
+        <div className="flex justify-center items-center p-4 gap-4">
           <Button
             variant="ghost"
             size="sm"
