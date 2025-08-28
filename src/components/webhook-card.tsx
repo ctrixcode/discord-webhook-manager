@@ -20,8 +20,9 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
-import { type Webhook } from '@/lib/api/types';
-import { api, UpdateWebhookRequest } from '@/lib/api';
+import { type Webhook } from '@/lib/api/types/webhook';
+import { api } from '@/lib/api';
+import { UpdateWebhookRequest } from '@/lib/api/types/webhook';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import {
   MoreHorizontal,
@@ -66,14 +67,6 @@ export function WebhookCard({ webhook, onWebhookUpdated }: WebhookCardProps) {
       });
     },
   });
-
-  const handleCopyUrl = () => {
-    navigator.clipboard.writeText(webhook.url);
-    toast({
-      title: 'Copied!',
-      description: 'Webhook URL copied to clipboard',
-    });
-  };
 
   const handleTestWebhook = async () => {
     setIsTestingWebhook(true);
@@ -170,13 +163,6 @@ export function WebhookCard({ webhook, onWebhookUpdated }: WebhookCardProps) {
                   {isTestingWebhook ? 'Testing...' : 'Test Webhook'}
                 </DropdownMenuItem>
                 <DropdownMenuItem
-                  onClick={handleCopyUrl}
-                  className="hover:bg-slate-700/50 focus:bg-slate-700/50"
-                >
-                  <Copy className="mr-2 h-4 w-4" />
-                  Copy URL
-                </DropdownMenuItem>
-                <DropdownMenuItem
                   onClick={toggleActive}
                   className="hover:bg-slate-700/50 focus:bg-slate-700/50"
                 >
@@ -201,9 +187,9 @@ export function WebhookCard({ webhook, onWebhookUpdated }: WebhookCardProps) {
         <CardContent>
           <div className="space-y-2">
             <div className="text-sm text-slate-300">
-              <span className="font-medium">URL:</span>
+              <span className="font-medium">Description:</span>
               <div className="mt-1 p-2 bg-slate-800/50 rounded border border-slate-700/50 font-mono text-xs break-all">
-                {webhook.url}
+                {webhook.description}
               </div>
             </div>
             <div className="flex items-center justify-between text-sm text-slate-400">

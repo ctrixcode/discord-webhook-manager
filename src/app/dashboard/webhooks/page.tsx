@@ -29,8 +29,7 @@ export default function WebhooksPage() {
     if (!webhooks) return [];
     return webhooks.filter(
       (webhook) =>
-        webhook.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        webhook.url.toLowerCase().includes(searchQuery.toLowerCase()),
+        webhook.name.toLowerCase().includes(searchQuery.toLowerCase()),
     );
   }, [webhooks, searchQuery]);
 
