@@ -19,7 +19,6 @@ export interface WebhookDto {
   user_id: string;
   name: string;
   description?: string;
-  url: string;
   is_active: boolean;
   createdAt: Date;
   updatedAt: Date;
@@ -54,7 +53,6 @@ export const toWebhookDto = (webhook: IWebhook): WebhookDto => {
     user_id: webhook.user_id,
     name: webhook.name,
     description: webhook.description,
-    url: webhook.url,
     is_active: webhook.is_active,
     createdAt: webhook.createdAt,
     updatedAt: webhook.updatedAt,
