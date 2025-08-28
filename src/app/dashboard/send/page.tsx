@@ -611,40 +611,41 @@ export default function SendMessagePage() {
                               </div>
 
                               <div className="space-y-3">
-                                <div>
-                                  <Label className="text-slate-300 text-sm">
-                                    Title
-                                  </Label>
-                                  <input
-                                    type="text"
-                                    placeholder="Embed title"
-                                    value={embed.title || ''}
-                                    onChange={(e) =>
-                                      updateEmbed(index, {
-                                        ...embed,
-                                        title: e.target.value,
-                                      })
-                                    }
-                                    className="mt-1 w-full px-3 py-2 bg-slate-600/50 border border-slate-500 rounded-md text-white placeholder:text-slate-400 focus:border-purple-500 focus:outline-none"
-                                  />
-                                </div>
-
-                                <div>
-                                  <Label className="text-slate-300 text-sm">
-                                    URL
-                                  </Label>
-                                  <input
-                                    type="url"
-                                    placeholder="Embed URL"
-                                    value={embed.url || ''}
-                                    onChange={(e) =>
-                                      updateEmbed(index, {
-                                        ...embed,
-                                        url: e.target.value,
-                                      })
-                                    }
-                                    className="mt-1 w-full px-3 py-2 bg-slate-600/50 border border-slate-500 rounded-md text-white placeholder:text-slate-400 focus:border-purple-500 focus:outline-none"
-                                  />
+                                <div className="flex gap-2">
+                                  <div className="flex-1">
+                                    <Label className="text-slate-300 text-sm">
+                                      Title
+                                    </Label>
+                                    <input
+                                      type="text"
+                                      placeholder="Embed title"
+                                      value={embed.title || ''}
+                                      onChange={(e) =>
+                                        updateEmbed(index, {
+                                          ...embed,
+                                          title: e.target.value,
+                                        })
+                                      }
+                                      className="mt-1 w-full px-3 py-2 bg-slate-600/50 border border-slate-500 rounded-md text-white placeholder:text-slate-400 focus:border-purple-500 focus:outline-none"
+                                    />
+                                  </div>
+                                  <div className="flex-1">
+                                    <Label className="text-slate-300 text-sm">
+                                      URL
+                                    </Label>
+                                    <input
+                                      type="url"
+                                      placeholder="Embed URL"
+                                      value={embed.url || ''}
+                                      onChange={(e) =>
+                                        updateEmbed(index, {
+                                          ...embed,
+                                          url: e.target.value,
+                                        })
+                                      }
+                                      className="mt-1 w-full px-3 py-2 bg-slate-600/50 border border-slate-500 rounded-md text-white placeholder:text-slate-400 focus:border-purple-500 focus:outline-none"
+                                    />
+                                  </div>
                                 </div>
 
                                 <div>
