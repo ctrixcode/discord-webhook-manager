@@ -53,18 +53,22 @@ export const getWebhooksQuerySchema = {
 export const webhookSendMessageSchema = {
   body: {
     type: 'object',
-    required: ['message'],
+    required: ['webhookIds', 'messageData'],
     properties: {
-      message: { type: 'string' },
-      avatarRefID: { type: 'string' },
-      embeds: { type: 'array', items: { type: 'object' } },
-    },
-  },
-  params: {
-    type: 'object',
-    required: ['id'],
-    properties: {
-      id: { type: 'string' },
+      webhookIds: {
+        type: 'array',
+        items: { type: 'string' },
+        minItems: 1,
+      },
+      messageData: {
+        type: 'object',
+        required: ['message'],
+        properties: {
+          message: { type: 'string' },
+          avatarRefID: { type: 'string' },
+          embeds: { type: 'array', items: { type: 'object' } },
+        },
+      },
     },
   },
 };

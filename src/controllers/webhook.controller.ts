@@ -147,7 +147,9 @@ export const testWebhookHandler = async (
 };
 
 export const sendMessageHandler = async (
-  request: FastifyRequest<{ Params: { id: string }; Body: SendMessageData }>,
+  request: FastifyRequest<{
+    Body: { webhookIds: string[]; messageData: SendMessageData };
+  }>,
   reply: FastifyReply
 ) => {
   try {
@@ -155,8 +157,32 @@ export const sendMessageHandler = async (
     if (!userId) {
       return reply.code(401).send({ message: 'Unauthorized' });
     }
-    await sendMessage(request.params.id, userId, request.body);
-    reply.send({ success: true, message: 'Message sent successfully' });
+
+    const { webhookIds, messageData } = request.body;
+
+    if (!webhookIds || !Array.isArray(webhookIds) || webhookIds.length === 0) {
+      return reply
+        .code(400)
+        .send({ message: 'webhookIds array is required and cannot be empty' });
+    }
+
+    const results = await sendMessage(webhookIds, userId, messageData);
+
+    if (results.every(result => result.status === 'failed')) {
+      return reply
+        .code(500)
+        .send({
+          success: false,
+          message: 'Failed to send message to any webhook',
+          results,
+        });
+    }
+
+    reply.send({
+      success: true,
+      message: 'Message sending process completed',
+      results,
+    });
   } catch (error) {
     logger.error('Error sending message:', error);
     reply.code(500).send({ message: 'Internal Server Error' });

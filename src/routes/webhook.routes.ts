@@ -55,8 +55,8 @@ const webhookRoutes = async (server: FastifyInstance) => {
     { schema: webhookParamsSchema, preHandler: [authenticate] },
     testWebhookHandler
   );
-  server.post<{ Params: { id: string }; Body: SendMessageData }>(
-    '/:id/send-message',
+  server.post<{ Body: { webhookIds: string[]; messageData: SendMessageData } }>(
+    '/send-message',
     { schema: webhookSendMessageSchema, preHandler: [authenticate] },
     sendMessageHandler
   );

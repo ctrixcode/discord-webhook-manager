@@ -278,6 +278,7 @@ export const sendMessage = async (
         });
       }
       webhookClient.addMessage(msg);
+      webhookClient.send();
       logger.info(`Message sent successfully to webhook ID: ${webhook.id}`, {
         userId,
       });
