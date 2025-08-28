@@ -687,35 +687,37 @@ export default function SendMessagePage() {
 
                                 <div className="space-y-2">
                                   <Label className="text-slate-200 font-medium">Author</Label>
-                                  <div>
-                                    <Label className="text-slate-300 text-sm">Name</Label>
-                                    <input
-                                      type="text"
-                                      placeholder="Author name"
-                                      value={embed.author?.name || ''}
-                                      onChange={(e) =>
-                                        updateEmbed(index, {
-                                          ...embed,
-                                          author: { ...embed.author, name: e.target.value },
-                                        })
-                                      }
-                                      className="mt-1 w-full px-3 py-2 bg-slate-600/50 border border-slate-500 rounded-md text-white placeholder:text-slate-400 focus:border-purple-500 focus:outline-none"
-                                    />
-                                  </div>
-                                  <div>
-                                    <Label className="text-slate-300 text-sm">Icon URL</Label>
-                                    <input
-                                      type="url"
-                                      placeholder="Author icon URL"
-                                      value={embed.author?.icon_url || ''}
-                                      onChange={(e) =>
-                                        updateEmbed(index, {
-                                          ...embed,
-                                          author: { ...embed.author, icon_url: e.target.value },
-                                        })
-                                      }
-                                      className="mt-1 w-full px-3 py-2 bg-slate-600/50 border border-slate-500 rounded-md text-white placeholder:text-slate-400 focus:border-purple-500 focus:outline-none"
-                                    />
+                                  <div className="flex gap-2">
+                                    <div className="flex-1">
+                                      <Label className="text-slate-300 text-sm">Name</Label>
+                                      <input
+                                        type="text"
+                                        placeholder="Author name"
+                                        value={embed.author?.name || ''}
+                                        onChange={(e) =>
+                                          updateEmbed(index, {
+                                            ...embed,
+                                            author: { ...embed.author, name: e.target.value },
+                                          })
+                                        }
+                                        className="mt-1 w-full px-3 py-2 bg-slate-600/50 border border-slate-500 rounded-md text-white placeholder:text-slate-400 focus:border-purple-500 focus:outline-none"
+                                      />
+                                    </div>
+                                    <div className="flex-1">
+                                      <Label className="text-slate-300 text-sm">Icon URL</Label>
+                                      <input
+                                        type="url"
+                                        placeholder="Author icon URL"
+                                        value={embed.author?.icon_url || ''}
+                                        onChange={(e) =>
+                                          updateEmbed(index, {
+                                            ...embed,
+                                            author: { ...embed.author, icon_url: e.target.value },
+                                          })
+                                        }
+                                        className="mt-1 w-full px-3 py-2 bg-slate-600/50 border border-slate-500 rounded-md text-white placeholder:text-slate-400 focus:border-purple-500 focus:outline-none"
+                                      />
+                                    </div>
                                   </div>
                                   <div>
                                     <Label className="text-slate-300 text-sm">URL</Label>
@@ -810,69 +812,73 @@ export default function SendMessagePage() {
                                   )}
                                 </div>
 
-                                <div className="space-y-2">
-                                  <Label className="text-slate-200 font-medium">Image</Label>
-                                  <input
-                                    type="url"
-                                    placeholder="Image URL"
-                                    value={embed.image?.url || ''}
-                                    onChange={(e) =>
-                                      updateEmbed(index, {
-                                        ...embed,
-                                        image: { url: e.target.value },
-                                      })
-                                    }
-                                    className="mt-1 w-full px-3 py-2 bg-slate-600/50 border border-slate-500 rounded-md text-white placeholder:text-slate-400 focus:border-purple-500 focus:outline-none"
-                                  />
-                                </div>
-
-                                <div className="space-y-2">
-                                  <Label className="text-slate-200 font-medium">Thumbnail</Label>
-                                  <input
-                                    type="url"
-                                    placeholder="Thumbnail URL"
-                                    value={embed.thumbnail?.url || ''}
-                                    onChange={(e) =>
-                                      updateEmbed(index, {
-                                        ...embed,
-                                        thumbnail: { url: e.target.value },
-                                      })
-                                    }
-                                    className="mt-1 w-full px-3 py-2 bg-slate-600/50 border border-slate-500 rounded-md text-white placeholder:text-slate-400 focus:border-purple-500 focus:outline-none"
-                                  />
-                                </div>
-
-                                <div className="space-y-2">
-                                  <Label className="text-slate-200 font-medium">Footer</Label>
-                                  <div>
-                                    <Label className="text-slate-300 text-sm">Text</Label>
+                                <div className="flex gap-2">
+                                  <div className="flex-1 space-y-2">
+                                    <Label className="text-slate-200 font-medium">Image</Label>
                                     <input
-                                      type="text"
-                                      placeholder="Footer text"
-                                      value={embed.footer?.text || ''}
+                                      type="url"
+                                      placeholder="Image URL"
+                                      value={embed.image?.url || ''}
                                       onChange={(e) =>
                                         updateEmbed(index, {
                                           ...embed,
-                                          footer: { ...embed.footer, text: e.target.value },
+                                          image: { url: e.target.value },
                                         })
                                       }
                                       className="mt-1 w-full px-3 py-2 bg-slate-600/50 border border-slate-500 rounded-md text-white placeholder:text-slate-400 focus:border-purple-500 focus:outline-none"
                                     />
                                   </div>
-                                  <div>
-                                    <Label className="text-slate-300 text-sm">Icon URL</Label>
+
+                                  <div className="flex-1 space-y-2">
+                                    <Label className="text-slate-200 font-medium">Thumbnail</Label>
                                     <input
                                       type="url"
-                                      placeholder="Footer icon URL"
-                                      value={embed.footer?.icon_url || ''}
+                                      placeholder="Thumbnail URL"
+                                      value={embed.thumbnail?.url || ''}
                                       onChange={(e) =>
                                         updateEmbed(index, {
                                           ...embed,
-                                          footer: { ...embed.footer, icon_url: e.target.value },
+                                          thumbnail: { url: e.target.value },
                                         })
                                       }
                                       className="mt-1 w-full px-3 py-2 bg-slate-600/50 border border-slate-500 rounded-md text-white placeholder:text-slate-400 focus:border-purple-500 focus:outline-none"
                                     />
+                                  </div>
+                                </div>
+
+                                <div className="space-y-2">
+                                  <Label className="text-slate-200 font-medium">Footer</Label>
+                                  <div className="flex gap-2">
+                                    <div className="flex-1">
+                                      <Label className="text-slate-300 text-sm">Text</Label>
+                                      <input
+                                        type="text"
+                                        placeholder="Footer text"
+                                        value={embed.footer?.text || ''}
+                                        onChange={(e) =>
+                                          updateEmbed(index, {
+                                            ...embed,
+                                            footer: { ...embed.footer, text: e.target.value },
+                                          })
+                                        }
+                                        className="mt-1 w-full px-3 py-2 bg-slate-600/50 border border-slate-500 rounded-md text-white placeholder:text-slate-400 focus:border-purple-500 focus:outline-none"
+                                      />
+                                    </div>
+                                    <div className="flex-1">
+                                      <Label className="text-slate-300 text-sm">Icon URL</Label>
+                                      <input
+                                        type="url"
+                                        placeholder="Footer icon URL"
+                                        value={embed.footer?.icon_url || ''}
+                                        onChange={(e) =>
+                                          updateEmbed(index, {
+                                            ...embed,
+                                            footer: { ...embed.footer, icon_url: e.target.value },
+                                          })
+                                        }
+                                        className="mt-1 w-full px-3 py-2 bg-slate-600/50 border border-slate-500 rounded-md text-white placeholder:text-slate-400 focus:border-purple-500 focus:outline-none"
+                                      />
+                                    </div>
                                   </div>
                                 </div>
 
