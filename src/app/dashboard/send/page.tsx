@@ -31,7 +31,7 @@ export default function SendMessagePage() {
   const [selectedWebhooks, setSelectedWebhooks] = useState<string[]>([]);
   const [message, setMessage] = useState({
     content: '',
-    avatarRefID: '', // New field
+    avatarRefID: '', 
     tts: false,
     threadName: '',
     embeds: [] as DiscordEmbed[],
@@ -43,6 +43,7 @@ export default function SendMessagePage() {
   );
   const [selectedTemplateId, setSelectedTemplateId] = useState<string | undefined>(undefined);
   const [selectedAvatar, setSelectedAvatar] = useState<PredefinedAvatar | undefined>();
+  const [hideSelectTemplate, setHideSelectTemplate] = useState(false);
 
   const handleClearMessage = () => {
     setMessage({
@@ -54,6 +55,7 @@ export default function SendMessagePage() {
     });
     setSelectedAvatar(undefined);
     setSelectedTemplateId(""); 
+    setHideSelectTemplate(false);
   };
 
   const handleTemplateSelect = (templateId: string) => {
@@ -74,6 +76,7 @@ export default function SendMessagePage() {
         setSelectedAvatar(undefined);
       }
     }
+    setHideSelectTemplate(true);
   };
 
   const { data: webhooks = [], isLoading: isLoadingWebhooks } = useQuery({ queryKey: ['webhooks', { isActive: true }], queryFn: () => api.webhook.getAllWebhooks({ isActive: true }) });
@@ -266,7 +269,7 @@ export default function SendMessagePage() {
               <CardContent>
                 <div className="flex items-center justify-between mb-4">
                   <div className="flex-1 mr-4">
-                    <Label htmlFor="template-select" className="text-slate-200">Load Template</Label>
+                    {!hideSelectTemplate && (<><Label htmlFor="template-select" className="text-slate-200">Load Template</Label>
                     <Select onValueChange={handleTemplateSelect} value={selectedTemplateId} disabled={isLoadingTemplates || templates.length === 0}>
                       <SelectTrigger id="template-select" className="mt-1 bg-slate-700/50 border-slate-600 text-white placeholder:text-slate-400">
                         <SelectValue placeholder="Select a template" />
@@ -278,7 +281,7 @@ export default function SendMessagePage() {
                           </SelectItem>
                         ))}
                       </SelectContent>
-                    </Select>
+                    </Select></>)}
                   </div>
                   <Button
                     variant="outline"
