@@ -118,16 +118,16 @@ export function DiscordMessagePreview({
     <div className="bg-[#313338] text-white p-4 rounded-lg font-sans text-[15px] leading-[1.375]">
       <div className="flex items-start gap-4">
         <Avatar className="w-10 h-10 mt-0.5 flex-shrink-0">
-          <AvatarImage src={avatar?.avatar_url || '/placeholder.svg'} />
+          <AvatarImage src={avatar.avatar_url || '/placeholder.svg'} />
           <AvatarFallback className="bg-[#5865f2] text-white text-sm font-medium">
-            {avatar?.username.charAt(0).toUpperCase()}
+            {avatar.username.charAt(0).toUpperCase()}
           </AvatarFallback>
         </Avatar>
 
         <div className="flex-1 min-w-0">
           <div className="flex items-baseline gap-2 mb-0.5">
             <span className="font-medium text-[#f2f3f5] text-base hover:underline cursor-pointer">
-              {avatar?.username}
+              {avatar.username}
             </span>
             <span className="text-xs text-[#949ba4] font-medium">
               Today at{' '}

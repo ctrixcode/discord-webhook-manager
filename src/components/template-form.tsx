@@ -40,9 +40,14 @@ export const TemplateForm = React.forwardRef(function TemplateForm(
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
   const [content, setContent] = useState('');
-  const [selectedAvatar, setSelectedAvatar] = useState<PredefinedAvatar | null>(
-    null,
-  );
+  const [selectedAvatar, setSelectedAvatar] = useState<PredefinedAvatar>({
+    username: 'Webhook Manager',
+    avatar_url: '/placeholder.svg',
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+    id: 'predefined-avatar-id',
+    user_id: 'predefined-user-id',
+  });
   const [isPredefinedAvatarSelected, setIsPredefinedAvatarSelected] =
     useState(false);
   const [embeds, setEmbeds] = useState<DiscordEmbed[]>([]);
@@ -225,7 +230,14 @@ export const TemplateForm = React.forwardRef(function TemplateForm(
                           size="sm"
                           onClick={() => {
                             setIsPredefinedAvatarSelected(false);
-                            setSelectedAvatar(null);
+                            setSelectedAvatar({
+                              username: 'Webhook Manager',
+                              avatar_url: '/placeholder.svg',
+                              createdAt: new Date().toISOString(),
+                              updatedAt: new Date().toISOString(),
+                              id: 'predefined-avatar-id',
+                              user_id: 'predefined-user-id',
+                            });
                           }}
                           className="bg-red-700 border-red-600 text-white hover:bg-red-600"
                         >
@@ -294,8 +306,7 @@ export const TemplateForm = React.forwardRef(function TemplateForm(
           <ScrollArea className="h-full">
             <DiscordMessagePreview
               content={content}
-              username={selectedAvatar?.username}
-              avatar_url={selectedAvatar?.avatar_url}
+              avatar={selectedAvatar}
               embeds={embeds.length > 0 ? embeds : undefined}
             />
           </ScrollArea>
