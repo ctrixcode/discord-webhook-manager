@@ -190,7 +190,10 @@ export function EmbedBuilder({
                   value={embed.author?.name || ''}
                   onChange={(e) =>
                     updateEmbed({
-                      author: { ...embed.author, name: e.target.value },
+                      author: {
+                        ...(embed.author || { name: '' }),
+                        name: e.target.value,
+                      },
                     })
                   }
                   placeholder="Author name"
@@ -215,8 +218,7 @@ export function EmbedBuilder({
                   onChange={(e) =>
                     updateEmbed({
                       author: {
-                        ...embed.author,
-                        name: embed.author?.name || '',
+                        ...(embed.author || { name: '' }),
                         icon_url: e.target.value,
                       },
                     })
@@ -260,9 +262,7 @@ export function EmbedBuilder({
                     value={embed.image?.url || ''}
                     onChange={(e) =>
                       updateEmbed({
-                        image: e.target.value
-                          ? { url: e.target.value }
-                          : undefined,
+                        image: { url: e.target.value },
                       })
                     }
                     placeholder="https://example.com/image.png"
@@ -280,9 +280,13 @@ export function EmbedBuilder({
               <div className="flex gap-2">
                 <Input
                   id="timestamp"
-                  value={embed.timestamp || ''}
-                  onChange={(e) => updateEmbed({ timestamp: e.target.value })}
-                  placeholder="2025-08-06T18:30:00.000Z"
+                  type="datetime-local"
+                  value={embed.timestamp ? new Date(embed.timestamp).toISOString().slice(0, 16) : ''}
+                  onChange={(e) =>
+                    updateEmbed({
+                      timestamp: e.target.value ? new Date(e.target.value).toISOString() : undefined,
+                    })
+                  }
                   className="bg-slate-700/50 border-slate-600 text-white placeholder:text-slate-400 focus:border-purple-500"
                 />
                 <Button
@@ -402,9 +406,10 @@ export function EmbedBuilder({
                   value={embed.footer?.icon_url || ''}
                   onChange={(e) =>
                     updateEmbed({
-                      footer: embed.footer?.text
-                        ? { text: embed.footer.text, icon_url: e.target.value }
-                          : undefined,
+                      footer: {
+                        ...(embed.footer || { text: '' }),
+                        icon_url: e.target.value,
+                      },
                     })
                   }
                   placeholder="Footer icon URL"
