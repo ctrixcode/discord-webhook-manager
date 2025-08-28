@@ -106,44 +106,30 @@ export default function SendMessagePage() {
     setIsSending(true);
     setSendResults([]);
 
-    const results = [];
-    for (const webhookId of selectedWebhooks) {
-      const webhook = webhooks.find((w) => w.id === webhookId);
-      if (!webhook) continue;
-
-      try {
-        const payload:SendMessageData = {
-          message: message.content || "", // Renamed content to message
-          avatarRefID: message.avatarRefID || undefined, // Use avatarRefID
-          // tts: message.tts,
-          // thread_name: message.threadName || undefined,
+    try {
+      const payload: SendMessageData = {
+        webhookIds: selectedWebhooks,
+        messageData: {
+          message: message.content || "",
+          avatarRefID: message.avatarRefID || undefined,
           embeds: message.embeds.length > 0 ? message.embeds : undefined,
-        };
-  
-        const response = await api.webhook.sendMessage(webhook.id, payload);
+        },
+      };
 
-        if (response.success) { // Discord webhooks return 204 No Content on success
-          results.push({ webhookId, success: true });
-        } else {
-          results.push({ webhookId, success: false, error: response.message });
-        }
-      } catch (error) {
-        results.push({ webhookId, success: false, error: String(error) });
+      const response = await api.webhook.sendMessage(payload);
+
+      if (response.success) {
+        toast({ variant: "success", title: "Success", description: `Message sent successfully to ${selectedWebhooks.length} webhook${selectedWebhooks.length > 1 ? 's' : ''}` });
+        setSendResults(selectedWebhooks.map(id => ({ webhookId: id, success: true })));
+      } else {
+        toast({ variant: "destructive", title: "Error", description: response.message || "Failed to send message" });
+        setSendResults(selectedWebhooks.map(id => ({ webhookId: id, success: false, error: response.message })));
       }
-    }
-
-    setSendResults(results);
-    setIsSending(false);
-
-    const successCount = results.filter((r) => r.success).length;
-    const failCount = results.filter((r) => !r.success).length;
-
-    if (failCount === 0) {
-      toast({ variant: "success", title: "Success", description: `Message sent successfully to ${successCount} webhook${successCount > 1 ? 's' : ''}` });
-    } else if (successCount === 0) {
-      toast({ variant: "destructive", title: "Error", description: `Failed to send message to all ${failCount} webhook${failCount > 1 ? 's' : ''}` });
-    } else {
-      toast({ variant: "default", title: "Warning", description: `Message sent to ${successCount} webhook${successCount > 1 ? 's' : ''}, failed on ${failCount}` });
+    } catch (error) {
+      toast({ variant: "destructive", title: "Error", description: String(error) });
+      setSendResults(selectedWebhooks.map(id => ({ webhookId: id, success: false, error: String(error) })));
+    } finally {
+      setIsSending(false);
     }
   };
 

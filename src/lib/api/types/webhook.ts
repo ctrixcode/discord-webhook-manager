@@ -28,7 +28,8 @@ export interface UpdateWebhookRequest {
 }
 
 export interface SendMessageData {
-  message: string;
+  webhookIds: string[];
+ messageData: { message: string;
   avatarRefID?: string;
-  embeds?: DiscordEmbed[];
+  embeds?: DiscordEmbed[];}
 }
