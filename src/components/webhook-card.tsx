@@ -10,16 +10,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from '@/components/ui/alert-dialog';
+import { ConfirmationDialog } from '@/components/ui/confirmation-dialog';
 import { type Webhook } from '@/lib/api/types/webhook';
 import { api } from '@/lib/api';
 import { UpdateWebhookRequest } from '@/lib/api/types/webhook';
@@ -207,30 +198,14 @@ export function WebhookCard({ webhook, onWebhookUpdated }: WebhookCardProps) {
         </CardContent>
       </Card>
 
-      <AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
-        <AlertDialogContent className="bg-slate-900/95 backdrop-blur-sm border-slate-700/50 text-white">
-          <AlertDialogHeader>
-            <AlertDialogTitle className="text-white">
-              Are you sure?
-            </AlertDialogTitle>
-            <AlertDialogDescription className="text-slate-300">
-              This action cannot be undone. This will permanently delete the
-              webhook &quot;{webhook.name}&quot; from your account.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel className="bg-slate-700/50 text-white border-slate-600/50 hover:bg-slate-600/50">
-              Cancel
-            </AlertDialogCancel>
-            <AlertDialogAction
-              onClick={handleDelete}
-              className="bg-red-600/80 text-white hover:bg-red-600 border-red-500/50"
-            >
-              Delete
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+      <ConfirmationDialog
+        open={showDeleteDialog}
+        onOpenChange={setShowDeleteDialog}
+        title="Are you sure?"
+        description={`This action cannot be undone. This will permanently delete the webhook "${webhook.name}" from your account.`}
+        onConfirm={handleDelete}
+        confirmButtonText="Delete"
+      />
     </>
   );
 }
