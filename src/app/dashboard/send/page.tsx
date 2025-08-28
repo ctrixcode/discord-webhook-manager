@@ -53,7 +53,7 @@ export default function SendMessagePage() {
       embeds: [],
     });
     setSelectedAvatar(undefined);
-    setSelectedTemplateId(undefined); 
+    setSelectedTemplateId(""); 
   };
 
   const handleTemplateSelect = (templateId: string) => {
