@@ -75,7 +75,7 @@ class ApiClient {
             console.error('Authentication failed. Please login again.', refreshError);
             // Redirect to login page
             if (typeof window !== 'undefined') {
-              window.location.href = '/login'; // Assuming '/login' is the route
+              window.location.href = '/login'; // Redirect to login page
             }
             return Promise.reject(refreshError);
           }
@@ -100,6 +100,12 @@ class ApiClient {
       if (error) {
         prom.reject(error);
       } else if (token) {
+        // Ensure the original request's Authorization header is updated before retrying
+        if (prom.config.headers) {
+          prom.config.headers.Authorization = `Bearer ${token}`;
+        } else {
+          prom.config.headers = { Authorization: `Bearer ${token}` };
+        }
         prom.resolve(this.client(prom.config)); // Retry the original request
       }
     });

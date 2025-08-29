@@ -3,7 +3,6 @@ import type { Metadata } from 'next';
 import { GeistSans } from 'geist/font/sans';
 import { GeistMono } from 'geist/font/mono';
 import './globals.css';
-import { AuthProvider } from '@/contexts/auth-context';
 import { ThemeProvider } from '@/components/theme-provider';
 import Providers from '@/lib/providers';
 import { Toaster } from '@/components/ui/toaster';
@@ -29,7 +28,7 @@ html {
 }
         `}</style>
       </head>
-      <body>
+      <body className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-purple-900">
         <ThemeProvider
           attribute="class"
           defaultTheme="dark"
@@ -37,7 +36,7 @@ html {
           disableTransitionOnChange
         >
           <Providers>
-            <AuthProvider>{children}</AuthProvider>
+            {children}
           </Providers>
           <Toaster />
         </ThemeProvider>
