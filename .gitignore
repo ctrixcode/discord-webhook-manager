@@ -1,3 +1,4 @@
+dist/
 qa-test-log.csv
 # PNPM
 pnpm-lock.yaml
@@ -10,7 +11,7 @@ yarn-error.log*
 pnpm-debug.log*
 
 # Production build
-dist/
+
 build/
 
 # Environment variables
