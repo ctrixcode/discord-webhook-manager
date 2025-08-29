@@ -6,6 +6,7 @@ import {
   setRefreshTokenCookie,
   clearRefreshTokenCookie,
 } from '../utils/cookie';
+import { verifyToken, TokenPayload } from '../utils/jwt'; // Added
 
 const DISCORD_CLIENT_ID = process.env.DISCORD_CLIENT_ID as string;
 const DISCORD_CLIENT_SECRET = process.env.DISCORD_CLIENT_SECRET as string;
@@ -27,13 +28,12 @@ export const refreshAccessToken = async (
         .send({ success: false, message: 'No refresh token provided' });
     }
 
-    const { newAccessToken, newRefreshToken, user } =
+    const { newAccessToken, newRefreshToken } =
       await authService.refreshTokens(refreshToken);
     setRefreshTokenCookie(reply, newRefreshToken);
     reply.status(200).send({
       success: true,
       data: {
-        user: { id: user.id, email: user.email, username: user.username },
         accessToken: newAccessToken,
       },
       message: 'Access token refreshed successfully',
@@ -64,13 +64,36 @@ export const logoutUser = async (
   reply: FastifyReply
 ): Promise<void> => {
   try {
-    if (!request.user || !request.user.userId) {
-      return reply.status(401).send({ success: false, message: 'Unauthorized' });
+    const refreshToken = request.cookies.refreshToken; // Get refresh token from cookie
+
+    // This is specially designed to remove specific refresh Tokens
+    // as that refresh token is used up
+    // making sure we only expiry single session of a user
+    if (refreshToken) {
+      try {
+        const decodedRefreshToken = verifyToken(refreshToken) as TokenPayload;
+        if (decodedRefreshToken.userId && decodedRefreshToken.jti) {
+          await authService.logout(
+            decodedRefreshToken.userId,
+            decodedRefreshToken.jti,
+            reply
+          );
+        } else {
+          logger.warn(
+            'Logout request: Refresh token missing userId or jti. Only client-side cookie cleared.'
+          );
+        }
+      } catch (error) {
+        logger.error('Error verifying refresh token during logout:', error);
+        // If refresh token is invalid or expired, still consider it a successful logout
+        // as the client-side cookie has been cleared.
+      }
+    } else {
+      logger.warn(
+        'Logout request received without refresh token. Only client-side cookie cleared.'
+      );
     }
-    if (!request.user.refreshTokenJti) {
-      return reply.status(400).send({ success: false, message: 'Refresh token JTI not found in request context.' });
-    }
-    await authService.logout(request.user.userId, request.user.refreshTokenJti, reply); // Pass userId and refreshTokenJti to logout service
+
     reply
       .status(200)
       .send({ success: true, message: 'Logged out successfully' });

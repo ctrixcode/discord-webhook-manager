@@ -2,7 +2,7 @@ import { FastifyRequest, FastifyReply } from 'fastify';
 import { TokenExpiredError } from 'jsonwebtoken';
 import * as AuthService from '../services/auth.service';
 import { setRefreshTokenCookie } from '../utils/cookie';
-import { verifyToken, TokenPayload } from '../utils/jwt'; // Added TokenPayload
+import { verifyToken } from '../utils/jwt'; // Added TokenPayload
 
 const authenticate = async (request: FastifyRequest, reply: FastifyReply) => {
   const authHeader = request.headers.authorization;
@@ -37,7 +37,8 @@ const authenticate = async (request: FastifyRequest, reply: FastifyReply) => {
             .send({ message: 'Invalid or expired refresh token' });
         }
 
-        const { newAccessToken, newRefreshToken, newRefreshTokenJti } = newTokens; // Added newRefreshTokenJti
+        const { newAccessToken, newRefreshToken, newRefreshTokenJti } =
+          newTokens; // Added newRefreshTokenJti
 
         setRefreshTokenCookie(reply, newRefreshToken);
         reply.header('X-Access-Token', newAccessToken);
