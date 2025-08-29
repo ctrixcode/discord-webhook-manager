@@ -2,7 +2,7 @@
 PORT=4000
 NODE_ENV=development
 
-FRONT_END_URL=http://localhost:3000
+FRONTEND_URL=http://localhost:3000
 
 # Database Configuration
 MONGODB_URI=mongodb://localhost:27017/discord-webhook-manager-test
