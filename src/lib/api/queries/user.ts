@@ -1,5 +1,6 @@
 import { apiClient } from '../client';
-import { User, UpdateUserRequest, ApiResponse } from '../types';
+import { User, UpdateUserRequest } from '../types/user';
+import { ApiResponse } from '../types/api';
 
 export const userQueries = {
   // Get current authenticated user
