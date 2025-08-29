@@ -22,6 +22,10 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { EmbedBuilder } from '@/components/embed-builder';
 import { DiscordMessagePreview } from '@/components/discord-message-preview';
 import { useAuth } from '@/contexts/auth-context';
+import { AvatarSelector } from '@/components/avatars/avatar-selector';
+import { api } from '@/lib/api';
+import { useQuery } from '@tanstack/react-query';
+import type { PredefinedAvatar } from '@/lib/api/types/avatar';
 import {
   addTemplate,
   updateTemplate,
@@ -47,35 +51,42 @@ export function TemplateEditorDialog({
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
   const [content, setContent] = useState('');
-  const [username, setUsername] = useState('');
-  const [avatar_url, setAvatar_url] = useState('');
   const [tts, setTts] = useState(false);
   const [threadName, setThreadName] = useState('');
+  const [selectedAvatar, setSelectedAvatar] = useState<PredefinedAvatar | undefined>(undefined);
   const [embeds, setEmbeds] = useState<DiscordEmbed[]>([]);
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+
+  const { data: avatars = [] } = useQuery({
+    queryKey: ['avatars'],
+    queryFn: () => api.avatar.getAllAvatars(),
+  });
 
   useEffect(() => {
     if (template && open) {
       setName(template.name);
       setDescription(template.description || '');
       setContent(template.content);
-      setUsername(template.username || '');
-      setAvatar_url(template.avatar_url || '');
       setTts(template.tts || false);
       setThreadName(template.threadName || '');
       setEmbeds(template.embeds || []);
+      if (template.avatar_url) {
+        const avatar = avatars.find(a => a.id === template.avatar_url);
+        setSelectedAvatar(avatar);
+      } else {
+        setSelectedAvatar(undefined);
+      }
     } else if (!template && open) {
       setName('');
       setDescription('');
       setContent('');
-      setUsername('');
-      setAvatar_url('');
       setTts(false);
       setThreadName('');
       setEmbeds([]);
+      setSelectedAvatar(undefined);
     }
-  }, [template, open]);
+  }, [template, open, avatars]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -101,8 +112,7 @@ export function TemplateEditorDialog({
         name: name.trim(),
         description: description.trim() || undefined,
         content: content.trim(),
-        username: username.trim() || undefined,
-        avatar_url: avatar_url.trim() || undefined,
+        avatar_ref: selectedAvatar?.id || undefined,
         tts: tts || undefined,
         threadName: threadName.trim() || undefined,
         embeds: embeds.length > 0 ? embeds : undefined,
@@ -119,7 +129,8 @@ export function TemplateEditorDialog({
 
       setOpen(false);
       onTemplateSaved();
-    } catch (err) {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    } catch (_err) {
       setError('Failed to save template');
     } finally {
       setIsLoading(false);
@@ -266,30 +277,36 @@ export function TemplateEditorDialog({
                     Webhook Settings
                   </h3>
 
-                  <div className="grid grid-cols-2 gap-4">
-                    <div className="space-y-2">
-                      <Label htmlFor="username" className="text-slate-200">
-                        Custom Username
-                      </Label>
-                      <Input
-                        id="username"
-                        value={username}
-                        onChange={(e) => setUsername(e.target.value)}
-                        placeholder="Override webhook username"
-                        className="bg-slate-800/50 border-slate-600/50 text-white placeholder:text-slate-400 focus:border-purple-500/50 focus:ring-purple-500/20"
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="avatar_url" className="text-slate-200">
-                        Custom Avatar URL
-                      </Label>
-                      <Input
-                        id="avatar_url"
-                        value={avatar_url}
-                        onChange={(e) => setAvatar_url(e.target.value)}
-                        placeholder="https://example.com/avatar.png"
-                        className="bg-slate-800/50 border-slate-600/50 text-white placeholder:text-slate-400 focus:border-purple-500/50 focus:ring-purple-500/20"
-                      />
+                  <div className="space-y-2">
+                    <Label className="text-slate-200">
+                      Message Avatar
+                    </Label>
+                    <div className="flex items-center gap-2">
+                      <AvatarSelector
+                        onSelect={(avatar) => {
+                          setSelectedAvatar(avatar);
+                        }}
+                      >
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          className="bg-slate-700 border-slate-600 text-white hover:bg-slate-600"
+                        >
+                          Select Predefined Avatar
+                        </Button>
+                      </AvatarSelector>
+                      {selectedAvatar && (
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => {
+                            setSelectedAvatar(undefined);
+                          }}
+                          className="bg-red-700 border-red-600 text-white hover:bg-red-600"
+                        >
+                          Clear Avatar
+                        </Button>
+                      )}
                     </div>
                   </div>
 
@@ -368,8 +385,7 @@ export function TemplateEditorDialog({
                 </div>
                 <DiscordMessagePreview
                   content={content}
-                  username={username}
-                  avatar_url={avatar_url}
+                  avatar={selectedAvatar}
                   embeds={embeds.length > 0 ? embeds : undefined}
                 />
               </div>

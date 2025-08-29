@@ -7,7 +7,6 @@ import { DiscordLogo } from '@/components/discord-logo';
 import {
   Home,
   Webhook,
-  Clock,
   FileText,
   Settings,
   X,

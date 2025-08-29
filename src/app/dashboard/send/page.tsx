@@ -26,11 +26,7 @@ import type { DiscordEmbed } from '@/lib/api/types/discord';
 import { useToast } from '@/hooks/use-toast';
 import { SendMessageData } from '@/lib/api/types/webhook';
 
-interface SendResult {
-  webhookId: string;
-  success: boolean;
-  error?: string; // Optional error message
-}
+
 
 export default function SendMessagePage() {
   const { toast } = useToast();
@@ -43,7 +39,7 @@ export default function SendMessagePage() {
     embeds: [] as DiscordEmbed[],
   });
   const [isSending, setIsSending] = useState(false);
-  const [sendResults, setSendResults] = useState<SendResult[]>([]);
+  
   const [avatarMode, setAvatarMode] = useState<'predefined' | 'custom'>(
     'predefined',
   );
@@ -95,7 +91,7 @@ export default function SendMessagePage() {
     queryKey: ['webhooks', { isActive: true }],
     queryFn: ({ queryKey }) => api.webhook.getAllWebhooks({ queryKey: queryKey as [string, { isActive?: boolean }] }),
   });
-  const { data: avatars = [], isLoading: isLoadingAvatars } = useQuery({
+  const { data: avatars = [] } = useQuery({
     queryKey: ['avatars'],
     queryFn: () => api.avatar.getAllAvatars(),
   });
@@ -216,7 +212,7 @@ export default function SendMessagePage() {
     }
 
     setIsSending(true);
-    setSendResults([]);
+    
 
     try {
       const payload: SendMessageData = {
@@ -236,22 +232,14 @@ export default function SendMessagePage() {
           title: 'Success',
           description: `Message sent successfully to ${selectedWebhooks.length} webhook${selectedWebhooks.length > 1 ? 's' : ''}`,
         });
-        setSendResults(
-          selectedWebhooks.map((id) => ({ webhookId: id, success: true })),
-        );
+        
       } else {
         toast({
           variant: 'destructive',
           title: 'Error',
           description: response.message || 'Failed to send message',
         });
-        setSendResults(
-          selectedWebhooks.map((id) => ({
-            webhookId: id,
-            success: false,
-            error: response.message,
-          })),
-        );
+        
       }
     } catch (error) {
       toast({
@@ -259,13 +247,7 @@ export default function SendMessagePage() {
         title: 'Error',
         description: String(error),
       });
-      setSendResults(
-        selectedWebhooks.map((id) => ({
-          webhookId: id,
-          success: false,
-          error: String(error),
-        })),
-      );
+      
     } finally {
       setIsSending(false);
     }

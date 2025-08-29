@@ -48,17 +48,17 @@ export function ScheduleMessageDialog({ triggerButton }: ScheduleMessageDialogPr
 
   const { data: webhooks = [] } = useQuery<Webhook[]>({
     queryKey: ['webhooks'],
-    queryFn: getAllWebhooks,
+    queryFn: ({ queryKey }) => getAllWebhooks({ queryKey: queryKey as [string, { isActive?: boolean }] }),
     enabled: open,
   });
 
-  const { mutate: scheduleMessage, isPending, error } = useMutation<ScheduledMessage, ApiError, Omit<ScheduledMessage, 'id' | 'createdAt' | 'userId' | 'status'>>({
-    mutationFn: scheduledMessageQueries.createScheduledMessage,
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['scheduled-messages'] });
-      setOpen(false);
-    },
-  });
+  // const { mutate: scheduleMessage, isPending, error } = useMutation<ScheduledMessage, ApiError, Omit<ScheduledMessage, 'id' | 'createdAt' | 'userId' | 'status'>>({
+  //   mutationFn: scheduledMessageQueries.createScheduledMessage,
+  //   onSuccess: () => {
+  //     queryClient.invalidateQueries({ queryKey: ['scheduled-messages'] });
+  //     setOpen(false);
+  //   },
+  // });
 
   useEffect(() => {
     if (!open) {
@@ -91,13 +91,13 @@ export function ScheduleMessageDialog({ triggerButton }: ScheduleMessageDialogPr
     const selectedWebhook = webhooks.find((w) => w.id === selectedWebhookId);
     if (!selectedWebhook) return setFormError('Selected webhook not found.');
 
-    scheduleMessage({
-      webhookId: selectedWebhook.id,
-      webhookName: selectedWebhook.name,
-      webhookUrl: selectedWebhook.url,
-      content: content.trim(),
-      scheduledFor: scheduledDateTime.toISOString(),
-    });
+    // scheduleMessage({
+    //   webhookId: selectedWebhook.id,
+    //   webhookName: selectedWebhook.name,
+    //   webhookUrl: selectedWebhook.url,
+    //   content: content.trim(),
+    //   scheduledFor: scheduledDateTime.toISOString(),
+    // });
   };
 
   return (
@@ -194,7 +194,7 @@ export function ScheduleMessageDialog({ triggerButton }: ScheduleMessageDialogPr
               </div>
             </div>
 
-            {(formError || error) && (
+            {/* {(formError || error) && (
               <Alert
                 variant="destructive"
                 className="bg-red-900/50 border-red-700 text-red-200"
@@ -202,9 +202,9 @@ export function ScheduleMessageDialog({ triggerButton }: ScheduleMessageDialogPr
                 <AlertCircle className="h-4 w-4" />
                 <AlertDescription>{formError || error?.message}</AlertDescription>
               </Alert>
-            )}
+            )} */}
           </div>
-          <DialogFooter>
+          {/* <DialogFooter>
             <Button
               type="button"
               variant="outline"
@@ -220,7 +220,7 @@ export function ScheduleMessageDialog({ triggerButton }: ScheduleMessageDialogPr
             >
               {isPending ? 'Scheduling...' : 'Schedule Message'}
             </Button>
-          </DialogFooter>
+          </DialogFooter> */}
         </form>
       </DialogContent>
     </Dialog>

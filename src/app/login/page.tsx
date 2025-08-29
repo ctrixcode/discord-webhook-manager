@@ -1,6 +1,6 @@
 'use client';
 
-import { redirect } from 'next/navigation';
+
 import { api } from '@/lib/api';
 
 export default function LoginPage() {

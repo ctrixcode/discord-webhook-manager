@@ -4,6 +4,7 @@ import { PredefinedAvatar } from '@/lib/api/types/avatar';
 import { type DiscordEmbed } from '@/lib/api/types/discord';
 import { discordColorToHex } from '@/lib/discord-utils';
 import type { ReactNode } from 'react';
+import Image from 'next/image';
 
 interface DiscordMessagePreviewProps {
   content: string;
@@ -159,10 +160,12 @@ export function DiscordMessagePreview({
                     {embed.author && (
                       <div className="flex items-center gap-2 mb-2">
                         {embed.author.icon_url && (
-                          <img
+                          <Image
                             src={embed.author.icon_url || '/placeholder.svg'}
                             alt=""
-                            className="w-6 h-6 rounded-full"
+                            width={24}
+                            height={24}
+                            className="rounded-full"
                           />
                         )}
                         <span className="text-sm font-medium text-[#f2f3f5]">
@@ -226,10 +229,11 @@ export function DiscordMessagePreview({
                     )}
 
                     {embed.image && (
-                      <div className="mb-3">
-                        <img
+                      <div className="mb-3 relative">
+                        <Image
                           src={embed.image.url || '/placeholder.svg'}
                           alt=""
+                          fill
                           className="max-w-full rounded"
                         />
                       </div>
@@ -237,10 +241,12 @@ export function DiscordMessagePreview({
 
                     <div className="flex items-center justify-between">
                       {embed.thumbnail && (
-                        <img
+                        <Image
                           src={embed.thumbnail.url || '/placeholder.svg'}
                           alt=""
-                          className="w-20 h-20 rounded ml-auto"
+                          width={80}
+                          height={80}
+                          className="rounded ml-auto"
                         />
                       )}
                     </div>
@@ -248,10 +254,12 @@ export function DiscordMessagePreview({
                     {embed.footer && (
                       <div className="flex items-center gap-2 mt-3 pt-0">
                         {embed.footer.icon_url && (
-                          <img
+                          <Image
                             src={embed.footer.icon_url || '/placeholder.svg'}
                             alt=""
-                            className="w-5 h-5 rounded-full"
+                            width={20}
+                            height={20}
+                            className="rounded-full"
                           />
                         )}
                         <span className="text-xs text-[#949ba4] font-medium">

@@ -21,7 +21,7 @@ export default function WebhooksPage() {
 
   const { data: webhooks = [], isLoading } = useQuery<Webhook[]>({
     queryKey: ['webhooks'],
-    queryFn: getAllWebhooks,
+    queryFn: ({ queryKey }) => getAllWebhooks({ queryKey: queryKey as [string, { isActive?: boolean }] }),
     enabled: !!user,
   });
 

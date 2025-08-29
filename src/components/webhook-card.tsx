@@ -19,7 +19,6 @@ import {
   MoreHorizontal,
   Send,
   Trash2,
-  Copy,
   CheckCircle,
   XCircle,
 } from 'lucide-react';
