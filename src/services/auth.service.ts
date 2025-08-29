@@ -53,7 +53,7 @@ export const loginWithDiscord = async (
     userId: user.id,
     email: user.email,
   });
-  const refreshToken = generateRefreshToken({
+  const { refreshToken } = generateRefreshToken({
     userId: user.id,
     email: user.email,
   });
@@ -96,12 +96,12 @@ export const refreshTokens = async (refreshToken: string) => {
       userId: user.id,
       email: user.email,
     });
-    const newRefreshToken = generateRefreshToken({
+    const { refreshToken: newRefreshToken, jti: newRefreshTokenJti } = generateRefreshToken({
       userId: user.id,
       email: user.email,
     });
 
-    return { newAccessToken, newRefreshToken, user };
+    return { newAccessToken, newRefreshToken, user, newRefreshTokenJti };
   } catch (error) {
     logger.error('Error refreshing tokens:', error);
     // If the error is not already 'Invalid or compromised refresh token', then it's a generic JWT error
@@ -112,6 +112,12 @@ export const refreshTokens = async (refreshToken: string) => {
   }
 };
 
-export const logout = (reply: FastifyReply) => {
-  clearRefreshTokenCookie(reply);
+export const logout = async (userId: string, refreshTokenJti: string, reply: FastifyReply) => {
+  // Invalidate only the specific refresh token used for this session
+  await AuthSessionTokenModel.findOneAndUpdate(
+    { userId: userId, jti: refreshTokenJti },
+    { isUsed: true }
+  );
+  logger.warn(`Session revoked for user: ${userId}, jti: ${refreshTokenJti}`);
+  clearRefreshTokenCookie(reply); // Clear the refresh token cookie
 };

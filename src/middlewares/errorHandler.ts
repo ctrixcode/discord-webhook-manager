@@ -11,15 +11,12 @@ export default fp(async fastify => {
   });
 
   fastify.setErrorHandler((error, request, reply) => {
-    logger.error('Unhandled error:', {
-      error: error.message,
-      stack: error.stack,
-    });
+    logger.error('Unhandled error:', error); // Log the entire error object
     reply.status(500).send({
       error: 'Internal server error',
       message:
         process.env.NODE_ENV === 'development'
-          ? error.message
+          ? (error instanceof Error ? error.message : 'An unknown error occurred') // Safely access message
           : 'Something went wrong',
     });
   });

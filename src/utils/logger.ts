@@ -30,9 +30,15 @@ const transports = [
     format: winston.format.combine(
       winston.format.timestamp({ format: 'HH:mm:ss' }),
       winston.format.colorize({ all: true }),
-      winston.format.printf(
-        info => `${info.timestamp} ${info.level}: ${info.message}`
-      )
+      winston.format.printf(info => {
+        if (info.stack) {
+          return `${info.timestamp} ${info.level}: ${info.message}\n${info.stack}`;
+        }
+        if (info.error) { // Check for the 'error' property added by errorHandler
+          return `${info.timestamp} ${info.level}: ${info.message} ${JSON.stringify(info.error)}`;
+        }
+        return `${info.timestamp} ${info.level}: ${info.message}`;
+      })
     ),
   }),
 

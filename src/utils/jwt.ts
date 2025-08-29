@@ -29,11 +29,13 @@ export const generateAccessToken = (payload: TokenPayload): string => {
 };
 
 /**
- * Generates a refresh token.
+ * Generates a refresh token and its associated JTI.
  * @param payload The data to include in the token.
- * @returns The generated refresh token string.
+ * @returns An object containing the refresh token string and its JTI.
  */
-export const generateRefreshToken = (payload: TokenPayload): string => {
+export const generateRefreshToken = (
+  payload: TokenPayload
+): { refreshToken: string; jti: string } => {
   const jti = uuidv4(); // Generate a unique ID for the token
   const options: SignOptions = {
     expiresIn: JWT_REFRESH_TOKEN_EXPIRES_IN as jwt.SignOptions['expiresIn'],
@@ -79,7 +81,7 @@ export const generateRefreshToken = (payload: TokenPayload): string => {
     .save()
     .catch(err => console.error('Error saving AuthSessionToken:', err)); // Log error, but don't block
 
-  return refreshToken;
+  return { refreshToken, jti };
 };
 
 /**

@@ -64,7 +64,13 @@ export const logoutUser = async (
   reply: FastifyReply
 ): Promise<void> => {
   try {
-    authService.logout(reply);
+    if (!request.user || !request.user.userId) {
+      return reply.status(401).send({ success: false, message: 'Unauthorized' });
+    }
+    if (!request.user.refreshTokenJti) {
+      return reply.status(400).send({ success: false, message: 'Refresh token JTI not found in request context.' });
+    }
+    await authService.logout(request.user.userId, request.user.refreshTokenJti, reply); // Pass userId and refreshTokenJti to logout service
     reply
       .status(200)
       .send({ success: true, message: 'Logged out successfully' });
