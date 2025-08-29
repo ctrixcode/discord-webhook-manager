@@ -22,7 +22,7 @@ const AuthSessionTokenSchema = new Schema<IAuthSessionToken>(
 );
 
 const AuthSessionTokenModel = model<IAuthSessionToken>(
-  'AuthSessionToken',
+  'auth_session_token',
   AuthSessionTokenSchema
 );
 

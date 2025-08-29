@@ -26,7 +26,7 @@ const MessageHistorySchema: Schema = new Schema({
 });
 
 const MessageHistory = mongoose.model<IMessageHistory>(
-  'MessageHistory',
+  'message_history',
   MessageHistorySchema
 );
 

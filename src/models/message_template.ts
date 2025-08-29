@@ -42,7 +42,7 @@ MessageTemplate.pre('validate', function (next) {
 });
 
 const MessageTemplateModel = model<IMessageTemplate>(
-  'Message_template',
+  'message_template',
   MessageTemplate
 );
 

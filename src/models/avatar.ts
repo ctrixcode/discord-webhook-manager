@@ -19,6 +19,6 @@ const AvatarSchema = new Schema<IAvatar>(
   }
 );
 
-const AvatarModel = model<IAvatar>('Avatar', AvatarSchema);
+const AvatarModel = model<IAvatar>('avatar', AvatarSchema);
 
 export default AvatarModel;

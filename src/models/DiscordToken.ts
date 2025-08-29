@@ -24,7 +24,7 @@ const DiscordTokenSchema = new Schema<IDiscordToken>(
 );
 
 const DiscordTokenModel = model<IDiscordToken>(
-  'Discord_token',
+  'discord_token',
   DiscordTokenSchema
 );
 
