@@ -17,6 +17,10 @@ const routes = async (fastify: FastifyInstance) => {
     });
   });
 
+  fastify.get('/', async (request, reply) => {
+    reply.status(200).send('Server is live!');
+  });
+
   fastify.register(userRoutes, { prefix: '/user' });
   fastify.register(authRoutes, { prefix: '/auth' });
   fastify.register(webhookRoutes, { prefix: '/webhook' });
