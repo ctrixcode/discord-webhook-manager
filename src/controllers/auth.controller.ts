@@ -245,7 +245,8 @@ export const discordCallback = async (
     }
 
     setRefreshTokenCookie(reply, refreshToken);
-    reply.redirect(`http://localhost:3000/auth/callback?token=${accessToken}`);
+    const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:3000';
+    reply.redirect(`${frontendUrl}/auth/callback?token=${accessToken}`);
     // reply.status(200).send({
     //   success: true,
     //   data: {
