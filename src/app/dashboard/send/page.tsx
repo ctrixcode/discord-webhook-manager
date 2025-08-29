@@ -975,7 +975,7 @@ export default function SendMessagePage() {
                                 </Badge>
                               </div>
                               <p className="text-sm text-slate-400 truncate">
-                                {webhook.url}
+                               {webhook.description}
                               </p>
                             </div>
                           </div>
