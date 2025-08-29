@@ -33,40 +33,61 @@ This flow involves redirecting the user to Discord for authorization and then ha
 
 ### 2. Token Handling
 
-- **Access Token:** The `accessToken` is returned in the response body for login and registration (both email/password and Discord). You should store this token in memory (e.g., a state management solution like Redux, React Context, or a simple variable) and include it in the `Authorization` header of all subsequent authenticated requests.
+- **Access Token:** The `accessToken` is returned in the response body for login and refresh operations. **It should be stored only in memory** (e.g., a state management solution like Redux, React Context, or a simple variable) and included in the `Authorization` header of all subsequent authenticated requests. **Do NOT store it in `localStorage` or `sessionStorage`**.
 
-- **Refresh Token:** The `refreshToken` is automatically managed by the browser as an `httpOnly` cookie. Your frontend code does not need to directly access or send this cookie. The backend will automatically use it to refresh your `accessToken` when it expires.
+- **Refresh Token:** The `refreshToken` is automatically managed by the browser as an `httpOnly` cookie. Your frontend code does not need to directly access or send this cookie. The backend uses a **single-use rotation mechanism** for refresh tokens:
+    *   When a refresh token is used to obtain a new access token, the old refresh token is immediately invalidated on the backend.
+    *   A new refresh token is issued and set in a new `httpOnly` cookie.
+    *   If a compromised (already used) refresh token is detected, all active sessions for that user are immediately revoked on the backend.
 
-- **Token Refresh Mechanism:** If your `accessToken` expires, the backend's authentication middleware will attempt to use the `refreshToken` from the cookie to issue a new `accessToken`. If a new `accessToken` is issued, it will be sent back in the `X-Access-Token` response header. Your frontend should check for this header on every authenticated API response and update its stored `accessToken` accordingly.
+- **Token Refresh Mechanism:**
+    *   If your frontend detects it does not have an access token in memory, or if an API call returns a 401 Unauthorized status (indicating an expired or invalid access token), the frontend should explicitly call the refresh endpoint:
+        `POST /api/auth/refresh`
+    *   This endpoint will return a new `accessToken` in the **JSON response payload**.
+    *   If the refresh attempt results in a 401 (meaning the refresh token itself is invalid, expired, or compromised), the frontend should redirect the user to the login page to re-authenticate.
 
-**Example (using `fetch` and handling `X-Access-Token` header):**
+**Example (Frontend logic for token refresh):**
 
 ```javascript
+async function refreshAndRetry(originalRequest) {
+  try {
+    const refreshResponse = await fetch('/api/auth/refresh', { method: 'POST' });
+    if (!refreshResponse.ok) {
+      // Refresh token invalid or compromised, redirect to login
+      window.location.href = '/login'; // Or your specific login route
+      return;
+    }
+    const refreshData = await refreshResponse.json();
+    const newAccessToken = refreshData.data.accessToken;
+    // Store newAccessToken in memory (e.g., update your state management)
+    // Then retry the original request with the new token
+    originalRequest.headers.set('Authorization', `Bearer ${newAccessToken}`);
+    return fetch(originalRequest);
+  } catch (error) {
+    console.error('Error during token refresh:', error);
+    window.location.href = '/login';
+  }
+}
+
+// Example usage in an API client:
 async function makeAuthenticatedRequest(url, options = {}) {
-  let currentAccessToken = localStorage.getItem('accessToken'); // Or from your state management
+  let accessToken = getAccessTokenFromMemory(); // Function to retrieve token from memory
 
-  const headers = {
-    'Content-Type': 'application/json',
-    ...
-    ...(currentAccessToken && { 'Authorization': `Bearer ${currentAccessToken}` }),
-    ...options.headers,
-  };
-
-  const response = await fetch(url, { ...options, headers });
-
-  // Check for new access token in headers
-  const newAccessToken = response.headers.get('X-Access-Token');
-  if (newAccessToken) {
-    localStorage.setItem('accessToken', newAccessToken); // Update stored token
-    console.log('Access token refreshed!');
+  const headers = new Headers(options.headers);
+  if (accessToken) {
+    headers.set('Authorization', `Bearer ${accessToken}`);
   }
 
-  if (!response.ok) {
-    // Handle errors, e.g., if refresh token is also invalid (401)
-    if (response.status === 401) {
-      console.error('Authentication failed. Redirect to login.');
-      // Redirect to login page or trigger re-authentication flow
-    }
+  const request = new Request(url, { ...options, headers });
+  let response = await fetch(request);
+
+  if (response.status === 401) {
+    // Access token expired, try to refresh
+    response = await refreshAndRetry(request.clone()); // Clone request to retry
+  }
+
+  if (!response || !response.ok) {
+    // Handle other errors or failed refresh
     const errorData = await response.json();
     throw new Error(errorData.message || 'API request failed');
   }
@@ -74,11 +95,24 @@ async function makeAuthenticatedRequest(url, options = {}) {
   return response.json();
 }
 
+// Placeholder for your in-memory token storage
+let inMemoryAccessToken = null;
+function getAccessTokenFromMemory() {
+  return inMemoryAccessToken;
+}
+function setAccessTokenInMemory(token) {
+  inMemoryAccessToken = token;
+}
+
 // Example usage:
-makeAuthenticatedRequest('/api/user')
-  .then(data => console.log(data))
-  .catch(error => console.error('Error:', error));
-```
+// On app load, or when token is missing:
+// makeAuthenticatedRequest('/api/user')
+//   .then(data => {
+//     setAccessTokenInMemory(data.data.accessToken); // Assuming /api/user returns it on first call
+//     console.log(data);
+//   })
+//   .catch(error => console.error('Error:', error));
+
 
 ## User Management
 

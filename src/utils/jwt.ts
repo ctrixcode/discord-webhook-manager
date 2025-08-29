@@ -1,4 +1,7 @@
 import jwt, { SignOptions } from 'jsonwebtoken';
+import { v4 as uuidv4 } from 'uuid';
+import AuthSessionTokenModel from '../models/AuthSessionToken';
+import { Types } from 'mongoose';
 
 const JWT_SECRET = process.env.JWT_SECRET || 'supersecretjwtkey'; // Should be a strong, unique secret
 const JWT_ACCESS_TOKEN_EXPIRES_IN: string | number =
@@ -6,9 +9,10 @@ const JWT_ACCESS_TOKEN_EXPIRES_IN: string | number =
 const JWT_REFRESH_TOKEN_EXPIRES_IN: string | number =
   process.env.JWT_REFRESH_TOKEN_EXPIRES_IN || '7d';
 
-interface TokenPayload {
+export interface TokenPayload {
   userId: string;
   email: string;
+  jti?: string; // Add jti as an optional property
   // Add any other data you want to store in the token payload
 }
 
@@ -30,10 +34,52 @@ export const generateAccessToken = (payload: TokenPayload): string => {
  * @returns The generated refresh token string.
  */
 export const generateRefreshToken = (payload: TokenPayload): string => {
+  const jti = uuidv4(); // Generate a unique ID for the token
   const options: SignOptions = {
     expiresIn: JWT_REFRESH_TOKEN_EXPIRES_IN as jwt.SignOptions['expiresIn'],
+    jwtid: jti, // Include jti in the token payload
   };
-  return jwt.sign(payload, JWT_SECRET, options);
+  const refreshToken = jwt.sign(payload, JWT_SECRET, options);
+
+  // Calculate expiration date for database storage
+  let expiresInSeconds: number;
+  if (typeof JWT_REFRESH_TOKEN_EXPIRES_IN === 'string') {
+    const value = parseInt(JWT_REFRESH_TOKEN_EXPIRES_IN.slice(0, -1));
+    const unit = JWT_REFRESH_TOKEN_EXPIRES_IN.slice(-1);
+    switch (unit) {
+      case 's':
+        expiresInSeconds = value;
+        break;
+      case 'm':
+        expiresInSeconds = value * 60;
+        break;
+      case 'h':
+        expiresInSeconds = value * 60 * 60;
+        break;
+      case 'd':
+        expiresInSeconds = value * 24 * 60 * 60;
+        break;
+      default:
+        expiresInSeconds = 0; // Should not happen with valid expiresIn
+    }
+  } else {
+    expiresInSeconds = JWT_REFRESH_TOKEN_EXPIRES_IN;
+  }
+
+  const expiresAt = new Date(Date.now() + expiresInSeconds * 1000);
+
+  // Save refresh token metadata to database
+  const authSessionToken = new AuthSessionTokenModel({
+    userId: new Types.ObjectId(payload.userId),
+    jti: jti,
+    expiresAt: expiresAt,
+    isUsed: false,
+  });
+  authSessionToken
+    .save()
+    .catch(err => console.error('Error saving AuthSessionToken:', err)); // Log error, but don't block
+
+  return refreshToken;
 };
 
 /**

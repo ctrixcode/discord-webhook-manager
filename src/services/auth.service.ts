@@ -2,12 +2,14 @@ import * as userService from './user.service';
 import {
   generateAccessToken,
   generateRefreshToken,
+  TokenPayload,
   verifyToken,
 } from '../utils/jwt';
 import { clearRefreshTokenCookie } from '../utils/cookie';
 import { FastifyReply } from 'fastify';
 import { logger } from '../utils';
 import { getDiscordGuildIconURL } from '../utils/discord-api';
+import AuthSessionTokenModel from '../models/AuthSessionToken';
 
 export const loginWithDiscord = async (
   discordId: string,
@@ -59,14 +61,36 @@ export const loginWithDiscord = async (
   return { user, accessToken, refreshToken };
 };
 
+const revokeAllUserSessions = async (userId: string) => {
+  await AuthSessionTokenModel.deleteMany({ userId: userId });
+  logger.warn(`All sessions revoked for user: ${userId}`);
+};
+
 export const refreshTokens = async (refreshToken: string) => {
   try {
-    const decodedRefreshToken = verifyToken(refreshToken);
+    const decodedRefreshToken = verifyToken(refreshToken) as TokenPayload;
     const user = await userService.getUserById(decodedRefreshToken.userId);
 
     if (!user) {
       throw new Error('Invalid refresh token: User not found');
     }
+
+    // Check if the refresh token exists in our database and is not used
+    const existingAuthSessionToken = await AuthSessionTokenModel.findOne({
+      userId: decodedRefreshToken.userId,
+      jti: decodedRefreshToken.jti,
+    });
+
+    if (!existingAuthSessionToken || existingAuthSessionToken.isUsed) {
+      // If token is not found or already used, it's a potential compromise
+      // Revoke all sessions for this user
+      await revokeAllUserSessions(decodedRefreshToken.userId);
+      throw new Error('Invalid or compromised refresh token');
+    }
+
+    // Mark the current refresh token as used
+    existingAuthSessionToken.isUsed = true;
+    await existingAuthSessionToken.save();
 
     const newAccessToken = generateAccessToken({
       userId: user.id,
@@ -80,6 +104,10 @@ export const refreshTokens = async (refreshToken: string) => {
     return { newAccessToken, newRefreshToken, user };
   } catch (error) {
     logger.error('Error refreshing tokens:', error);
+    // If the error is not already 'Invalid or compromised refresh token', then it's a generic JWT error
+    if (error instanceof Error && error.message.includes('compromised')) {
+      throw error; // Re-throw the specific error
+    }
     throw new Error('Invalid or expired refresh token');
   }
 };
