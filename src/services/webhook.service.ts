@@ -1,9 +1,11 @@
 import { createWebhook, Message, Embed, Field } from 'discord-webhook-library';
 import WebhookModel, { IWebhook } from '../models/Webhook';
 import { logger } from '../utils';
+import mongoose from 'mongoose';
 import { IAvatar } from '../models/avatar';
 import { IEmbedSchemaDocument, IFields } from '../models/embed';
 import { getAvatar } from './avatar.service';
+import { createMessageHistory } from './messageHistory.service';
 
 export interface CreateWebhookData {
   name: string;
@@ -283,16 +285,37 @@ export const sendMessage = async (
         userId,
       });
       results.push({ webhookId: webhook.id, status: 'success' });
+
+      // Add message history for success
+      await createMessageHistory(
+        webhook.id,
+        new mongoose.Types.ObjectId(userId),
+        messageData.message,
+        messageData.embeds || [],
+        'success'
+      );
     } catch (error: unknown) {
       logger.error(
         `Error sending message to webhook ID: ${webhook.id}:`,
         error instanceof Error ? error.message : error
       );
+      const errorMessage =
+        error instanceof Error ? error.message : String(error);
       results.push({
         webhookId: webhook.id,
         status: 'failed',
-        error: error instanceof Error ? error.message : String(error),
+        error: errorMessage,
       });
+
+      // Add message history for failure
+      await createMessageHistory(
+        webhook.id,
+        new mongoose.Types.ObjectId(userId),
+        messageData.message,
+        messageData.embeds || [],
+        'failed',
+        errorMessage
+      );
     }
   }
 
