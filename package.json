@@ -1,5 +1,5 @@
 {
-  "name": "fastify-ts-mongo",
+  "name": "discord-webhook-manager-backend",
   "version": "1.0.0",
   "main": "dist/server.js",
   "scripts": {
