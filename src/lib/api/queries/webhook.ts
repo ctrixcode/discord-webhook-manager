@@ -9,7 +9,7 @@ import { ApiResponse } from '../types/api';
 
 export const webhookQueries = {
   // Get all webhooks
-  getAllWebhooks: async ({ queryKey }: { queryKey: readonly unknown[] }): Promise<Webhook[]> => {
+  getAllWebhooks: async ({ queryKey }: { queryKey: readonly [string, { isActive?: boolean }] }): Promise<Webhook[]> => {
     const filters = queryKey[1] as { isActive?: boolean } | undefined;
     const params = new URLSearchParams();
     if (filters?.isActive !== undefined) {

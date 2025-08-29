@@ -93,7 +93,7 @@ export default function SendMessagePage() {
 
   const { data: webhooks = [], isLoading: isLoadingWebhooks } = useQuery({
     queryKey: ['webhooks', { isActive: true }],
-    queryFn: () => api.webhook.getAllWebhooks({ isActive: true }),
+    queryFn: ({ queryKey }) => api.webhook.getAllWebhooks({ queryKey: queryKey as [string, { isActive?: boolean }] }),
   });
   const { data: avatars = [], isLoading: isLoadingAvatars } = useQuery({
     queryKey: ['avatars'],
