@@ -5,7 +5,7 @@ import dotenv from 'dotenv';
 import cookie from '@fastify/cookie';
 import {
   corsPlugin,
-  rateLimiterPlugin,
+  // rateLimiterPlugin,
   loggingPlugin,
   errorHandlerPlugin,
   sanitizerPlugin,
@@ -21,7 +21,7 @@ app.register(helmet);
 app.register(multipart);
 app.register(loggingPlugin);
 app.register(corsPlugin);
-app.register(rateLimiterPlugin);
+// app.register(rateLimiterPlugin);
 app.register(sanitizerPlugin);
 app.register(errorHandlerPlugin);
 app.register(cookie);
