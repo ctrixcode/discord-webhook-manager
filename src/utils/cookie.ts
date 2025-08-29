@@ -3,14 +3,10 @@ import { FastifyReply } from 'fastify';
 export const setRefreshTokenCookie = (reply: FastifyReply, token: string) => {
   reply.setCookie('refreshToken', token, {
     httpOnly: true,
-    secure: process.env.NODE_ENV === 'production', // Use secure cookies in production
-    path: '/', // Accessible across the entire domain
-    sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax', // 'none' for cross-site in production, 'lax' for development
-    domain:
-      process.env.NODE_ENV === 'production'
-        ? process.env.FRONTEND_URL
-        : undefined, // Set your domain if needed (e.g., .yourdomain.com)
-    expires: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // 7 days
+    secure: process.env.NODE_ENV === 'production',
+    path: '/',
+    sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
+    expires: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
   });
 };
 
@@ -19,10 +15,6 @@ export const clearRefreshTokenCookie = (reply: FastifyReply) => {
     httpOnly: true,
     secure: process.env.NODE_ENV === 'production',
     path: '/',
-    sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax', // 'none' for cross-site in production, 'lax' for development
-    domain:
-      process.env.NODE_ENV === 'production'
-        ? process.env.FRONTEND_URL
-        : undefined, // Set your domain if needed (e.g., .yourdomain.com)
+    sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
   });
 };
