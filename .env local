@@ -2,6 +2,8 @@
 PORT=4000
 NODE_ENV=development
 
+FRONT_END_URL=http://localhost:3000
+
 # Database Configuration
 MONGODB_URI=mongodb+srv://<user>:<pass>@cluster.mongodb.net/test
 
@@ -17,9 +19,9 @@ JWT_REFRESH_TOKEN_EXPIRES_IN=7d
 LOG_LEVEL=info 
 
 # Discord OAuth2
-DISCORD_CLIENT_ID=your_discord_client_id
-DISCORD_CLIENT_SECRET=your_discord_client_secret
-DISCORD_REDIRECT_URI=http://localhost:3000/api/auth/discord/callback
+DISCORD_CLIENT_ID=1406591839821365299
+DISCORD_CLIENT_SECRET=9vh6Qt78oBahklqxqgJ2RAhvA37u0csv
+DISCORD_REDIRECT_URI=http://localhost:4000/api/auth/discord/callback
 
 # Encryption
 ENCRYPTION_KEY=your_32_byte_encryption_key_here # Generate a random 32-character key 
