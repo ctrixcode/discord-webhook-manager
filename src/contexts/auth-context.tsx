@@ -7,7 +7,8 @@ import {
   useState,
   type ReactNode,
 } from 'react';
-import { api, apiClient, type User } from '@/lib/api';
+import { api, apiClient } from '@/lib/api';
+import { type User } from '@/lib/api/types/user';
 
 interface AuthContextType {
   user: User | null;
@@ -27,19 +28,19 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const initAuth = async () => {
       setIsLoading(true);
       try {
-        if (api.auth.isAuthenticated()) {
-          const currentUser = await api.user.getCurrentUser();
-          setUser(currentUser);
-        } else {
-          setUser(null);
-        }
+        // Attempt to get the current user. The apiClient's interceptor will handle token refresh if needed.
+        const currentUser = await api.user.getCurrentUser();
+        setUser(currentUser);
       } catch (error) {
+        // If getCurrentUser fails (e.g., no token, refresh failed, or other API error),
+        // it means the user is not authenticated or an error occurred.
         console.error('Authentication check failed, logging out.', error);
         setUser(null);
-        apiClient.clearAccessToken();
+        apiClient.clearAccessToken(); // Ensure in-memory token is cleared
+        // No explicit redirect here, as apiClient's interceptor handles redirect on refresh failure.
       } finally {
         setIsLoading(false);
-      }
+      };
     };
 
     initAuth();
@@ -55,7 +56,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     api.auth.logout();
   };
 
-  const isAuthenticated = !!user && api.auth.isAuthenticated();
+  const isAuthenticated = !!user;
 
   return (
     <AuthContext.Provider
