@@ -1,4 +1,4 @@
-import axios, { AxiosError, AxiosInstance, AxiosResponse, InternalAxiosRequestConfig } from 'axios';
+import axios, { AxiosError, AxiosHeaders, AxiosInstance, AxiosResponse, InternalAxiosRequestConfig } from 'axios';
 
 // Base URL from the integration guide
 const BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000/api';
@@ -60,7 +60,12 @@ class ApiClient {
 
           try {
             const refreshResponse = await this.client.post('/auth/refresh');
-            const newAccessToken = refreshResponse.data.accessToken; // Assuming accessToken is in data.accessToken
+            const newAccessToken = refreshResponse.data.data.accessToken || refreshResponse.headers['x-access-token'];
+
+            if (!newAccessToken) {
+              throw new Error('New access token not found in refresh response');
+            }
+            
             this.setAccessToken(newAccessToken);
             this.isRefreshing = false;
             this.processQueue(null, newAccessToken); // Process queued requests
@@ -100,12 +105,10 @@ class ApiClient {
       if (error) {
         prom.reject(error);
       } else if (token) {
-        // Ensure the original request's Authorization header is updated before retrying
-        if (prom.config.headers) {
-          prom.config.headers.Authorization = `Bearer ${token}`;
-        } else {
-          prom.config.headers = { Authorization: `Bearer ${token}` };
+        if (!prom.config.headers) {
+          prom.config.headers = new AxiosHeaders();
         }
+        prom.config.headers.set('Authorization', `Bearer ${token}`);
         prom.resolve(this.client(prom.config)); // Retry the original request
       }
     });

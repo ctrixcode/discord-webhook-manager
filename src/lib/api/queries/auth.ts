@@ -7,9 +7,9 @@ export const authQueries = {
   },
 
   // Logout (clear tokens)
-  logout: () => {
+  logout: async () => {
     apiClient.clearAccessToken();
     // You might want to call a logout endpoint here if your backend has one
-    // await apiClient.post('/auth/logout');
+    await apiClient.post('/auth/logout');
   },
 };
