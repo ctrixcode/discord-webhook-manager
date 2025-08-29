@@ -111,5 +111,6 @@ export default function SettingsPage() {
         onConfirm={handleConfirmClearData}
         confirmButtonText="Clear Data"
       />
-    </div>
-  );
+    </div>)
+
+  }
