@@ -5,7 +5,7 @@ import { Types } from 'mongoose';
 
 const JWT_SECRET = process.env.JWT_SECRET || 'supersecretjwtkey'; // Should be a strong, unique secret
 const JWT_ACCESS_TOKEN_EXPIRES_IN: string | number =
-  process.env.JWT_ACCESS_TOKEN_EXPIRES_IN || '15m';
+  process.env.JWT_ACCESS_TOKEN_EXPIRES_IN || '59m';
 const JWT_REFRESH_TOKEN_EXPIRES_IN: string | number =
   process.env.JWT_REFRESH_TOKEN_EXPIRES_IN || '7d';
 
@@ -60,6 +60,9 @@ export const generateRefreshToken = (
         break;
       case 'd':
         expiresInSeconds = value * 24 * 60 * 60;
+        break;
+      case 'w':
+        expiresInSeconds = value * 7 * 24 * 60 * 60;
         break;
       default:
         expiresInSeconds = 0; // Should not happen with valid expiresIn
