@@ -33,7 +33,7 @@ const sanitizeObject = (obj: Sanitizable): Sanitizable => {
 const sanitizeString = (str: string): string => {
   if (typeof str !== 'string') return str;
   return str
-    .replace(/<[^>]*>/g, '')
+    .replace(/<[a-zA-Z\/][^>]*>/g, '')
     .replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '')
     .replace(/on\w+\s*=/gi, '')
     .replace(/javascript:/gi, '')
