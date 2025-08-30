@@ -1,6 +1,8 @@
 import { NextResponse } from 'next/server';
 import { cookies } from 'next/headers';
 
+export const dynamic = 'force-dynamic';
+
 // This route sets the refresh token as an HttpOnly cookie.
 export async function POST(request: Request) {
   try {
