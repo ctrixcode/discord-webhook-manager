@@ -1,3 +1,6 @@
+import { logger } from '../utils';
+import { getDiscordGuildIconURL } from '../utils/discord-api';
+import AuthSessionTokenModel from '../models/AuthSessionToken';
 import * as userService from './user.service';
 import {
   generateAccessToken,
@@ -5,11 +8,6 @@ import {
   TokenPayload,
   verifyToken,
 } from '../utils/jwt';
-import { clearRefreshTokenCookie } from '../utils/cookie';
-import { FastifyReply } from 'fastify';
-import { logger } from '../utils';
-import { getDiscordGuildIconURL } from '../utils/discord-api';
-import AuthSessionTokenModel from '../models/AuthSessionToken';
 
 export const loginWithDiscord = async (
   discordId: string,
@@ -96,10 +94,11 @@ export const refreshTokens = async (refreshToken: string) => {
       userId: user.id,
       email: user.email,
     });
-    const { refreshToken: newRefreshToken, jti: newRefreshTokenJti } = generateRefreshToken({
-      userId: user.id,
-      email: user.email,
-    });
+    const { refreshToken: newRefreshToken, jti: newRefreshTokenJti } =
+      generateRefreshToken({
+        userId: user.id,
+        email: user.email,
+      });
 
     return { newAccessToken, newRefreshToken, user, newRefreshTokenJti };
   } catch (error) {
@@ -112,12 +111,11 @@ export const refreshTokens = async (refreshToken: string) => {
   }
 };
 
-export const logout = async (userId: string, refreshTokenJti: string, reply: FastifyReply) => {
+export const logout = async (userId: string, refreshTokenJti: string) => {
   // Invalidate only the specific refresh token used for this session
   await AuthSessionTokenModel.findOneAndUpdate(
     { userId: userId, jti: refreshTokenJti },
     { isUsed: true }
   );
   logger.warn(`Session revoked for user: ${userId}, jti: ${refreshTokenJti}`);
-  clearRefreshTokenCookie(reply); // Clear the refresh token cookie
 };

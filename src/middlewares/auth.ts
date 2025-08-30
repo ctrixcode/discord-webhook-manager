@@ -1,8 +1,6 @@
 import { FastifyRequest, FastifyReply } from 'fastify';
 import { TokenExpiredError } from 'jsonwebtoken';
-import * as AuthService from '../services/auth.service';
-import { setRefreshTokenCookie } from '../utils/cookie';
-import { verifyToken } from '../utils/jwt'; // Added TokenPayload
+import { verifyToken } from '../utils/jwt';
 
 const authenticate = async (request: FastifyRequest, reply: FastifyReply) => {
   const authHeader = request.headers.authorization;
@@ -22,35 +20,9 @@ const authenticate = async (request: FastifyRequest, reply: FastifyReply) => {
     request.user = decoded;
   } catch (error) {
     if (error instanceof TokenExpiredError) {
-      try {
-        const refreshToken = request.cookies.refreshToken;
-        if (!refreshToken) {
-          return reply.status(401).send({
-            message: 'Access token expired and no refresh token provided',
-          });
-        }
-
-        const newTokens = await AuthService.refreshTokens(refreshToken);
-        if (!newTokens) {
-          return reply
-            .status(401)
-            .send({ message: 'Invalid or expired refresh token' });
-        }
-
-        const { newAccessToken, newRefreshToken, newRefreshTokenJti } =
-          newTokens; // Added newRefreshTokenJti
-
-        setRefreshTokenCookie(reply, newRefreshToken);
-        reply.header('X-Access-Token', newAccessToken);
-
-        const decoded = verifyToken(newAccessToken);
-        request.user = { ...decoded, refreshTokenJti: newRefreshTokenJti }; // Set refreshTokenJti
-      } catch (_refreshError) {
-        return reply.status(401).send({ message: 'Failed to refresh token' });
-      }
-    } else {
-      return reply.status(401).send({ message: 'Invalid token' });
+      return reply.status(401).send({ message: 'Access token expired' });
     }
+    return reply.status(401).send({ message: 'Invalid token' });
   }
 };
 export default authenticate;

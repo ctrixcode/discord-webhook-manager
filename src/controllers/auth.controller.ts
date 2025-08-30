@@ -2,11 +2,7 @@ import { FastifyRequest, FastifyReply } from 'fastify';
 import * as authService from '../services/auth.service';
 import * as discordTokenService from '../services/discord-token.service';
 import { logger } from '../utils';
-import {
-  setRefreshTokenCookie,
-  clearRefreshTokenCookie,
-} from '../utils/cookie';
-import { verifyToken, TokenPayload } from '../utils/jwt'; // Added
+import { verifyToken, TokenPayload } from '../utils/jwt';
 
 const DISCORD_CLIENT_ID = process.env.DISCORD_CLIENT_ID as string;
 const DISCORD_CLIENT_SECRET = process.env.DISCORD_CLIENT_SECRET as string;
@@ -30,17 +26,17 @@ export const refreshAccessToken = async (
 
     const { newAccessToken, newRefreshToken } =
       await authService.refreshTokens(refreshToken);
-    setRefreshTokenCookie(reply, newRefreshToken);
+
     reply.status(200).send({
       success: true,
       data: {
         accessToken: newAccessToken,
+        refreshToken: newRefreshToken,
       },
       message: 'Access token refreshed successfully',
     });
   } catch (error: unknown) {
     logger.error('Error in refreshAccessToken controller:', error);
-    clearRefreshTokenCookie(reply);
     if (error instanceof Error) {
       reply.status(401).send({
         success: false,
@@ -60,38 +56,28 @@ export const refreshAccessToken = async (
  * POST /api/auth/logout
  */
 export const logoutUser = async (
-  request: FastifyRequest,
+  request: FastifyRequest<{ Body: { refreshToken: string } }>,
   reply: FastifyReply
 ): Promise<void> => {
   try {
-    const refreshToken = request.cookies.refreshToken; // Get refresh token from cookie
+    const { refreshToken } = request.body;
 
-    // This is specially designed to remove specific refresh Tokens
-    // as that refresh token is used up
-    // making sure we only expiry single session of a user
     if (refreshToken) {
       try {
         const decodedRefreshToken = verifyToken(refreshToken) as TokenPayload;
         if (decodedRefreshToken.userId && decodedRefreshToken.jti) {
           await authService.logout(
             decodedRefreshToken.userId,
-            decodedRefreshToken.jti,
-            reply
+            decodedRefreshToken.jti
           );
         } else {
-          logger.warn(
-            'Logout request: Refresh token missing userId or jti. Only client-side cookie cleared.'
-          );
+          logger.warn('Logout request: Refresh token missing userId or jti.');
         }
       } catch (error) {
         logger.error('Error verifying refresh token during logout:', error);
-        // If refresh token is invalid or expired, still consider it a successful logout
-        // as the client-side cookie has been cleared.
       }
     } else {
-      logger.warn(
-        'Logout request received without refresh token. Only client-side cookie cleared.'
-      );
+      logger.warn('Logout request received without refresh token.');
     }
 
     reply
@@ -244,17 +230,10 @@ export const discordCallback = async (
       });
     }
 
-    setRefreshTokenCookie(reply, refreshToken);
     const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:3000';
-    reply.redirect(`${frontendUrl}/auth/callback?token=${accessToken}`);
-    // reply.status(200).send({
-    //   success: true,
-    //   data: {
-    //     user: { id: user.id, email: user.email, username: user.username },
-    //     accessToken,
-    //   },
-    //   message: 'Logged in with Discord successfully',
-    // });
+    reply.redirect(
+      `${frontendUrl}/auth/callback?token=${accessToken}&refreshToken=${refreshToken}`
+    );
   } catch (error: unknown) {
     logger.error('Error in discordCallback controller:', error);
     if (error instanceof Error) {
