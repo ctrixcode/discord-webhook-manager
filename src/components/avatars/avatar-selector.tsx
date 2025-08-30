@@ -3,7 +3,7 @@
 import type React from 'react';
 
 import { useState } from 'react';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { Button } from '@/components/ui/button';
 import {
   Dialog,
@@ -14,10 +14,11 @@ import {
 } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Search, Users } from 'lucide-react';
+import { Search, Users, Plus } from 'lucide-react';
 import { getAllAvatars } from '@/lib/api/queries/avatar';
 import type { PredefinedAvatar } from '@/lib/api/types/avatar';
 import { useAuth } from '@/contexts/auth-context';
+import { CreateAvatarDialog } from '@/components/avatars/create-avatar-dialog';
 
 interface AvatarSelectorProps {
   onSelect: (avatar: PredefinedAvatar) => void;
@@ -26,8 +27,10 @@ interface AvatarSelectorProps {
 
 export function AvatarSelector({ onSelect, children }: AvatarSelectorProps) {
   const { user } = useAuth();
+  const queryClient = useQueryClient();
   const [open, setOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
+  const [showCreateDialog, setShowCreateDialog] = useState(false);
 
   const { data: avatars = [] } = useQuery<PredefinedAvatar[]>({
     queryKey: ['avatars'],
@@ -60,15 +63,25 @@ export function AvatarSelector({ onSelect, children }: AvatarSelectorProps) {
         </DialogHeader>
 
         <div className="space-y-4">
-          {/* Search */}
-          <div className="relative">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400 w-4 h-4" />
-            <Input
-              placeholder="Search avatars..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-10 bg-slate-700/50 border-slate-600 text-white placeholder:text-slate-400 focus:border-purple-500"
-            />
+          {/* Search and Add Button */}
+          <div className="flex items-center gap-2">
+            <div className="relative flex-grow">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400 w-4 h-4" />
+              <Input
+                placeholder="Search avatars..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="pl-10 bg-slate-700/50 border-slate-600 text-white placeholder:text-slate-400 focus:border-purple-500"
+              />
+            </div>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setShowCreateDialog(true)}
+              className="text-white border-slate-600 hover:bg-slate-700/50"
+            >
+              <Plus className="w-4 h-4" />
+            </Button>
           </div>
 
           {/* Avatar List */}
@@ -115,6 +128,14 @@ export function AvatarSelector({ onSelect, children }: AvatarSelectorProps) {
           </div>
         </div>
       </DialogContent>
+      <CreateAvatarDialog
+        open={showCreateDialog}
+        onOpenChange={setShowCreateDialog}
+        onSaveSuccess={() => {
+          queryClient.invalidateQueries({ queryKey: ['avatars'] });
+          setShowCreateDialog(false);
+        }}
+      />
     </Dialog>
   );
 }
