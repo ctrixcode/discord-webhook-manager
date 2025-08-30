@@ -16,12 +16,12 @@ import {
 import Link from 'next/link';
 
 const navigation = [
-  {
-    name: 'Home',
-    href: '/dashboard',
-    icon: Home,
-    color: 'bg-blue-500 hover:bg-blue-600',
-  },
+  // {
+  //   name: 'Home',
+  //   href: '/dashboard',
+  //   icon: Home,
+  //   color: 'bg-blue-500 hover:bg-blue-600',
+  // },
   {
     name: 'Webhooks',
     href: '/dashboard/webhooks',
@@ -148,7 +148,9 @@ export function FloatingNavigation() {
           )}
         >
           {isOpen ? (
-            <X className="w-7 h-7 text-white transition-all duration-300" /> // Ensured consistent icon sizing and centering
+            <Link href={"/dashboard"}>
+            <X className="w-7 h-7 text-white transition-all duration-300" />
+            </Link>
           ) : (
             <DiscordLogo className="w-7 h-7 text-white transition-all duration-300" />
           )}
