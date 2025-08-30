@@ -5,12 +5,14 @@ import {
   getAvatars,
   updateAvatar,
   deleteAvatar,
+  uploadAvatar,
 } from '../controllers/avatar.controller';
 import authenticate from '../middlewares/auth';
 import {
   createAvatarSchema,
   updateAvatarSchema,
   avatarParamsSchema,
+  uploadAvatarSchema,
 } from '../schemas/avatar.schema';
 
 async function avatarRoutes(fastify: FastifyInstance) {
@@ -21,6 +23,15 @@ async function avatarRoutes(fastify: FastifyInstance) {
       schema: createAvatarSchema,
     },
     createAvatar
+  );
+
+  fastify.post(
+    '/upload',
+    {
+      preHandler: [authenticate],
+      schema: uploadAvatarSchema,
+    },
+    uploadAvatar
   );
 
   fastify.get('/', { preHandler: [authenticate] }, getAvatars);

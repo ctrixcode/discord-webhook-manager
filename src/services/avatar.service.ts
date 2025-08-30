@@ -1,5 +1,6 @@
 import AvatarModel, { IAvatar } from '../models/avatar';
 import { Types } from 'mongoose';
+import { uploadImage } from '../services/cloudinary.service';
 
 /**
  * Creates a new avatar for a specific user.
@@ -14,6 +15,30 @@ export const createAvatar = async (
   const newAvatar = new AvatarModel({
     ...avatarData,
     user_id: new Types.ObjectId(userId),
+  });
+  return newAvatar.save();
+};
+
+/**
+ * Uploads an avatar to Cloudinary and creates a new avatar record in the database.
+ * @param userId The ID of the user uploading the avatar.
+ * @param username The username of the user (for Cloudinary folder).
+ * @param avatarName The name of the avatar (for Cloudinary filename).
+ * @param filePath The temporary file path of the avatar.
+ * @returns The created avatar document.
+ */
+export const uploadAvatar = async (
+  userId: string,
+  username: string,
+  avatarName: string,
+  filePath: string
+): Promise<IAvatar> => {
+  const uploadResult = await uploadImage(filePath, username, avatarName);
+  const newAvatar = new AvatarModel({
+    user_id: new Types.ObjectId(userId),
+    username: username,
+    avatar_url: uploadResult.secure_url,
+    public_id: uploadResult.public_id,
   });
   return newAvatar.save();
 };

@@ -1,10 +1,14 @@
 import { FastifyRequest, FastifyReply } from 'fastify';
+import * as fs from 'fs';
+import * as path from 'path';
+import { MultipartFile } from '@fastify/multipart';
 import {
   createAvatar as createAvatarService,
   getAvatar as getAvatarService,
   getAvatars as getAvatarsService,
   updateAvatar as updateAvatarService,
   deleteAvatar as deleteAvatarService,
+  uploadAvatar as uploadAvatarService,
 } from '../services/avatar.service';
 import { IAvatarParams } from '../schemas/avatar.schema';
 import { IAvatar } from '../models/avatar';
@@ -32,6 +36,74 @@ export const createAvatar = async (
     } else {
       reply.code(500).send({
         message: 'Error creating avatar',
+        error: 'An unknown error occurred.',
+      });
+    }
+  }
+};
+
+export const uploadAvatar = async (
+  request: FastifyRequest,
+  reply: FastifyReply
+) => {
+  try {
+    if (!request.user) {
+      return reply
+        .code(401)
+        .send({ message: 'Unauthorized: User not authenticated.' });
+    }
+
+    if (!request.isMultipart()) {
+      return reply.code(400).send({ message: 'Request is not multipart' });
+    }
+
+    let file: MultipartFile | undefined;
+    let avatarUsername: string | undefined;
+
+    for await (const part of request.parts()) {
+      if (part.type === 'file') {
+        file = part;
+      } else if (part.fieldname === 'username') {
+        avatarUsername = part.value as string;
+      }
+    }
+
+    if (!file) {
+      return reply.code(400).send({ message: 'No file uploaded' });
+    }
+
+    if (!avatarUsername) {
+      return reply.code(400).send({ message: 'Username field is missing' });
+    }
+
+    const userId = request.user.userId;
+
+    const tempDir = path.join(__dirname, '..', '..', 'temp');
+    if (!fs.existsSync(tempDir)) {
+      fs.mkdirSync(tempDir);
+    }
+
+    const tempFilePath = path.join(tempDir, file.filename);
+    await fs.promises.writeFile(tempFilePath, file.file);
+
+    const avatar = await uploadAvatarService(
+      userId,
+      avatarUsername,
+      avatarUsername,
+      tempFilePath
+    );
+
+    fs.unlinkSync(tempFilePath); // Clean up temporary file
+
+    reply.code(201).send(toAvatarDto(avatar));
+  } catch (error: unknown) {
+    if (error instanceof Error) {
+      reply
+        .code(500)
+        .send({ message: 'Error uploading avatar', error: error.message });
+    } else {
+      reply.code(500).send({
+        message: 'Error uploading avatar',
         error: 'An unknown error occurred.',
       });
     }

@@ -9,6 +9,18 @@ export const createAvatarSchema = {
   },
 };
 
+export const uploadAvatarSchema = {
+  consumes: ['multipart/form-data'],
+  body: {
+    type: 'object',
+    properties: {
+      avatar: { type: 'string', format: 'binary' }, // Represents the file input
+      username: { type: 'string' }, // The username for the avatar
+    },
+    required: ['avatar', 'username'],
+  },
+};
+
 export const updateAvatarSchema = {
   body: {
     type: 'object',
@@ -33,6 +45,11 @@ export interface ICreateAvatarBody {
   username: string;
   avatar_url?: string;
   avatar_icon_url: string;
+}
+
+export interface IUploadAvatarBody {
+  avatar: string; // This will be a string representing the file in the schema
+  username: string;
 }
 
 export interface IUpdateAvatarBody {
