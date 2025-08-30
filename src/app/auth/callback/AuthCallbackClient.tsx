@@ -16,21 +16,16 @@ export default function AuthCallbackClient() {
 
       if (accessToken && refreshToken) {
         try {
-          // 1. Set access token in memory
+          // 1. Set access token in localStorage
+          localStorage.setItem('accessToken', accessToken);
           apiClient.setAccessToken(accessToken);
 
-          // 2. Send refresh token to our API route to set it as an HttpOnly cookie
-          const cookieResponse = await fetch('/api/auth/set-refresh-token', {
+          // 2. Send refresh token to API to set http-only cookie
+          await fetch('/api/auth/set-refresh-token', {
             method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
+            headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ refreshToken }),
           });
-
-          if (!cookieResponse.ok) {
-            throw new Error('Failed to set refresh token cookie.');
-          }
 
           // 3. Manually trigger user fetch and redirect
           // The AuthProvider will typically handle this, but we can be explicit

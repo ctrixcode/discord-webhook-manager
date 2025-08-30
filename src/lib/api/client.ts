@@ -5,9 +5,25 @@ const BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000/api';
 
 class ApiClient {
   private client: AxiosInstance;
-  private accessToken: string | null = null;
   private isRefreshing = false;
   private failedQueue: Array<{ resolve: (value: unknown) => void; reject: (reason?: AxiosError) => void; config: InternalAxiosRequestConfig }> = [];
+
+  private getAccessToken(): string | null {
+    if (typeof window !== 'undefined') {
+      return localStorage.getItem('accessToken');
+    }
+    return null;
+  }
+
+  public setAccessToken(token: string | null) {
+    if (typeof window !== 'undefined') {
+      if (token) {
+        localStorage.setItem('accessToken', token);
+      } else {
+        localStorage.removeItem('accessToken');
+      }
+    }
+  }
 
   constructor() {
     this.client = axios.create({
@@ -25,8 +41,9 @@ class ApiClient {
     // Request interceptor to add auth token
     this.client.interceptors.request.use(
       (config: InternalAxiosRequestConfig) => {
-        if (this.accessToken) {
-          config.headers.Authorization = `Bearer ${this.accessToken}`;
+        const token = this.getAccessToken();
+        if (token) {
+          config.headers.Authorization = `Bearer ${token}`;
         }
         return config;
       },
@@ -86,7 +103,10 @@ class ApiClient {
         }
 
         // If 401 on refresh request itself, or other errors
-        if (error.response?.status === 401 && originalRequest.url === '/auth/refresh') {
+        // The new /api/auth/refresh-token endpoint handles the refresh token cookie directly.
+        // If it returns 401, it means the refresh token is invalid/expired.
+        if (error.response?.status === 401 && originalRequest.url === '/api/auth/refresh-token') {
+          localStorage.removeItem('refreshToken'); // Clear refresh token from localStorage
           this.clearAccessToken();
           console.error('Refresh token invalid or expired.');
         }
@@ -111,12 +131,8 @@ class ApiClient {
     this.failedQueue = [];
   }
 
-  setAccessToken(token: string) {
-    this.accessToken = token;
-  }
-
   clearAccessToken() {
-    this.accessToken = null;
+    this.setAccessToken(null);
   }
 
   get<T = unknown>(url: string, config = {}) {

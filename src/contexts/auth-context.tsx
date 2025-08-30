@@ -37,7 +37,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       } catch (error) {
         console.error('Authentication check failed:', error);
         setUser(null);
-        apiClient.clearAccessToken();
+        localStorage.removeItem('accessToken');
       } finally {
         setIsLoading(false);
       }
@@ -63,7 +63,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       console.error('Failed to clear refresh token cookie', error);
     } finally {
       setUser(null);
-      apiClient.clearAccessToken();
+      localStorage.removeItem('accessToken');
       router.push('/login');
     }
   };
