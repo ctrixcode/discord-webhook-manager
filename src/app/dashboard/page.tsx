@@ -33,7 +33,7 @@ export default function DashboardPage() {
                   variant="outline"
                 >
                   <Webhook className="w-8 h-8 text-purple-400" />
-                  <span className="font-medium">Add Webhook</span>
+                  <span className="font-medium">Webhook</span>
                 </Button>
               </Link>
               <Link href="/dashboard/send">
@@ -51,7 +51,7 @@ export default function DashboardPage() {
                   variant="outline"
                 >
                   <FileText className="w-8 h-8 text-pink-400" />
-                  <span className="font-medium">Create Template</span>
+                  <span className="font-medium">Template</span>
                 </Button>
               </Link>
             </div>
