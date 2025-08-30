@@ -35,7 +35,7 @@ import {
   Plus,
 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
-import { Skeleton } from '@/components/ui/skeleton';
+import { Spinner } from '@/components/ui/spinner';
 
 export default function TemplatesPage() {
   const router = useRouter();
@@ -112,8 +112,8 @@ export default function TemplatesPage() {
 
       {/* Templates List */}
       {isLoading ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {[...Array(3)].map((_, i) => <Skeleton key={i} className="h-64 w-full rounded-lg" />)}
+        <div className="flex min-h-[50vh] items-center justify-center">
+          <Spinner size={48} className="text-primary" />
         </div>
       ) : filteredTemplates.length > 0 ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">

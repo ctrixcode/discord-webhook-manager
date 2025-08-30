@@ -11,7 +11,7 @@ import { useAuth } from '@/contexts/auth-context';
 import { getAllWebhooks } from '@/lib/api/queries/webhook';
 import { type Webhook } from '@/lib/api/types/webhook';
 import { Search, WebhookIcon } from 'lucide-react';
-import { Skeleton } from '@/components/ui/skeleton';
+import { Spinner } from '@/components/ui/spinner';
 
 export default function WebhooksPage() {
   const { user } = useAuth();
@@ -64,7 +64,7 @@ export default function WebhooksPage() {
           </CardHeader>
           <CardContent>
             {isLoading ? (
-              <Skeleton className="h-8 w-1/4" />
+              <Spinner size={24} className="text-primary" />
             ) : (
               <div className="text-2xl font-bold text-white">
                 {webhooks.length}
@@ -83,7 +83,7 @@ export default function WebhooksPage() {
           </CardHeader>
           <CardContent>
             {isLoading ? (
-              <Skeleton className="h-8 w-1/4" />
+              <Spinner size={24} className="text-primary" />
             ) : (
               <div className="text-2xl font-bold text-white">
                 {activeWebhooks}
@@ -109,25 +109,8 @@ export default function WebhooksPage() {
 
       {/* Webhooks List */}
       {isLoading ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {[...Array(3)].map((_, i) => (
-            <Card
-              key={i}
-              className="bg-slate-900/50 backdrop-blur-xl border-slate-700/50"
-            >
-              <CardHeader>
-                <Skeleton className="h-6 w-3/4" />
-                <Skeleton className="h-4 w-1/2" />
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <Skeleton className="h-4 w-full" />
-                <Skeleton className="h-4 w-full" />
-                <div className="flex justify-end pt-4">
-                  <Skeleton className="h-8 w-20" />
-                </div>
-              </CardContent>
-            </Card>
-          ))}
+        <div className="flex min-h-[50vh] items-center justify-center">
+          <Spinner size={48} className="text-primary" />
         </div>
       ) : filteredWebhooks.length > 0 ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">

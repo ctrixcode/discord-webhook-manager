@@ -12,7 +12,7 @@ import { useAuth } from '@/contexts/auth-context';
 import { AvatarCard } from '@/components/avatars/avatar-card';
 import { CreateAvatarDialog } from '@/components/avatars/create-avatar-dialog';
 import { Card, CardContent } from '@/components/ui/card';
-import { Skeleton } from '@/components/ui/skeleton';
+import { Spinner } from '@/components/ui/spinner';
 
 export default function AvatarsPage() {
   const { user } = useAuth();
@@ -95,24 +95,8 @@ export default function AvatarsPage() {
 
         {/* Content */}
         {isLoading ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {[...Array(3)].map((_, i) => (
-              <Card key={i} className="bg-slate-900/50 backdrop-blur-sm border-slate-700/50">
-                <CardContent className="p-4">
-                  <div className="flex items-start justify-between mb-3">
-                    <div className="flex items-center gap-3">
-                      <Skeleton className="w-12 h-12 rounded-full" />
-                      <div>
-                        <Skeleton className="h-5 w-24 mb-1" />
-                        <Skeleton className="h-4 w-16" />
-                      </div>
-                    </div>
-                    <Skeleton className="w-8 h-8" />
-                  </div>
-                  <Skeleton className="h-4 w-32" />
-                </CardContent>
-              </Card>
-            ))}
+          <div className="flex min-h-[50vh] items-center justify-center">
+            <Spinner size={48} className="text-primary" />
           </div>
         ) : filteredAvatars.length === 0 ? (
           <div className="text-center py-12">
