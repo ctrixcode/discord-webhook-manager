@@ -13,11 +13,11 @@ const DISCORD_REDIRECT_URI = process.env.DISCORD_REDIRECT_URI as string;
  * POST /api/auth/refresh
  */
 export const refreshAccessToken = async (
-  request: FastifyRequest,
+  request: FastifyRequest<{ Body: { refreshToken: string } }>,
   reply: FastifyReply
 ): Promise<void> => {
   try {
-    const refreshToken = request.cookies.refreshToken;
+    const { refreshToken } = request.body;
     if (!refreshToken) {
       return reply
         .status(401)
