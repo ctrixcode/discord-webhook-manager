@@ -12,8 +12,10 @@ export const webhookQueries = {
   getAllWebhooks: async ({ queryKey }: { queryKey: readonly [string, { isActive?: boolean }] }): Promise<Webhook[]> => {
     const filters = queryKey[1] as { isActive?: boolean } | undefined;
     const params = new URLSearchParams();
-    if (filters?.isActive !== undefined) {
+    if (filters?.isActive === true) {
       params.append('status', "active");
+    } else if (filters?.isActive === false) {
+      params.append('status', "inactive");
     }
     const queryString = params.toString();
     const url = queryString ? `/webhook?${queryString}` : '/webhook';

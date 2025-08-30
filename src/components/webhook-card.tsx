@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -37,6 +37,7 @@ export function WebhookCard({ webhook, onWebhookUpdated, onCardClick }: WebhookC
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [isTestingWebhook, setIsTestingWebhook] = useState(false);
   const queryClient = useQueryClient();
+  const dropdownRef = useRef<HTMLDivElement>(null);
 
   const { mutate: updateWebhook } = useMutation({
     mutationFn: ({ id, data }: { id: string; data: UpdateWebhookRequest }) =>
@@ -108,7 +109,13 @@ export function WebhookCard({ webhook, onWebhookUpdated, onCardClick }: WebhookC
     <>
       <Card
         className="bg-slate-900/20 backdrop-blur-sm border-slate-700/50 text-white cursor-pointer"
-        onClick={() => onCardClick?.(webhook)}
+        onClick={(e) => {
+          // Check if the click originated from within the dropdown menu
+          if (dropdownRef.current && dropdownRef.current.contains(e.target as Node)) {
+            return; // Do nothing if click is inside dropdown
+          }
+          onCardClick?.(webhook); // Otherwise, proceed with card click
+        }}
       >
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
           <CardTitle className="text-base font-medium text-white">
@@ -135,47 +142,50 @@ export function WebhookCard({ webhook, onWebhookUpdated, onCardClick }: WebhookC
                 </>
               )}
             </Badge>
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button
-                  variant="ghost"
-                  className="h-8 w-8 p-0 text-slate-400 hover:text-white hover:bg-slate-700/50"
+            <div ref={dropdownRef}> {/* Add this ref */}
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button
+                    variant="ghost"
+                    className="h-8 w-8 p-0 text-slate-400 hover:text-white hover:bg-slate-700/50"
+                    onClick={(e) => e.stopPropagation()} // Add stopPropagation here
+                  >
+                    <MoreHorizontal className="h-4 w-4" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent
+                  align="end"
+                  className="bg-slate-800/95 backdrop-blur-sm border-slate-700/50 text-white"
                 >
-                  <MoreHorizontal className="h-4 w-4" />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent
-                align="end"
-                className="bg-slate-800/95 backdrop-blur-sm border-slate-700/50 text-white"
-              >
-                <DropdownMenuItem
-                  onClick={handleTestWebhook}
-                  disabled={isTestingWebhook}
-                  className="hover:bg-slate-700/50 focus:bg-slate-700/50"
-                >
-                  <Send className="mr-2 h-4 w-4" />
-                  {isTestingWebhook ? 'Testing...' : 'Test Webhook'}
-                </DropdownMenuItem>
-                <DropdownMenuItem
-                  onClick={toggleActive}
-                  className="hover:bg-slate-700/50 focus:bg-slate-700/50"
-                >
-                  {webhook.is_active ? (
-                    <XCircle className="mr-2 h-4 w-4" />
-                  ) : (
-                    <CheckCircle className="mr-2 h-4 w-4" />
-                  )}
-                  {webhook.is_active ? 'Deactivate' : 'Activate'}
-                </DropdownMenuItem>
-                <DropdownMenuItem
-                  onClick={() => setShowDeleteDialog(true)}
-                  className="text-red-400 hover:bg-red-500/20 focus:bg-red-500/20"
-                >
-                  <Trash2 className="mr-2 h-4 w-4" />
-                  Delete
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
+                  <DropdownMenuItem
+                    onClick={(e) => { e.stopPropagation(); handleTestWebhook(); }}
+                    disabled={isTestingWebhook}
+                    className="hover:bg-slate-700/50 focus:bg-slate-700/50"
+                  >
+                    <Send className="mr-2 h-4 w-4" />
+                    {isTestingWebhook ? 'Testing...' : 'Test Webhook'}
+                  </DropdownMenuItem>
+                  <DropdownMenuItem
+                    onClick={(e) => { e.stopPropagation(); toggleActive(); }}
+                    className="hover:bg-slate-700/50 focus:bg-slate-700/50"
+                  >
+                    {webhook.is_active ? (
+                      <XCircle className="mr-2 h-4 w-4" />
+                    ) : (
+                      <CheckCircle className="mr-2 h-4 w-4" />
+                    )}
+                    {webhook.is_active ? 'Deactivate' : 'Activate'}
+                  </DropdownMenuItem>
+                  <DropdownMenuItem
+                    onClick={(e) => { e.stopPropagation(); setShowDeleteDialog(true); }}
+                    className="text-red-400 hover:bg-red-500/20 focus:bg-red-500/20"
+                  >
+                    <Trash2 className="mr-2 h-4 w-4" />
+                    Delete
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </div>
           </div>
         </CardHeader>
         <CardContent>

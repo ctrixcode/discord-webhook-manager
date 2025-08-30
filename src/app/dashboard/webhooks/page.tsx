@@ -12,17 +12,19 @@ import { getAllWebhooks } from '@/lib/api/queries/webhook';
 import { type Webhook } from '@/lib/api/types/webhook';
 import { Search, WebhookIcon } from 'lucide-react';
 import { Spinner } from '@/components/ui/spinner';
+import { Button } from '@/components/ui/button';
 
 export default function WebhooksPage() {
   const { user } = useAuth();
   const router = useRouter();
 
   const [searchQuery, setSearchQuery] = useState('');
+  const [filterStatus, setFilterStatus] = useState<'all' | 'active' | 'inactive'>('all');
 
   const queryClient = useQueryClient();
 
   const { data: webhooks = [], isLoading } = useQuery<Webhook[]>({
-    queryKey: ['webhooks', { isActive: true }],
+    queryKey: ['webhooks', { isActive: filterStatus === 'active' ? true : filterStatus === 'inactive' ? false : undefined }],
     queryFn: ({ queryKey }) => getAllWebhooks({ queryKey: queryKey as [string, { isActive?: boolean }] }),
     enabled: !!user,
   });
@@ -94,9 +96,9 @@ export default function WebhooksPage() {
         </Card>
       </div>
 
-      {/* Search */}
-      <div className="flex items-center space-x-2">
-        <div className="relative flex-1 max-w-sm">
+      {/* Search and Filters */}
+      <div className="flex flex-col md:flex-row items-center gap-4">
+        <div className="relative flex-1 w-full md:max-w-sm">
           <Search className="absolute left-2 top-2.5 h-4 w-4 text-slate-400" />
           <Input
             placeholder="Search webhooks..."
@@ -104,6 +106,29 @@ export default function WebhooksPage() {
             onChange={(e) => setSearchQuery(e.target.value)}
             className="pl-8 bg-slate-900/50 backdrop-blur-xl border-slate-700/50 text-white placeholder:text-slate-400 focus:border-purple-500/50"
           />
+        </div>
+        <div className="flex gap-2">
+          <Button
+            variant={filterStatus === 'all' ? 'default' : 'outline'}
+            onClick={() => setFilterStatus('all')}
+            className={filterStatus === 'all' ? 'bg-purple-600 hover:bg-purple-700 text-white' : 'border-slate-600 text-slate-300 hover:bg-slate-700 bg-transparent'}
+          >
+            All
+          </Button>
+          <Button
+            variant={filterStatus === 'active' ? 'default' : 'outline'}
+            onClick={() => setFilterStatus('active')}
+            className={filterStatus === 'active' ? 'bg-green-600 hover:bg-green-700 text-white' : 'border-slate-600 text-slate-300 hover:bg-slate-700 bg-transparent'}
+          >
+            Active
+          </Button>
+          <Button
+            variant={filterStatus === 'inactive' ? 'default' : 'outline'}
+            onClick={() => setFilterStatus('inactive')}
+            className={filterStatus === 'inactive' ? 'bg-red-600 hover:bg-red-700 text-white' : 'border-slate-600 text-slate-300 hover:bg-slate-700 bg-transparent'}
+          >
+            Inactive
+          </Button>
         </div>
       </div>
 
@@ -118,34 +143,36 @@ export default function WebhooksPage() {
             <WebhookCard
               key={webhook.id}
               webhook={webhook}
-              onWebhookUpdated={() => queryClient.invalidateQueries({ queryKey: ['webhooks'] })}
+              onWebhookUpdated={() => queryClient.invalidateQueries({ queryKey: ['webhooks', { isActive: filterStatus === 'active' ? true : filterStatus === 'inactive' ? false : undefined }] })}
               onCardClick={handleCardClick}
             />
           ))}
         </div>
-      ) : webhooks.length === 0 ? (
-        <Card className="bg-slate-900/50 backdrop-blur-xl border-slate-700/50">
-          <CardContent className="flex flex-col items-center justify-center py-16">
-            <WebhookIcon className="h-12 w-12 text-slate-400 mb-4" />
-            <h3 className="text-lg font-semibold mb-2 text-white">
-              No webhooks yet
-            </h3>
-            <p className="text-slate-300 text-center mb-4">
-              Get started by adding your first Discord webhook
-            </p>
-            <AddWebhookDialog />
-          </CardContent>
-        </Card>
       ) : (
         <Card className="bg-slate-900/50 backdrop-blur-xl border-slate-700/50">
           <CardContent className="flex flex-col items-center justify-center py-16">
-            <Search className="h-12 w-12 text-slate-400 mb-4" />
-            <h3 className="text-lg font-semibold mb-2 text-white">
-              No webhooks found
-            </h3>
-            <p className="text-slate-300 text-center">
-              Try adjusting your search query
-            </p>
+            {searchQuery || filterStatus !== 'all' ? (
+              <>
+                <Search className="h-12 w-12 text-slate-400 mb-4" />
+                <h3 className="text-lg font-semibold mb-2 text-white">
+                  No webhooks found
+                </h3>
+                <p className="text-slate-300 text-center">
+                  Try adjusting your search query or filters
+                </p>
+              </>
+            ) : (
+              <>
+                <WebhookIcon className="h-12 w-12 text-slate-400 mb-4" />
+                <h3 className="text-lg font-semibold mb-2 text-white">
+                  No webhooks yet
+                </h3>
+                <p className="text-slate-300 text-center mb-4">
+                  Get started by adding your first Discord webhook
+                </p>
+                <AddWebhookDialog />
+              </>
+            )}
           </CardContent>
         </Card>
       )}
