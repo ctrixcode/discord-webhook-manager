@@ -14,7 +14,7 @@ import routes from './routes/index';
 
 dotenv.config();
 
-const app = Fastify({ logger: false });
+const app = Fastify({ logger: false, requestTimeout: 30000 });
 
 // Register plugins
 app.register(helmet);
