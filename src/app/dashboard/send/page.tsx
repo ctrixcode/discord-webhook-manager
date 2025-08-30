@@ -17,11 +17,12 @@ import { Textarea } from '@/components/ui/textarea';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Send, Webhook } from 'lucide-react';
+import { Send, Webhook, Users } from 'lucide-react';
 import { api } from '@/lib/api';
 import type { PredefinedAvatar } from '@/lib/api/types/avatar';
 import { useQuery } from '@tanstack/react-query';
 import { AvatarSelector } from '@/components/avatars/avatar-selector';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { DiscordMessagePreview } from '@/components/discord-message-preview';
 import type { DiscordEmbed } from '@/lib/api/types/discord';
 import { useToast } from '@/hooks/use-toast';
@@ -626,8 +627,56 @@ export default function SendMessagePage() {
 
                                 <div className="space-y-2">
                                   <Label className="text-slate-200 font-medium">Author</Label>
-                                  <div className="flex gap-2">
-                                    <div className="flex-1">
+                                  <div className="flex items-center justify-between gap-2">
+                                    {embed.author?.name ? (
+                                      <div className="flex items-center gap-2 p-2 rounded-md bg-slate-700/50 border border-slate-600">
+                                        <Avatar className="w-8 h-8">
+                                          <AvatarImage src={embed.author.icon_url || '/placeholder.svg'} />
+                                          <AvatarFallback>{embed.author.name.slice(0, 2).toUpperCase()}</AvatarFallback>
+                                        </Avatar>
+                                        <span className="text-white font-medium">{embed.author.name}</span>
+                                      </div>
+                                    ) : (
+                                      <AvatarSelector
+                                        onSelect={(avatar) => {
+                                          updateEmbed(index, {
+                                            ...embed,
+                                            author: {
+                                              name: avatar.username,
+                                              icon_url: avatar.avatar_url,
+                                            },
+                                          });
+                                        }}
+                                      >
+                                        <Button
+                                          variant="outline"
+                                          size="sm"
+                                          className="bg-slate-700 border-slate-600 text-white hover:bg-slate-600"
+                                        >
+                                          <Users className="w-4 h-4 mr-2" />
+                                          Select Avatar
+                                        </Button>
+                                      </AvatarSelector>
+                                    )}
+                                    {embed.author?.name && (
+                                      <Button
+                                        variant="outline"
+                                        size="sm"
+                                        onClick={() => {
+                                          updateEmbed(index, {
+                                            ...embed,
+                                            author: { name: '', icon_url: '', url: '' },
+                                          });
+                                        }}
+                                        className="bg-red-700 border-red-600 text-white hover:bg-red-600"
+                                      >
+                                        Clear Author
+                                      </Button>
+                                    )}
+                                  </div>
+                                  {/* Manual Author Input Fields (conditionally rendered) */}
+                                  {!embed.author?.name && (
+                                    <div className="space-y-2">
                                       <Label className="text-slate-300 text-sm">Name</Label>
                                       <input
                                         type="text"
@@ -644,8 +693,6 @@ export default function SendMessagePage() {
                                         }
                                         className="mt-1 w-full px-3 py-2 bg-slate-600/50 border border-slate-500 rounded-md text-white placeholder:text-slate-400 focus:border-purple-500 focus:outline-none"
                                       />
-                                    </div>
-                                    <div className="flex-1">
                                       <Label className="text-slate-300 text-sm">Icon URL</Label>
                                       <input
                                         type="url"
@@ -662,26 +709,24 @@ export default function SendMessagePage() {
                                         }
                                         className="mt-1 w-full px-3 py-2 bg-slate-600/50 border border-slate-500 rounded-md text-white placeholder:text-slate-400 focus:border-purple-500 focus:outline-none"
                                       />
+                                      <Label className="text-slate-300 text-sm">URL</Label>
+                                      <input
+                                        type="url"
+                                        placeholder="Author URL"
+                                        value={embed.author?.url || ''}
+                                        onChange={(e) =>
+                                          updateEmbed(index, {
+                                            ...embed,
+                                            author: {
+                                              ...(embed.author || { name: '' }),
+                                              url: e.target.value,
+                                            },
+                                          })
+                                        }
+                                        className="mt-1 w-full px-3 py-2 bg-slate-600/50 border border-slate-500 rounded-md text-white placeholder:text-slate-400 focus:border-purple-500 focus:outline-none"
+                                      />
                                     </div>
-                                  </div>
-                                  <div>
-                                    <Label className="text-slate-300 text-sm">URL</Label>
-                                    <input
-                                      type="url"
-                                      placeholder="Author URL"
-                                      value={embed.author?.url || ''}
-                                      onChange={(e) =>
-                                        updateEmbed(index, {
-                                          ...embed,
-                                          author: {
-                                            ...(embed.author || { name: '' }),
-                                            url: e.target.value,
-                                          },
-                                        })
-                                      }
-                                      className="mt-1 w-full px-3 py-2 bg-slate-600/50 border border-slate-500 rounded-md text-white placeholder:text-slate-400 focus:border-purple-500 focus:outline-none"
-                                    />
-                                  </div>
+                                  )}
                                 </div>
 
                                 <div className="space-y-2">
