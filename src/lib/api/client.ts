@@ -79,13 +79,6 @@ class ApiClient {
             this.processQueue(refreshError as AxiosError);
             this.clearAccessToken();
             console.error('Authentication failed. Please login again.', refreshError);
-            
-            // Clear the cookie via our API route on refresh failure
-            await fetch('/api/auth/logout', { method: 'POST' });
-
-            if (typeof window !== 'undefined') {
-              window.location.href = '/login';
-            }
             return Promise.reject(refreshError);
           } finally {
             this.isRefreshing = false;
@@ -95,10 +88,7 @@ class ApiClient {
         // If 401 on refresh request itself, or other errors
         if (error.response?.status === 401 && originalRequest.url === '/auth/refresh') {
           this.clearAccessToken();
-          console.error('Refresh token invalid or expired. Redirecting to login.');
-          if (typeof window !== 'undefined') {
-            window.location.href = '/login';
-          }
+          console.error('Refresh token invalid or expired.');
         }
 
         return Promise.reject(error);
