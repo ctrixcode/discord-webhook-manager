@@ -7,7 +7,7 @@ import {
   useState,
   type ReactNode,
 } from 'react';
-import { useRouter } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { api, apiClient } from '@/lib/api';
 import { type User } from '@/lib/api/types/user';
 
@@ -21,14 +21,16 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
+const PUBLIC_ROUTES = ['/login', '/auth/callback'];
+
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const router = useRouter();
+  const pathname = usePathname();
 
   useEffect(() => {
     const initAuth = async () => {
-      setIsLoading(true);
       try {
         const currentUser = await api.user.getCurrentUser();
         setUser(currentUser);
@@ -41,8 +43,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       }
     };
 
+    // Skip auth check on public routes
+    if (PUBLIC_ROUTES.includes(pathname)) {
+      setIsLoading(false);
+      return;
+    }
+
     initAuth();
-  }, []);
+  }, [pathname]);
 
   const login = () => {
     api.auth.loginWithDiscord();
@@ -50,15 +58,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const logout = async () => {
     try {
-      // Call the Next.js API route to clear the HttpOnly cookie
       await fetch('/api/auth/logout', { method: 'POST' });
     } catch (error) {
       console.error('Failed to clear refresh token cookie', error);
     } finally {
-      // Clear user state and in-memory access token
       setUser(null);
       apiClient.clearAccessToken();
-      // Redirect to login page
       router.push('/login');
     }
   };
