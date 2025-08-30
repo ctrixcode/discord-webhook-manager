@@ -12,7 +12,6 @@ import {
   createAvatarSchema,
   updateAvatarSchema,
   avatarParamsSchema,
-  uploadAvatarSchema,
 } from '../schemas/avatar.schema';
 
 async function avatarRoutes(fastify: FastifyInstance) {
@@ -29,7 +28,7 @@ async function avatarRoutes(fastify: FastifyInstance) {
     '/upload',
     {
       preHandler: [authenticate],
-      schema: uploadAvatarSchema,
+      bodyLimit: 10485760, // 10MB limit for the body
     },
     uploadAvatar
   );

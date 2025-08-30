@@ -1,7 +1,6 @@
 import { FastifyRequest, FastifyReply } from 'fastify';
 import * as fs from 'fs';
 import * as path from 'path';
-import { MultipartFile } from '@fastify/multipart';
 import {
   createAvatar as createAvatarService,
   getAvatar as getAvatarService,
@@ -46,6 +45,7 @@ export const uploadAvatar = async (
   request: FastifyRequest,
   reply: FastifyReply
 ) => {
+  let tempFilePath: string | undefined;
   try {
     if (!request.user) {
       return reply
@@ -57,18 +57,23 @@ export const uploadAvatar = async (
       return reply.code(400).send({ message: 'Request is not multipart' });
     }
 
-    let file: MultipartFile | undefined;
+    const data = await request.file();
+
+    if (!data) {
+      return reply.code(400).send({ message: 'No file data received' });
+    }
+
+    const { filename, fields } = data;
     let avatarUsername: string | undefined;
 
-    for await (const part of request.parts()) {
-      if (part.type === 'file') {
-        file = part;
-      } else if (part.fieldname === 'username') {
-        avatarUsername = part.value as string;
+    if (fields.username && !Array.isArray(fields.username)) {
+      // Check if it's a MultipartField (non-file field) and has a value property
+      if ('value' in fields.username) {
+        avatarUsername = fields.username.value as string;
       }
     }
 
-    if (!file) {
+    if (!filename) {
       return reply.code(400).send({ message: 'No file uploaded' });
     }
 
@@ -83,8 +88,20 @@ export const uploadAvatar = async (
       fs.mkdirSync(tempDir);
     }
 
-    const tempFilePath = path.join(tempDir, file.filename);
-    await fs.promises.writeFile(tempFilePath, file.file);
+    let fileBuffer: Buffer;
+    try {
+      fileBuffer = await data.toBuffer();
+    } catch (bufferError: unknown) {
+      return reply
+        .code(500)
+        .send({
+          message: 'Error processing file',
+          error: (bufferError as Error).message,
+        });
+    }
+
+    tempFilePath = path.join(tempDir, filename);
+    await fs.promises.writeFile(tempFilePath as string, fileBuffer);
 
     const avatar = await uploadAvatarService(
       userId,
@@ -92,8 +109,6 @@ export const uploadAvatar = async (
       avatarUsername,
       tempFilePath
     );
-
-    fs.unlinkSync(tempFilePath); // Clean up temporary file
 
     reply.code(201).send(toAvatarDto(avatar));
   } catch (error: unknown) {
@@ -106,6 +121,10 @@ export const uploadAvatar = async (
         message: 'Error uploading avatar',
         error: 'An unknown error occurred.',
       });
+    }
+  } finally {
+    if (tempFilePath && fs.existsSync(tempFilePath)) {
+      fs.unlinkSync(tempFilePath); // Ensure temporary file is cleaned up
     }
   }
 };
