@@ -115,6 +115,8 @@ export function DiscordMessagePreview({
     user_id: 'predefined-user-id',
   }
 }: DiscordMessagePreviewProps) {
+  // Create a deep copy of embeds to ensure immutability within the component
+  const clonedEmbeds = embeds ? JSON.parse(JSON.stringify(embeds)) : [];
   return (
     <div className="bg-[#313338] text-white p-4 rounded-lg font-sans text-[15px] leading-[1.375]">
       <div className="flex items-start gap-4">
@@ -145,8 +147,8 @@ export function DiscordMessagePreview({
             </div>
           )}
 
-          {embeds &&
-            embeds.map((embed, index) => (
+          {clonedEmbeds &&
+            clonedEmbeds.map((embed, index) => (
               <div key={index} className="max-w-lg mt-2">
                 <div className="flex">
                   <div
