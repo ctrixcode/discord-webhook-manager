@@ -57,7 +57,7 @@ class ApiClient {
         const originalRequest = error.config;
 
         // If the error is 401 and it's not the refresh request itself
-        if (error.response?.status === 401 && originalRequest.url !== '/auth/refresh') {
+        if (error.response?.status === 401 && originalRequest.url !== '/api/auth/refresh-token') {
           if (this.isRefreshing) {
             return new Promise((resolve, reject) => {
               this.failedQueue.push({ resolve, reject, config: originalRequest });
@@ -67,26 +67,22 @@ class ApiClient {
           this.isRefreshing = true;
 
           try {
-            // The /auth/refresh endpoint in the backend will use the HttpOnly cookie
-            const refreshResponse = await this.client.post('/auth/refresh');
-            
-            const { accessToken: newAccessToken, refreshToken: newRefreshToken } = refreshResponse.data.data;
+            const refreshResponse = await fetch('/api/auth/refresh-token', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+            });
+
+            if (!refreshResponse.ok) {
+              throw new Error(`HTTP error! status: ${refreshResponse.status}`);
+            }
+
+            const { accessToken: newAccessToken } = await refreshResponse.json();
 
             if (!newAccessToken) {
               throw new Error('New access token not found in refresh response');
             }
 
             this.setAccessToken(newAccessToken);
-
-            // If the backend sends a new refresh token (rotation), update the cookie
-            // Simpler call without going through axios interceptors
-            if (newRefreshToken) {
-              await fetch('/api/auth/set-refresh-token', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ refreshToken: newRefreshToken }),
-              });
-            }
 
             this.processQueue(null, newAccessToken);
             originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;
