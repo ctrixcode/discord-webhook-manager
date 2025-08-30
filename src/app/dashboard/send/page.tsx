@@ -35,8 +35,9 @@ export default function SendMessagePage() {
   const router = useRouter();
   const pathname = usePathname();
   const initialAvatarId = searchParams.get('avatarId');
+  const initialWebhookId = searchParams.get('webhookId');
 
-  const [selectedWebhooks, setSelectedWebhooks] = useState<string[]>([]);
+  const [selectedWebhooks, setSelectedWebhooks] = useState<string[]>(initialWebhookId ? [initialWebhookId] : []);
   const [message, setMessage] = useState({
     content: '',
     avatarRefID: initialAvatarId || '',
@@ -115,6 +116,25 @@ export default function SendMessagePage() {
       }
     }
   }, [initialAvatarId, avatars]);
+
+  useEffect(() => {
+    if (initialWebhookId) {
+      // Optionally, switch to the webhooks tab if a webhookId is present
+      // This might require managing the active tab state
+      // For now, just ensure the webhook is selected
+      setSelectedWebhooks([initialWebhookId]);
+    }
+  }, [initialWebhookId]);
+
+  useEffect(() => {
+    const newSearchParams = new URLSearchParams(searchParams.toString());
+    if (selectedWebhooks.length === 1) {
+      newSearchParams.set('webhookId', selectedWebhooks[0]);
+    } else {
+      newSearchParams.delete('webhookId');
+    }
+    router.replace(`${pathname}?${newSearchParams.toString()}`);
+  }, [selectedWebhooks, router, pathname, searchParams]);
 
   const handleWebhookToggle = (webhookId: string) => {
     setSelectedWebhooks((prev) =>

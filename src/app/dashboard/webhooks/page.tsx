@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useMemo } from 'react';
+import { useRouter } from 'next/navigation';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -14,6 +15,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 
 export default function WebhooksPage() {
   const { user } = useAuth();
+  const router = useRouter();
 
   const [searchQuery, setSearchQuery] = useState('');
 
@@ -34,6 +36,10 @@ export default function WebhooksPage() {
   }, [webhooks, searchQuery]);
 
   const activeWebhooks = webhooks.filter((w) => w.is_active).length;
+
+  const handleCardClick = (webhook: Webhook) => {
+    router.push(`/dashboard/send?webhookId=${webhook.id}`);
+  };
 
   return (
     <div className="space-y-8">
@@ -130,6 +136,7 @@ export default function WebhooksPage() {
               key={webhook.id}
               webhook={webhook}
               onWebhookUpdated={() => queryClient.invalidateQueries({ queryKey: ['webhooks'] })}
+              onCardClick={handleCardClick}
             />
           ))}
         </div>

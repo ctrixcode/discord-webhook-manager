@@ -29,9 +29,10 @@ import { testWebhook } from '@/lib/api/queries/webhook';
 interface WebhookCardProps {
   webhook: Webhook;
   onWebhookUpdated: () => void;
+  onCardClick?: (webhook: Webhook) => void;
 }
 
-export function WebhookCard({ webhook, onWebhookUpdated }: WebhookCardProps) {
+export function WebhookCard({ webhook, onWebhookUpdated, onCardClick }: WebhookCardProps) {
   const { toast } = useToast();
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [isTestingWebhook, setIsTestingWebhook] = useState(false);
@@ -105,7 +106,10 @@ export function WebhookCard({ webhook, onWebhookUpdated }: WebhookCardProps) {
 
   return (
     <>
-      <Card className="bg-slate-900/20 backdrop-blur-sm border-slate-700/50 text-white">
+      <Card
+        className="bg-slate-900/20 backdrop-blur-sm border-slate-700/50 text-white cursor-pointer"
+        onClick={() => onCardClick?.(webhook)}
+      >
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
           <CardTitle className="text-base font-medium text-white">
             {webhook.name}
