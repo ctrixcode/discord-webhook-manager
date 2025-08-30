@@ -22,7 +22,7 @@ export default function WebhooksPage() {
   const queryClient = useQueryClient();
 
   const { data: webhooks = [], isLoading } = useQuery<Webhook[]>({
-    queryKey: ['webhooks'],
+    queryKey: ['webhooks', { isActive: true }],
     queryFn: ({ queryKey }) => getAllWebhooks({ queryKey: queryKey as [string, { isActive?: boolean }] }),
     enabled: !!user,
   });
