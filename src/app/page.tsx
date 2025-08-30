@@ -1,7 +1,16 @@
 import { cookies } from 'next/headers';
+import type { Metadata } from 'next';
 
-export default function HomePage() {
-  const cookieStore = cookies();
+export const generateMetadata = async (): Promise<Metadata> => {
+  return {
+    title: 'Discord Webhook Manager - Supercharge Your Discord Communication',
+    description: 'Effortlessly manage, automate, and send rich messages to your Discord channels. Streamline announcements, updates, and interactions with our intuitive Webhook Manager.',
+    keywords: ['Discord', 'Webhook', 'Manager', 'Automation', 'Messages', 'Bots', 'Communication', 'Tools'],
+  };
+};
+
+export default async function HomePage() { 
+  const cookieStore = await cookies(); 
   const refreshToken = cookieStore.get('refreshToken');
   const isLoggedIn = !!refreshToken;
 
