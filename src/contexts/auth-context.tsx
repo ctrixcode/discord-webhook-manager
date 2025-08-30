@@ -7,13 +7,14 @@ import {
   useState,
   type ReactNode,
 } from 'react';
+import { useRouter } from 'next/navigation';
 import { api, apiClient } from '@/lib/api';
 import { type User } from '@/lib/api/types/user';
 
 interface AuthContextType {
   user: User | null;
   login: () => void;
-  logout: () => void;
+  logout: () => Promise<void>;
   isLoading: boolean;
   isAuthenticated: boolean;
 }
@@ -23,37 +24,43 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const router = useRouter();
 
   useEffect(() => {
     const initAuth = async () => {
       setIsLoading(true);
       try {
-        // Attempt to get the current user. The apiClient's interceptor will handle token refresh if needed.
         const currentUser = await api.user.getCurrentUser();
         setUser(currentUser);
       } catch (error) {
-        // If getCurrentUser fails (e.g., no token, refresh failed, or other API error),
-        // it means the user is not authenticated or an error occurred.
-        console.error('Authentication check failed, logging out.', error);
+        console.error('Authentication check failed:', error);
         setUser(null);
-        apiClient.clearAccessToken(); // Ensure in-memory token is cleared
-        // No explicit redirect here, as apiClient's interceptor handles redirect on refresh failure.
+        apiClient.clearAccessToken();
       } finally {
         setIsLoading(false);
-      };
+      }
     };
 
     initAuth();
   }, []);
 
   const login = () => {
-    // Redirect to Discord OAuth
     api.auth.loginWithDiscord();
   };
 
-  const logout = () => {
-    setUser(null);
-    api.auth.logout();
+  const logout = async () => {
+    try {
+      // Call the Next.js API route to clear the HttpOnly cookie
+      await fetch('/api/auth/logout', { method: 'POST' });
+    } catch (error) {
+      console.error('Failed to clear refresh token cookie', error);
+    } finally {
+      // Clear user state and in-memory access token
+      setUser(null);
+      apiClient.clearAccessToken();
+      // Redirect to login page
+      router.push('/login');
+    }
   };
 
   const isAuthenticated = !!user;

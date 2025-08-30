@@ -35,22 +35,13 @@ class ApiClient {
 
     // Response interceptor to handle token refresh
     this.client.interceptors.response.use(
-      (response: AxiosResponse) => {
-        // Check for new access token in headers (token refresh)
-        const newAccessToken = response.headers['x-access-token'];
-        if (newAccessToken) {
-          this.setAccessToken(newAccessToken);
-          console.log('Access token refreshed via x-access-token header');
-        }
-        return response;
-      },
+      (response: AxiosResponse) => response, // Success responses pass through
       async (error) => {
         const originalRequest = error.config;
 
         // If the error is 401 and it's not the refresh request itself
         if (error.response?.status === 401 && originalRequest.url !== '/auth/refresh') {
           if (this.isRefreshing) {
-            // If a refresh is already in progress, queue the failed request
             return new Promise((resolve, reject) => {
               this.failedQueue.push({ resolve, reject, config: originalRequest });
             });
@@ -59,30 +50,45 @@ class ApiClient {
           this.isRefreshing = true;
 
           try {
+            // The /auth/refresh endpoint in the backend will use the HttpOnly cookie
             const refreshResponse = await this.client.post('/auth/refresh');
-            const newAccessToken = refreshResponse.data.data.accessToken || refreshResponse.headers['x-access-token'];
+            
+            const { accessToken: newAccessToken, refreshToken: newRefreshToken } = refreshResponse.data.data;
 
             if (!newAccessToken) {
               throw new Error('New access token not found in refresh response');
             }
-            
-            this.setAccessToken(newAccessToken);
-            this.isRefreshing = false;
-            this.processQueue(null, newAccessToken); // Process queued requests
 
-            // Retry the original request with the new token
+            this.setAccessToken(newAccessToken);
+
+            // If the backend sends a new refresh token (rotation), update the cookie
+            // Simpler call without going through axios interceptors
+            if (newRefreshToken) {
+              await fetch('/api/auth/set-refresh-token', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ refreshToken: newRefreshToken }),
+              });
+            }
+
+            this.processQueue(null, newAccessToken);
             originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;
             return this.client(originalRequest);
+
           } catch (refreshError) {
-            this.isRefreshing = false;
-            this.processQueue(refreshError as AxiosError); // Cast to AxiosError
-            this.clearAccessToken(); // Clear token if refresh fails
+            this.processQueue(refreshError as AxiosError);
+            this.clearAccessToken();
             console.error('Authentication failed. Please login again.', refreshError);
-            // Redirect to login page
+            
+            // Clear the cookie via our API route on refresh failure
+            await fetch('/api/auth/logout', { method: 'POST' });
+
             if (typeof window !== 'undefined') {
-              window.location.href = '/login'; // Redirect to login page
+              window.location.href = '/login';
             }
             return Promise.reject(refreshError);
+          } finally {
+            this.isRefreshing = false;
           }
         }
 
@@ -109,7 +115,7 @@ class ApiClient {
           prom.config.headers = new AxiosHeaders();
         }
         prom.config.headers.set('Authorization', `Bearer ${token}`);
-        prom.resolve(this.client(prom.config)); // Retry the original request
+        prom.resolve(this.client(prom.config));
       }
     });
     this.failedQueue = [];
@@ -123,7 +129,6 @@ class ApiClient {
     this.accessToken = null;
   }
 
-  // Expose axios methods
   get<T = unknown>(url: string, config = {}) {
     return this.client.get<T>(url, config);
   }
@@ -140,7 +145,6 @@ class ApiClient {
     return this.client.delete<T>(url, config);
   }
 
-  // Discord login redirect
   redirectToDiscordLogin() {
     if (typeof window !== 'undefined') {
       window.location.href = `${BASE_URL}/auth/discord`;
@@ -148,7 +152,5 @@ class ApiClient {
   }
 }
 
-// Create and export singleton instance
 export const apiClient = new ApiClient();
-
 export default apiClient;
