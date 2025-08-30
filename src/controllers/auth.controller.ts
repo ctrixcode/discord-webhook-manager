@@ -232,7 +232,7 @@ export const discordCallback = async (
 
     const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:3000';
     reply.redirect(
-      `${frontendUrl}/auth/callback?token=${accessToken}&refreshToken=${refreshToken}`
+      `${frontendUrl}/auth/callback?access_token=${accessToken}&refresh_token=${refreshToken}`
     );
   } catch (error: unknown) {
     logger.error('Error in discordCallback controller:', error);
