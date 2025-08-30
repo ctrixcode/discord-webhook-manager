@@ -46,7 +46,7 @@ export default function TemplatesPage() {
   const [deleteDialogTemplate, setDeleteDialogTemplate] = useState<MessageTemplate | null>(null);
 
   const { data: templates = [], isLoading } = useQuery<MessageTemplate[]>({
-    queryKey: ['templates'],
+    queryKey: ['messageTemplates'],
     queryFn: templateQueries.getAllTemplates,
     enabled: !!user,
   });
@@ -54,7 +54,7 @@ export default function TemplatesPage() {
   const deleteMutation = useMutation({
     mutationFn: templateQueries.deleteTemplate,
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['templates'] });
+      queryClient.invalidateQueries({ queryKey: ['messageTemplates'] });
       toast({ title: 'Template deleted', description: `"${deleteDialogTemplate?.name}" has been removed` });
       setDeleteDialogTemplate(null);
     },
