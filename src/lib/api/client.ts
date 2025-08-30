@@ -69,7 +69,7 @@ class ApiClient {
           try {
             const refreshResponse = await fetch('/api/auth/refresh-token', {
               method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
+              credentials: 'include',
             });
 
             if (!refreshResponse.ok) {
@@ -101,8 +101,7 @@ class ApiClient {
         // If 401 on refresh request itself, or other errors
         // The new /api/auth/refresh-token endpoint handles the refresh token cookie directly.
         // If it returns 401, it means the refresh token is invalid/expired.
-        if (error.response?.status === 401 && originalRequest.url === '/api/auth/refresh-token') {
-          localStorage.removeItem('refreshToken'); // Clear refresh token from localStorage
+        if ((error.response?.status === 401 || error.response?.status === 400) && originalRequest.url === '/api/auth/refresh-token') {
           this.clearAccessToken();
           console.error('Refresh token invalid or expired.');
         }

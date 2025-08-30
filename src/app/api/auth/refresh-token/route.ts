@@ -5,7 +5,7 @@ const BACKEND_API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:400
 
 export async function POST(req: NextRequest) {
   try {
-    const { refreshToken } = await req.json();
+    const refreshToken = req.cookies.get('refreshToken')?.value;
 
     if (!refreshToken) {
       return NextResponse.json({ message: 'Refresh token not provided' }, { status: 400 });
@@ -42,8 +42,9 @@ export async function POST(req: NextRequest) {
     return response;
   } catch (error) {
     console.error('Error refreshing token:', error);
-    if (axios.isAxiosError(error) && error.response) {
-      return NextResponse.json(error.response.data, { status: error.response.status });
+    if (axios.isAxiosError(error)) {
+      console.error('Axios error details:', error.response?.data, error.response?.status, error.response?.headers);
+      return NextResponse.json(error.response?.data, { status: error.response?.status });
     }
     return NextResponse.json({ message: 'Internal server error' }, { status: 500 });
   }
