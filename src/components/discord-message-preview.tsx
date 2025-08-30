@@ -20,6 +20,46 @@ function parseDiscordMarkdown(text: string): ReactNode[] {
   // Discord markdown patterns in order of precedence
   const patterns = [
     {
+      regex: /<@(\d+)>/g, // Matches <@ followed by digits followed by >
+      render: () => (
+        <span className="text-[#00aff4] bg-[#5865f2]/20 rounded px-1 py-0.5 font-medium">
+          @user
+        </span>
+      ),
+    }, // User mention
+    {
+      regex: /<#(\d+)>/g, // Matches <# followed by digits followed by >
+      render: () => (
+        <span className="text-[#00aff4] bg-[#5865f2]/20 rounded px-1 py-0.5 font-medium">
+          #channel
+        </span>
+      ),
+    }, // Channel mention
+    {
+      regex: /<@&(\d+)>/g, // Matches <@& followed by digits followed by >
+      render: () => (
+        <span className="text-[#00aff4] bg-[#5865f2]/20 rounded px-1 py-0.5 font-medium">
+          @role
+        </span>
+      ),
+    }, // Role mention
+    {
+      regex: /@everyone/g, // Matches @everyone
+      render: () => (
+        <span className="text-[#00aff4] bg-[#5865f2]/20 rounded px-1 py-0.5 font-medium">
+          @everyone
+        </span>
+      ),
+    }, // @everyone mention
+    {
+      regex: /@here/g, // Matches @here
+      render: () => (
+        <span className="text-[#00aff4] bg-[#5865f2]/20 rounded px-1 py-0.5 font-medium">
+          @here
+        </span>
+      ),
+    }, // @here mention
+    {
       regex: /\*\*\*(.*?)\*\*\*/g,
       render: (match: string) => (
         <strong>
@@ -148,7 +188,7 @@ export function DiscordMessagePreview({
           )}
 
           {clonedEmbeds &&
-            clonedEmbeds.map((embed, index) => (
+            clonedEmbeds.map((embed: DiscordEmbed, index) => (
               <div key={index} className="max-w-lg mt-2">
                 <div className="flex">
                   <div
