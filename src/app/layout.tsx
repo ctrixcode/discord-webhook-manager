@@ -6,6 +6,7 @@ import './globals.css';
 import { ThemeProvider } from '@/components/theme-provider';
 import Providers from '@/lib/providers';
 import { Toaster } from '@/components/ui/toaster';
+import { Analytics } from "@vercel/analytics/next"
 
 export const metadata: Metadata = {
   title: 'Discord Webhook Manager',
@@ -27,6 +28,7 @@ html {
   --font-mono: ${GeistMono.variable};
 }
         `}</style>
+        <Analytics/>
       </head>
       <body className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-purple-900">
         <ThemeProvider
