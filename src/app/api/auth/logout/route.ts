@@ -11,7 +11,7 @@ export async function POST() {
     cookieStore.set('refreshToken', '', {
       httpOnly: true,
       secure: process.env.NODE_ENV !== 'development',
-      sameSite: 'lax',
+      sameSite: 'none',
       path: '/',
       maxAge: 0,
     });
