@@ -62,15 +62,6 @@ export function DashboardHeader() {
               align="end"
               forceMount
             >
-              <DropdownMenuLabel className="font-normal">
-                <div className="flex flex-col space-y-1">
-                  <p className="text-sm font-medium leading-none text-white">
-                    {user?.username}
-                  </p>
-                  
-                </div>
-              </DropdownMenuLabel>
-              <DropdownMenuSeparator className="bg-slate-700" />
               <DropdownMenuItem
                 onClick={() => router.push('/dashboard/settings')}
                 className="text-slate-300 hover:bg-purple-500/20 hover:text-white"
