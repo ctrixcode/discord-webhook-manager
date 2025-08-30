@@ -48,8 +48,6 @@ export const TemplateForm = React.forwardRef(function TemplateForm(
     id: 'predefined-avatar-id',
     user_id: 'predefined-user-id',
   });
-  const [isPredefinedAvatarSelected, setIsPredefinedAvatarSelected] =
-    useState(false);
   const [embeds, setEmbeds] = useState<DiscordEmbed[]>([]);
 
   React.useImperativeHandle(ref, () => ({
@@ -69,11 +67,9 @@ export const TemplateForm = React.forwardRef(function TemplateForm(
       setName(initialData.name);
       setDescription(initialData.description || '');
       setContent(initialData.content);
-      setIsPredefinedAvatarSelected(!!initialData.avatar_ref);
       // For display, if initialData has avatar_ref, we might need to fetch the actual URL
       // For now, assuming initialData.avatar_ref can be directly used as a URL for preview if it's a full URL
       // or we need a mechanism to resolve ID to URL.
-      // For simplicity, if avatar_ref is a URL, use it. Otherwise, it's an ID and needs resolution.
       // Given the backend schema, avatar_ref is an ID. So, we need to fetch the URL for display.
       // For now, I'll leave avatar_display_url as empty and it will be handled by AvatarSelector or a separate fetch.
       setEmbeds(initialData.embeds || []);
@@ -81,7 +77,6 @@ export const TemplateForm = React.forwardRef(function TemplateForm(
       setName('');
       setDescription('');
       setContent('');
-      setIsPredefinedAvatarSelected(false);
       setEmbeds([]);
     }
   }, [initialData]);
@@ -208,43 +203,20 @@ export const TemplateForm = React.forwardRef(function TemplateForm(
                     <h3 className="text-lg font-semibold text-white">
                       Message Avatar
                     </h3>
-                    <div className="flex items-center gap-2">
-                      <AvatarSelector
-                        onSelect={(avatar) => {
-                          setSelectedAvatar(avatar);
-                          setIsPredefinedAvatarSelected(true);
-                        }}
+                    <AvatarSelector
+                      onSelect={(avatar) => {
+                        setSelectedAvatar(avatar);
+                      }}
+                    >
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="bg-slate-700 border-slate-600 text-white hover:bg-slate-600"
                       >
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          className="bg-slate-700 border-slate-600 text-white hover:bg-slate-600"
-                        >
-                          <Users className="w-4 h-4 mr-2" />
-                          Use Predefined Avatar
-                        </Button>
-                      </AvatarSelector>
-                      {isPredefinedAvatarSelected && (
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={() => {
-                            setIsPredefinedAvatarSelected(false);
-                            setSelectedAvatar({
-                              username: 'Webhook Manager',
-                              avatar_url: '/placeholder.svg',
-                              createdAt: new Date().toISOString(),
-                              updatedAt: new Date().toISOString(),
-                              id: 'predefined-avatar-id',
-                              user_id: 'predefined-user-id',
-                            });
-                          }}
-                          className="bg-red-700 border-red-600 text-white hover:bg-red-600"
-                        >
-                          Clear Avatar
-                        </Button>
-                      )}
-                    </div>
+                        <Users className="w-4 h-4 mr-2" />
+                        Select Avatar
+                      </Button>
+                    </AvatarSelector>
                   </div>
                   <div className="grid grid-cols-1 gap-4"></div>
                 </div>

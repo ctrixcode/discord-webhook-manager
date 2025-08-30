@@ -47,9 +47,6 @@ export default function SendMessagePage() {
   });
   const [isSending, setIsSending] = useState(false);
   
-  const [avatarMode, setAvatarMode] = useState<'predefined' | 'custom'>(
-    'predefined',
-  );
   const [selectedTemplateId, setSelectedTemplateId] = useState<
     string | undefined
   >(undefined);
@@ -436,108 +433,26 @@ export default function SendMessagePage() {
                         </p>
                       </div>
 
-                      {/* Avatar Mode Toggle */}
-                      <div className="flex gap-2">
-                        <Button
-                          variant={
-                            avatarMode === 'predefined' ? 'default' : 'outline'
-                          }
-                          size="sm"
-                          onClick={() => setAvatarMode('predefined')}
-                          className={
-                            avatarMode === 'predefined'
-                              ? 'bg-purple-600 hover:bg-purple-700 text-white'
-                              : 'border-slate-600 text-slate-300 hover:bg-slate-700 bg-transparent'
-                          }
-                        >
-                          Predefined Avatar
-                        </Button>
-                        {/* <Button
-                          variant={
-                            avatarMode === 'custom' ? 'default' : 'outline'
-                          }
-                          size="sm"
-                          onClick={() => setAvatarMode('custom')}
-                          className={
-                            avatarMode === 'custom'
-                              ? 'bg-purple-600 hover:bg-purple-700 text-white'
-                              : 'border-slate-600 text-slate-300 hover:bg-slate-700 bg-transparent'
-                          }
-                        >
-                          Custom Avatar
-                        </Button> */}
-                      </div>
-
                       {/* Predefined Avatar Selection */}
-                      {avatarMode === 'predefined' && (
-                        <div className="flex items-center justify-between p-4 rounded-lg bg-slate-700/30 border border-slate-600/50">
-                          <div>
-                            <p className="text-slate-200 font-medium">
-                              Select Predefined Avatar
-                            </p>
-                            <p className="text-sm text-slate-400">
-                              Choose from your saved avatar profiles
-                            </p>
-                          </div>
-                          <AvatarSelector onSelect={handleAvatarSelect}>
-                            <Button
-                              variant="outline"
-                              size="sm"
-                              className="bg-slate-700 border-slate-600 text-white hover:bg-slate-600"
-                            >
-                              Select Avatar
-                            </Button>
-                          </AvatarSelector>
+                      <div className="flex items-center justify-between p-4 rounded-lg bg-slate-700/30 border border-slate-600/50">
+                        <div>
+                          <p className="text-slate-200 font-medium">
+                            Select Predefined Avatar
+                          </p>
+                          <p className="text-sm text-slate-400">
+                            Choose from your saved avatar profiles
+                          </p>
                         </div>
-                      )}
-
-                      {/* Custom Avatar Input */}
-                      {/* {avatarMode === 'custom' && (
-                        <div className="space-y-4 p-4 rounded-lg bg-slate-700/30 border border-slate-600/50">
-                          <div>
-                            <Label
-                              htmlFor="custom-username"
-                              className="text-slate-200"
-                            >
-                              Custom Username
-                            </Label>
-                            <input
-                              id="custom-username"
-                              type="text"
-                              placeholder="Enter custom username"
-                              value={message.username}
-                              onChange={(e) =>
-                                setMessage((prev) => ({
-                                  ...prev,
-                                  username: e.target.value,
-                                }))
-                              }
-                              className="mt-1 w-full px-3 py-2 bg-slate-600/50 border border-slate-500 rounded-md text-white placeholder:text-slate-400 focus:border-purple-500 focus:outline-none"
-                            />
-                          </div>
-                          <div>
-                            <Label
-                              htmlFor="custom-avatar"
-                              className="text-slate-200"
-                            >
-                              Custom Avatar URL
-                            </Label>
-                            <input
-                              id="custom-avatar"
-                              type="url"
-                              placeholder="Enter custom avatar URL"
-                              value={message.avatar_url}
-                              onChange={(e) =>
-                                setMessage((prev) => ({
-                                  ...prev,
-                                  avatar_url: e.target.value,
-                                }))
-                              }
-                              className="mt-1 w-full px-3 py-2 bg-slate-600/50 border border-slate-500 rounded-md text-white placeholder:text-slate-400 focus:border-purple-500 focus:outline-none"
-                            />
-                          </div>
-                        </div>
-                      )} */}
+                        <AvatarSelector onSelect={handleAvatarSelect}>
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            className="bg-slate-700 border-slate-600 text-white hover:bg-slate-600"
+                          >
+                            Select Avatar
+                          </Button>
+                        </AvatarSelector>
+                      </div>
                     </div>
                     
                     <div className="space-y-4">

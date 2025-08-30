@@ -141,12 +141,12 @@ export function CreateAvatarDialog({
               <div className="flex items-center space-x-2">
                 <Input
                   id="avatar_url"
-                  value={avatar_url}
+                  value={selectedFile ? selectedFile.name : avatar_url}
                   onChange={(e) => {
                     setAvatar_url(e.target.value);
                     setSelectedFile(null); // Clear file when URL is typed
                   }}
-                  placeholder="https://example.com/avatar.png"
+                  placeholder={selectedFile ? selectedFile.name : "https://example.com/avatar.png"}
                   className="bg-slate-700/50 border-slate-600 text-white placeholder:text-slate-400 focus:border-purple-500"
                 />
                 <Button
