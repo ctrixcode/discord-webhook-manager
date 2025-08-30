@@ -38,6 +38,11 @@ export function DashboardHeader() {
         </div>
 
         <div className="flex items-center gap-4">
+          {user?.username && (
+            <span className="text-white text-lg font-semibold mr-2">
+              {user.username}
+            </span>
+          )}
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button
