@@ -29,6 +29,7 @@ html {
 }
         `}</style>
         <Analytics/>
+        <meta name="google-site-verification" content="7PSk6bAhkuIK6tkLoDHIHaW34OdbhkY7oX0vEDqa7ms" />
       </head>
       <body className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-purple-900">
         <ThemeProvider
