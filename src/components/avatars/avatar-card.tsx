@@ -31,6 +31,7 @@ interface AvatarCardProps {
   onDeleteSuccess: () => void;
   onSelect?: (avatar: PredefinedAvatar) => void;
   selectable?: boolean;
+  onCardClick?: (avatar: PredefinedAvatar) => void;
 }
 
 export function AvatarCard({
@@ -39,6 +40,7 @@ export function AvatarCard({
   onDeleteSuccess,
   onSelect,
   selectable = false,
+  onCardClick,
 }: AvatarCardProps) {
   const queryClient = useQueryClient();
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
@@ -62,7 +64,10 @@ export function AvatarCard({
 
   return (
     <>
-      <Card className="bg-slate-900/50 backdrop-blur-sm border-slate-700/50 hover:bg-slate-800/50 transition-all duration-200">
+      <Card
+        className="bg-slate-900/50 backdrop-blur-sm border-slate-700/50 hover:bg-slate-800/50 transition-all duration-200 cursor-pointer"
+        onClick={() => onCardClick?.(avatar)}
+      >
         <CardContent className="p-4">
           <div className="flex items-start justify-between mb-3">
             <div className="flex items-center gap-3">

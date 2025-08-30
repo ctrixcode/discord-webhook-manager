@@ -1,6 +1,7 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useSearchParams, useRouter, usePathname } from 'next/navigation';
 import {
   Select,
   SelectContent,
@@ -30,10 +31,15 @@ import { SendMessageData } from '@/lib/api/types/webhook';
 
 export default function SendMessagePage() {
   const { toast } = useToast();
+  const searchParams = useSearchParams();
+  const router = useRouter();
+  const pathname = usePathname();
+  const initialAvatarId = searchParams.get('avatarId');
+
   const [selectedWebhooks, setSelectedWebhooks] = useState<string[]>([]);
   const [message, setMessage] = useState({
     content: '',
-    avatarRefID: '',
+    avatarRefID: initialAvatarId || '',
     tts: false,
     threadName: '',
     embeds: [] as DiscordEmbed[],
@@ -100,6 +106,16 @@ export default function SendMessagePage() {
     queryFn: () => api.template.getAllTemplates(),
   });
 
+  useEffect(() => {
+    if (initialAvatarId && avatars.length > 0) {
+      const avatar = avatars.find((a) => a.id === initialAvatarId);
+      if (avatar) {
+        setSelectedAvatar(avatar);
+        setMessage((prev) => ({ ...prev, avatarRefID: avatar.id }));
+      }
+    }
+  }, [initialAvatarId, avatars]);
+
   const handleWebhookToggle = (webhookId: string) => {
     setSelectedWebhooks((prev) =>
       prev.includes(webhookId)
@@ -122,6 +138,11 @@ export default function SendMessagePage() {
       avatarRefID: avatar.id, // Use avatar.id as avatarRefID
     }));
     setSelectedAvatar(avatar);
+
+    // Update URL param
+    const newSearchParams = new URLSearchParams(searchParams.toString());
+    newSearchParams.set('avatarId', avatar.id);
+    router.replace(`${pathname}?${newSearchParams.toString()}`);
   };
 
   const addEmbed = () => {

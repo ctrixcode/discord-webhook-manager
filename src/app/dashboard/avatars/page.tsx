@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useMemo } from 'react';
+import { useRouter } from 'next/navigation';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -15,6 +16,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 
 export default function AvatarsPage() {
   const { user } = useAuth();
+  const router = useRouter();
   const queryClient = useQueryClient();
   const [searchQuery, setSearchQuery] = useState('');
   const [showCreateDialog, setShowCreateDialog] = useState(false);
@@ -52,6 +54,10 @@ export default function AvatarsPage() {
   const handleCloseDialog = () => {
     setShowCreateDialog(false);
     setEditingAvatar(null);
+  };
+
+  const handleCardClick = (avatar: PredefinedAvatar) => {
+    router.push(`/dashboard/send?avatarId=${avatar.id}`);
   };
 
   return (
@@ -139,6 +145,7 @@ export default function AvatarsPage() {
                 avatar={avatar}
                 onEdit={handleEdit}
                 onDeleteSuccess={handleMutationSuccess}
+                onCardClick={handleCardClick}
               />
             ))}
           </div>
