@@ -5,6 +5,7 @@ import {
   getAvatars,
   updateAvatar,
   deleteAvatar,
+  uploadAvatar,
 } from '../controllers/avatar.controller';
 import authenticate from '../middlewares/auth';
 import {
@@ -21,6 +22,15 @@ async function avatarRoutes(fastify: FastifyInstance) {
       schema: createAvatarSchema,
     },
     createAvatar
+  );
+
+  fastify.post(
+    '/upload',
+    {
+      preHandler: [authenticate],
+      bodyLimit: 10485760, // 10MB limit for the body
+    },
+    uploadAvatar
   );
 
   fastify.get('/', { preHandler: [authenticate] }, getAvatars);
