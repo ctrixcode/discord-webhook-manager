@@ -1,14 +1,41 @@
+"use client";
+
 import type React from 'react';
 import { ProtectedRoute } from '@/components/protected-route';
 import { DashboardHeader } from '@/components/dashboard-header';
 import { FloatingNavigation } from '@/components/floating-navigation';
 import { AuthProvider } from '@/contexts/auth-context';
+import { useQueryClient } from '@tanstack/react-query';
+import { api } from '@/lib/api';
+import { useEffect } from 'react';
 
 export default function DashboardLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const queryClient = useQueryClient();
+
+  useEffect(() => {
+    // Prefetch webhooks
+    queryClient.prefetchQuery({
+      queryKey: ['webhooks', { isActive: true }],
+      queryFn: ({ queryKey }) => api.webhook.getAllWebhooks({ queryKey: queryKey as [string, { isActive?: boolean }] }),
+    });
+
+    // Prefetch avatars
+    queryClient.prefetchQuery({
+      queryKey: ['avatars'],
+      queryFn: () => api.avatar.getAllAvatars(),
+    });
+
+    // Prefetch message templates
+    queryClient.prefetchQuery({
+      queryKey: ['messageTemplates'],
+      queryFn: () => api.template.getAllTemplates(),
+    });
+  }, [queryClient]);
+
   return (
     <AuthProvider>
       <ProtectedRoute>
