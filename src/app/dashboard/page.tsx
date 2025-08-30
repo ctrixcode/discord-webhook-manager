@@ -36,13 +36,13 @@ export default function DashboardPage() {
                   <span className="font-medium">Add Webhook</span>
                 </Button>
               </Link>
-              <Link href="/dashboard/scheduled">
+              <Link href="/dashboard/send">
                 <Button
                   className="w-full h-24 flex-col gap-3 bg-gradient-to-r from-blue-600/20 to-purple-600/20 border-blue-500/30 hover:from-blue-600/30 hover:to-purple-600/30 hover:border-blue-400/50 transition-all duration-300 text-white"
                   variant="outline"
                 >
                   <Clock className="w-8 h-8 text-blue-400" />
-                  <span className="font-medium">Schedule Message</span>
+                  <span className="font-medium">Send Message</span>
                 </Button>
               </Link>
               <Link href="/dashboard/templates">
