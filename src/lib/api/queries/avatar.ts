@@ -31,6 +31,16 @@ export const avatarQueries = {
     const response = await apiClient.delete<{ success: boolean; message: string }>(`/avatar/${id}`);
     return response.data;
   },
+
+  // Upload avatar
+  uploadAvatar: async (data: FormData): Promise<PredefinedAvatar> => {
+    const response = await apiClient.post<PredefinedAvatar>('/avatar/upload', data, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    });
+    return response.data;
+  },
 };
 
 export const {
@@ -39,4 +49,5 @@ export const {
   createAvatar,
   updateAvatar,
   deleteAvatar,
+  uploadAvatar,
 } = avatarQueries;
