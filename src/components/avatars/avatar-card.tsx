@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -44,6 +44,7 @@ export function AvatarCard({
 }: AvatarCardProps) {
   const queryClient = useQueryClient();
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
 
   const { mutate: deleteAvatarMutation } = useMutation({
     mutationFn: deleteAvatar,
@@ -66,7 +67,13 @@ export function AvatarCard({
     <>
       <Card
         className="bg-slate-900/50 backdrop-blur-sm border-slate-700/50 hover:bg-slate-800/50 transition-all duration-200 cursor-pointer"
-        onClick={() => onCardClick?.(avatar)}
+        onClick={(e) => {
+          // Check if the click originated from within the dropdown menu
+          if (dropdownRef.current && dropdownRef.current.contains(e.target as Node)) {
+            return; // Do nothing if click is inside dropdown
+          }
+          onCardClick?.(avatar); // Otherwise, proceed with card click
+        }}
       >
         <CardContent className="p-4">
           <div className="flex items-start justify-between mb-3">
@@ -86,40 +93,43 @@ export function AvatarCard({
               </div>
             </div>
 
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  className="text-slate-400 hover:text-white"
-                >
-                  <MoreHorizontal className="w-4 h-4" />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent className="bg-slate-800 border-slate-700">
-                <DropdownMenuItem
-                  onClick={() => onEdit(avatar)}
-                  className="text-slate-300 hover:text-white hover:bg-slate-700"
-                >
-                  <Edit className="w-4 h-4 mr-2" />
-                  Edit
-                </DropdownMenuItem>
-                <DropdownMenuItem
-                  onClick={handleCopyUrl}
-                  className="text-slate-300 hover:text-white hover:bg-slate-700"
-                >
-                  <Copy className="w-4 h-4 mr-2" />
-                  Copy Avatar URL
-                </DropdownMenuItem>
-                <DropdownMenuItem
-                  onClick={() => setShowDeleteDialog(true)}
-                  className="text-red-400 hover:text-red-300 hover:bg-red-900/20"
-                >
-                  <Trash2 className="w-4 h-4 mr-2" />
-                  Delete
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
+            <div ref={dropdownRef}> {/* Add ref here */}
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="text-slate-400 hover:text-white"
+                    onClick={(e) => e.stopPropagation()} // Add stopPropagation here
+                  >
+                    <MoreHorizontal className="w-4 h-4" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent className="bg-slate-800 border-slate-700">
+                  <DropdownMenuItem
+                    onClick={(e) => { e.stopPropagation(); onEdit(avatar); }}
+                    className="text-slate-300 hover:text-white hover:bg-slate-700"
+                  >
+                    <Edit className="w-4 h-4 mr-2" />
+                    Edit
+                  </DropdownMenuItem>
+                  <DropdownMenuItem
+                    onClick={(e) => { e.stopPropagation(); handleCopyUrl(); }}
+                    className="text-slate-300 hover:text-white hover:bg-slate-700"
+                  >
+                    <Copy className="w-4 h-4 mr-2" />
+                    Copy Avatar URL
+                  </DropdownMenuItem>
+                  <DropdownMenuItem
+                    onClick={(e) => { e.stopPropagation(); setShowDeleteDialog(true); }}
+                    className="text-red-400 hover:text-red-300 hover:bg-red-900/20"
+                  >
+                    <Trash2 className="w-4 h-4 mr-2" />
+                    Delete
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </div>
           </div>
 
           <div className="text-xs text-slate-500 mb-3">
