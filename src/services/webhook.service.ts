@@ -235,74 +235,86 @@ export const sendMessage = async (
     }
   }
 
-  const webhookRes: Promise<void>[] = [];
+  const webhookPromises: { webhookId: string; promise: Promise<void> }[] = [];
   for (const webhook of fetchedWebhooks) {
-    try {
-      // Existing message sending logic
-      const webhookClient = createWebhook(webhook.url);
-      const msg = new Message();
-      msg.setContent(messageData.message);
+    // Existing message sending logic
+    const webhookClient = createWebhook(webhook.url);
+    const msg = new Message();
+    msg.setContent(messageData.message);
 
-      let avatar: IAvatar | null;
+    let avatar: IAvatar | null;
 
-      if (messageData.avatarRefID) {
-        avatar = await getAvatar(userId, messageData.avatarRefID);
-        if (avatar) {
-          msg.setUsername(avatar.username);
-          msg.setAvatarURL(avatar.avatar_url);
+    if (messageData.avatarRefID) {
+      avatar = await getAvatar(userId, messageData.avatarRefID);
+      if (avatar) {
+        msg.setUsername(avatar.username);
+        msg.setAvatarURL(avatar.avatar_url);
+      }
+    }
+
+    if (messageData.embeds) {
+      messageData.embeds.forEach((embedData: IEmbedSchemaDocument) => {
+        const embed = new Embed();
+        if (embedData.title) embed.setTitle(embedData.title);
+        if (embedData.description) embed.setDescription(embedData.description);
+        if (embedData.url) embed.setURL(embedData.url);
+        if (embedData.timestamp)
+          embed.setTimestamp(new Date(embedData.timestamp));
+        if (embedData.color) embed.setColor(Number(embedData.color));
+        if (embedData.footer)
+          embed.setFooter({
+            text: embedData.footer.text,
+            icon_url: embedData.footer.icon_url,
+          });
+        if (embedData.image) embed.setImage(embedData.image.url);
+        if (embedData.thumbnail) embed.setThumbnail(embedData.thumbnail.url);
+        if (embedData.author)
+          embed.setAuthor({
+            name: embedData.author.name,
+            url: embedData.author.url,
+            icon_url: embedData.author.icon_url,
+          });
+        if (embedData.fields) {
+          embedData.fields.forEach((field: IFields) => {
+            embed.addField(
+              new Field(field.name, field.value, field.inline) as Field
+            );
+          });
         }
-      }
+        msg.addEmbed(embed);
+      });
+    }
+    webhookClient.addMessage(msg);
+    webhookPromises.push({
+      webhookId: webhook.id,
+      promise: webhookClient.send(),
+    });
+  }
+  const settledResults = await Promise.allSettled(
+    webhookPromises.map(p => p.promise)
+  );
 
-      if (messageData.embeds) {
-        messageData.embeds.forEach((embedData: IEmbedSchemaDocument) => {
-          const embed = new Embed();
-          if (embedData.title) embed.setTitle(embedData.title);
-          if (embedData.description)
-            embed.setDescription(embedData.description);
-          if (embedData.url) embed.setURL(embedData.url);
-          if (embedData.timestamp)
-            embed.setTimestamp(new Date(embedData.timestamp));
-          if (embedData.color) embed.setColor(Number(embedData.color));
-          if (embedData.footer)
-            embed.setFooter({
-              text: embedData.footer.text,
-              icon_url: embedData.footer.icon_url,
-            });
-          if (embedData.image) embed.setImage(embedData.image.url);
-          if (embedData.thumbnail) embed.setThumbnail(embedData.thumbnail.url);
-          if (embedData.author)
-            embed.setAuthor({
-              name: embedData.author.name,
-              url: embedData.author.url,
-              icon_url: embedData.author.icon_url,
-            });
-          if (embedData.fields) {
-            embedData.fields.forEach((field: IFields) => {
-              embed.addField(
-                new Field(field.name, field.value, field.inline) as Field
-              );
-            });
-          }
-          msg.addEmbed(embed);
-        });
-      }
-      webhookClient.addMessage(msg);
-      webhookRes.push(webhookClient.send());
-      logger.info(`Message sent successfully to webhook ID: ${webhook.id}`, {
+  for (let i = 0; i < settledResults.length; i++) {
+    const result = settledResults[i];
+    const { webhookId } = webhookPromises[i];
+
+    if (result.status === 'fulfilled') {
+      logger.info(`Message sent successfully to webhook ID: ${webhookId}`, {
         userId,
       });
-      results.push({ webhookId: webhook.id, status: 'success' });
+      results.push({ webhookId: webhookId, status: 'success' });
 
-      // Add message history for success
       await createMessageHistory(
-        webhook.id,
+        new mongoose.Types.ObjectId(webhookId),
         new mongoose.Types.ObjectId(userId),
         messageData.message,
         messageData.embeds || [],
         'success'
       );
-    } catch (error: unknown) {
+    } else {
       let errorMessage: string;
+      const error = result.reason; // The error object from the rejected promise
+
       if (error instanceof WebhookError) {
         errorMessage = `Webhook Error: ${(error as Error).message}`;
       } else if (error instanceof Error) {
@@ -312,18 +324,17 @@ export const sendMessage = async (
       }
 
       logger.error(
-        `Error sending message to webhook ID: ${webhook.id}:`,
+        `Error sending message to webhook ID: ${webhookId}:`,
         errorMessage
       );
       results.push({
-        webhookId: webhook.id,
+        webhookId: webhookId,
         status: 'failed',
         error: errorMessage,
       });
 
-      // Add message history for failure
       await createMessageHistory(
-        webhook.id,
+        new mongoose.Types.ObjectId(webhookId),
         new mongoose.Types.ObjectId(userId),
         messageData.message,
         messageData.embeds || [],
@@ -331,19 +342,6 @@ export const sendMessage = async (
         errorMessage
       );
     }
-  }
-  try {
-    await Promise.all(webhookRes);
-  } catch (error) {
-    logger.error('Error in sending messages:', error);
-    throw new Error('Failed to send message to any of the provided webhooks.');
-  }
-
-  if (
-    results.every(result => result.status === 'failed') &&
-    webhookIds.length > 0
-  ) {
-    throw new Error('Failed to send message to any of the provided webhooks.');
   }
 
   return results;
