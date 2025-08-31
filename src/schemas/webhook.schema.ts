@@ -16,7 +16,6 @@ export const updateWebhookSchema = {
     properties: {
       name: { type: 'string' },
       description: { type: 'string' },
-      url: { type: 'string', format: 'uri' },
       is_active: { type: 'boolean' },
     },
   },

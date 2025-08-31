@@ -22,7 +22,6 @@ export interface CreateWebhookData {
 export interface UpdateWebhookData {
   name?: string;
   description?: string;
-  url?: string;
   is_active?: boolean;
 }
 
