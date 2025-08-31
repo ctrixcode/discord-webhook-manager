@@ -45,7 +45,7 @@ export const getWebhooksQuerySchema = {
     properties: {
       page: { type: 'string' },
       limit: { type: 'string' },
-      status: { type: 'string', enum: ['active'] },
+      status: { type: 'string', enum: ['active', 'inactive'] },
     },
   },
 };

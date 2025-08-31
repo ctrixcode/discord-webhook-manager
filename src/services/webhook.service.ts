@@ -68,6 +68,8 @@ export const getWebhooksByUserId = async (
 
     if (status === 'active') {
       query.is_active = true;
+    } else if (status === 'inactive') {
+      query.is_active = false;
     }
 
     const webhooks = await WebhookModel.find(query)
