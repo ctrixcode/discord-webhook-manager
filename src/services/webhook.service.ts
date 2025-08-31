@@ -1,4 +1,10 @@
-import { createWebhook, Message, Embed, Field } from 'discord-webhook-library';
+import {
+  createWebhook,
+  Message,
+  Embed,
+  Field,
+  WebhookError,
+} from 'discord-webhook-library';
 import WebhookModel, { IWebhook } from '../models/Webhook';
 import { logger } from '../utils';
 import mongoose from 'mongoose';
@@ -297,12 +303,19 @@ export const sendMessage = async (
         'success'
       );
     } catch (error: unknown) {
+      let errorMessage: string;
+      if (error instanceof WebhookError) {
+        errorMessage = `Webhook Error: ${(error as Error).message}`;
+      } else if (error instanceof Error) {
+        errorMessage = error.message;
+      } else {
+        errorMessage = String(error);
+      }
+
       logger.error(
         `Error sending message to webhook ID: ${webhook.id}:`,
-        error instanceof Error ? error.message : error
+        errorMessage
       );
-      const errorMessage =
-        error instanceof Error ? error.message : String(error);
       results.push({
         webhookId: webhook.id,
         status: 'failed',
