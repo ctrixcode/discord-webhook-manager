@@ -3,10 +3,9 @@ import type { Metadata } from 'next';
 import { GeistSans } from 'geist/font/sans';
 import { GeistMono } from 'geist/font/mono';
 import './globals.css';
-import { ThemeProvider } from '@/components/theme-provider';
 import Providers from '@/lib/providers';
 import { Toaster } from '@/components/ui/toaster';
-import { Analytics } from "@vercel/analytics/next"
+import { Analytics } from '@vercel/analytics/next';
 
 export const metadata: Metadata = {
   title: 'Discord Webhook Manager',
@@ -28,21 +27,15 @@ html {
   --font-mono: ${GeistMono.variable};
 }
         `}</style>
-        <Analytics/>
-        <meta name="google-site-verification" content="7PSk6bAhkuIK6tkLoDHIHaW34OdbhkY7oX0vEDqa7ms" />
+        <Analytics />
+        <meta
+          name="google-site-verification"
+          content="7PSk6bAhkuIK6tkLoDHIHaW34OdbhkY7oX0vEDqa7ms"
+        />
       </head>
       <body className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-purple-900">
-        <ThemeProvider
-          attribute="class"
-          defaultTheme="dark"
-          enableSystem
-          disableTransitionOnChange
-        >
-          <Providers>
-            {children}
-          </Providers>
-          <Toaster />
-        </ThemeProvider>
+        <Providers>{children}</Providers>
+        <Toaster />
       </body>
     </html>
   );
