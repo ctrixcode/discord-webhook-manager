@@ -35,6 +35,11 @@ export const getCurrentUser = async (
       ? getDiscordAvatarURL(user.discord_id, user.discord_avatar)
       : user.discord_avatar;
 
+    // attach discord guilds icon urls
+    if (user.guilds) {
+      user.guilds = user.guilds.sort((a, b) => a.name.localeCompare(b.name));
+    }
+
     reply.status(200).send({
       success: true,
       data: toUserPayload(user),
