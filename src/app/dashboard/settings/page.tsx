@@ -31,7 +31,7 @@ export default function SettingsPage() {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="min-h-screen p-6">
       <div>
         <h2 className="text-3xl font-bold tracking-tight text-white">
           Settings

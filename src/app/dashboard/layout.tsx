@@ -42,7 +42,7 @@ export default function DashboardLayout({
   return (
     <AuthProvider>
       <ProtectedRoute>
-        <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-purple-900">
+        <div className="min-h-screen">
           <DashboardHeader />
           <main className="p-6 pb-24">{children}</main>
           <FloatingNavigation />

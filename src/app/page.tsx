@@ -15,7 +15,7 @@ export default async function HomePage() {
   const isLoggedIn = !!refreshToken;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-purple-900 text-white">
+    <div className="min-h-scree text-white">
       {/* Hero Section */}
       <section className="relative flex flex-col items-center justify-center min-h-screen p-4 md:p-24 text-center">
         <h1 className="text-5xl md:text-7xl font-extrabold mb-6 drop-shadow-lg leading-tight">

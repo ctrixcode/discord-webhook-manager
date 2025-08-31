@@ -44,7 +44,7 @@ export default function WebhooksPage() {
   };
 
   return (
-    <div className="space-y-8">
+    <div className="min-h-screen p-6 space-y-8">
       <div className="flex items-center justify-between">
         <div>
           <h2 className="text-3xl font-bold tracking-tight text-white">

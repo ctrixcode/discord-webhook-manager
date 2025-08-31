@@ -7,7 +7,7 @@ import Link from 'next/link';
 
 export default function DashboardPage() {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900">
+    <div className="min-h-screen">
       <div className="space-y-8 p-6">
         <div className="text-center space-y-2">
           <h2 className="text-4xl font-bold tracking-tight bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">
