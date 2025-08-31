@@ -236,8 +236,8 @@ export const sendMessage = async (
     }
   }
 
+  const webhookRes: Promise<void>[] = [];
   for (const webhook of fetchedWebhooks) {
-    // Loop directly over fetched webhooks
     try {
       // Existing message sending logic
       const webhookClient = createWebhook(webhook.url);
@@ -288,7 +288,7 @@ export const sendMessage = async (
         });
       }
       webhookClient.addMessage(msg);
-      webhookClient.send();
+      webhookRes.push(webhookClient.send());
       logger.info(`Message sent successfully to webhook ID: ${webhook.id}`, {
         userId,
       });
@@ -332,6 +332,12 @@ export const sendMessage = async (
         errorMessage
       );
     }
+  }
+  try {
+    await Promise.all(webhookRes);
+  } catch (error) {
+    logger.error('Error in sending messages:', error);
+    throw new Error('Failed to send message to any of the provided webhooks.');
   }
 
   if (
