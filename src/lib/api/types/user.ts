@@ -4,6 +4,7 @@ export interface User {
   email: string;
   discord_id?: string;
   discord_avatar?: string;
+  guilds?: { id: string; name: string; icon: string | null }[];
   createdAt: string;
   updatedAt: string;
 }
