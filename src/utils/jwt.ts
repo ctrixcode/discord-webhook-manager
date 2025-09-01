@@ -34,7 +34,8 @@ export const generateAccessToken = (payload: TokenPayload): string => {
  * @returns An object containing the refresh token string and its JTI.
  */
 export const generateRefreshToken = (
-  payload: TokenPayload
+  payload: TokenPayload,
+  userAgent: string
 ): { refreshToken: string; jti: string } => {
   const jti = uuidv4(); // Generate a unique ID for the token
   const options: SignOptions = {
@@ -79,6 +80,7 @@ export const generateRefreshToken = (
     jti: jti,
     expiresAt: expiresAt,
     isUsed: false,
+    userAgent: userAgent,
   });
   authSessionToken
     .save()

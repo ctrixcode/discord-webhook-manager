@@ -24,8 +24,10 @@ export const refreshAccessToken = async (
         .send({ success: false, message: 'No refresh token provided' });
     }
 
-    const { newAccessToken, newRefreshToken } =
-      await authService.refreshTokens(refreshToken);
+    const { newAccessToken, newRefreshToken } = await authService.refreshTokens(
+      refreshToken,
+      request.headers['user-agent'] || 'unknown'
+    );
 
     reply.status(200).send({
       success: true,
@@ -209,7 +211,8 @@ export const discordCallback = async (
         discordUser.username,
         discordUser.email,
         discordUser.avatar,
-        discordGuilds
+        discordGuilds,
+        request.headers['user-agent'] || 'unknown'
       );
 
     // Save or update Discord token in our database

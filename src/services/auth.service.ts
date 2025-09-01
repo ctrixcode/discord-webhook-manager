@@ -14,7 +14,8 @@ export const loginWithDiscord = async (
   username: string,
   email: string,
   avatar: string,
-  guilds: { id: string; name: string; icon: string | null }[]
+  guilds: { id: string; name: string; icon: string | null }[],
+  userAgent: string
 ) => {
   // Transform guild icons from ID to URL
   const transformedGuilds = guilds.map(guild => ({
@@ -51,10 +52,13 @@ export const loginWithDiscord = async (
     userId: user.id,
     email: user.email,
   });
-  const { refreshToken } = generateRefreshToken({
-    userId: user.id,
-    email: user.email,
-  });
+  const { refreshToken } = generateRefreshToken(
+    {
+      userId: user.id,
+      email: user.email,
+    },
+    userAgent
+  );
 
   return { user, accessToken, refreshToken };
 };
@@ -64,7 +68,10 @@ const revokeAllUserSessions = async (userId: string) => {
   logger.warn(`All sessions revoked for user: ${userId}`);
 };
 
-export const refreshTokens = async (refreshToken: string) => {
+export const refreshTokens = async (
+  refreshToken: string,
+  currentUserAgent: string
+) => {
   try {
     const decodedRefreshToken = verifyToken(refreshToken) as TokenPayload;
     const user = await userService.getUserById(decodedRefreshToken.userId);
@@ -86,6 +93,12 @@ export const refreshTokens = async (refreshToken: string) => {
       throw new Error('Invalid or compromised refresh token');
     }
 
+    // Validate user agent
+    if (existingAuthSessionToken.userAgent !== currentUserAgent) {
+      await revokeAllUserSessions(decodedRefreshToken.userId);
+      throw new Error('User agent mismatch. Session revoked.');
+    }
+
     // Mark the current refresh token as used
     existingAuthSessionToken.isUsed = true;
     await existingAuthSessionToken.save();
@@ -95,10 +108,13 @@ export const refreshTokens = async (refreshToken: string) => {
       email: user.email,
     });
     const { refreshToken: newRefreshToken, jti: newRefreshTokenJti } =
-      generateRefreshToken({
-        userId: user.id,
-        email: user.email,
-      });
+      generateRefreshToken(
+        {
+          userId: user.id,
+          email: user.email,
+        },
+        currentUserAgent
+      );
 
     return { newAccessToken, newRefreshToken, user, newRefreshTokenJti };
   } catch (error) {
