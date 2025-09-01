@@ -188,7 +188,7 @@ export function DiscordMessagePreview({
           )}
 
           {clonedEmbeds &&
-            clonedEmbeds.map((embed: DiscordEmbed, index) => (
+            clonedEmbeds.map((embed: DiscordEmbed, index: number) => (
               <div key={index} className="max-w-lg mt-2">
                 <div className="flex">
                   <div
