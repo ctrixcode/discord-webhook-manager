@@ -11,7 +11,7 @@ import { type PredefinedAvatar } from '@/lib/api/types/avatar';
 import { useAuth } from '@/contexts/auth-context';
 import { AvatarCard } from '@/components/avatars/avatar-card';
 import { CreateAvatarDialog } from '@/components/avatars/create-avatar-dialog';
-import { Card, CardContent } from '@/components/ui/card';
+
 import { Spinner } from '@/components/ui/spinner';
 
 export default function AvatarsPage() {

@@ -5,7 +5,7 @@ import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { DiscordLogo } from '@/components/discord-logo';
 import {
-  Home,
+
   Webhook,
   FileText,
   Settings,
