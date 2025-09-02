@@ -7,6 +7,7 @@ import {
   userParamsSchema,
   getUsersQuerySchema,
 } from '../schemas/user.schema';
+import { userUsageResponseSchema } from '../schemas/user-usage.schema';
 
 const userRoutes = async (fastify: FastifyInstance) => {
   fastify.get(
@@ -28,6 +29,19 @@ const userRoutes = async (fastify: FastifyInstance) => {
     '/:id',
     { schema: userParamsSchema, preHandler: [authenticate] },
     userController.deleteUser
+  );
+
+  fastify.get(
+    '/me/usage',
+    {
+      preHandler: [authenticate], // Authentication is required
+      schema: {
+        response: {
+          200: userUsageResponseSchema, // Add response schema
+        },
+      },
+    },
+    userController.getUserUsageHandler
   );
 };
 
