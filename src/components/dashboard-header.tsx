@@ -15,6 +15,12 @@ import { useRouter } from 'next/navigation';
 import { LogOut, Settings, Crown } from 'lucide-react';
 import { DiscordLogo } from '@/components/discord-logo';
 import { Badge } from '@/components/ui/badge';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from '@/components/ui/tooltip';
 
 export function DashboardHeader() {
   const { user, logout } = useAuth();
@@ -27,26 +33,57 @@ export function DashboardHeader() {
 
   const getAccountTypeBadge = (accountType: string) => {
     const commonBadgeClasses = "ml-2";
+    let quote = "";
 
     switch (accountType) {
       case 'free':
+        quote = 'Explore the basics, unlock your potential.';
         return (
-          <Badge className={`${commonBadgeClasses} bg-blue-500/80 text-white text-xs px-4 py-0.5 rounded-full`}>
-            Free
-          </Badge>
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Badge className={`${commonBadgeClasses} bg-blue-500/80 text-white text-xs px-1 py-0.5 rounded-full`}>
+                  Free
+                </Badge>
+              </TooltipTrigger>
+              <TooltipContent className="bg-slate-800 border-slate-700 text-white">
+                <p>{quote}</p>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
         );
       case 'paid':
+        quote = 'Elevate your experience, achieve more.';
         return (
-          <Badge className={`${commonBadgeClasses} bg-purple-500/80 text-white text-xs px-4 py-0.5 rounded-full`}>
-            Paid
-          </Badge>
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Badge className={`${commonBadgeClasses} bg-purple-500/80 text-white text-xs px-1 py-0.5 rounded-full`}>
+                  Paid
+                </Badge>
+              </TooltipTrigger>
+              <TooltipContent className="bg-slate-800 border-slate-700 text-white">
+                <p>{quote}</p>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
         );
       case 'premium':
+        quote = 'Unleash the ultimate power, no limits.';
         return (
-          <Crown
-            className={`${commonBadgeClasses} h-4 w-4 text-yellow-400 drop-shadow-md`}
-            fill="currentColor"
-          />
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Crown
+                  className={`${commonBadgeClasses} h-4 w-4 text-yellow-400 drop-shadow-md`}
+                  fill="currentColor"
+                />
+              </TooltipTrigger>
+              <TooltipContent className="bg-slate-800 border-slate-700 text-white">
+                <p>{quote}</p>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
         );
       default:
         return null;
