@@ -1,25 +1,23 @@
 'use client';
 
 import { Separator } from '@/components/ui/separator';
-import { Palette, Bell, Shield, Trash2 } from 'lucide-react';
-import { useEffect, useState } from 'react';
+import { Bell, Shield, Trash2, BarChart2 } from 'lucide-react';
+import { useState } from 'react';
 import { ConfirmationDialog } from '@/components/ui/confirmation-dialog';
 import { SettingsCard } from '@/components/settings/settings-card';
-import { ThemeSelector } from '@/components/settings/theme-selector';
 import { NotificationToggle } from '@/components/settings/notification-toggle';
 import { DangerAction } from '@/components/settings/danger-action';
+import { useQuery } from '@tanstack/react-query';
+import { userQueries } from '@/lib/api/queries/user';
+import { Progress } from '@/components/ui/progress';
 
 export default function SettingsPage() {
-  const [mounted, setMounted] = useState(false);
   const [showClearDataDialog, setShowClearDataDialog] = useState(false);
 
-  useEffect(() => {
-    setMounted(true);
-  }, []);
-
-  if (!mounted) {
-    return null;
-  }
+  const { data: usage, isLoading: isLoadingUsage } = useQuery({
+    queryKey: ['userUsage'],
+    queryFn: userQueries.getUserUsage,
+  });
 
   const handleClearData = () => {
     setShowClearDataDialog(true);
@@ -28,6 +26,15 @@ export default function SettingsPage() {
   const handleConfirmClearData = () => {
     localStorage.clear();
     window.location.reload();
+  };
+
+  const formatBytes = (bytes: number, decimals = 2) => {
+    if (bytes === 0) return '0 Bytes';
+    const k = 1024;
+    const dm = decimals < 0 ? 0 : decimals;
+    const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + ' ' + sizes[i];
   };
 
   return (
@@ -41,12 +48,68 @@ export default function SettingsPage() {
         </p>
       </div>
 
+      <SettingsCard
+        title="Usage"
+        description="Track your current usage and limits"
+        icon={<BarChart2 className="h-5 w-5" />}
+      >
+        {isLoadingUsage ? (
+          <div className="space-y-4">
+            <div className="h-8 bg-slate-700/50 rounded-md animate-pulse" />
+            <div className="h-8 bg-slate-700/50 rounded-md animate-pulse" />
+          </div>
+        ) : usage ? (
+          <div className="space-y-4">
+            <div>
+              <div className="flex justify-between mb-1">
+                <span className="text-sm font-medium text-slate-300">
+                  Daily Webhook Messages
+                </span>
+                <span className="text-sm font-medium text-slate-400">
+                  {usage.webhookMessagesSentToday} /{' '}
+                  {usage.dailyWebhookMessageLimit}
+                </span>
+              </div>
+              <Progress
+                value={
+                  (usage.webhookMessagesSentToday /
+                    usage.dailyWebhookMessageLimit) *
+                  100
+                }
+                className="bg-slate-700/50"
+              />
+            </div>
+            <div>
+              <div className="flex justify-between mb-1">
+                <span className="text-sm font-medium text-slate-300">
+                  Media Storage
+                </span>
+                <span className="text-sm font-medium text-slate-400">
+                  {formatBytes(usage.totalMediaStorageUsed)} /{' '}
+                  {formatBytes(usage.overallMediaStorageLimit)}
+                </span>
+              </div>
+              <Progress
+                value={
+                  (usage.totalMediaStorageUsed /
+                    usage.overallMediaStorageLimit) *
+                  100
+                }
+                className="bg-slate-700/50"
+              />
+            </div>
+          </div>
+        ) : (
+          <p className="text-slate-400">Could not load usage data.</p>
+        )}
+      </SettingsCard>
+
       {/* <SettingsCard
         title="Appearance"
         description="Customize how the application looks and feels"
         icon={<Palette className="h-5 w-5" />}
       > */}
-        {/* <ThemeSelector /> */}
+      {/* <ThemeSelector /> */}
       {/* </SettingsCard> */}
 
       <SettingsCard
@@ -111,6 +174,6 @@ export default function SettingsPage() {
         onConfirm={handleConfirmClearData}
         confirmButtonText="Clear Data"
       />
-    </div>)
-
-  }
+    </div>
+  );
+}
