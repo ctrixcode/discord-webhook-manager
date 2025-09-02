@@ -1,6 +1,6 @@
 import { Schema, model, Document } from 'mongoose';
 
-export type AccountType = 'free' | 'paid' | 'premium';
+export type AccountType = 'free' | 'paid' | 'premium'; // Re-add AccountType
 
 export interface IUser extends Document {
   username: string;
@@ -9,7 +9,7 @@ export interface IUser extends Document {
   discord_id: string;
   discord_avatar: string;
   guilds?: { id: string; name: string; icon: string | null }[];
-  accountType: AccountType; // Add accountType
+  accountType: AccountType; // Change back to AccountType
   createdAt: Date;
   updatedAt: Date;
   deleted_at?: Date | null;
@@ -31,10 +31,10 @@ const UserSchema = new Schema<IUser>(
     ],
     accountType: {
       type: String,
-      enum: ['free', 'paid', 'premium'],
-      default: 'free',
+      enum: ['free', 'paid', 'premium'], // Use string literals
+      default: 'free', // Use string literal
       required: true,
-    }, // Add accountType to schema
+    },
     deleted_at: { type: Date, default: null },
   },
   {
