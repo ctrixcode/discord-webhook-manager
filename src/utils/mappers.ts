@@ -43,7 +43,7 @@ export const toUserPayload = (user: IUser): UserPayload => {
     discord_id: user.discord_id,
     discord_avatar: user.discord_avatar,
     guilds: user.guilds,
-    accountType: user.accountType, // Added accountType
+    accountType: user.accountType,
     createdAt: user.createdAt.toISOString(),
     updatedAt: user.updatedAt.toISOString(),
   };
