@@ -2,6 +2,7 @@ import { logger } from '../utils';
 import { getDiscordGuildIconURL } from '../utils/discord-api';
 import AuthSessionTokenModel from '../models/AuthSessionToken';
 import * as userService from './user.service';
+import * as userUsageService from './user-usage.service'; // Import userUsageService
 import {
   generateAccessToken,
   generateRefreshToken,
@@ -47,6 +48,9 @@ export const loginWithDiscord = async (
   if (!user) {
     throw new Error('Failed to create or update user with Discord info');
   }
+
+  // Ensure UserUsage record exists for the user
+  await userUsageService.getOrCreateUserUsage(user.id);
 
   const accessToken = generateAccessToken({
     userId: user.id,

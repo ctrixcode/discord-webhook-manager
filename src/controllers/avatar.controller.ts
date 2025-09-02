@@ -12,6 +12,7 @@ import {
 import { IAvatarParams } from '../schemas/avatar.schema';
 import { IAvatar } from '../models/avatar';
 import { toAvatarDto } from '../utils/mappers';
+import { UsageLimitExceededError } from '../utils/errors'; // Import UsageLimitExceededError
 
 export const createAvatar = async (
   request: FastifyRequest,
@@ -92,12 +93,10 @@ export const uploadAvatar = async (
     try {
       fileBuffer = await data.toBuffer();
     } catch (bufferError: unknown) {
-      return reply
-        .code(500)
-        .send({
-          message: 'Error processing file',
-          error: (bufferError as Error).message,
-        });
+      return reply.code(500).send({
+        message: 'Error processing file',
+        error: (bufferError as Error).message,
+      });
     }
 
     tempFilePath = path.join(tempDir, filename);
@@ -107,12 +106,20 @@ export const uploadAvatar = async (
       userId,
       avatarUsername,
       avatarUsername,
-      tempFilePath
+      tempFilePath,
+      fileBuffer.byteLength // Pass fileSize
     );
 
     reply.code(201).send(toAvatarDto(avatar));
   } catch (error: unknown) {
-    if (error instanceof Error) {
+    if (error instanceof UsageLimitExceededError) {
+      // Handle custom error
+      reply.status(error.statusCode).send({
+        success: false,
+        message: error.message,
+        code: error.type,
+      });
+    } else if (error instanceof Error) {
       reply
         .code(500)
         .send({ message: 'Error uploading avatar', error: error.message });

@@ -1,6 +1,6 @@
 import AvatarModel, { IAvatar } from '../models/avatar';
 import { Types } from 'mongoose';
-import { uploadImage } from '../services/cloudinary.service';
+import { uploadImage, deleteImage } from '../services/cloudinary.service'; // Import deleteImage
 
 /**
  * Creates a new avatar for a specific user.
@@ -25,20 +25,29 @@ export const createAvatar = async (
  * @param username The username of the user (for Cloudinary folder).
  * @param avatarName The name of the avatar (for Cloudinary filename).
  * @param filePath The temporary file path of the avatar.
+ * @param fileSize The size of the avatar file in bytes. // Added fileSize
  * @returns The created avatar document.
  */
 export const uploadAvatar = async (
   userId: string,
   username: string,
   avatarName: string,
-  filePath: string
+  filePath: string,
+  fileSize: number
 ): Promise<IAvatar> => {
-  const uploadResult = await uploadImage(filePath, username, avatarName);
+  const uploadResult = await uploadImage(
+    filePath,
+    username,
+    avatarName,
+    userId,
+    fileSize
+  ); // Pass userId and fileSize
   const newAvatar = new AvatarModel({
     user_id: new Types.ObjectId(userId),
     username: username,
     avatar_url: uploadResult.secure_url,
     public_id: uploadResult.public_id,
+    size: fileSize,
   });
   return newAvatar.save();
 };
@@ -94,5 +103,16 @@ export const deleteAvatar = async (
   userId: string,
   avatarId: string
 ): Promise<IAvatar | null> => {
+  const avatarToDelete = await AvatarModel.findOne({
+    _id: avatarId,
+    user_id: userId,
+  });
+  if (!avatarToDelete) {
+    return null; // Avatar not found or not owned by user
+  }
+
+  // Delete image from Cloudinary and update user usage
+  await deleteImage(avatarToDelete.public_id, userId, avatarToDelete.size!); // Use non-null assertion
+
   return AvatarModel.findOneAndDelete({ _id: avatarId, user_id: userId });
 };

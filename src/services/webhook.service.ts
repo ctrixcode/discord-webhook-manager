@@ -12,6 +12,8 @@ import { IAvatar } from '../models/avatar';
 import { IEmbedSchemaDocument, IFields } from '../models/embed';
 import { getAvatar } from './avatar.service';
 import { createMessageHistory } from './messageHistory.service';
+import * as userUsageService from './user-usage.service'; // Import userUsageService
+import { UsageLimitExceededError } from '../utils/errors';
 
 export interface CreateWebhookData {
   name: string;
@@ -221,6 +223,15 @@ export const sendMessage = async (
   userId: string,
   messageData: SendMessageData
 ) => {
+  // Check webhook message limit before proceeding
+  if (await userUsageService.isUserWebhookLimitReached(userId)) {
+    throw new UsageLimitExceededError(
+      'Daily webhook message limit exceeded. Please try again tomorrow or upgrade your plan.',
+      'webhook_limit',
+      403
+    ); // Throw custom error
+  }
+
   const results: { webhookId: string; status: string; error?: string }[] = [];
 
   const fetchedWebhooks = await getWebhooksByIds(webhookIds, userId);
@@ -318,6 +329,8 @@ export const sendMessage = async (
         messageData.embeds || [],
         'success'
       );
+      // Increment webhook message count after successful send
+      await userUsageService.incrementWebhookMessageCount(userId);
     } else {
       let errorMessage: string;
       const error = result.reason; // The error object from the rejected promise

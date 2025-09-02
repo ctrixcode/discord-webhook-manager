@@ -1,5 +1,7 @@
 import { v2 as cloudinary } from 'cloudinary';
 import dotenv from 'dotenv';
+import * as userUsageService from './user-usage.service'; // Import userUsageService
+import { UsageLimitExceededError } from '../utils/errors'; // Import UsageLimitExceededError
 
 dotenv.config();
 
@@ -12,15 +14,30 @@ cloudinary.config({
 export const uploadImage = async (
   filePath: string,
   username: string,
-  avatarName: string
+  avatarName: string,
+  userId: string, // Added userId
+  mediaSize: number // Added mediaSize in bytes
 ) => {
   try {
+    // Check media limit before uploading
+    if (await userUsageService.isUserMediaLimitReached(userId, mediaSize)) {
+      throw new UsageLimitExceededError(
+        'Overall media storage limit exceeded. Upgrade your plan to upload more.',
+        'media_limit',
+        403
+      ); // Throw custom error
+    }
+
     const timestamp = new Date().getTime();
     const publicId = `${username}/${avatarName}_${timestamp}`;
     const result = await cloudinary.uploader.upload(filePath, {
       public_id: publicId,
       folder: username,
     });
+
+    // Update user's media storage after successful upload
+    await userUsageService.updateMediaStorageUsed(userId, mediaSize);
+
     return result;
   } catch (error) {
     console.error('Cloudinary upload error:', error);
@@ -28,9 +45,15 @@ export const uploadImage = async (
   }
 };
 
-export const deleteImage = async (publicId: string) => {
+export const deleteImage = async (
+  publicId: string,
+  userId: string, // Added userId
+  mediaSize: number // Added mediaSize in bytes (size of the image being deleted)
+) => {
   try {
     const result = await cloudinary.uploader.destroy(publicId);
+    // Update user's media storage after successful deletion
+    await userUsageService.updateMediaStorageUsed(userId, -mediaSize); // Subtract size
     return result;
   } catch (error) {
     console.error('Cloudinary delete error:', error);

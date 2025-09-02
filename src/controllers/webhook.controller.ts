@@ -12,6 +12,7 @@ import {
   SendMessageData,
 } from '../services/webhook.service';
 import { logger, toWebhookDto } from '../utils';
+import { UsageLimitExceededError } from '../utils/errors'; // Import UsageLimitExceededError
 
 export const createWebhookHandler = async (
   request: FastifyRequest<{ Body: CreateWebhookData }>,
@@ -169,13 +170,11 @@ export const sendMessageHandler = async (
     const results = await sendMessage(webhookIds, userId, messageData);
 
     if (results.every(result => result.status === 'failed')) {
-      return reply
-        .code(500)
-        .send({
-          success: false,
-          message: 'Failed to send message to any webhook',
-          results,
-        });
+      return reply.code(500).send({
+        success: false,
+        message: 'Failed to send message to any webhook',
+        results,
+      });
     }
 
     reply.send({
@@ -183,8 +182,17 @@ export const sendMessageHandler = async (
       message: 'Message sending process completed',
       results,
     });
-  } catch (error) {
-    logger.error('Error sending message:', error);
-    reply.code(500).send({ message: 'Internal Server Error' });
+  } catch (error: unknown) {
+    // Catch unknown error type
+    if (error instanceof UsageLimitExceededError) {
+      reply.status(error.statusCode).send({
+        success: false,
+        message: error.message,
+        code: error.type,
+      });
+    } else {
+      logger.error('Error sending message:', error);
+      reply.code(500).send({ message: 'Internal Server Error' });
+    }
   }
 };

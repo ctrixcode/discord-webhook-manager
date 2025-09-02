@@ -5,6 +5,7 @@ export interface IAvatar extends Document {
   username: string;
   avatar_url: string;
   public_id: string;
+  size?: number; // Made size optional
   createdAt: Date;
   updatedAt: Date;
 }
@@ -15,6 +16,7 @@ const AvatarSchema = new Schema<IAvatar>(
     username: { type: String, required: true },
     avatar_url: { type: String, required: false },
     public_id: { type: String, required: false },
+    size: { type: Number, required: false, default: 0 }, // Made size not required and added default
   },
   {
     timestamps: true,
