@@ -12,8 +12,9 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { useRouter } from 'next/navigation';
-import { LogOut, Settings } from 'lucide-react';
+import { LogOut, Settings, Crown } from 'lucide-react';
 import { DiscordLogo } from '@/components/discord-logo';
+import { Badge } from '@/components/ui/badge';
 
 export function DashboardHeader() {
   const { user, logout } = useAuth();
@@ -22,6 +23,34 @@ export function DashboardHeader() {
   const handleLogout = () => {
     logout();
     router.push('/');
+  };
+
+  const getAccountTypeBadge = (accountType: string) => {
+    const commonBadgeClasses = "ml-2";
+
+    switch (accountType) {
+      case 'free':
+        return (
+          <Badge className={`${commonBadgeClasses} bg-blue-500/80 text-white text-xs px-4 py-0.5 rounded-full`}>
+            Free
+          </Badge>
+        );
+      case 'paid':
+        return (
+          <Badge className={`${commonBadgeClasses} bg-purple-500/80 text-white text-xs px-4 py-0.5 rounded-full`}>
+            Paid
+          </Badge>
+        );
+      case 'premium':
+        return (
+          <Crown
+            className={`${commonBadgeClasses} h-4 w-4 text-yellow-400 drop-shadow-md`}
+            fill="currentColor"
+          />
+        );
+      default:
+        return null;
+    }
   };
 
   return (
@@ -39,8 +68,9 @@ export function DashboardHeader() {
 
         <div className="flex items-center gap-4">
           {user?.username && (
-            <span className="text-white text-lg font-semibold mr-2">
+            <span className="text-white text-lg font-semibold mr-2 flex items-center">
               {user.username}
+              {user?.accountType && getAccountTypeBadge(user.accountType)}
             </span>
           )}
           <DropdownMenu>
