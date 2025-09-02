@@ -1,7 +1,7 @@
 'use client';
 
 import { Separator } from '@/components/ui/separator';
-import { Bell, Shield, Trash2, BarChart2 } from 'lucide-react';
+import { Bell, Shield, Trash2, BarChart2, Gem } from 'lucide-react';
 import { useState } from 'react';
 import { ConfirmationDialog } from '@/components/ui/confirmation-dialog';
 import { SettingsCard } from '@/components/settings/settings-card';
@@ -10,6 +10,7 @@ import { DangerAction } from '@/components/settings/danger-action';
 import { useQuery } from '@tanstack/react-query';
 import { userQueries } from '@/lib/api/queries/user';
 import { Progress } from '@/components/ui/progress';
+import { Badge } from '@/components/ui/badge';
 
 export default function SettingsPage() {
   const [showClearDataDialog, setShowClearDataDialog] = useState(false);
@@ -17,6 +18,11 @@ export default function SettingsPage() {
   const { data: usage, isLoading: isLoadingUsage } = useQuery({
     queryKey: ['userUsage'],
     queryFn: userQueries.getUserUsage,
+  });
+
+  const { data: user, isLoading: isLoadingUser } = useQuery({
+    queryKey: ['currentUser'],
+    queryFn: userQueries.getCurrentUser,
   });
 
   const handleClearData = () => {
@@ -37,6 +43,32 @@ export default function SettingsPage() {
     return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + ' ' + sizes[i];
   };
 
+  const getAccountTypeBadgeClass = (accountType: string) => {
+    switch (accountType) {
+      case 'free':
+        return 'bg-blue-500/20 text-blue-400 border-blue-500/30';
+      case 'paid':
+        return 'bg-purple-500/20 text-purple-400 border-purple-500/30';
+      case 'premium':
+        return 'bg-yellow-500/20 text-yellow-400 border-yellow-500/30 shadow-lg shadow-yellow-500/20';
+      default:
+        return 'bg-gray-500/20 text-gray-400 border-gray-500/30';
+    }
+  };
+
+  const getAccountTypeQuote = (accountType: string) => {
+    switch (accountType) {
+      case 'free':
+        return 'Explore the basics, unlock your potential.';
+      case 'paid':
+        return 'Elevate your experience, achieve more.';
+      case 'premium':
+        return 'Unleash the ultimate power, no limits.';
+      default:
+        return '';
+    }
+  };
+
   return (
     <div className="min-h-screen p-6">
       <div>
@@ -47,6 +79,32 @@ export default function SettingsPage() {
           Manage your account and application preferences
         </p>
       </div>
+
+      <SettingsCard
+        title="Account Type"
+        description="Your current subscription level"
+        icon={<Gem className="h-5 w-5" />}
+      >
+        {isLoadingUser ? (
+          <div className="h-8 bg-slate-700/50 rounded-md animate-pulse" />
+        ) : user ? (
+          <div className='flex items-center gap-2'>
+          <Badge
+            className={
+              `text-lg px-4 py-2 font-semibold ` +
+              getAccountTypeBadgeClass(user.accountType)
+            }
+            >
+            {user.accountType.toUpperCase()}
+          </Badge>
+          <p className="text-slate-400 text-sm mt-2">
+            {getAccountTypeQuote(user.accountType)}
+          </p>
+            </div>
+        ) : (
+          <p className="text-slate-400">Could not load account type.</p>
+        )}
+      </SettingsCard>
 
       <SettingsCard
         title="Usage"
