@@ -43,6 +43,7 @@
     "helmet": "^8.1.0",
     "jsonwebtoken": "^9.0.2",
     "mongoose": "^8.17.1",
+    "resend": "^6.0.2",
     "uuid": "^11.1.0",
     "winston": "^3.17.0"
   },
