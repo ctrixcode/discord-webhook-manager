@@ -178,11 +178,24 @@ export default function SendMessagePage() {
     }));
   };
 
-  const updateEmbed = (index: number, embed: DiscordEmbed) => {
-    setMessage((prev) => ({
-      ...prev,
-      embeds: prev.embeds.map((e, i) => (i === index ? embed : e)),
-    }));
+  const updateEmbed = (index: number, updatedEmbed: DiscordEmbed) => {
+    setMessage((prev) => {
+      const newEmbeds = prev.embeds.map((e, i) => {
+        if (i === index) {
+          // Check if author object should be removed
+          if (updatedEmbed.author) {
+            const { name, icon_url, url } = updatedEmbed.author;
+            if (!name && !icon_url && !url) {
+              // If all author fields are empty, set author to undefined
+              return { ...updatedEmbed, author: undefined };
+            }
+          }
+          return updatedEmbed;
+        }
+        return e;
+      });
+      return { ...prev, embeds: newEmbeds };
+    });
   };
 
   const removeEmbed = (index: number) => {
@@ -691,7 +704,7 @@ export default function SendMessagePage() {
                                         onClick={() => {
                                           updateEmbed(index, {
                                             ...embed,
-                                            author: { name: '', icon_url: '', url: '' },
+                                            author: undefined,
                                           });
                                         }}
                                         className="bg-red-700 border-red-600 text-white hover:bg-red-600"
