@@ -3,144 +3,16 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { PredefinedAvatar } from '@/lib/api/types/avatar';
 import { type DiscordEmbed } from '@/lib/api/types/discord';
 import { discordColorToHex } from '@/lib/discord-utils';
-import type { ReactNode } from 'react';
+import { useEffect, useState } from 'react';
 import Image from 'next/image';
+import { useQueries } from '@tanstack/react-query';
+import { userQueries } from '@/lib/api/queries/user';
+import { parseDiscordMarkdown } from '@/lib/discord-markdown-parser';
 
 interface DiscordMessagePreviewProps {
   content: string;
   embeds?: DiscordEmbed[];
-  avatar?: PredefinedAvatar
-}
-
-function parseDiscordMarkdown(text: string): ReactNode[] {
-  if (!text) return [];
-
-  const parts: ReactNode[] = [];
-
-  // Discord markdown patterns in order of precedence
-  const patterns = [
-    {
-      regex: /<@(\d+)>/g, // Matches <@ followed by digits followed by >
-      render: () => (
-        <span className="text-[#00aff4] bg-[#5865f2]/20 rounded px-1 py-0.5 font-medium">
-          @user
-        </span>
-      ),
-    }, // User mention
-    {
-      regex: /<#(\d+)>/g, // Matches <# followed by digits followed by >
-      render: () => (
-        <span className="text-[#00aff4] bg-[#5865f2]/20 rounded px-1 py-0.5 font-medium">
-          #channel
-        </span>
-      ),
-    }, // Channel mention
-    {
-      regex: /<@&(\d+)>/g, // Matches <@& followed by digits followed by >
-      render: () => (
-        <span className="text-[#00aff4] bg-[#5865f2]/20 rounded px-1 py-0.5 font-medium">
-          @role
-        </span>
-      ),
-    }, // Role mention
-    {
-      regex: /@everyone/g, // Matches @everyone
-      render: () => (
-        <span className="text-[#00aff4] bg-[#5865f2]/20 rounded px-1 py-0.5 font-medium">
-          @everyone
-        </span>
-      ),
-    }, // @everyone mention
-    {
-      regex: /@here/g, // Matches @here
-      render: () => (
-        <span className="text-[#00aff4] bg-[#5865f2]/20 rounded px-1 py-0.5 font-medium">
-          @here
-        </span>
-      ),
-    }, // @here mention
-    {
-      regex: /\*\*\*(.*?)\*\*\*/g,
-      render: (match: string) => (
-        <strong>
-          <em>{match}</em>
-        </strong>
-      ),
-    }, // ***bold italic***
-    {
-      regex: /\*\*(.*?)\*\*/g,
-      render: (match: string) => <strong>{match}</strong>,
-    }, // **bold**
-    { regex: /\*(.*?)\*/g, render: (match: string) => <em>{match}</em> }, // *italic*
-    { regex: /__(.*?)__/g, render: (match: string) => <u>{match}</u> }, // __underline__
-    { regex: /~~(.*?)~~/g, render: (match: string) => <s>{match}</s> }, // ~~strikethrough~~
-    {
-      regex: /`(.*?)`/g,
-      render: (match: string) => (
-        <code className="bg-[#202225] px-1 py-0.5 rounded text-[#f8f8ff] text-xs">
-          {match}
-        </code>
-      ),
-    }, // `code`
-    {
-      regex: /\|\|(.*?)\|\|/g,
-      render: (match: string) => (
-        <span
-          className="bg-[#202225] text-[#202225] hover:text-[#dcddde] cursor-pointer rounded px-1"
-          title="Spoiler - click to reveal"
-        >
-          {match}
-        </span>
-      ),
-    }, // ||spoiler||
-  ];
-
-  const workingText = text;
-  const replacements: { start: number; end: number; element: ReactNode }[] = [];
-
-  // Find all matches
-  patterns.forEach((pattern) => {
-    let match;
-    const regex = new RegExp(pattern.regex.source, pattern.regex.flags);
-    while ((match = regex.exec(workingText)) !== null) {
-      replacements.push({
-        start: match.index,
-        end: match.index + match[0].length,
-        element: pattern.render(match[1]),
-      });
-    }
-  });
-
-  // Sort by position and remove overlapping matches
-  replacements.sort((a, b) => a.start - b.start);
-  const validReplacements = [];
-  let lastEnd = 0;
-
-  for (const replacement of replacements) {
-    if (replacement.start >= lastEnd) {
-      validReplacements.push(replacement);
-      lastEnd = replacement.end;
-    }
-  }
-
-  // Build the result
-  let textIndex = 0;
-  validReplacements.forEach((replacement, index) => {
-    // Add text before the replacement
-    if (replacement.start > textIndex) {
-      parts.push(workingText.slice(textIndex, replacement.start));
-    }
-    // Add the replacement element
-    parts.push(<span key={index}>{replacement.element}</span>);
-    textIndex = replacement.end;
-  });
-
-  // Add remaining text
-  if (textIndex < workingText.length) {
-    parts.push(workingText.slice(textIndex));
-  }
-
-  return parts.length > 0 ? parts : [text];
+  avatar?: PredefinedAvatar;
 }
 
 export function DiscordMessagePreview({
@@ -153,8 +25,66 @@ export function DiscordMessagePreview({
     updatedAt: new Date().toISOString(),
     id: 'predefined-avatar-id',
     user_id: 'predefined-user-id',
-  }
+  },
 }: DiscordMessagePreviewProps) {
+  const [userIds, setUserIds] = useState<string[]>([]);
+  const [userMap, setUserMap] = useState<Map<string, string>>(new Map());
+
+  useEffect(() => {
+    const extractUserIds = (text: string) => {
+      const ids: string[] = [];
+      const userMentionRegex = /<@(\d+)>/g;
+      let match;
+      while ((match = userMentionRegex.exec(text)) !== null) {
+        ids.push(match[1]);
+      }
+      return ids;
+    };
+
+    let allUserIds: string[] = [];
+    if (content) {
+      allUserIds = allUserIds.concat(extractUserIds(content));
+    }
+
+    if (embeds) {
+      embeds.forEach((embed) => {
+        if (embed.description) {
+          allUserIds = allUserIds.concat(extractUserIds(embed.description));
+        }
+        if (embed.fields) {
+          embed.fields.forEach((field) => {
+            allUserIds = allUserIds.concat(extractUserIds(field.name));
+            allUserIds = allUserIds.concat(extractUserIds(field.value));
+          });
+        }
+        if (embed.footer?.text) {
+          allUserIds = allUserIds.concat(extractUserIds(embed.footer.text));
+        }
+      });
+    }
+
+    setUserIds(Array.from(new Set(allUserIds))); // Get unique IDs
+  }, [content, embeds]);
+
+  const userQueriesResults = useQueries({
+    queries: userIds.map((id) => ({
+      queryKey: ['user', id],
+      queryFn: () => userQueries.getUserById(id),
+      staleTime: Infinity,
+      enabled: !!id, // Only fetch if ID exists
+    })),
+  });
+
+  useEffect(() => {
+    const newUserMap = new Map<string, string>();
+    userQueriesResults.forEach((result, index) => {
+      if (result.isSuccess && result.data) {
+        newUserMap.set(userIds[index], result.data.username);
+      }
+    });
+    setUserMap(newUserMap);
+  }, [userQueriesResults, userIds]);
+
   // Create a deep copy of embeds to ensure immutability within the component
   const clonedEmbeds = embeds ? JSON.parse(JSON.stringify(embeds)) : [];
   return (
@@ -183,7 +113,7 @@ export function DiscordMessagePreview({
 
           {content && (
             <div className="text-[#dbdee1] mb-2 whitespace-pre-wrap break-words leading-[1.375]">
-              {parseDiscordMarkdown(content)}
+              {parseDiscordMarkdown(content, userMap)}
             </div>
           )}
 
@@ -239,7 +169,7 @@ export function DiscordMessagePreview({
 
                     {embed.description && (
                       <div className="text-[#dbdee1] mb-3 whitespace-pre-wrap text-sm leading-[1.375]">
-                        {parseDiscordMarkdown(embed.description)}
+                        {parseDiscordMarkdown(embed.description, userMap)}
                       </div>
                     )}
 
@@ -260,10 +190,10 @@ export function DiscordMessagePreview({
                             className={field.inline ? '' : 'col-span-full'}
                           >
                             <div className="text-white font-semibold text-sm mb-1">
-                              {parseDiscordMarkdown(field.name)}
+                              {parseDiscordMarkdown(field.name, userMap)}
                             </div>
                             <div className="text-[#dbdee1] text-sm whitespace-pre-wrap">
-                              {parseDiscordMarkdown(field.value)}
+                              {parseDiscordMarkdown(field.value, userMap)}
                             </div>
                           </div>
                         ))}
@@ -305,7 +235,7 @@ export function DiscordMessagePreview({
                           />
                         )}
                         <span className="text-xs text-[#949ba4] font-medium">
-                          {parseDiscordMarkdown(embed.footer.text)}
+                          {parseDiscordMarkdown(embed.footer.text, userMap)}
                           {embed.timestamp && (
                             <>
                               {' '}
