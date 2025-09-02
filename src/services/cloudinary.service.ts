@@ -2,6 +2,7 @@ import { v2 as cloudinary } from 'cloudinary';
 import dotenv from 'dotenv';
 import * as userUsageService from './user-usage.service'; // Import userUsageService
 import { UsageLimitExceededError } from '../utils/errors'; // Import UsageLimitExceededError
+import { logger } from '../utils'; // Import logger
 
 dotenv.config();
 
@@ -40,8 +41,8 @@ export const uploadImage = async (
 
     return result;
   } catch (error) {
-    console.error('Cloudinary upload error:', error);
-    throw new Error('Failed to upload image to Cloudinary');
+    logger.error('Cloudinary upload error:', error); // Changed to logger.error
+    throw error; // Re-throw the original error
   }
 };
 
@@ -56,7 +57,7 @@ export const deleteImage = async (
     await userUsageService.updateMediaStorageUsed(userId, -mediaSize); // Subtract size
     return result;
   } catch (error) {
-    console.error('Cloudinary delete error:', error);
-    throw new Error('Failed to delete image from Cloudinary');
+    logger.error('Cloudinary delete error:', error); // Changed to logger.error
+    throw error; // Re-throw the original error
   }
 };
