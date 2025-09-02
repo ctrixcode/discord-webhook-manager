@@ -15,7 +15,9 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { createAvatar, updateAvatar, uploadAvatar } from '@/lib/api/queries/avatar';
 import type { PredefinedAvatar } from '@/lib/api/types/avatar';
 import { Image as ImageIcon } from 'lucide-react';
-
+import { useToast } from '@/hooks/use-toast';
+import { AxiosError } from 'axios';
+import Link from 'next/link';
 
 interface CreateAvatarDialogProps {
   open: boolean;
@@ -35,6 +37,7 @@ export function CreateAvatarDialog({
   const [avatar_url, setAvatar_url] = useState('');
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const { toast } = useToast();
 
   useEffect(() => {
     if (editingAvatar) {
@@ -50,15 +53,53 @@ export function CreateAvatarDialog({
 
   const { mutate: saveAvatar, isPending } = useMutation({
     mutationFn: async (data: { id?: string; username: string; avatar_url?: string; file?: File }) => {
-      if (data.file) {
-        const formData = new FormData();
-        formData.append('username', data.username);
-        formData.append('avatar', data.file);
-        return uploadAvatar(formData);
-      } else if (data.id) {
-        return updateAvatar(data.id, { username: data.username, avatar_url: data.avatar_url });
-      } else {
-        return createAvatar({ username: data.username, avatar_url: data.avatar_url || '' });
+      try {
+        if (data.file) {
+          const formData = new FormData();
+          formData.append('username', data.username);
+          formData.append('avatar', data.file);
+          return await uploadAvatar(formData);
+        } else if (data.id) {
+          return await updateAvatar(data.id, { username: data.username, avatar_url: data.avatar_url });
+        } else {
+          return await createAvatar({ username: data.username, avatar_url: data.avatar_url || '' });
+        }
+      } catch (error) {
+        if (error instanceof AxiosError && error.response?.status === 403) {
+          handleClear();
+          handleClose();
+          const errorData = error.response.data as { success: boolean; message: string; code: 'webhook_limit' | 'media_limit' };
+          if (errorData.code === 'media_limit') {
+            const toastResponse =  toast({
+              title: 'Limit Reached',
+              description: (
+                <div>
+                  <p>{errorData.message}</p>
+                  <Link href="/dashboard/settings" onClick={() => toastResponse.dismiss()} className="text-blue-400 hover:underline">
+                    Check your usage in settings.
+                  </Link>
+                </div>
+              ),
+              variant: 'destructive',
+            });
+          } else {
+            toast({
+              title: 'Error',
+              description: errorData.message || 'An unexpected error occurred',
+              variant: 'destructive',
+            });
+          }
+        } else {
+          toast({
+            title: 'Error',
+            description: 'An unexpected error occurred',
+            variant: 'destructive',
+          });
+        }
+        throw error; // Re-throw to ensure mutation is marked as failed
+      }
+      finally{
+        handleClear();
       }
     },
     onSuccess: () => {
@@ -77,6 +118,13 @@ export function CreateAvatarDialog({
     } else {
       saveAvatar({ username: username.trim(), avatar_url: avatar_url.trim() });
     }
+  };
+
+  const handleClear = () => {
+    setUsername('');
+    setAvatar_url('');
+    setSelectedFile(null);
+    setSelectedFile(null);
   };
 
   const handleClose = () => {
