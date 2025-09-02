@@ -41,13 +41,13 @@ export default function SettingsPage() {
         </p>
       </div>
 
-      <SettingsCard
+      {/* <SettingsCard
         title="Appearance"
         description="Customize how the application looks and feels"
         icon={<Palette className="h-5 w-5" />}
-      >
-        <ThemeSelector />
-      </SettingsCard>
+      > */}
+        {/* <ThemeSelector /> */}
+      {/* </SettingsCard> */}
 
       <SettingsCard
         title="Notifications"
