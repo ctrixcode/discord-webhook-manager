@@ -55,6 +55,11 @@
     oklch(0.98 0.005 264) 0%,
     oklch(0.96 0.01 264) 100%
   );
+  --gradient-destructive: linear-gradient(
+    135deg,
+    oklch(0.55 0.2 15) 0%,
+    oklch(0.45 0.2 15) 100%
+  );
 }
 
 .dark {
