@@ -44,6 +44,7 @@ export default function SendMessagePage() {
     tts: false,
     threadName: '',
     embeds: [] as DiscordEmbed[],
+   message_replace_url: "" ,
   });
   const [isSending, setIsSending] = useState(false);
   
@@ -62,6 +63,7 @@ export default function SendMessagePage() {
       tts: false,
       threadName: '',
       embeds: [],
+      message_replace_url: "",
     });
     setSelectedAvatar(undefined);
     setSelectedTemplateId('');
@@ -78,6 +80,7 @@ export default function SendMessagePage() {
         tts: false,
         threadName: '',
         embeds: selectedTemplate.embeds || [],
+        message_replace_url: "",
       });
       if (selectedTemplate.avatar_ref) {
         const avatar = avatars.find(
@@ -259,6 +262,7 @@ export default function SendMessagePage() {
           avatarRefID: message.avatarRefID || undefined,
           embeds: message.embeds.length > 0 ? message.embeds : undefined,
           tts: message.tts,
+          message_replace_url: message.message_replace_url || undefined,
         },
       };
 
@@ -493,6 +497,29 @@ export default function SendMessagePage() {
                         />
                         <p className="text-xs text-slate-400 mt-1">
                           If specified, the message will be sent to a new thread
+                        </p>
+                      </div>
+
+                      <div>
+                        <Label htmlFor="message-url" className="text-slate-200">
+                          Discord Message URL (Optional)
+                        </Label>
+                        <input
+                          id="message-url"
+                          type="url"
+                          placeholder="e.g., https://discord.com/channels/guild_id/channel_id/message_id"
+                          value={message.message_replace_url || ''}
+                          onChange={(e) => {
+                            const url = e.target.value;
+                            setMessage((prev) => ({
+                              ...prev,
+                              message_replace_url: url,
+                            }));
+                          }}
+                          className="mt-1 w-full px-3 py-2 bg-slate-600/50 border border-slate-500 rounded-md text-white placeholder:text-slate-400 focus:border-purple-500 focus:outline-none"
+                        />
+                        <p className="text-xs text-slate-400 mt-1">
+                          If provided, the message will replace the existing Discord message at this URL.
                         </p>
                       </div>
                     </div>

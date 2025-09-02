@@ -32,5 +32,6 @@ export interface SendMessageData {
     avatarRefID?: string;
     tts: boolean;
     embeds?: DiscordEmbed[];
+    message_replace_url?: string;
   };
 }
