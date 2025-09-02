@@ -55,4 +55,4 @@ const UserUsageSchema: Schema = new Schema({
   },
 });
 
-export default mongoose.model<IUserUsage>('UserUsage', UserUsageSchema);
+export default mongoose.model<IUserUsage>('user_usage', UserUsageSchema);
