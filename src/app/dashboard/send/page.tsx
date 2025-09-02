@@ -32,6 +32,8 @@ import {
   DISCORD_MAX_EMBEDS,
   DISCORD_MAX_MESSAGE_LENGTH,
 } from '@/constants/discord';
+import { AxiosError } from 'axios';
+import Link from 'next/link';
 
 export default function SendMessagePage() {
   const { toast } = useToast();
@@ -304,11 +306,46 @@ export default function SendMessagePage() {
         });
       }
     } catch (error) {
-      toast({
-        variant: 'destructive',
-        title: 'Error',
-        description: String(error),
-      });
+      if (error instanceof AxiosError && error.response?.status === 403) {
+        const errorData = error.response.data as {
+          success: boolean;
+          message: string;
+          code: 'webhook_limit' | 'media_limit';
+        };
+        if (
+          errorData.code === 'webhook_limit' ||
+          errorData.code === 'media_limit'
+        ) {
+          toast({
+            variant: 'destructive',
+            title: 'Limit Reached',
+            description: (
+              <div>
+                <p>{errorData.message}</p>
+                <Link
+                  href="/dashboard/settings"
+                  className="text-blue-400 hover:underline"
+                >
+                  Check your usage in settings.
+                </Link>
+              </div>
+            ),
+          });
+        } else {
+          toast({
+            variant: 'destructive',
+            title: 'Error',
+            description:
+              error.response?.data?.message || 'An unexpected error occurred',
+          });
+        }
+      } else {
+        toast({
+          variant: 'destructive',
+          title: 'Error',
+          description: 'An unexpected error occurred',
+        });
+      }
     } finally {
       setIsSending(false);
     }
