@@ -249,8 +249,7 @@ export default function SendMessagePage() {
       return;
     }
 
-    setIsSending(true);
-    
+    setIsSending(true);    
 
     try {
       const payload: SendMessageData = {
@@ -259,6 +258,7 @@ export default function SendMessagePage() {
           message: message.content || '',
           avatarRefID: message.avatarRefID || undefined,
           embeds: message.embeds.length > 0 ? message.embeds : undefined,
+          tts: message.tts,
         },
       };
 

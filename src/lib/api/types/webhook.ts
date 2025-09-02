@@ -1,4 +1,4 @@
-import { DiscordEmbed } from "./discord";
+import { DiscordEmbed } from './discord';
 
 export interface Webhook {
   id: string;
@@ -27,7 +27,10 @@ export interface UpdateWebhookRequest {
 
 export interface SendMessageData {
   webhookIds: string[];
- messageData: { message: string;
-  avatarRefID?: string;
-  embeds?: DiscordEmbed[];}
+  messageData: {
+    message: string;
+    avatarRefID?: string;
+    tts: boolean;
+    embeds?: DiscordEmbed[];
+  };
 }
