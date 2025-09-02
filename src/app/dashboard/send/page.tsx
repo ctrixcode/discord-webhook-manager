@@ -27,7 +27,11 @@ import { DiscordMessagePreview } from '@/components/discord-message-preview';
 import type { DiscordEmbed } from '@/lib/api/types/discord';
 import { useToast } from '@/hooks/use-toast';
 import { SendMessageData } from '@/lib/api/types/webhook';
-import { DISCORD_BLURPLE_COLOR, DISCORD_MAX_EMBEDS, DISCORD_MAX_MESSAGE_LENGTH } from '@/constants/discord';
+import {
+  DISCORD_BLURPLE_COLOR,
+  DISCORD_MAX_EMBEDS,
+  DISCORD_MAX_MESSAGE_LENGTH,
+} from '@/constants/discord';
 
 export default function SendMessagePage() {
   const { toast } = useToast();
@@ -37,17 +41,19 @@ export default function SendMessagePage() {
   const initialAvatarId = searchParams.get('avatarId');
   const initialWebhookId = searchParams.get('webhookId');
 
-  const [selectedWebhooks, setSelectedWebhooks] = useState<string[]>(initialWebhookId ? [initialWebhookId] : []);
+  const [selectedWebhooks, setSelectedWebhooks] = useState<string[]>(
+    initialWebhookId ? [initialWebhookId] : [],
+  );
   const [message, setMessage] = useState({
     content: '',
     avatarRefID: initialAvatarId || '',
     tts: false,
     threadName: '',
     embeds: [] as DiscordEmbed[],
-   message_replace_url: "" ,
+    message_replace_url: '',
   });
   const [isSending, setIsSending] = useState(false);
-  
+
   const [selectedTemplateId, setSelectedTemplateId] = useState<
     string | undefined
   >(undefined);
@@ -63,7 +69,7 @@ export default function SendMessagePage() {
       tts: false,
       threadName: '',
       embeds: [],
-      message_replace_url: "",
+      message_replace_url: '',
     });
     setSelectedAvatar(undefined);
     setSelectedTemplateId('');
@@ -80,7 +86,7 @@ export default function SendMessagePage() {
         tts: false,
         threadName: '',
         embeds: selectedTemplate.embeds || [],
-        message_replace_url: "",
+        message_replace_url: '',
       });
       if (selectedTemplate.avatar_ref) {
         const avatar = avatars.find(
@@ -96,7 +102,10 @@ export default function SendMessagePage() {
 
   const { data: webhooks = [], isLoading: isLoadingWebhooks } = useQuery({
     queryKey: ['webhooks', { isActive: true }],
-    queryFn: ({ queryKey }) => api.webhook.getAllWebhooks({ queryKey: queryKey as [string, { isActive?: boolean }] }),
+    queryFn: ({ queryKey }) =>
+      api.webhook.getAllWebhooks({
+        queryKey: queryKey as [string, { isActive?: boolean }],
+      }),
   });
   const { data: avatars = [] } = useQuery({
     queryKey: ['avatars'],
@@ -265,7 +274,7 @@ export default function SendMessagePage() {
       return;
     }
 
-    setIsSending(true);    
+    setIsSending(true);
 
     try {
       const payload: SendMessageData = {
@@ -287,14 +296,12 @@ export default function SendMessagePage() {
           title: 'Success',
           description: `Message sent successfully to ${selectedWebhooks.length} webhook${selectedWebhooks.length > 1 ? 's' : ''}`,
         });
-        
       } else {
         toast({
           variant: 'destructive',
           title: 'Error',
           description: response.message || 'Failed to send message',
         });
-        
       }
     } catch (error) {
       toast({
@@ -302,7 +309,6 @@ export default function SendMessagePage() {
         title: 'Error',
         description: String(error),
       });
-      
     } finally {
       setIsSending(false);
     }
@@ -434,13 +440,14 @@ export default function SendMessagePage() {
                         className="mt-1 bg-slate-700/50 border-slate-600 text-white placeholder:text-slate-400 focus:border-purple-500 min-h-[120px]"
                       />
                       <p className="text-xs text-slate-400 mt-1">
-                        {message.content.length}/{DISCORD_MAX_MESSAGE_LENGTH} characters
+                        {message.content.length}/{DISCORD_MAX_MESSAGE_LENGTH}{' '}
+                        characters
                       </p>
                     </div>
                   </TabsContent>
 
                   <TabsContent value="settings" className="space-y-4 mt-4">
-                     <div className="space-y-4">
+                    <div className="space-y-4">
                       <div>
                         <Label className="text-slate-200">
                           Message Appearance
@@ -471,7 +478,7 @@ export default function SendMessagePage() {
                         </AvatarSelector>
                       </div>
                     </div>
-                    
+
                     <div className="space-y-4">
                       <div className="flex items-center justify-between p-4 rounded-lg bg-slate-700/30 border border-slate-600/50">
                         <div>
@@ -532,7 +539,8 @@ export default function SendMessagePage() {
                           className="mt-1 w-full px-3 py-2 bg-slate-600/50 border border-slate-500 rounded-md text-white placeholder:text-slate-400 focus:border-purple-500 focus:outline-none"
                         />
                         <p className="text-xs text-slate-400 mt-1">
-                          If provided, the message will replace the existing Discord message at this URL.
+                          If provided, the message will replace the existing
+                          Discord message at this URL.
                         </p>
                       </div>
                     </div>
@@ -665,15 +673,28 @@ export default function SendMessagePage() {
                                 </div>
 
                                 <div className="space-y-2">
-                                  <Label className="text-slate-200 font-medium">Author</Label>
+                                  <Label className="text-slate-200 font-medium">
+                                    Author
+                                  </Label>
                                   <div className="flex items-center justify-between gap-2">
                                     {embed.author?.name ? (
                                       <div className="flex items-center gap-2 p-2 rounded-md bg-slate-700/50 border border-slate-600">
                                         <Avatar className="w-8 h-8">
-                                          <AvatarImage src={embed.author.icon_url || '/placeholder.svg'} />
-                                          <AvatarFallback>{embed.author.name.slice(0, 2).toUpperCase()}</AvatarFallback>
+                                          <AvatarImage
+                                            src={
+                                              embed.author.icon_url ||
+                                              '/placeholder.svg'
+                                            }
+                                          />
+                                          <AvatarFallback>
+                                            {embed.author.name
+                                              .slice(0, 2)
+                                              .toUpperCase()}
+                                          </AvatarFallback>
                                         </Avatar>
-                                        <span className="text-white font-medium">{embed.author.name}</span>
+                                        <span className="text-white font-medium">
+                                          {embed.author.name}
+                                        </span>
                                       </div>
                                     ) : (
                                       <AvatarSelector
@@ -716,7 +737,9 @@ export default function SendMessagePage() {
                                   {/* Manual Author Input Fields (conditionally rendered) */}
                                   {!embed.author?.name && (
                                     <div className="space-y-2">
-                                      <Label className="text-slate-300 text-sm">Name</Label>
+                                      <Label className="text-slate-300 text-sm">
+                                        Name
+                                      </Label>
                                       <input
                                         type="text"
                                         placeholder="Author name"
@@ -732,7 +755,9 @@ export default function SendMessagePage() {
                                         }
                                         className="mt-1 w-full px-3 py-2 bg-slate-600/50 border border-slate-500 rounded-md text-white placeholder:text-slate-400 focus:border-purple-500 focus:outline-none"
                                       />
-                                      <Label className="text-slate-300 text-sm">Icon URL</Label>
+                                      <Label className="text-slate-300 text-sm">
+                                        Icon URL
+                                      </Label>
                                       <input
                                         type="url"
                                         placeholder="Author icon URL"
@@ -748,7 +773,9 @@ export default function SendMessagePage() {
                                         }
                                         className="mt-1 w-full px-3 py-2 bg-slate-600/50 border border-slate-500 rounded-md text-white placeholder:text-slate-400 focus:border-purple-500 focus:outline-none"
                                       />
-                                      <Label className="text-slate-300 text-sm">URL</Label>
+                                      <Label className="text-slate-300 text-sm">
+                                        URL
+                                      </Label>
                                       <input
                                         type="url"
                                         placeholder="Author URL"
@@ -769,7 +796,9 @@ export default function SendMessagePage() {
                                 </div>
 
                                 <div className="space-y-2">
-                                  <Label className="text-slate-200 font-medium">Fields</Label>
+                                  <Label className="text-slate-200 font-medium">
+                                    Fields
+                                  </Label>
                                   <Button
                                     onClick={() => addField(index)}
                                     size="sm"
@@ -785,9 +814,13 @@ export default function SendMessagePage() {
                                           className="p-3 rounded-md bg-slate-600/50 border border-slate-500"
                                         >
                                           <div className="flex items-center justify-between mb-2">
-                                            <Label className="text-slate-200 text-sm">Field {fieldIndex + 1}</Label>
+                                            <Label className="text-slate-200 text-sm">
+                                              Field {fieldIndex + 1}
+                                            </Label>
                                             <Button
-                                              onClick={() => removeField(index, fieldIndex)}
+                                              onClick={() =>
+                                                removeField(index, fieldIndex)
+                                              }
                                               variant="outline"
                                               size="sm"
                                               className="border-red-600 text-red-400 hover:bg-red-600 hover:text-white bg-transparent"
@@ -796,7 +829,9 @@ export default function SendMessagePage() {
                                             </Button>
                                           </div>
                                           <div>
-                                            <Label className="text-slate-300 text-sm">Name</Label>
+                                            <Label className="text-slate-300 text-sm">
+                                              Name
+                                            </Label>
                                             <input
                                               type="text"
                                               placeholder="Field name"
@@ -811,7 +846,9 @@ export default function SendMessagePage() {
                                             />
                                           </div>
                                           <div className="mt-2">
-                                            <Label className="text-slate-300 text-sm">Value</Label>
+                                            <Label className="text-slate-300 text-sm">
+                                              Value
+                                            </Label>
                                             <Textarea
                                               placeholder="Field value"
                                               value={field.value}
@@ -836,7 +873,9 @@ export default function SendMessagePage() {
                                               }
                                               className="border-slate-500"
                                             />
-                                            <Label className="text-slate-300 text-sm">Inline</Label>
+                                            <Label className="text-slate-300 text-sm">
+                                              Inline
+                                            </Label>
                                           </div>
                                         </div>
                                       ))}
@@ -846,7 +885,9 @@ export default function SendMessagePage() {
 
                                 <div className="flex gap-2">
                                   <div className="flex-1 space-y-2">
-                                    <Label className="text-slate-200 font-medium">Image</Label>
+                                    <Label className="text-slate-200 font-medium">
+                                      Image
+                                    </Label>
                                     <input
                                       type="url"
                                       placeholder="Image URL"
@@ -862,7 +903,9 @@ export default function SendMessagePage() {
                                   </div>
 
                                   <div className="flex-1 space-y-2">
-                                    <Label className="text-slate-200 font-medium">Thumbnail</Label>
+                                    <Label className="text-slate-200 font-medium">
+                                      Thumbnail
+                                    </Label>
                                     <input
                                       type="url"
                                       placeholder="Thumbnail URL"
@@ -879,10 +922,14 @@ export default function SendMessagePage() {
                                 </div>
 
                                 <div className="space-y-2">
-                                  <Label className="text-slate-200 font-medium">Footer</Label>
+                                  <Label className="text-slate-200 font-medium">
+                                    Footer
+                                  </Label>
                                   <div className="flex gap-2">
                                     <div className="flex-1">
-                                      <Label className="text-slate-300 text-sm">Text</Label>
+                                      <Label className="text-slate-300 text-sm">
+                                        Text
+                                      </Label>
                                       <input
                                         type="text"
                                         placeholder="Footer text"
@@ -900,7 +947,9 @@ export default function SendMessagePage() {
                                       />
                                     </div>
                                     <div className="flex-1">
-                                      <Label className="text-slate-300 text-sm">Icon URL</Label>
+                                      <Label className="text-slate-300 text-sm">
+                                        Icon URL
+                                      </Label>
                                       <input
                                         type="url"
                                         placeholder="Footer icon URL"
@@ -921,14 +970,26 @@ export default function SendMessagePage() {
                                 </div>
 
                                 <div className="space-y-2">
-                                  <Label className="text-slate-200 font-medium">Timestamp</Label>
+                                  <Label className="text-slate-200 font-medium">
+                                    Timestamp
+                                  </Label>
                                   <input
                                     type="datetime-local"
-                                    value={embed.timestamp ? new Date(embed.timestamp).toISOString().slice(0, 16) : ''}
+                                    value={
+                                      embed.timestamp
+                                        ? new Date(embed.timestamp)
+                                            .toISOString()
+                                            .slice(0, 16)
+                                        : ''
+                                    }
                                     onChange={(e) =>
                                       updateEmbed(index, {
                                         ...embed,
-                                        timestamp: e.target.value ? new Date(e.target.value).toISOString() : undefined,
+                                        timestamp: e.target.value
+                                          ? new Date(
+                                              e.target.value,
+                                            ).toISOString()
+                                          : undefined,
                                       })
                                     }
                                     className="mt-1 w-full px-3 py-2 bg-slate-600/50 border border-slate-500 rounded-md text-white placeholder:text-slate-400 focus:border-purple-500 focus:outline-none"
@@ -997,7 +1058,7 @@ export default function SendMessagePage() {
                                 </Badge>
                               </div>
                               <p className="text-sm text-slate-400 truncate">
-                               {webhook.description}
+                                {webhook.description}
                               </p>
                             </div>
                           </div>
