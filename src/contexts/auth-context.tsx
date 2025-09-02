@@ -10,6 +10,7 @@ import {
 import { usePathname, useRouter } from 'next/navigation';
 import { api } from '@/lib/api';
 import { type User } from '@/lib/api/types/user';
+import { AxiosError } from 'axios';
 
 interface AuthContextType {
   user: User | null;
@@ -36,8 +37,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         setUser(currentUser);
       } catch (error) {
         console.error('Authentication check failed:', error);
-        setUser(null);
-        localStorage.removeItem('accessToken');
+        if (error instanceof AxiosError && error.response?.status === 401) {
+          setUser(null);
+          localStorage.removeItem('accessToken');
+        }
       } finally {
         setIsLoading(false);
       }
