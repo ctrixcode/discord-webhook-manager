@@ -316,7 +316,7 @@ export default function SendMessagePage() {
           errorData.code === 'webhook_limit' ||
           errorData.code === 'media_limit'
         ) {
-          toast({
+          const toastResponse = toast({
             variant: 'destructive',
             title: 'Limit Reached',
             description: (
@@ -325,12 +325,14 @@ export default function SendMessagePage() {
                 <Link
                   href="/dashboard/settings"
                   className="text-blue-400 hover:underline"
+                  onClick={() => toastResponse.dismiss()}
                 >
                   Check your usage in settings.
                 </Link>
               </div>
             ),
           });
+          
         } else {
           toast({
             variant: 'destructive',
