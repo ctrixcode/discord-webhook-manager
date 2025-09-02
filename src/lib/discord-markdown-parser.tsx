@@ -48,6 +48,14 @@ export function parseDiscordMarkdown(text: string, userMap: Map<string, string>)
       ),
     }, // @here mention
     {
+      regex: /\[(.*?)\]\((.*?)\)/g, // Matches [link text](URL)
+      render: (linkText: string, url: string) => (
+        <a href={url} target="_blank" rel="noopener noreferrer" className="text-[#00aff4] hover:underline">
+          {linkText}
+        </a>
+      ),
+    }, // Link
+    {
       regex: /\*\*\*(.*?)\*\*\*/g,
       render: (match: string) => (
         <strong>
@@ -94,7 +102,7 @@ export function parseDiscordMarkdown(text: string, userMap: Map<string, string>)
       replacements.push({
         start: match.index,
         end: match.index + match[0].length,
-        element: pattern.render(match[1]),
+        element: pattern.render(...match.slice(1)),
       });
     }
   });
