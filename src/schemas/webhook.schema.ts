@@ -66,6 +66,7 @@ export const webhookSendMessageSchema = {
           message: { type: 'string' },
           avatarRefID: { type: 'string' },
           embeds: { type: 'array', items: { type: 'object' } },
+          message_replace_url: { type: 'string' }, // Optional: ID of the message to edit
         },
       },
     },

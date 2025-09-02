@@ -28,7 +28,9 @@ export interface UpdateWebhookData {
 export interface SendMessageData {
   message: string;
   avatarRefID?: string;
+  tts: boolean;
   embeds?: IEmbedSchemaDocument[];
+  message_replace_url?: string; // Optional: ID of the message to edit
 }
 
 interface IWebhookQuery {
@@ -241,6 +243,7 @@ export const sendMessage = async (
     const webhookClient = createWebhook(webhook.url);
     const msg = new Message();
     msg.setContent(messageData.message);
+    msg.setTTS(messageData.tts);
 
     let avatar: IAvatar | null;
 
@@ -283,6 +286,10 @@ export const sendMessage = async (
         }
         msg.addEmbed(embed);
       });
+    }
+
+    if (messageData.message_replace_url) {
+      msg.setEditTarget(messageData.message_replace_url);
     }
     webhookClient.addMessage(msg);
     webhookPromises.push({
