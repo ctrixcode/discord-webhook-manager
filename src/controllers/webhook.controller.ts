@@ -188,7 +188,7 @@ export const sendMessageHandler = async (
       reply.status(error.statusCode).send({
         success: false,
         message: error.message,
-        code: error.type,
+        code: error.type, //"webhook_limit" | "media_limit"
       });
     } else {
       logger.error('Error sending message:', error);
