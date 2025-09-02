@@ -1,0 +1,4 @@
+export const DISCORD_BLURPLE_COLOR = 5814783;
+export const DISCORD_MAX_EMBEDS = 10;
+export const DISCORD_MAX_MESSAGE_LENGTH = 2000;
+export const DISCORD_MAX_EMBED_FIELDS = 25;

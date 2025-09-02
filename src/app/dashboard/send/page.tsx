@@ -27,8 +27,7 @@ import { DiscordMessagePreview } from '@/components/discord-message-preview';
 import type { DiscordEmbed } from '@/lib/api/types/discord';
 import { useToast } from '@/hooks/use-toast';
 import { SendMessageData } from '@/lib/api/types/webhook';
-
-
+import { DISCORD_BLURPLE_COLOR, DISCORD_MAX_EMBEDS, DISCORD_MAX_MESSAGE_LENGTH } from '@/constants/discord';
 
 export default function SendMessagePage() {
   const { toast } = useToast();
@@ -167,7 +166,7 @@ export default function SendMessagePage() {
     const newEmbed: DiscordEmbed = {
       title: '',
       description: '',
-      color: 5814783, // Discord's default blurple color
+      color: DISCORD_BLURPLE_COLOR, // Discord's default blurple color
       fields: [],
     };
     setMessage((prev) => ({
@@ -418,7 +417,9 @@ export default function SendMessagePage() {
                         className="mt-1 bg-slate-700/50 border-slate-600 text-white placeholder:text-slate-400 focus:border-purple-500 min-h-[120px]"
                       />
                       <p className="text-xs text-slate-400 mt-1">
-                        {message.content.length}/2000 characters
+                        `${
+                          message.content.length
+                        }/${DISCORD_MAX_MESSAGE_LENGTH} characters`
                       </p>
                     </div>
                   </TabsContent>
@@ -512,7 +513,7 @@ export default function SendMessagePage() {
                         </div>
                         <Button
                           onClick={addEmbed}
-                          disabled={message.embeds.length >= 10}
+                          disabled={message.embeds.length >= DISCORD_MAX_EMBEDS}
                           size="sm"
                           className="bg-purple-600 hover:bg-purple-700 text-white"
                         >
@@ -611,7 +612,7 @@ export default function SendMessagePage() {
                                   </Label>
                                   <input
                                     type="color"
-                                    value={`#${(embed.color || 5814783).toString(16).padStart(6, '0')}`}
+                                    value={`#${(embed.color || DISCORD_BLURPLE_COLOR).toString(16).padStart(6, '0')}`}
                                     onChange={(e) =>
                                       updateEmbed(index, {
                                         ...embed,

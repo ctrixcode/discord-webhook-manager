@@ -10,6 +10,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { type DiscordEmbed } from '@/lib/api/types/discord';
 import { hexToDiscordColor } from '@/lib/discord-utils';
 import { Plus, Trash2, ChevronDown, ChevronUp, Calendar } from 'lucide-react';
+import { DISCORD_BLURPLE_COLOR, DISCORD_MAX_EMBED_FIELDS } from '@/constants/discord';
 import {
   Collapsible,
   CollapsibleContent,
@@ -157,7 +158,7 @@ export function EmbedBuilder({
                     value={
                       embed.color
                         ? `#${embed.color.toString(16).padStart(6, '0')}`
-                        : '#5865f2'
+                        : `#${DISCORD_BLURPLE_COLOR.toString(16).padStart(6, '0')}`
                     }
                     onChange={(e) =>
                       updateEmbed({ color: hexToDiscordColor(e.target.value) })
@@ -168,7 +169,7 @@ export function EmbedBuilder({
                     value={
                       embed.color
                         ? `#${embed.color.toString(16).padStart(6, '0')}`
-                        : '#5865f2'
+                        : `#${DISCORD_BLURPLE_COLOR.toString(16).padStart(6, '0')}`
                     }
                     onChange={(e) =>
                       updateEmbed({ color: hexToDiscordColor(e.target.value) })
@@ -313,11 +314,11 @@ export function EmbedBuilder({
                   variant="outline"
                   size="sm"
                   onClick={addField}
-                  disabled={(embed.fields?.length || 0) >= 25}
+                  disabled={(embed.fields?.length || 0) >= DISCORD_MAX_EMBED_FIELDS}
                   className="bg-purple-600 hover:bg-purple-700 border-purple-500 text-white disabled:opacity-50"
                 >
                   <Plus className="w-4 h-4 mr-1" />
-                  Add Field ({embed.fields?.length || 0}/25)
+                  Add Field ({embed.fields?.length || 0}/DISCORD_MAX_EMBED_FIELDS)
                 </Button>
               </div>
               {embed.fields &&

@@ -8,6 +8,7 @@ import { AuthProvider } from '@/contexts/auth-context';
 import { useQueryClient } from '@tanstack/react-query';
 import { api } from '@/lib/api';
 import { useEffect } from 'react';
+import { STALE_TIME_FIVE_MINUTES } from '@/constants/app';
 
 export default function DashboardLayout({
   children,
@@ -21,21 +22,21 @@ export default function DashboardLayout({
     queryClient.prefetchQuery({
       queryKey: ['webhooks', { isActive: true }],
       queryFn: ({ queryKey }) => api.webhook.getAllWebhooks({ queryKey: queryKey as [string, { isActive?: boolean }] }),
-      staleTime: 5 * 60 * 1000, // 5 minutes
+      staleTime: STALE_TIME_FIVE_MINUTES, // 5 minutes
     });
 
     // Prefetch avatars
     queryClient.prefetchQuery({
       queryKey: ['avatars'],
       queryFn: () => api.avatar.getAllAvatars(),
-      staleTime: 5 * 60 * 1000, // 5 minutes
+      staleTime: STALE_TIME_FIVE_MINUTES, // 5 minutes
     });
 
     // Prefetch message templates
     queryClient.prefetchQuery({
       queryKey: ['messageTemplates'],
       queryFn: () => api.template.getAllTemplates(),
-      staleTime: 5 * 60 * 1000, // 5 minutes
+      staleTime: STALE_TIME_FIVE_MINUTES, // 5 minutes
     });
   }, [queryClient]);
 
