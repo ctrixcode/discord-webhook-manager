@@ -417,9 +417,7 @@ export default function SendMessagePage() {
                         className="mt-1 bg-slate-700/50 border-slate-600 text-white placeholder:text-slate-400 focus:border-purple-500 min-h-[120px]"
                       />
                       <p className="text-xs text-slate-400 mt-1">
-                        `${
-                          message.content.length
-                        }/${DISCORD_MAX_MESSAGE_LENGTH} characters`
+                        {message.content.length}/{DISCORD_MAX_MESSAGE_LENGTH} characters
                       </p>
                     </div>
                   </TabsContent>
