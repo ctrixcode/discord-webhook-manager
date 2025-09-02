@@ -186,68 +186,72 @@ export function DiscordMessagePreview({
                       </div>
                     )}
 
-                    {embed.description && (
-                      <div className="text-[#dbdee1] mb-3 whitespace-pre-wrap text-sm leading-[1.375]">
-                        {parseDiscordMarkdown(embed.description, userMap)}
-                      </div>
-                    )}
-
-                    {embed.fields && embed.fields.length > 0 && (
-                      <div
-                        className="grid gap-2 mb-3"
-                        style={{
-                          gridTemplateColumns: embed.fields.some(
-                            (f) => f.inline,
-                          )
-                            ? 'repeat(3, 1fr)'
-                            : '1fr',
-                        }}
-                      >
-                        {embed.fields.map((field, fieldIndex) => (
-                          <div
-                            key={fieldIndex}
-                            className={field.inline ? '' : 'col-span-full'}
-                          >
-                            <div className="text-white font-semibold text-sm mb-1">
-                              {parseDiscordMarkdown(field.name, userMap)}
-                            </div>
-                            <div className="text-[#dbdee1] text-sm whitespace-pre-wrap">
-                              {parseDiscordMarkdown(field.value, userMap)}
-                            </div>
+                    <div className="flex">
+                      <div className="flex-1 mr-4">
+                        {embed.description && (
+                          <div className="text-[#dbdee1] mb-3 whitespace-pre-wrap text-sm leading-[1.375]">
+                            {parseDiscordMarkdown(embed.description, userMap)}
                           </div>
-                        ))}
-                      </div>
-                    )}
+                        )}
 
-                    {embed.image && (
-                      <div className="mb-3 relative">
-                        <Image
-                          src={embed.image.url || '/placeholder.svg'}
-                          alt=""
-                          fill
-                          className="max-w-full rounded"
-                        />
+                        {embed.fields && embed.fields.length > 0 && (
+                          <div
+                            className="grid gap-2 mb-3"
+                            style={{
+                              gridTemplateColumns: embed.fields.some(
+                                (f) => f.inline,
+                              )
+                                ? 'repeat(3, 1fr)'
+                                : '1fr',
+                            }}
+                          >
+                            {embed.fields.map((field, fieldIndex) => (
+                              <div
+                                key={fieldIndex}
+                                className={field.inline ? '' : 'col-span-full'}
+                              >
+                                <div className="text-white font-semibold text-sm mb-1">
+                                  {parseDiscordMarkdown(field.name, userMap)}
+                                </div>
+                                <div className="text-[#dbdee1] text-sm whitespace-pre-wrap">
+                                  {parseDiscordMarkdown(field.value, userMap)}
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        )}
                       </div>
-                    )}
 
-                    <div className="flex items-center justify-between">
                       {embed.thumbnail && (
-                        <Image
-                          src={embed.thumbnail.url || '/placeholder.svg'}
-                          alt=""
-                          width={80}
-                          height={80}
-                          className="rounded ml-auto"
-                        />
+                        <div className="flex-shrink-0">
+                          <Image
+                            src={embed.thumbnail.url || '/placeholder.svg'}
+                            alt=""
+                            width={80}
+                            height={80}
+                            className="rounded"
+                          />
+                        </div>
                       )}
                     </div>
+
+                    {embed.image && (
+                      <div className="mb-3 w-2/3 h-48 relative">
+                        <Image
+                          src={embed.image.url || '/placeholder.svg'}
+                          alt="embed image"
+                          fill
+                          className=""
+                        />
+                      </div>
+                    )}
 
                     {embed.footer && (
                       <div className="flex items-center gap-2 mt-3 pt-0">
                         {embed.footer.icon_url && (
                           <Image
                             src={embed.footer.icon_url || '/placeholder.svg'}
-                            alt=""
+                            alt="embed footer icon"
                             width={20}
                             height={20}
                             className="rounded-full"
