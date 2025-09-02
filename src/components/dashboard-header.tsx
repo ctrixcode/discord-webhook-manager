@@ -25,7 +25,7 @@ export function DashboardHeader() {
   };
 
   return (
-    <header className="border-b border-slate-800/50 bg-gradient-to-r from-slate-900 via-purple-900/20 to-slate-900 backdrop-blur-xl supports-[backdrop-filter]:bg-slate-900/80 sticky top-0 z-30">
+    <header className="border-b border-t border-slate-800/50 bg-slate-900/20 backdrop-blur-xl sticky top-0 z-30">
       <div className="flex h-16 items-center justify-between px-6">
         <div className="flex items-center gap-3 cursor-pointer" onClick={() => router.push('/dashboard/webhooks')}>
           <DiscordLogo className="w-8 h-8 text-purple-400" />
