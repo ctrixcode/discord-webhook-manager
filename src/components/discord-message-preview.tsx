@@ -63,7 +63,12 @@ export function DiscordMessagePreview({
       });
     }
 
-    setUserIds(Array.from(new Set(allUserIds))); // Get unique IDs
+    const uniqueUserIds = Array.from(new Set(allUserIds));
+
+    // Only update if the userIds have actually changed to prevent infinite loops
+    if (uniqueUserIds.length !== userIds.length || uniqueUserIds.some((id, index) => id !== userIds[index])) {
+      setUserIds(uniqueUserIds);
+    }
   }, [content, embeds]);
 
   const userQueriesResults = useQueries({
@@ -82,8 +87,22 @@ export function DiscordMessagePreview({
         newUserMap.set(userIds[index], result.data.username);
       }
     });
-    setUserMap(newUserMap);
-  }, [userQueriesResults, userIds]);
+
+    // Deep compare maps before setting state to prevent infinite loops
+    let mapsEqual = userMap.size === newUserMap.size;
+    if (mapsEqual) {
+      for (const [key, value] of userMap.entries()) {
+        if (newUserMap.get(key) !== value) {
+          mapsEqual = false;
+          break;
+        }
+      }
+    }
+
+    if (!mapsEqual) {
+      setUserMap(newUserMap);
+    }
+  }, [userQueriesResults, userIds, userMap]);
 
   // Create a deep copy of embeds to ensure immutability within the component
   const clonedEmbeds = embeds ? JSON.parse(JSON.stringify(embeds)) : [];
