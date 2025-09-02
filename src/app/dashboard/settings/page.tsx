@@ -1,12 +1,12 @@
 'use client';
 
-import { Separator } from '@/components/ui/separator';
-import { Bell, Shield, Trash2, BarChart2, Gem } from 'lucide-react';
+// import { Separator } from '@/components/ui/separator';
+import { BarChart2, Gem } from 'lucide-react';
 import { useState } from 'react';
 import { ConfirmationDialog } from '@/components/ui/confirmation-dialog';
 import { SettingsCard } from '@/components/settings/settings-card';
-import { NotificationToggle } from '@/components/settings/notification-toggle';
-import { DangerAction } from '@/components/settings/danger-action';
+// import { NotificationToggle } from '@/components/settings/notification-toggle';
+// import { DangerAction } from '@/components/settings/danger-action';
 import { useQuery } from '@tanstack/react-query';
 import { userQueries } from '@/lib/api/queries/user';
 import { Progress } from '@/components/ui/progress';
@@ -170,7 +170,7 @@ export default function SettingsPage() {
       {/* <ThemeSelector /> */}
       {/* </SettingsCard> */}
 
-      <SettingsCard
+      {/* <SettingsCard
         title="Notifications"
         description="Configure how you receive notifications"
         icon={<Bell className="h-5 w-5" />}
@@ -188,9 +188,9 @@ export default function SettingsPage() {
             defaultChecked={true}
           />
         </div>
-      </SettingsCard>
+      </SettingsCard> */}
 
-      <SettingsCard
+      {/* <SettingsCard
         title="Privacy & Security"
         description="Manage your data and security preferences"
         icon={<Shield className="h-5 w-5" />}
@@ -208,9 +208,9 @@ export default function SettingsPage() {
             defaultChecked={false}
           />
         </div>
-      </SettingsCard>
+      </SettingsCard> */}
 
-      <SettingsCard
+      {/* <SettingsCard
         title="Danger Zone"
         description="Irreversible actions that affect your data"
         icon={<Trash2 className="h-5 w-5" />}
@@ -222,7 +222,7 @@ export default function SettingsPage() {
           buttonText="Clear Data"
           onAction={handleClearData}
         />
-      </SettingsCard>
+      </SettingsCard> */}
 
       <ConfirmationDialog
         open={showClearDataDialog}
