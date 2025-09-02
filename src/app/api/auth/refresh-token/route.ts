@@ -12,11 +12,16 @@ export async function POST(req: NextRequest) {
     }
 
     // Make a request to the backend's refresh endpoint
+    const userAgent = req.headers.get('user-agent');
+
     const backendResponse = await axios.post(
       `${BACKEND_API_URL}/auth/refresh`,
       { refreshToken }, // Send refresh token in the body
       {
         withCredentials: true, // Ensure cookies are sent to the backend (if any, though not for refresh token here)
+        headers: {
+          'User-Agent': userAgent || '',
+        },
       }
     );
 
