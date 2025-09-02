@@ -2,7 +2,6 @@ import UserUsage, { IUserUsage } from '../models/UserUsage';
 import User from '../models/User'; // Import User model
 import { logger } from '../utils';
 import {
-  // Import usage constants
   FREE_PLAN_DAILY_WEBHOOK_MESSAGE_LIMIT,
   DEFAULT_MEDIA_STORAGE_LIMIT_BYTES,
   PAID_PLAN_DAILY_WEBHOOK_MESSAGE_LIMIT,
@@ -71,13 +70,13 @@ export const incrementWebhookMessageCount = async (
   const userUsage = await getOrCreateUserUsage(userId);
 
   const now = new Date();
-  const lastMessageDate = userUsage.lastWebhookMessageDate;
+  const lastWebhookMessageDate = userUsage.lastWebhookMessageDate;
 
   // Check if it's a new day (using UTC for consistency)
   if (
-    lastMessageDate.getUTCFullYear() !== now.getUTCFullYear() ||
-    lastMessageDate.getUTCMonth() !== now.getUTCMonth() ||
-    lastMessageDate.getUTCDate() !== now.getUTCDate()
+    lastWebhookMessageDate.getUTCFullYear() !== now.getUTCFullYear() ||
+    lastWebhookMessageDate.getUTCMonth() !== now.getUTCMonth() ||
+    lastWebhookMessageDate.getUTCDate() !== now.getUTCDate()
   ) {
     userUsage.webhookMessagesSentToday = 0; // Reset for new day
   }
@@ -115,42 +114,10 @@ export const updateMediaStorageUsed = async (
 export const isUserWebhookLimitReached = async (
   userId: string
 ): Promise<boolean> => {
-  const userUsage = await getOrCreateUserUsage(userId);
-  const user = await User.findById(userId); // Assuming User model has accountType
-
-  if (!user) {
-    logger.warn(`User not found for limit check: ${userId}`);
-    return true; // Or handle as an error, depending on desired behavior
-  }
-
-  // Determine effective limit
-  let effectiveLimit = FREE_PLAN_DAILY_WEBHOOK_MESSAGE_LIMIT; // Default for free users
-
-  if (userUsage.overrides?.unlimitedWebhookMessages) {
-    return false; // User has unlimited messages
-  }
-
-  if (
-    userUsage.overrides?.dailyWebhookMessageLimit !== undefined &&
-    userUsage.overrides.dailyWebhookMessageLimit !== null
-  ) {
-    effectiveLimit = userUsage.overrides.dailyWebhookMessageLimit;
-  } else {
-    switch (user.accountType) {
-      case 'paid':
-        effectiveLimit = PAID_PLAN_DAILY_WEBHOOK_MESSAGE_LIMIT;
-        break;
-      case 'premium':
-        effectiveLimit = PREMIUM_PLAN_DAILY_WEBHOOK_MESSAGE_LIMIT;
-        break;
-      case 'free':
-      default:
-        effectiveLimit = FREE_PLAN_DAILY_WEBHOOK_MESSAGE_LIMIT;
-        break;
-    }
-  }
-
-  return userUsage.webhookMessagesSentToday >= effectiveLimit;
+  const { limits, currentUsage } = await getUserUsageAndLimits(userId);
+  return (
+    currentUsage.webhookMessagesSentToday >= limits.dailyWebhookMessageLimit
+  );
 };
 
 /**
@@ -163,38 +130,77 @@ export const isUserMediaLimitReached = async (
   userId: string,
   newMediaSize: number
 ): Promise<boolean> => {
+  const { limits, currentUsage } = await getUserUsageAndLimits(userId);
+  const potentialNewTotal = currentUsage.totalMediaStorageUsed + newMediaSize;
+  return potentialNewTotal >= limits.overallMediaStorageLimit;
+};
+
+/**
+ * Retrieves a user's current usage and their effective limits.
+ * @param userId The ID of the user.
+ * @returns An object containing the user's current usage and their calculated limits.
+ */
+export const getUserUsageAndLimits = async (userId: string) => {
   const userUsage = await getOrCreateUserUsage(userId);
-  const user = await User.findById(userId); // Assuming User model has accountType
+  const user = await User.findById(userId);
 
   if (!user) {
-    logger.warn(`User not found for limit check: ${userId}`);
-    return true; // Or handle as an error
+    logger.warn(`User not found for usage and limits check: ${userId}`);
+    throw new Error('User not found.'); // Or handle as appropriate
   }
 
-  // Determine effective limit
-  let effectiveLimit = DEFAULT_MEDIA_STORAGE_LIMIT_BYTES; // Default for free users
+  let dailyWebhookMessageLimit = FREE_PLAN_DAILY_WEBHOOK_MESSAGE_LIMIT;
+  let overallMediaStorageLimit = DEFAULT_MEDIA_STORAGE_LIMIT_BYTES;
 
-  if (
-    userUsage.overrides?.overallMediaStorageLimit !== undefined &&
-    userUsage.overrides.overallMediaStorageLimit !== null
+  // Apply overrides for webhook messages
+  if (userUsage.overrides?.unlimitedWebhookMessages) {
+    dailyWebhookMessageLimit = Infinity; // Effectively unlimited
+  } else if (
+    userUsage.overrides?.dailyWebhookMessageLimit !== undefined &&
+    userUsage.overrides.dailyWebhookMessageLimit !== null
   ) {
-    effectiveLimit = userUsage.overrides.overallMediaStorageLimit;
+    dailyWebhookMessageLimit = userUsage.overrides.dailyWebhookMessageLimit;
   } else {
     switch (user.accountType) {
       case 'paid':
-        effectiveLimit = PAID_PLAN_MEDIA_STORAGE_LIMIT_BYTES;
+        dailyWebhookMessageLimit = PAID_PLAN_DAILY_WEBHOOK_MESSAGE_LIMIT;
         break;
       case 'premium':
-        effectiveLimit = PREMIUM_PLAN_MEDIA_STORAGE_LIMIT_BYTES;
+        dailyWebhookMessageLimit = PREMIUM_PLAN_DAILY_WEBHOOK_MESSAGE_LIMIT;
         break;
       case 'free':
       default:
-        effectiveLimit = DEFAULT_MEDIA_STORAGE_LIMIT_BYTES;
+        dailyWebhookMessageLimit = FREE_PLAN_DAILY_WEBHOOK_MESSAGE_LIMIT;
         break;
     }
   }
 
-  const potentialNewTotal = userUsage.totalMediaStorageUsed + newMediaSize;
+  // Apply overrides for media storage
+  if (
+    userUsage.overrides?.overallMediaStorageLimit !== undefined &&
+    userUsage.overrides.overallMediaStorageLimit !== null
+  ) {
+    overallMediaStorageLimit = userUsage.overrides.overallMediaStorageLimit;
+  } else {
+    switch (user.accountType) {
+      case 'paid':
+        overallMediaStorageLimit = PAID_PLAN_MEDIA_STORAGE_LIMIT_BYTES;
+        break;
+      case 'premium':
+        overallMediaStorageLimit = PREMIUM_PLAN_MEDIA_STORAGE_LIMIT_BYTES;
+        break;
+      case 'free':
+      default:
+        overallMediaStorageLimit = DEFAULT_MEDIA_STORAGE_LIMIT_BYTES;
+        break;
+    }
+  }
 
-  return potentialNewTotal >= effectiveLimit;
+  return {
+    currentUsage: userUsage,
+    limits: {
+      dailyWebhookMessageLimit,
+      overallMediaStorageLimit,
+    },
+  };
 };

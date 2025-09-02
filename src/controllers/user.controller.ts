@@ -1,5 +1,6 @@
 import { FastifyRequest, FastifyReply } from 'fastify';
 import * as userService from '../services/user.service';
+import * as userUsageService from '../services/user-usage.service'; // Import userUsageService
 import { logger } from '../utils';
 import { UpdateUserData } from '../services/user.service';
 import { getDiscordAvatarURL } from '../utils/discord-api';
@@ -217,6 +218,51 @@ export const deleteUser = async (
     });
   } catch (error: unknown) {
     logger.error('Error in deleteUser controller:', error);
+    if (error instanceof Error) {
+      reply.status(500).send({
+        success: false,
+        message: error.message,
+      });
+    } else {
+      reply.status(500).send({
+        success: false,
+        message: 'Internal server error',
+      });
+    }
+  }
+};
+
+/**
+ * Get user usage and limits
+ * GET /api/users/me/usage
+ */
+export const getUserUsageHandler = async (
+  request: FastifyRequest,
+  reply: FastifyReply
+): Promise<void> => {
+  try {
+    if (!request.user || !request.user.userId) {
+      reply.status(401).send({
+        success: false,
+        message: 'Unauthorized: User information not found in request',
+      });
+      return;
+    }
+    const userId = request.user.userId;
+    const { currentUsage, limits } =
+      await userUsageService.getUserUsageAndLimits(userId);
+
+    reply.status(200).send({
+      success: true,
+      data: {
+        webhookMessagesSentToday: currentUsage.webhookMessagesSentToday,
+        totalMediaStorageUsed: currentUsage.totalMediaStorageUsed,
+        dailyWebhookMessageLimit: limits.dailyWebhookMessageLimit,
+        overallMediaStorageLimit: limits.overallMediaStorageLimit,
+      },
+    });
+  } catch (error: unknown) {
+    logger.error('Error in getUserUsageHandler controller:', error);
     if (error instanceof Error) {
       reply.status(500).send({
         success: false,
