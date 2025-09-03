@@ -17,7 +17,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Send, Webhook, Users } from 'lucide-react';
+import { Send, Webhook } from 'lucide-react';
 import { api } from '@/lib/api';
 import type { PredefinedAvatar } from '@/lib/api/types/avatar';
 import { useQuery } from '@tanstack/react-query';

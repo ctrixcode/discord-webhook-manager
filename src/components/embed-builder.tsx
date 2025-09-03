@@ -11,6 +11,7 @@ import { Users } from 'lucide-react';
 import type { DiscordEmbed } from '@/lib/api/types/discord';
 import { DISCORD_BLURPLE_COLOR, DISCORD_MAX_EMBEDS } from '@/constants/discord';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import { discordColorToHex, hexToDiscordColor } from '@/lib/discord-utils';
 
 interface EmbedBuilderProps {
   embeds: DiscordEmbed[];
@@ -27,6 +28,7 @@ export function EmbedBuilder({ embeds, onEmbedsChange }: EmbedBuilderProps) {
     };
     onEmbedsChange([...embeds, newEmbed]);
   };
+  console.log(embeds);
 
   const updateEmbed = (index: number, updatedEmbed: DiscordEmbed) => {
     const newEmbeds = embeds.map((e, i) => {
@@ -186,11 +188,11 @@ export function EmbedBuilder({ embeds, onEmbedsChange }: EmbedBuilderProps) {
                   <Label className="text-slate-300 text-sm">Color</Label>
                   <input
                     type="color"
-                    value={`#${(embed.color || DISCORD_BLURPLE_COLOR).toString(16).padStart(6, '0')}`}
+                    value={discordColorToHex(embed.color || DISCORD_BLURPLE_COLOR)}
                     onChange={(e) =>
                       updateEmbed(index, {
                         ...embed,
-                        color: Number.parseInt(e.target.value.slice(1), 16),
+                        color: hexToDiscordColor(e.target.value),
                       })
                     }
                     className="mt-1 w-full h-10 bg-slate-600/50 border border-slate-500 rounded-md"
