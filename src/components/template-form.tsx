@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect, SetStateAction } from 'react';
+import React, { useState, useEffect} from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -18,7 +18,7 @@ import type {
 import type { DiscordEmbed } from '@/lib/api/types/discord';
 import { FileText, MessageSquare, Layers, Users } from 'lucide-react';
 import { PredefinedAvatar } from '@/lib/api/types/avatar';
-import { EmbedBuilder } from '@/components/Embed-builder';
+import { EmbedBuilder } from '@/components/embed-builder';
 import { useQuery } from '@tanstack/react-query';
 import { api } from '@/lib/api';
 
