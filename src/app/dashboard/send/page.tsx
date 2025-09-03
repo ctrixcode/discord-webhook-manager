@@ -32,7 +32,7 @@ import {
 } from '@/constants/discord';
 import { AxiosError } from 'axios';
 import Link from 'next/link';
-import { EmbedBuilder } from '../../../components/Embed-builder';
+import { EmbedBuilder } from '../../../components/embed-builder';
 
 export default function SendMessagePage() {
   const { toast } = useToast();
