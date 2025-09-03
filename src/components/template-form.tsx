@@ -7,7 +7,6 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { EmbedBuilder } from '@/components/embed-builder';
 import { DiscordMessagePreview } from '@/components/discord-message-preview';
 import { AvatarSelector } from '@/components/avatars/avatar-selector';
 
@@ -17,8 +16,9 @@ import type {
   UpdateMessageTemplateRequest,
 } from '@/lib/api/types/message-template';
 import type { DiscordEmbed } from '@/lib/api/types/discord';
-import { FileText, Plus, MessageSquare, Layers, Users } from 'lucide-react';
+import { FileText, MessageSquare, Layers, Users } from 'lucide-react';
 import { PredefinedAvatar } from '@/lib/api/types/avatar';
+import { EmbedSection } from '@/app/dashboard/send/EmbedSection';
 
 interface TemplateFormProps {
   initialData?: MessageTemplate | null;
@@ -56,7 +56,7 @@ export const TemplateForm = React.forwardRef(function TemplateForm(
         name,
         description,
         content,
-        avatar_ref: selectedAvatar?.id || "", // Send the ID to the backend
+        avatar_ref: selectedAvatar?.id || '',
         embeds,
       });
     },
@@ -81,22 +81,8 @@ export const TemplateForm = React.forwardRef(function TemplateForm(
     }
   }, [initialData]);
 
-  const addEmbed = () => {
-    setEmbeds([...embeds, { title: 'New Embed', color: 0x5865f2 }]);
-  };
-
-  const updateEmbed = (index: number, embed: DiscordEmbed) => {
-    const newEmbeds = [...embeds];
-    newEmbeds[index] = embed;
-    setEmbeds(newEmbeds);
-  };
-
-  const removeEmbed = (index: number) => {
-    setEmbeds(embeds.filter((_, i) => i !== index));
-  };
-
   return (
-    <div className="flex-1 flex overflow-hidden">
+    <div className="flex-1 flex">
       {/* Left Side - Editor */}
       <div className="w-1/2 border-r border-slate-700/50 flex flex-col">
         <Tabs defaultValue="info" className="flex-1 flex flex-col">
@@ -127,49 +113,47 @@ export const TemplateForm = React.forwardRef(function TemplateForm(
           </div>
 
           <TabsContent value="info" className="flex-1 p-4">
-            <ScrollArea className="h-full">
-              <div className="space-y-6">
-                <div className="space-y-4">
-                  <h3 className="text-lg font-semibold text-white">
-                    Template Information
-                  </h3>
+            <div className="space-y-6">
+              <div className="space-y-4">
+                <h3 className="text-lg font-semibold text-white">
+                  Template Information
+                </h3>
 
-                  <div className="space-y-2">
-                    <Label htmlFor="name" className="text-slate-200">
-                      Template Name
-                    </Label>
-                    <Input
-                      id="name"
-                      value={name}
-                      onChange={(e) => setName(e.target.value)}
-                      placeholder="My Awesome Template"
-                      required
-                      className="bg-slate-800/50 border-slate-600 text-white placeholder:text-slate-400 focus:border-purple-500"
-                    />
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label htmlFor="description" className="text-slate-200">
-                      Description (Optional)
-                    </Label>
-                    <Textarea
-                      id="description"
-                      value={description}
-                      onChange={(e) => setDescription(e.target.value)}
-                      placeholder="What is this template for? Describe its purpose..."
-                      rows={4}
-                      className="resize-none bg-slate-800/50 border-slate-600 text-white placeholder:text-slate-400 focus:border-purple-500"
-                    />
-                  </div>
+                <div className="space-y-2">
+                  <Label htmlFor="name" className="text-slate-200">
+                    Template Name
+                  </Label>
+                  <Input
+                    id="name"
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                    placeholder="My Awesome Template"
+                    required
+                    className="bg-slate-800/50 border-slate-600 text-white placeholder:text-slate-400 focus:border-purple-500"
+                  />
                 </div>
 
-                {saveError && (
-                  <div className="text-red-400 text-sm">
-                    Error: {saveError.message}
-                  </div>
-                )}
+                <div className="space-y-2">
+                  <Label htmlFor="description" className="text-slate-200">
+                    Description (Optional)
+                  </Label>
+                  <Textarea
+                    id="description"
+                    value={description}
+                    onChange={(e) => setDescription(e.target.value)}
+                    placeholder="What is this template for? Describe its purpose..."
+                    rows={4}
+                    className="resize-none bg-slate-800/50 border-slate-600 text-white placeholder:text-slate-400 focus:border-purple-500"
+                  />
+                </div>
               </div>
-            </ScrollArea>
+
+              {saveError && (
+                <div className="text-red-400 text-sm">
+                  Error: {saveError.message}
+                </div>
+              )}
+            </div>
           </TabsContent>
 
           <TabsContent value="message" className="flex-1 p-4">
@@ -190,7 +174,7 @@ export const TemplateForm = React.forwardRef(function TemplateForm(
                       placeholder="Enter your message content here... (Max 2000 characters)"
                       rows={8}
                       maxLength={2000}
-                      className="resize-none bg-slate-800/50 border-slate-600 text-white placeholder:text-slate-400 focus:border-purple-500"
+                      className="bg-slate-800/50 border-slate-600 text-white placeholder:text-slate-400 focus:border-purple-500"
                     />
                     <div className="text-xs text-slate-400">
                       {content.length}/2000 characters
@@ -225,64 +209,20 @@ export const TemplateForm = React.forwardRef(function TemplateForm(
           </TabsContent>
 
           <TabsContent value="embeds" className="flex-1 p-4">
-            <ScrollArea className="h-full">
-              <div className="space-y-6">
-                <div className="space-y-4">
-                  <div className="flex items-center justify-between">
-                    <h3 className="text-lg font-semibold text-white">
-                      Discord Embeds (Max 10)
-                    </h3>
-                    <Button
-                      type="button"
-                      variant="outline"
-                      onClick={addEmbed}
-                      disabled={embeds.length >= 10}
-                      className="bg-slate-700 border-slate-600 text-white hover:bg-slate-600"
-                    >
-                      <Plus className="w-4 h-4 mr-2" />
-                      Add Embed ({embeds.length}/10)
-                    </Button>
-                  </div>
-
-                  {embeds.map((embed, index) => (
-                    <EmbedBuilder
-                      key={index}
-                      embed={embed}
-                      onEmbedChange={(newEmbed) => updateEmbed(index, newEmbed)}
-                      onRemove={() => removeEmbed(index)}
-                    />
-                  ))}
-
-                  {embeds.length === 0 && (
-                    <div className="text-center py-8 text-slate-400">
-                      No embeds added yet. Click &quot;Add Embed&quot; to create
-                      rich formatted content.
-                    </div>
-                  )}
-                </div>
-              </div>
-            </ScrollArea>
+              <EmbedSection embeds={embeds} onEmbedsChange={setEmbeds} />
           </TabsContent>
         </Tabs>
       </div>
 
       {/* Right Side - Live Preview */}
       <div className="w-1/2 flex flex-col">
-        <div className="border-b border-slate-700/50 px-4 py-3 bg-slate-800/30">
-          <h2 className="font-semibold text-white">Live Preview</h2>
-          <p className="text-sm text-slate-300">
-            See how your message will appear in Discord
-          </p>
-        </div>
-        <div className="flex-1 p-4 bg-[#36393f]">
-          <ScrollArea className="h-full">
+          <ScrollArea className="h-[600px]">
             <DiscordMessagePreview
               content={content}
               avatar={selectedAvatar}
               embeds={embeds.length > 0 ? embeds : undefined}
             />
           </ScrollArea>
-        </div>
       </div>
     </div>
   );
