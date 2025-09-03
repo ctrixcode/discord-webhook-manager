@@ -514,7 +514,6 @@ export default function SendMessagePage() {
                       onEmbedsChange={(newEmbeds) =>
                         setMessage((prev) => ({ ...prev, embeds: newEmbeds }))
                       }
-                      avatars={avatars}
                     />
                   </TabsContent>
 
