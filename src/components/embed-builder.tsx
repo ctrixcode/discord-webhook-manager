@@ -1,426 +1,544 @@
 'use client';
 
-import { useState } from 'react';
+import React from 'react';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Checkbox } from '@/components/ui/checkbox';
-import { type DiscordEmbed } from '@/lib/api/types/discord';
-import { hexToDiscordColor } from '@/lib/discord-utils';
-import { Plus, Trash2, ChevronDown, ChevronUp, Calendar } from 'lucide-react';
-import { DISCORD_BLURPLE_COLOR, DISCORD_MAX_EMBED_FIELDS } from '@/constants/discord';
-import {
-  Collapsible,
-  CollapsibleContent,
-  CollapsibleTrigger,
-} from '@/components/ui/collapsible';
-
-type DiscordEmbedField = { name: string; value: string; inline?: boolean; };
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { AvatarSelector } from '@/components/avatars/avatar-selector';
+import { Users } from 'lucide-react';
+import type { DiscordEmbed } from '@/lib/api/types/discord';
+import { DISCORD_BLURPLE_COLOR, DISCORD_MAX_EMBEDS } from '@/constants/discord';
+import { ScrollArea } from '@/components/ui/scroll-area';
 
 interface EmbedBuilderProps {
-  embed: DiscordEmbed;
-  onEmbedChange: (embed: DiscordEmbed) => void;
-  onRemove: () => void;
+  embeds: DiscordEmbed[];
+  onEmbedsChange: (embeds: DiscordEmbed[]) => void;
 }
 
-export function EmbedBuilder({
-  embed,
-  onEmbedChange,
-  onRemove,
-}: EmbedBuilderProps) {
-  const [isOpen, setIsOpen] = useState(true); // Always start expanded
-
-  const updateEmbed = (updates: Partial<DiscordEmbed>) => {
-    onEmbedChange({ ...embed, ...updates });
+export function EmbedBuilder({ embeds, onEmbedsChange }: EmbedBuilderProps) {
+  const addEmbed = () => {
+    const newEmbed: DiscordEmbed = {
+      title: '',
+      description: '',
+      color: DISCORD_BLURPLE_COLOR, // Discord's default blurple color
+      fields: [],
+    };
+    onEmbedsChange([...embeds, newEmbed]);
   };
 
-  const addField = () => {
-    const fields = embed.fields || [];
-    updateEmbed({
-      fields: [
-        ...fields,
-        { name: 'Field Name', value: 'Field Value', inline: false },
-      ],
+  const updateEmbed = (index: number, updatedEmbed: DiscordEmbed) => {
+    const newEmbeds = embeds.map((e, i) => {
+      if (i === index) {
+        // Check if author object should be removed
+        if (updatedEmbed.author) {
+          const { name, icon_url, url } = updatedEmbed.author;
+          if (!name && !icon_url && !url) {
+            // If all author fields are empty, set author to undefined
+            return { ...updatedEmbed, author: undefined };
+          }
+        }
+        return updatedEmbed;
+      }
+      return e;
     });
+    onEmbedsChange(newEmbeds);
+  };
+
+  const removeEmbed = (index: number) => {
+    onEmbedsChange(embeds.filter((_, i) => i !== index));
+  };
+
+  const addField = (embedIndex: number) => {
+    const newEmbeds = [...embeds];
+    if (newEmbeds[embedIndex]) {
+      newEmbeds[embedIndex].fields = [
+        ...(newEmbeds[embedIndex].fields || []),
+        { name: '', value: '', inline: false },
+      ];
+    }
+    onEmbedsChange(newEmbeds);
   };
 
   const updateField = (
-    index: number,
-    updates: Partial<DiscordEmbedField>,
+    embedIndex: number,
+    fieldIndex: number,
+    field: { name: string; value: string; inline?: boolean },
   ) => {
-    const currentFields: Array<{ name: string; value: string; inline?: boolean; }> = embed.fields || [];
-    const newFields = [...currentFields];
-
-    if (newFields[index]) {
-      newFields[index] = { ...newFields[index], ...updates };
-      updateEmbed({ fields: newFields });
+    const newEmbeds = [...embeds];
+    if (newEmbeds[embedIndex] && newEmbeds[embedIndex].fields) {
+      newEmbeds[embedIndex].fields = newEmbeds[embedIndex].fields!.map(
+        (f, i) => (i === fieldIndex ? field : f),
+      );
     }
+    onEmbedsChange(newEmbeds);
   };
 
-  const removeField = (index: number) => {
-    const fields = embed.fields || [];
-    updateEmbed({ fields: fields.filter((_, i) => i !== index) });
-  };
-
-  const setCurrentTimestamp = () => {
-    updateEmbed({ timestamp: new Date().toISOString() });
+  const removeField = (embedIndex: number, fieldIndex: number) => {
+    const newEmbeds = [...embeds];
+    if (newEmbeds[embedIndex] && newEmbeds[embedIndex].fields) {
+      newEmbeds[embedIndex].fields = newEmbeds[embedIndex].fields!.filter(
+        (_, i) => i !== fieldIndex,
+      );
+    }
+    onEmbedsChange(newEmbeds);
   };
 
   return (
-    <Card className="bg-slate-800/50 backdrop-blur-sm border-slate-700/50 mb-4">
-      <Collapsible open={isOpen} onOpenChange={setIsOpen}>
-        <CardHeader className="pb-3">
-          <div className="flex items-center justify-between">
-            <CollapsibleTrigger asChild>
-              <Button
-                variant="ghost"
-                className="p-0 h-auto font-semibold text-white hover:text-purple-300"
-              >
-                <CardTitle className="flex items-center gap-2 text-white">
-                  {isOpen ? (
-                    <ChevronUp className="w-4 h-4" />
-                  ) : (
-                    <ChevronDown className="w-4 h-4" />
-                  )}
-                  Discord Embed - All Fields Available
-                </CardTitle>
-              </Button>
-            </CollapsibleTrigger>
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={onRemove}
-              className="text-red-400 hover:text-red-300 hover:bg-red-500/10"
+    <ScrollArea className="flex flex-col overflow-hidden max-h-[400px]">
+      <div className="flex items-center justify-between mb-4">
+        <div>
+          <Label className="text-slate-200 font-medium">
+            Discord Embeds
+          </Label>
+          <p className="text-sm text-slate-400">
+            Add rich embeds to your message (max 10)
+          </p>
+        </div>
+        <Button
+          onClick={addEmbed}
+          disabled={embeds.length >= DISCORD_MAX_EMBEDS}
+          size="sm"
+          className="bg-purple-600 hover:bg-purple-700 text-white"
+        >
+          Add Embed
+        </Button>
+      </div>
+
+      {embeds.length === 0 ? (
+        <div className="text-center py-8 text-slate-400">
+          <p>No embeds added yet</p>
+          <p className="text-sm">
+            Click &quot;Add Embed&quot; to create rich message
+            content
+          </p>
+        </div>
+      ) : (
+          <div>
+          {embeds.map((embed, index) => (
+            <div
+              key={index}
+              className="p-4 rounded-lg bg-slate-700/30 border border-slate-600/50"
             >
-              <Trash2 className="w-4 h-4" />
-            </Button>
-          </div>
-        </CardHeader>
-
-        <CollapsibleContent>
-          <CardContent className="space-y-6 max-h-[600px] overflow-y-auto pr-4">
-            {/* Basic Information */}
-            <div className="space-y-4">
-              <h4 className="text-sm font-semibold text-purple-300 border-b border-purple-500/30 pb-1">
-                Basic Information
-              </h4>
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="title" className="text-slate-200">
-                    Title
-                  </Label>
-                  <Input
-                    id="title"
-                    value={embed.title || ''}
-                    onChange={(e) => updateEmbed({ title: e.target.value })}
-                    placeholder="Embed title"
-                    className="bg-slate-700/50 border-slate-600 text-white placeholder:text-slate-400 focus:border-purple-500"
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="url" className="text-slate-200">
-                    Title URL (Makes title clickable)
-                  </Label>
-                  <Input
-                    id="url"
-                    value={embed.url || ''}
-                    onChange={(e) => updateEmbed({ url: e.target.value })}
-                    placeholder="https://example.com"
-                    className="bg-slate-700/50 border-slate-600 text-white placeholder:text-slate-400 focus:border-purple-500"
-                  />
-                </div>
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="description" className="text-slate-200">
-                  Description
+              <div className="flex items-center justify-between mb-4">
+                <Label className="text-slate-200 font-medium">
+                  Embed {index + 1}
                 </Label>
-                <Textarea
-                  id="description"
-                  value={embed.description || ''}
-                  onChange={(e) => updateEmbed({ description: e.target.value })}
-                  placeholder="Embed description (supports markdown)"
-                  rows={3}
-                  className="bg-slate-700/50 border-slate-600 text-white placeholder:text-slate-400 focus:border-purple-500"
-                />
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="color" className="text-slate-200">
-                  Color (Left border accent)
-                </Label>
-                <div className="flex gap-2">
-                  <Input
-                    id="color"
-                    type="color"
-                    value={
-                      embed.color
-                        ? `#${embed.color.toString(16).padStart(6, '0')}`
-                        : `#${DISCORD_BLURPLE_COLOR.toString(16).padStart(6, '0')}`
-                    }
-                    onChange={(e) =>
-                      updateEmbed({ color: hexToDiscordColor(e.target.value) })
-                    }
-                    className="w-20 bg-slate-700/50 border-slate-600"
-                  />
-                  <Input
-                    value={
-                      embed.color
-                        ? `#${embed.color.toString(16).padStart(6, '0')}`
-                        : `#${DISCORD_BLURPLE_COLOR.toString(16).padStart(6, '0')}`
-                    }
-                    onChange={(e) =>
-                      updateEmbed({ color: hexToDiscordColor(e.target.value) })
-                    }
-                    placeholder="#5865f2"
-                    className="bg-slate-700/50 border-slate-600 text-white placeholder:text-slate-400 focus:border-purple-500"
-                  />
-                </div>
-              </div>
-            </div>
-
-            {/* Author Information */}
-            <div className="space-y-4">
-              <h4 className="text-sm font-semibold text-purple-300 border-b border-purple-500/30 pb-1">
-                Author Information
-              </h4>
-              <div className="grid grid-cols-3 gap-2">
-                <Input
-                  value={embed.author?.name || ''}
-                  onChange={(e) =>
-                    updateEmbed({
-                      author: {
-                        ...(embed.author || { name: '' }),
-                        name: e.target.value,
-                      },
-                    })
-                  }
-                  placeholder="Author name"
-                  className="bg-slate-700/50 border-slate-600 text-white placeholder:text-slate-400 focus:border-purple-500"
-                />
-                <Input
-                  value={embed.author?.url || ''}
-                  onChange={(e) =>
-                    updateEmbed({
-                      author: {
-                        ...embed.author,
-                        name: embed.author?.name || '',
-                        url: e.target.value,
-                      },
-                    })
-                  }
-                  placeholder="Author URL"
-                  className="bg-slate-700/50 border-slate-600 text-white placeholder:text-slate-400 focus:border-purple-500"
-                />
-                <Input
-                  value={embed.author?.icon_url || ''}
-                  onChange={(e) =>
-                    updateEmbed({
-                      author: {
-                        ...(embed.author || { name: '' }),
-                        icon_url: e.target.value,
-                      },
-                    })
-                  }
-                  placeholder="Author icon URL"
-                  className="bg-slate-700/50 border-slate-600 text-white placeholder:text-slate-400 focus:border-purple-500"
-                />
-              </div>
-            </div>
-
-            {/* Images */}
-            <div className="space-y-4">
-              <h4 className="text-sm font-semibold text-purple-300 border-b border-purple-500/30 pb-1">
-                Images
-              </h4>
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="thumbnail" className="text-slate-200">
-                    Thumbnail URL (Small image, top-right)
-                  </Label>
-                  <Input
-                    id="thumbnail"
-                    value={embed.thumbnail?.url || ''}
-                    onChange={(e) =>
-                      updateEmbed({
-                        thumbnail: e.target.value
-                          ? { url: e.target.value }
-                          : undefined,
-                      })
-                    }
-                    placeholder="https://example.com/image.png"
-                    className="bg-slate-700/50 border-slate-600 text-white placeholder:text-slate-400 focus:border-purple-500"
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="image" className="text-slate-200">
-                    Image URL (Large image, bottom)
-                  </Label>
-                  <Input
-                    id="image"
-                    value={embed.image?.url || ''}
-                    onChange={(e) =>
-                      updateEmbed({
-                        image: { url: e.target.value },
-                      })
-                    }
-                    placeholder="https://example.com/image.png"
-                    className="bg-slate-700/50 border-slate-600 text-white placeholder:text-slate-400 focus:border-purple-500"
-                  />
-                </div>
-              </div>
-            </div>
-
-            {/* Timestamp */}
-            <div className="space-y-4">
-              <h4 className="text-sm font-semibold text-purple-300 border-b border-purple-500/30 pb-1">
-                Timestamp
-              </h4>
-              <div className="flex gap-2">
-                <Input
-                  id="timestamp"
-                  type="datetime-local"
-                  value={embed.timestamp ? new Date(embed.timestamp).toISOString().slice(0, 16) : ''}
-                  onChange={(e) =>
-                    updateEmbed({
-                      timestamp: e.target.value ? new Date(e.target.value).toISOString() : undefined,
-                    })
-                  }
-                  className="bg-slate-700/50 border-slate-600 text-white placeholder:text-slate-400 focus:border-purple-500"
-                />
                 <Button
-                  type="button"
-                  variant="outline"
-                  onClick={setCurrentTimestamp}
-                  className="bg-purple-600 hover:bg-purple-700 border-purple-500 text-white"
-                >
-                  <Calendar className="w-4 h-4 mr-1" />
-                  Now
-                </Button>
-              </div>
-            </div>
-
-            {/* Fields (Grid Layout) */}
-            <div className="space-y-4">
-              <h4 className="text-sm font-semibold text-purple-300 border-b border-purple-500/30 pb-1">
-                Fields (Grid Layout)
-              </h4>
-              <div className="flex items-center justify-between">
-                <Label className="text-slate-200">Custom Fields</Label>
-                <Button
-                  type="button"
+                  onClick={() => removeEmbed(index)}
                   variant="outline"
                   size="sm"
-                  onClick={addField}
-                  disabled={(embed.fields?.length || 0) >= DISCORD_MAX_EMBED_FIELDS}
-                  className="bg-purple-600 hover:bg-purple-700 border-purple-500 text-white disabled:opacity-50"
+                  className="border-red-600 text-red-400 hover:bg-red-600 hover:text-white bg-transparent"
                 >
-                  <Plus className="w-4 h-4 mr-1" />
-                  Add Field ({embed.fields?.length || 0}/DISCORD_MAX_EMBED_FIELDS)
+                  Remove
                 </Button>
               </div>
-              {embed.fields &&
-                embed.fields.map((field, index) => (
-                  <Card
-                    key={index}
-                    className="p-3 bg-slate-700/30 border-slate-600/50"
-                  >
-                    <div className="space-y-2">
-                      <div className="flex items-center justify-between">
-                        <span className="text-sm font-medium text-slate-200">
-                          Field {index + 1}
-                        </span>
-                        <Button
-                          type="button"
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => removeField(index)}
-                          className="text-red-400 hover:text-red-300 hover:bg-red-500/10"
-                        >
-                          <Trash2 className="w-3 h-3" />
-                        </Button>
-                      </div>
-                      <div className="grid grid-cols-2 gap-2">
-                        <Input
-                          value={field.name}
-                          onChange={(e) =>
-                            updateField(index, { name: e.target.value })
-                          }
-                          placeholder="Field name"
-                          className="bg-slate-600/50 border-slate-500 text-white placeholder:text-slate-400 focus:border-purple-500"
-                        />
-                        <div className="flex items-center space-x-2">
-                          <Checkbox
-                            id={`inline-${index}`}
-                            checked={field.inline || false}
-                            onCheckedChange={(checked) =>
-                              updateField(index, { inline: !!checked })
+
+              <div className="space-y-3">
+                <div className="flex gap-2">
+                  <div className="flex-1">
+                    <Label className="text-slate-300 text-sm">
+                      Title
+                    </Label>
+                    <input
+                      type="text"
+                      placeholder="Embed title"
+                      value={embed.title || ''}
+                      onChange={(e) =>
+                        updateEmbed(index, {
+                          ...embed,
+                          title: e.target.value,
+                        })
+                      }
+                      className="mt-1 w-full px-3 py-2 bg-slate-600/50 border border-slate-500 rounded-md text-white placeholder:text-slate-400 focus:border-purple-500 focus:outline-none"
+                    />
+                  </div>
+                  <div className="flex-1">
+                    <Label className="text-slate-300 text-sm">
+                      URL
+                    </Label>
+                    <input
+                      type="url"
+                      placeholder="Embed URL"
+                      value={embed.url || ''}
+                      onChange={(e) =>
+                        updateEmbed(index, {
+                          ...embed,
+                          url: e.target.value,
+                        })
+                      }
+                      className="mt-1 w-full px-3 py-2 bg-slate-600/50 border border-slate-500 rounded-md text-white placeholder:text-slate-400 focus:border-purple-500 focus:outline-none"
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <Label className="text-slate-300 text-sm">
+                    Description
+                  </Label>
+                  <Textarea
+                    placeholder="Embed description"
+                    value={embed.description || ''}
+                    onChange={(e) =>
+                      updateEmbed(index, {
+                        ...embed,
+                        description: e.target.value,
+                      })
+                    }
+                    className="mt-1 bg-slate-600/50 border-slate-500 text-white placeholder:text-slate-400 focus:border-purple-500"
+                    rows={3}
+                  />
+                </div>
+
+                <div>
+                  <Label className="text-slate-300 text-sm">
+                    Color
+                  </Label>
+                  <input
+                    type="color"
+                    value={`#${(embed.color || DISCORD_BLURPLE_COLOR).toString(16).padStart(6, '0')}`}
+                    onChange={(e) =>
+                      updateEmbed(index, {
+                        ...embed,
+                        color: Number.parseInt(
+                          e.target.value.slice(1),
+                          16,
+                        ),
+                      })
+                    }
+                    className="mt-1 w-full h-10 bg-slate-600/50 border border-slate-500 rounded-md"
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label className="text-slate-200 font-medium">
+                    Author
+                  </Label>
+                  <div className="flex items-center justify-between gap-2">
+                    {embed.author?.name ? (
+                      <div className="flex items-center gap-2 p-2 rounded-md bg-slate-700/50 border border-slate-600">
+                        <Avatar className="w-8 h-8">
+                          <AvatarImage
+                            src={
+                              embed.author.icon_url ||
+                              '/placeholder.svg'
                             }
-                            className="border-slate-500 data-[state=checked]:bg-purple-600 data-[state=checked]:border-purple-600"
                           />
-                          <Label
-                            htmlFor={`inline-${index}`}
-                            className="text-sm text-slate-200"
-                          >
-                            Inline
-                          </Label>
-                        </div>
+                          <AvatarFallback>
+                            {embed.author.name
+                              .slice(0, 2)
+                              .toUpperCase()}
+                          </AvatarFallback>
+                        </Avatar>
+                        <span className="text-white font-medium">
+                          {embed.author.name}
+                        </span>
                       </div>
-                      <Textarea
-                        value={field.value}
+                    ) : (
+                      <AvatarSelector
+                        onSelect={(avatar) => {
+                          updateEmbed(index, {
+                            ...embed,
+                            author: {
+                              name: avatar.username,
+                              icon_url: avatar.avatar_url,
+                            },
+                          });
+                        }}
+                      >
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          className="bg-slate-700 border-slate-600 text-white hover:bg-slate-600"
+                        >
+                          <Users className="w-4 h-4 mr-2" />
+                          Select Avatar
+                        </Button>
+                      </AvatarSelector>
+                    )}
+                    {embed.author?.name && (
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => {
+                          updateEmbed(index, {
+                            ...embed,
+                            author: undefined,
+                          });
+                        }}
+                        className="bg-red-700 border-red-600 text-white hover:bg-red-600"
+                      >
+                        Clear Author
+                      </Button>
+                    )}
+                  </div>
+                  {/* Manual Author Input Fields (conditionally rendered) */}
+                  {!embed.author?.name && (
+                    <div className="space-y-2">
+                      <Label className="text-slate-300 text-sm">
+                        Name
+                      </Label>
+                      <input
+                        type="text"
+                        placeholder="Author name"
+                        value={embed.author?.name || ''}
                         onChange={(e) =>
-                          updateField(index, { value: e.target.value })
+                          updateEmbed(index, {
+                            ...embed,
+                            author: {
+                              ...(embed.author || { name: '' }),
+                              name: e.target.value,
+                            },
+                          })
                         }
-                        placeholder="Field value (supports markdown)"
-                        rows={2}
-                        className="bg-slate-600/50 border-slate-500 text-white placeholder:text-slate-400 focus:border-purple-500"
+                        className="mt-1 w-full px-3 py-2 bg-slate-600/50 border border-slate-500 rounded-md text-white placeholder:text-slate-400 focus:border-purple-500 focus:outline-none"
+                      />
+                      <Label className="text-slate-300 text-sm">
+                        Icon URL
+                      </Label>
+                      <input
+                        type="url"
+                        placeholder="Author icon URL"
+                        value={embed.author?.icon_url || ''}
+                        onChange={(e) =>
+                          updateEmbed(index, {
+                            ...embed,
+                            author: {
+                              ...(embed.author || { name: '' }),
+                              icon_url: e.target.value,
+                            },
+                          })
+                        }
+                        className="mt-1 w-full px-3 py-2 bg-slate-600/50 border border-slate-500 rounded-md text-white placeholder:text-slate-400 focus:border-purple-500 focus:outline-none"
+                      />
+                      <Label className="text-slate-300 text-sm">
+                        URL
+                      </Label>
+                      <input
+                        type="url"
+                        placeholder="Author URL"
+                        value={embed.author?.url || ''}
+                        onChange={(e) =>
+                          updateEmbed(index, {
+                            ...embed,
+                            author: {
+                              ...(embed.author || { name: '' }),
+                              url: e.target.value,
+                            },
+                          })
+                        }
+                        className="mt-1 w-full px-3 py-2 bg-slate-600/50 border border-slate-500 rounded-md text-white placeholder:text-slate-400 focus:border-purple-500 focus:outline-none"
                       />
                     </div>
-                  </Card>
-                ))}
-            </div>
+                  )}
+                </div>
 
-            {/* Footer */}
-            <div className="space-y-4">
-              <h4 className="text-sm font-semibold text-purple-300 border-b border-purple-500/30 pb-1">
-                Footer
-              </h4>
-              <div className="grid grid-cols-2 gap-2">
-                <Input
-                  value={embed.footer?.text || ''}
-                  onChange={(e) =>
-                    updateEmbed({
-                      footer: e.target.value
-                        ? {
-                            text: e.target.value,
-                            icon_url: embed.footer?.icon_url,
-                          }
+                <div className="space-y-2">
+                  <Label className="text-slate-200 font-medium">
+                    Fields
+                  </Label>
+                  <Button
+                    onClick={() => addField(index)}
+                    size="sm"
+                    className="bg-purple-600 hover:bg-purple-700 text-white"
+                  >
+                    Add Field
+                  </Button>
+                  {embed.fields && embed.fields.length > 0 && (
+                    <div className="space-y-3 mt-2">
+                      {embed.fields.map((field, fieldIndex) => (
+                        <div
+                          key={fieldIndex}
+                          className="p-3 rounded-md bg-slate-600/50 border border-slate-500"
+                        >
+                          <div className="flex items-center justify-between mb-2">
+                            <Label className="text-slate-200 text-sm">
+                              Field {fieldIndex + 1}
+                            </Label>
+                            <Button
+                              onClick={() =>
+                                removeField(index, fieldIndex)
+                              }
+                              variant="outline"
+                              size="sm"
+                              className="border-red-600 text-red-400 hover:bg-red-600 hover:text-white bg-transparent"
+                            >
+                              Remove
+                            </Button>
+                          </div>
+                          <div>
+                            <Label className="text-slate-300 text-sm">
+                              Name
+                            </Label>
+                            <input
+                              type="text"
+                              placeholder="Field name"
+                              value={field.name}
+                              onChange={(e) =>
+                                updateField(index, fieldIndex, {
+                                  ...field,
+                                  name: e.target.value,
+                                })
+                              }
+                              className="mt-1 w-full px-3 py-2 bg-slate-700/50 border border-slate-600 rounded-md text-white placeholder:text-slate-400 focus:border-purple-500 focus:outline-none"
+                            />
+                          </div>
+                          <div className="mt-2">
+                            <Label className="text-slate-300 text-sm">
+                              Value
+                            </Label>
+                            <Textarea
+                              placeholder="Field value"
+                              value={field.value}
+                              onChange={(e) =>
+                                updateField(index, fieldIndex, {
+                                  ...field,
+                                  value: e.target.value,
+                                })
+                              }
+                              className="mt-1 bg-slate-700/50 border-slate-600 text-white placeholder:text-slate-400 focus:border-purple-500"
+                              rows={2}
+                            />
+                          </div>
+                          <div className="flex items-center space-x-2 mt-2">
+                            <Checkbox
+                              checked={field.inline}
+                              onCheckedChange={(checked) =>
+                                updateField(index, fieldIndex, {
+                                  ...field,
+                                  inline: !!checked,
+                                })
+                              }
+                              className="border-slate-500"
+                            />
+                            <Label className="text-slate-300 text-sm">
+                              Inline
+                            </Label>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+
+                <div className="flex gap-2">
+                  <div className="flex-1 space-y-2">
+                    <Label className="text-slate-200 font-medium">
+                      Image
+                    </Label>
+                    <input
+                      type="url"
+                      placeholder="Image URL"
+                      value={embed.image?.url || ''}
+                      onChange={(e) =>
+                        updateEmbed(index, {
+                          ...embed,
+                          image: { url: e.target.value },
+                        })
+                      }
+                      className="mt-1 w-full px-3 py-2 bg-slate-600/50 border border-slate-500 rounded-md text-white placeholder:text-slate-400 focus:border-purple-500 focus:outline-none"
+                    />
+                  </div>
+
+                  <div className="flex-1 space-y-2">
+                    <Label className="text-slate-200 font-medium">
+                      Thumbnail
+                    </Label>
+                    <input
+                      type="url"
+                      placeholder="Thumbnail URL"
+                      value={embed.thumbnail?.url || ''}
+                      onChange={(e) =>
+                        updateEmbed(index, {
+                          ...embed,
+                          thumbnail: { url: e.target.value },
+                        })
+                      }
+                      className="mt-1 w-full px-3 py-2 bg-slate-600/50 border border-slate-500 rounded-md text-white placeholder:text-slate-400 focus:border-purple-500 focus:outline-none"
+                    />
+                  </div>
+                </div>
+
+                <div className="space-y-2">
+                  <Label className="text-slate-200 font-medium">
+                    Footer
+                  </Label>
+                  <div className="flex gap-2">
+                    <div className="flex-1">
+                      <Label className="text-slate-300 text-sm">
+                        Text
+                      </Label>
+                      <input
+                        type="text"
+                        placeholder="Footer text"
+                        value={embed.footer?.text || ''}
+                        onChange={(e) =>
+                          updateEmbed(index, {
+                            ...embed,
+                            footer: {
+                              ...(embed.footer || { text: '' }),
+                              text: e.target.value,
+                            },
+                          })
+                        }
+                        className="mt-1 w-full px-3 py-2 bg-slate-600/50 border border-slate-500 rounded-md text-white placeholder:text-slate-400 focus:border-purple-500 focus:outline-none"
+                      />
+                    </div>
+                    <div className="flex-1">
+                      <Label className="text-slate-300 text-sm">
+                        Icon URL
+                      </Label>
+                      <input
+                        type="url"
+                        placeholder="Footer icon URL"
+                        value={embed.footer?.icon_url || ''}
+                        onChange={(e) =>
+                          updateEmbed(index, {
+                            ...embed,
+                            footer: {
+                              ...(embed.footer || { text: '' }),
+                              icon_url: e.target.value,
+                            },
+                          })
+                        }
+                        className="mt-1 w-full px-3 py-2 bg-slate-600/50 border border-slate-500 rounded-md text-white placeholder:text-slate-400 focus:border-purple-500 focus:outline-none"
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                <div className="space-y-2">
+                  <Label className="text-slate-200 font-medium">
+                    Timestamp
+                  </Label>
+                  <input
+                    type="datetime-local"
+                    value={
+                      embed.timestamp
+                        ? new Date(embed.timestamp)
+                            .toISOString()
+                            .slice(0, 16)
+                        : ''
+                    }
+                    onChange={(e) =>
+                      updateEmbed(index, {
+                        ...embed,
+                        timestamp: e.target.value
+                          ? new Date(
+                              e.target.value,
+                            ).toISOString()
                           : undefined,
-                    })
-                  }
-                  placeholder="Footer text"
-                  className="bg-slate-700/50 border-slate-600 text-white placeholder:text-slate-400 focus:border-purple-500"
-                />
-                <Input
-                  value={embed.footer?.icon_url || ''}
-                  onChange={(e) =>
-                    updateEmbed({
-                      footer: {
-                        ...(embed.footer || { text: '' }),
-                        icon_url: e.target.value,
-                      },
-                    })
-                  }
-                  placeholder="Footer icon URL"
-                  className="bg-slate-700/50 border-slate-600 text-white placeholder:text-slate-400 focus:border-purple-500"
-                />
+                      })
+                    }
+                    className="mt-1 w-full px-3 py-2 bg-slate-600/50 border border-slate-500 rounded-md text-white placeholder:text-slate-400 focus:border-purple-500 focus:outline-none"
+                  />
+                </div>
               </div>
             </div>
-          </CardContent>
-        </CollapsibleContent>
-      </Collapsible>
-    </Card>
+          ))}
+          </div>
+      )}
+    </ScrollArea>
   );
 }

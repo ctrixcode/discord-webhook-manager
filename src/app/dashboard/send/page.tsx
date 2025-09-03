@@ -22,7 +22,6 @@ import { api } from '@/lib/api';
 import type { PredefinedAvatar } from '@/lib/api/types/avatar';
 import { useQuery } from '@tanstack/react-query';
 import { AvatarSelector } from '@/components/avatars/avatar-selector';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { DiscordMessagePreview } from '@/components/discord-message-preview';
 import type { DiscordEmbed } from '@/lib/api/types/discord';
 import { useToast } from '@/hooks/use-toast';
@@ -33,7 +32,7 @@ import {
 } from '@/constants/discord';
 import { AxiosError } from 'axios';
 import Link from 'next/link';
-import { EmbedSection } from './EmbedSection';
+import { EmbedBuilder } from '../../../components/Embed-builder';
 
 export default function SendMessagePage() {
   const { toast } = useToast();
@@ -509,7 +508,7 @@ export default function SendMessagePage() {
                   
 
                   <TabsContent value="embeds" className="space-y-4 mt-4">
-                    <EmbedSection
+                    <EmbedBuilder
                       embeds={message.embeds}
                       onEmbedsChange={(newEmbeds) =>
                         setMessage((prev) => ({ ...prev, embeds: newEmbeds }))

@@ -18,7 +18,7 @@ import type {
 import type { DiscordEmbed } from '@/lib/api/types/discord';
 import { FileText, MessageSquare, Layers, Users } from 'lucide-react';
 import { PredefinedAvatar } from '@/lib/api/types/avatar';
-import { EmbedSection } from '@/app/dashboard/send/EmbedSection';
+import { EmbedBuilder } from '@/components/Embed-builder';
 
 interface TemplateFormProps {
   initialData?: MessageTemplate | null;
@@ -209,7 +209,7 @@ export const TemplateForm = React.forwardRef(function TemplateForm(
           </TabsContent>
 
           <TabsContent value="embeds" className="flex-1 p-4">
-              <EmbedSection embeds={embeds} onEmbedsChange={setEmbeds} />
+              <EmbedBuilder embeds={embeds} onEmbedsChange={setEmbeds} />
           </TabsContent>
         </Tabs>
       </div>
