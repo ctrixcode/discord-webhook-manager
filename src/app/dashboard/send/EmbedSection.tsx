@@ -10,6 +10,7 @@ import { AvatarSelector } from '@/components/avatars/avatar-selector';
 import { Users } from 'lucide-react';
 import type { DiscordEmbed } from '@/lib/api/types/discord';
 import { DISCORD_BLURPLE_COLOR, DISCORD_MAX_EMBEDS } from '@/constants/discord';
+import { ScrollArea } from '@/components/ui/scroll-area';
 
 interface EmbedSectionProps {
   embeds: DiscordEmbed[];
@@ -85,7 +86,7 @@ export function EmbedSection({ embeds, onEmbedsChange }: EmbedSectionProps) {
   };
 
   return (
-    <div className="space-y-4">
+    <ScrollArea className="flex flex-col max-h-[400px]">
       <div className="flex items-center justify-between">
         <div>
           <Label className="text-slate-200 font-medium">
@@ -114,7 +115,7 @@ export function EmbedSection({ embeds, onEmbedsChange }: EmbedSectionProps) {
           </p>
         </div>
       ) : (
-        <div className="space-y-4">
+          <div>
           {embeds.map((embed, index) => (
             <div
               key={index}
@@ -536,8 +537,8 @@ export function EmbedSection({ embeds, onEmbedsChange }: EmbedSectionProps) {
               </div>
             </div>
           ))}
-        </div>
+          </div>
       )}
-    </div>
+    </ScrollArea>
   );
 }
