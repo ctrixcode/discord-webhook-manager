@@ -9,16 +9,14 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { AvatarSelector } from '@/components/avatars/avatar-selector';
 import { Users } from 'lucide-react';
 import type { DiscordEmbed } from '@/lib/api/types/discord';
-import type { PredefinedAvatar } from '@/lib/api/types/avatar';
 import { DISCORD_BLURPLE_COLOR, DISCORD_MAX_EMBEDS } from '@/constants/discord';
 
 interface EmbedSectionProps {
   embeds: DiscordEmbed[];
   onEmbedsChange: (embeds: DiscordEmbed[]) => void;
-  avatars: PredefinedAvatar[];
 }
 
-export function EmbedSection({ embeds, onEmbedsChange, avatars }: EmbedSectionProps) {
+export function EmbedSection({ embeds, onEmbedsChange }: EmbedSectionProps) {
   const addEmbed = () => {
     const newEmbed: DiscordEmbed = {
       title: '',
