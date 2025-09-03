@@ -1,3 +1,5 @@
+export const FILE_SIZE_UPLOAD_LIMIT = 5 * 1024 * 1024;
+
 // Free
 export const FREE_PLAN_DAILY_WEBHOOK_MESSAGE_LIMIT = 15; // Default for free users
 export const DEFAULT_MEDIA_STORAGE_LIMIT_BYTES = 15 * 1024 * 1024; // 15 MB in bytes

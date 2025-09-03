@@ -11,6 +11,7 @@ import {
   sanitizerPlugin,
 } from './middlewares';
 import routes from './routes/index';
+import { FILE_SIZE_UPLOAD_LIMIT } from './config/usage';
 
 dotenv.config();
 
@@ -18,7 +19,11 @@ const app = Fastify({ logger: false, requestTimeout: 30000 });
 
 // Register plugins
 app.register(helmet);
-app.register(multipart);
+app.register(multipart, {
+  limits: {
+    fileSize: FILE_SIZE_UPLOAD_LIMIT,
+  },
+});
 app.register(loggingPlugin);
 app.register(corsPlugin);
 app.register(rateLimiterPlugin);
