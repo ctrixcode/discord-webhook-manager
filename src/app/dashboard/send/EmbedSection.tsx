@@ -86,8 +86,8 @@ export function EmbedSection({ embeds, onEmbedsChange }: EmbedSectionProps) {
   };
 
   return (
-    <ScrollArea className="flex flex-col max-h-[400px]">
-      <div className="flex items-center justify-between">
+    <ScrollArea className="flex flex-col overflow-hidden max-h-[400px]">
+      <div className="flex items-center justify-between mb-4">
         <div>
           <Label className="text-slate-200 font-medium">
             Discord Embeds
