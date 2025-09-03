@@ -58,13 +58,16 @@ export const TemplateForm = React.forwardRef(function TemplateForm(
 
   React.useImperativeHandle(ref, () => ({
     submit: () => {
-      onSave({
+      const payload:CreateMessageTemplateRequest ={
         name,
         description,
         content,
-        avatar_ref: selectedAvatar?.id || '',
         embeds,
-      });
+      }
+      if(selectedAvatar && avatars.some(a => a.id === selectedAvatar.id)) {
+        payload.avatar_ref = selectedAvatar.id;
+      }
+      onSave(payload);
     },
   }));
 

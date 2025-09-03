@@ -28,7 +28,7 @@ export function EmbedBuilder({ embeds, onEmbedsChange }: EmbedBuilderProps) {
     };
     onEmbedsChange([...embeds, newEmbed]);
   };
-  console.log(embeds);
+
 
   const updateEmbed = (index: number, updatedEmbed: DiscordEmbed) => {
     const newEmbeds = embeds.map((e, i) => {
