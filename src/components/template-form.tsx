@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, SetStateAction } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -19,6 +19,8 @@ import type { DiscordEmbed } from '@/lib/api/types/discord';
 import { FileText, MessageSquare, Layers, Users } from 'lucide-react';
 import { PredefinedAvatar } from '@/lib/api/types/avatar';
 import { EmbedBuilder } from '@/components/Embed-builder';
+import { useQuery } from '@tanstack/react-query';
+import { api } from '@/lib/api';
 
 interface TemplateFormProps {
   initialData?: MessageTemplate | null;
@@ -49,6 +51,10 @@ export const TemplateForm = React.forwardRef(function TemplateForm(
     user_id: 'predefined-user-id',
   });
   const [embeds, setEmbeds] = useState<DiscordEmbed[]>([]);
+  const { data: avatars = [] } = useQuery<PredefinedAvatar[]>({
+    queryKey: ['avatars'],
+    queryFn: api.avatar.getAllAvatars,
+  });
 
   React.useImperativeHandle(ref, () => ({
     submit: () => {
@@ -67,6 +73,13 @@ export const TemplateForm = React.forwardRef(function TemplateForm(
       setName(initialData.name);
       setDescription(initialData.description || '');
       setContent(initialData.content);
+      if (avatars && avatars.length > 0) {
+        setSelectedAvatar(
+          avatars.find(
+            (a) => a.id === initialData.avatar_ref,
+          ) as PredefinedAvatar,
+        );
+      }
       // For display, if initialData has avatar_ref, we might need to fetch the actual URL
       // For now, assuming initialData.avatar_ref can be directly used as a URL for preview if it's a full URL
       // or we need a mechanism to resolve ID to URL.
@@ -209,20 +222,20 @@ export const TemplateForm = React.forwardRef(function TemplateForm(
           </TabsContent>
 
           <TabsContent value="embeds" className="flex-1 p-4">
-              <EmbedBuilder embeds={embeds} onEmbedsChange={setEmbeds} />
+            <EmbedBuilder embeds={embeds} onEmbedsChange={setEmbeds} />
           </TabsContent>
         </Tabs>
       </div>
 
       {/* Right Side - Live Preview */}
       <div className="w-1/2 flex flex-col">
-          <ScrollArea className="h-[600px]">
-            <DiscordMessagePreview
-              content={content}
-              avatar={selectedAvatar}
-              embeds={embeds.length > 0 ? embeds : undefined}
-            />
-          </ScrollArea>
+        <ScrollArea className="h-[600px]">
+          <DiscordMessagePreview
+            content={content}
+            avatar={selectedAvatar}
+            embeds={embeds.length > 0 ? embeds : undefined}
+          />
+        </ScrollArea>
       </div>
     </div>
   );
