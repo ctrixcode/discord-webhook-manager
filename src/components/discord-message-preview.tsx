@@ -27,6 +27,7 @@ export function DiscordMessagePreview({
     user_id: 'predefined-user-id',
   },
 }: DiscordMessagePreviewProps) {
+  const clonedEmbeds = embeds ? JSON.parse(JSON.stringify(embeds)) : [];
   const [userIds, setUserIds] = useState<string[]>([]);
   const [userMap, setUserMap] = useState<Map<string, string>>(new Map());
 
@@ -66,7 +67,10 @@ export function DiscordMessagePreview({
     const uniqueUserIds = Array.from(new Set(allUserIds));
 
     // Only update if the userIds have actually changed to prevent infinite loops
-    if (uniqueUserIds.length !== userIds.length || uniqueUserIds.some((id, index) => id !== userIds[index])) {
+    if (
+      uniqueUserIds.length !== userIds.length ||
+      uniqueUserIds.some((id, index) => id !== userIds[index])
+    ) {
       setUserIds(uniqueUserIds);
     }
   }, [content, embeds]);
@@ -104,8 +108,6 @@ export function DiscordMessagePreview({
     }
   }, [userQueriesResults, userIds, userMap]);
 
-  // Create a deep copy of embeds to ensure immutability within the component
-  const clonedEmbeds = embeds ? JSON.parse(JSON.stringify(embeds)) : [];
   return (
     <div className="bg-[#313338] text-white p-4 rounded-lg font-sans text-[15px] leading-[1.375]">
       <div className="flex items-start gap-4">

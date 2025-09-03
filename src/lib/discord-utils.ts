@@ -1,13 +1,19 @@
 // Discord utility functions
 
 // Convert hex color to Discord color integer
-export const hexToDiscordColor = (hex: string): number => {
-  return Number.parseInt(hex.replace('#', ''), 16);
+export const hexToDiscordColor = (hex: string): string => {
+  return Number.parseInt(hex.replace('#', ''), 16).toString();
 };
 
-// Convert Discord color integer to hex
-export const discordColorToHex = (color: number): string => {
-  return `#${color.toString(16).padStart(6, '0')}`;
+// Convert Discord color integer (or string decimal) to hex
+export const discordColorToHex = (color: number | string): string => {
+  let numColor: number;
+  if (typeof color === 'string') {
+    numColor = Number.parseInt(color, 10);
+  } else {
+    numColor = color;
+  }
+  return `#${numColor.toString(16).padStart(6, '0')}`;
 };
 
 // Validate Discord webhook URL

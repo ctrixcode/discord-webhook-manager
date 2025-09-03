@@ -2,7 +2,7 @@ export interface DiscordEmbed {
   title?: string;
   description?: string;
   url?: string;
-  color?: number;
+  color?: string;
   author?: {
     name: string;
     icon_url?: string;
