@@ -89,9 +89,7 @@ export function EmbedBuilder({ embeds, onEmbedsChange }: EmbedBuilderProps) {
     <ScrollArea className="flex flex-col overflow-hidden max-h-[400px]">
       <div className="flex items-center justify-between mb-4">
         <div>
-          <Label className="text-slate-200 font-medium">
-            Discord Embeds
-          </Label>
+          <Label className="text-slate-200 font-medium">Discord Embeds</Label>
           <p className="text-sm text-slate-400">
             Add rich embeds to your message (max 10)
           </p>
@@ -110,12 +108,11 @@ export function EmbedBuilder({ embeds, onEmbedsChange }: EmbedBuilderProps) {
         <div className="text-center py-8 text-slate-400">
           <p>No embeds added yet</p>
           <p className="text-sm">
-            Click &quot;Add Embed&quot; to create rich message
-            content
+            Click &quot;Add Embed&quot; to create rich message content
           </p>
         </div>
       ) : (
-          <div>
+        <div>
           {embeds.map((embed, index) => (
             <div
               key={index}
@@ -138,9 +135,7 @@ export function EmbedBuilder({ embeds, onEmbedsChange }: EmbedBuilderProps) {
               <div className="space-y-3">
                 <div className="flex gap-2">
                   <div className="flex-1">
-                    <Label className="text-slate-300 text-sm">
-                      Title
-                    </Label>
+                    <Label className="text-slate-300 text-sm">Title</Label>
                     <input
                       type="text"
                       placeholder="Embed title"
@@ -155,9 +150,7 @@ export function EmbedBuilder({ embeds, onEmbedsChange }: EmbedBuilderProps) {
                     />
                   </div>
                   <div className="flex-1">
-                    <Label className="text-slate-300 text-sm">
-                      URL
-                    </Label>
+                    <Label className="text-slate-300 text-sm">URL</Label>
                     <input
                       type="url"
                       placeholder="Embed URL"
@@ -174,9 +167,7 @@ export function EmbedBuilder({ embeds, onEmbedsChange }: EmbedBuilderProps) {
                 </div>
 
                 <div>
-                  <Label className="text-slate-300 text-sm">
-                    Description
-                  </Label>
+                  <Label className="text-slate-300 text-sm">Description</Label>
                   <Textarea
                     placeholder="Embed description"
                     value={embed.description || ''}
@@ -192,19 +183,14 @@ export function EmbedBuilder({ embeds, onEmbedsChange }: EmbedBuilderProps) {
                 </div>
 
                 <div>
-                  <Label className="text-slate-300 text-sm">
-                    Color
-                  </Label>
+                  <Label className="text-slate-300 text-sm">Color</Label>
                   <input
                     type="color"
                     value={`#${(embed.color || DISCORD_BLURPLE_COLOR).toString(16).padStart(6, '0')}`}
                     onChange={(e) =>
                       updateEmbed(index, {
                         ...embed,
-                        color: Number.parseInt(
-                          e.target.value.slice(1),
-                          16,
-                        ),
+                        color: Number.parseInt(e.target.value.slice(1), 16),
                       })
                     }
                     className="mt-1 w-full h-10 bg-slate-600/50 border border-slate-500 rounded-md"
@@ -212,23 +198,16 @@ export function EmbedBuilder({ embeds, onEmbedsChange }: EmbedBuilderProps) {
                 </div>
 
                 <div className="space-y-2">
-                  <Label className="text-slate-200 font-medium">
-                    Author
-                  </Label>
+                  <Label className="text-slate-200 font-medium">Author</Label>
                   <div className="flex items-center justify-between gap-2">
                     {embed.author?.name ? (
                       <div className="flex items-center gap-2 p-2 rounded-md bg-slate-700/50 border border-slate-600">
                         <Avatar className="w-8 h-8">
                           <AvatarImage
-                            src={
-                              embed.author.icon_url ||
-                              '/placeholder.svg'
-                            }
+                            src={embed.author.icon_url || '/placeholder.svg'}
                           />
                           <AvatarFallback>
-                            {embed.author.name
-                              .slice(0, 2)
-                              .toUpperCase()}
+                            {embed.author.name.slice(0, 2).toUpperCase()}
                           </AvatarFallback>
                         </Avatar>
                         <span className="text-white font-medium">
@@ -276,45 +255,47 @@ export function EmbedBuilder({ embeds, onEmbedsChange }: EmbedBuilderProps) {
                   {/* Manual Author Input Fields (conditionally rendered) */}
                   {!embed.author?.name && (
                     <div className="space-y-2">
-                      <Label className="text-slate-300 text-sm">
-                        Name
-                      </Label>
-                      <input
-                        type="text"
-                        placeholder="Author name"
-                        value={embed.author?.name || ''}
-                        onChange={(e) =>
-                          updateEmbed(index, {
-                            ...embed,
-                            author: {
-                              ...(embed.author || { name: '' }),
-                              name: e.target.value,
-                            },
-                          })
-                        }
-                        className="mt-1 w-full px-3 py-2 bg-slate-600/50 border border-slate-500 rounded-md text-white placeholder:text-slate-400 focus:border-purple-500 focus:outline-none"
-                      />
-                      <Label className="text-slate-300 text-sm">
-                        Icon URL
-                      </Label>
-                      <input
-                        type="url"
-                        placeholder="Author icon URL"
-                        value={embed.author?.icon_url || ''}
-                        onChange={(e) =>
-                          updateEmbed(index, {
-                            ...embed,
-                            author: {
-                              ...(embed.author || { name: '' }),
-                              icon_url: e.target.value,
-                            },
-                          })
-                        }
-                        className="mt-1 w-full px-3 py-2 bg-slate-600/50 border border-slate-500 rounded-md text-white placeholder:text-slate-400 focus:border-purple-500 focus:outline-none"
-                      />
-                      <Label className="text-slate-300 text-sm">
-                        URL
-                      </Label>
+                      <div className="flex justify-between gap-2">
+                        <div className="w-full">
+                          <Label className="text-slate-300 text-sm">Name</Label>
+                          <input
+                            type="text"
+                            placeholder="Author name"
+                            value={embed.author?.name || ''}
+                            onChange={(e) =>
+                              updateEmbed(index, {
+                                ...embed,
+                                author: {
+                                  ...(embed.author || { name: '' }),
+                                  name: e.target.value,
+                                },
+                              })
+                            }
+                            className="mt-1 w-full px-3 py-2 bg-slate-600/50 border border-slate-500 rounded-md text-white placeholder:text-slate-400 focus:border-purple-500 focus:outline-none"
+                          />
+                        </div>
+                        <div className="w-full">
+                          <Label className="text-slate-300 text-sm">
+                            Icon URL
+                          </Label>
+                          <input
+                            type="url"
+                            placeholder="Author icon URL"
+                            value={embed.author?.icon_url || ''}
+                            onChange={(e) =>
+                              updateEmbed(index, {
+                                ...embed,
+                                author: {
+                                  ...(embed.author || { name: '' }),
+                                  icon_url: e.target.value,
+                                },
+                              })
+                            }
+                            className="mt-1 w-full px-3 py-2 bg-slate-600/50 border border-slate-500 rounded-md text-white placeholder:text-slate-400 focus:border-purple-500 focus:outline-none"
+                          />
+                        </div>
+                      </div>
+                      <Label className="text-slate-300 text-sm">URL</Label>
                       <input
                         type="url"
                         placeholder="Author URL"
@@ -335,9 +316,7 @@ export function EmbedBuilder({ embeds, onEmbedsChange }: EmbedBuilderProps) {
                 </div>
 
                 <div className="space-y-2">
-                  <Label className="text-slate-200 font-medium">
-                    Fields
-                  </Label>
+                  <Label className="text-slate-200 font-medium">Fields</Label>
                   <Button
                     onClick={() => addField(index)}
                     size="sm"
@@ -357,9 +336,7 @@ export function EmbedBuilder({ embeds, onEmbedsChange }: EmbedBuilderProps) {
                               Field {fieldIndex + 1}
                             </Label>
                             <Button
-                              onClick={() =>
-                                removeField(index, fieldIndex)
-                              }
+                              onClick={() => removeField(index, fieldIndex)}
                               variant="outline"
                               size="sm"
                               className="border-red-600 text-red-400 hover:bg-red-600 hover:text-white bg-transparent"
@@ -424,9 +401,7 @@ export function EmbedBuilder({ embeds, onEmbedsChange }: EmbedBuilderProps) {
 
                 <div className="flex gap-2">
                   <div className="flex-1 space-y-2">
-                    <Label className="text-slate-200 font-medium">
-                      Image
-                    </Label>
+                    <Label className="text-slate-200 font-medium">Image</Label>
                     <input
                       type="url"
                       placeholder="Image URL"
@@ -461,14 +436,10 @@ export function EmbedBuilder({ embeds, onEmbedsChange }: EmbedBuilderProps) {
                 </div>
 
                 <div className="space-y-2">
-                  <Label className="text-slate-200 font-medium">
-                    Footer
-                  </Label>
+                  <Label className="text-slate-200 font-medium">Footer</Label>
                   <div className="flex gap-2">
                     <div className="flex-1">
-                      <Label className="text-slate-300 text-sm">
-                        Text
-                      </Label>
+                      <Label className="text-slate-300 text-sm">Text</Label>
                       <input
                         type="text"
                         placeholder="Footer text"
@@ -486,9 +457,7 @@ export function EmbedBuilder({ embeds, onEmbedsChange }: EmbedBuilderProps) {
                       />
                     </div>
                     <div className="flex-1">
-                      <Label className="text-slate-300 text-sm">
-                        Icon URL
-                      </Label>
+                      <Label className="text-slate-300 text-sm">Icon URL</Label>
                       <input
                         type="url"
                         placeholder="Footer icon URL"
@@ -516,18 +485,14 @@ export function EmbedBuilder({ embeds, onEmbedsChange }: EmbedBuilderProps) {
                     type="datetime-local"
                     value={
                       embed.timestamp
-                        ? new Date(embed.timestamp)
-                            .toISOString()
-                            .slice(0, 16)
+                        ? new Date(embed.timestamp).toISOString().slice(0, 16)
                         : ''
                     }
                     onChange={(e) =>
                       updateEmbed(index, {
                         ...embed,
                         timestamp: e.target.value
-                          ? new Date(
-                              e.target.value,
-                            ).toISOString()
+                          ? new Date(e.target.value).toISOString()
                           : undefined,
                       })
                     }
@@ -537,7 +502,7 @@ export function EmbedBuilder({ embeds, onEmbedsChange }: EmbedBuilderProps) {
               </div>
             </div>
           ))}
-          </div>
+        </div>
       )}
     </ScrollArea>
   );
