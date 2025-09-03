@@ -11,6 +11,7 @@ import { templateQueries } from '@/lib/api/queries/message-template';
 import type { MessageTemplate, CreateMessageTemplateRequest, UpdateMessageTemplateRequest } from '@/lib/api/types/message-template';
 import { TemplateForm } from '@/components/template-form';
 import { ArrowLeft, Save } from 'lucide-react';
+import { Spinner } from '@/components/ui/spinner';
 
 export default function CreateTemplatePage() {
   const router = useRouter();
@@ -23,7 +24,7 @@ export default function CreateTemplatePage() {
   }
   const templateFormRef = useRef<TemplateFormRef>(null);
 
-  const { data: existingTemplate } = useQuery<MessageTemplate>({
+  const { data: existingTemplate, isLoading } = useQuery<MessageTemplate>({
     queryKey: ['template', templateId],
     queryFn: () => templateQueries.getTemplateById(templateId!),
     enabled: !!templateId,
@@ -57,7 +58,7 @@ export default function CreateTemplatePage() {
   return (
     <div className="h-screen flex flex-col">
       {/* Header */}
-      <div className="flex justify-between items-center p-4 border-b border-slate-700/50 bg-slate-900/50 backdrop-blur-sm sticky top-0 z-10">
+      <div className="flex justify-between items-center p-4 border-b border-slate-700/50 bg-slate-900/50 backdrop-blur-sm">
         <div className="flex justify-center items-center p-4 gap-4">
           <Button
             variant="ghost"
@@ -87,13 +88,19 @@ export default function CreateTemplatePage() {
         </Button>
       </div>
 
-      <TemplateForm
-        ref={templateFormRef}
-        initialData={existingTemplate}
-        onSave={saveTemplate}
-        isSaving={isPending}
-        saveError={error}
-      />
+      {templateId && isLoading ? (
+        <div className="flex flex-1 items-center justify-center">
+          <Spinner size={48} className="text-primary" />
+        </div>
+      ) : (
+        <TemplateForm
+          ref={templateFormRef}
+          initialData={existingTemplate}
+          onSave={saveTemplate}
+          isSaving={isPending}
+          saveError={error}
+        />
+      )}
     </div>
   );
 }
