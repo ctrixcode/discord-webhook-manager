@@ -57,16 +57,16 @@ export const uploadImage = async (
 
 export const deleteImage = async (
   publicId: string,
-  userId: string, // Added userId
-  mediaSize: number // Added mediaSize in bytes (size of the image being deleted)
+  userId: string,
+  mediaSize: number
 ) => {
   try {
     const result = await cloudinary.uploader.destroy(publicId);
     // Update user's media storage after successful deletion
-    await userUsageService.updateMediaStorageUsed(userId, -mediaSize); // Subtract size
+    await userUsageService.updateMediaStorageUsed(userId, -mediaSize);
     return result;
   } catch (error) {
-    logger.error('Cloudinary delete error:', error); // Changed to logger.error
-    throw error; // Re-throw the original error
+    logger.error('Cloudinary delete error:', error);
+    throw error;
   }
 };
