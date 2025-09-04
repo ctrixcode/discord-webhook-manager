@@ -100,3 +100,14 @@ export class ExternalApiError extends ApiError {
     this.source = source;
   }
 }
+
+export class BadRequestError extends ApiError {
+  constructor(
+    message: string,
+    errorCode: string,
+    statusCode: number = HttpStatusCode.BAD_REQUEST
+  ) {
+    super(message, errorCode, statusCode);
+    this.name = 'BadRequestError';
+  }
+}
