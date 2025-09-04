@@ -1,36 +1,44 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Discord Webhook Manager
+
+The Discord Webhook Manager is a powerful and intuitive platform designed to streamline and enhance how Discord server administrators and users manage their server announcements and messages. It eliminates the need for manual work, expensive paid bots, or complex custom bot development by providing a centralized, user-friendly interface for all your Discord messaging needs.
+
+## Problem Solved
+Discord server administrators often face challenges when trying to send custom announcements with unique avatars and usernames. This typically requires:
+
+*   **Manual Work**: Tediously creating and sending messages through webhooks for each announcement.
+*   **Paid Bots**: Investing in premium bot services that offer custom messaging features.
+*   **Custom Bots**: Developing and maintaining their own custom Discord bots, which can be time-consuming and require technical expertise.
+
+The Discord Webhook Manager addresses these pain points by offering a free, convenient, and feature-rich alternative.
+
+## Key Features
+*   **Comprehensive Webhook Management**: Easily create, view, edit, and delete all your Discord webhooks from a single dashboard.
+*   **Custom Avatar Creation**: Design and save multiple custom avatars for different announcement types or personas, allowing for dynamic and engaging messaging.
+*   **Reusable Message Templates**: Create and store message templates, including rich embeds, to quickly send recurring announcements or pre-formatted content.
+*   **Intuitive Message Composer**: Compose messages with a user-friendly interface, incorporating custom avatars, usernames, and embeds.
+*   **Real-time Discord Preview**: See exactly how your message will appear on Discord before you send it, ensuring perfect formatting and presentation.
+*   **No Coding Required**: A completely no-code solution, making advanced Discord messaging accessible to everyone.
+*   **Cost-Effective**: Eliminate the need for paid bot subscriptions or the overhead of custom bot development.
+
+## Target Audience
+This platform is specifically geared towards:
+*   **Discord Server Administrators**: Those who manage Discord servers and frequently make announcements.
+*   **Community Managers**: Individuals responsible for engaging with their community on Discord.
+*   **Anyone with a Discord Server**: Users who want to send customized messages without the hassle of manual webhook interaction or complex bot setups.
+
+## Technologies Used
+*   Next.js
+*   React
+*   TypeScript
+*   TanStack Query
+*   Radix UI
+*   Tailwind CSS
 
 ## Getting Started
+*(Instructions on how to set up and run the project will go here.)*
 
-First, run the development server:
+## Contributing
+*(Guidelines for contributing to the project will go here.)*
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
-
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
-
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
-
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## License
+*(License information will go here.)*

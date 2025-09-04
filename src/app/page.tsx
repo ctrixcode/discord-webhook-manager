@@ -22,8 +22,8 @@ export default async function HomePage() {
           Supercharge Your Discord Communication
         </h1>
         <p className="text-xl md:text-2xl mb-10 max-w-4xl leading-relaxed opacity-90">
-          Effortlessly manage, automate, and send rich messages to your Discord channels.
-          Streamline announcements, updates, and interactions with our intuitive Webhook Manager.
+          Eliminate manual work, costly bots, and complex custom solutions. Effortlessly manage, automate, and send rich messages to your Discord channels,
+          streamlining announcements and interactions with our intuitive Webhook Manager.
         </p>
         <a
           href={isLoggedIn ? "/dashboard" : "/login"}
@@ -44,14 +44,14 @@ export default async function HomePage() {
             <div className="bg-slate-700 bg-opacity-70 p-8 rounded-lg shadow-lg transform hover:scale-105 transition duration-300 ease-in-out">
               <h3 className="text-2xl font-semibold mb-4">Centralized Webhook Management</h3>
               <p className="text-lg opacity-80">
-                Keep all your Discord webhooks organized in one place. Easily add, edit, and delete webhooks without juggling multiple Discord servers.
+                Keep all your Discord webhooks organized in one place. Easily add, edit, and delete webhooks, eliminating the hassle of juggling multiple Discord servers or manual configurations.
               </p>
             </div>
             {/* Feature 2 */}
             <div className="bg-slate-700 bg-opacity-70 p-8 rounded-lg shadow-lg transform hover:scale-105 transition duration-300 ease-in-out">
               <h3 className="text-2xl font-semibold mb-4">Rich Message Composition</h3>
               <p className="text-lg opacity-80">
-                Craft stunning Discord messages with full support for embeds, custom avatars, and usernames. Make your announcements stand out.
+                Craft stunning Discord messages with full support for embeds, custom avatars, and usernames. Make your announcements stand out without the need for custom bots or tedious manual work.
               </p>
             </div>
             {/* Feature 3 - Scheduled Messaging (Temporarily commented out) */}
@@ -67,7 +67,7 @@ export default async function HomePage() {
             <div className="bg-slate-700 bg-opacity-70 p-8 rounded-lg shadow-lg transform hover:scale-105 transition duration-300 ease-in-out">
               <h3 className="text-2xl font-semibold mb-4">Custom Avatars & Identities</h3>
               <p className="text-lg opacity-80">
-                Define and reuse custom avatars and usernames for your webhook messages, giving each message a unique identity.
+                Define and reuse custom avatars and usernames for your webhook messages, allowing for dynamic and engaging announcements tailored to different requirements.
               </p>
             </div>
             {/* Feature 5 */}
