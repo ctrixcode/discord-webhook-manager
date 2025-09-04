@@ -23,7 +23,7 @@ export function EmbedBuilder({ embeds, onEmbedsChange }: EmbedBuilderProps) {
     const newEmbed: DiscordEmbed = {
       title: '',
       description: '',
-      color: DISCORD_BLURPLE_COLOR, // Discord's default blurple color
+      color: String(DISCORD_BLURPLE_COLOR), // Discord's default blurple color
       fields: [],
     };
     onEmbedsChange([...embeds, newEmbed]);
