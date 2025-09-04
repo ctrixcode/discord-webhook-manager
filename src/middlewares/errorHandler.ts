@@ -3,91 +3,76 @@ import { logger } from '../utils';
 import { HttpStatusCode } from '../utils/httpcode';
 import { ErrorMessages } from '../utils/errorMessages';
 import {
-  UsageLimitExceededError,
   InvalidInputError,
-  AuthenticationError,
   NotFoundError,
   InternalServerError,
   ExternalApiError,
+  ApiError,
 } from '../utils/errors';
 import { sendErrorResponse } from '../utils/responseHandler';
+import { FastifyReply, FastifyRequest } from 'fastify';
 
 export default fp(async fastify => {
   fastify.setNotFoundHandler((request, reply) => {
     logger.warn(`Route not found: ${request.url}`);
+    const notFoundError = new NotFoundError(
+      ErrorMessages.Generic.NOT_FOUND_ERROR.message,
+      ErrorMessages.Generic.NOT_FOUND_ERROR.code,
+      HttpStatusCode.NOT_FOUND
+    );
     sendErrorResponse(
       reply,
-      HttpStatusCode.NOT_FOUND,
-      ErrorMessages.Generic.NOT_FOUND_ERROR.code,
-      ErrorMessages.Generic.NOT_FOUND_ERROR.message,
+      notFoundError.statusCode,
+      notFoundError.errorCode,
+      notFoundError.message,
       { path: request.url }
     );
   });
 
-  fastify.setErrorHandler((error, request, reply) => {
-    logger.error('Unhandled error:', error); // Log the entire error object
+  fastify.setErrorHandler(
+    (error: Error, request: FastifyRequest, reply: FastifyReply) => {
+      logger.error('Unhandled error:', error);
 
-    let statusCode = HttpStatusCode.INTERNAL_SERVER_ERROR;
-    let errorCode: string | undefined =
-      ErrorMessages.Generic.INTERNAL_SERVER_ERROR.code;
-    let message: string | undefined =
-      ErrorMessages.Generic.INTERNAL_SERVER_ERROR.message;
-    let details: unknown | undefined;
+      let statusCode: number = HttpStatusCode.INTERNAL_SERVER_ERROR;
+      let errorCode: string = ErrorMessages.Generic.INTERNAL_SERVER_ERROR.code;
+      let message: string = ErrorMessages.Generic.INTERNAL_SERVER_ERROR.message;
+      let details: unknown | undefined;
 
-    if (error instanceof UsageLimitExceededError) {
-      statusCode = error.statusCode;
-      errorCode = error.type; // This is already a key-like string (e.g., 'webhook_limit')
-      message = error.message;
-    } else if (error instanceof InvalidInputError) {
-      statusCode = error.statusCode;
-      errorCode = ErrorMessages.Generic.INVALID_INPUT_ERROR.code;
-      message = error.message;
-      details = error.details;
-    } else if (error instanceof AuthenticationError) {
-      statusCode = error.statusCode;
-      errorCode = ErrorMessages.Generic.AUTHENTICATION_ERROR.code;
-      message = error.message;
-    } else if (error instanceof NotFoundError) {
-      statusCode = error.statusCode;
-      errorCode = ErrorMessages.Generic.NOT_FOUND_ERROR.code;
-      message = error.message;
-    } else if (error instanceof ExternalApiError) {
-      statusCode = error.statusCode;
-      errorCode = ErrorMessages.Generic.EXTERNAL_API_ERROR.code;
-      message = ErrorMessages.Generic.SOMETHING_WENT_WENT_ERROR.message;
-      details = { source: error.source };
-    } else if (error instanceof InternalServerError) {
-      statusCode = error.statusCode;
-      errorCode = ErrorMessages.Generic.INTERNAL_SERVER_ERROR.code;
-      message = error.message;
-    } else if (error instanceof Error) {
-      message =
-        process.env.NODE_ENV === 'development'
-          ? error.message
-          : ErrorMessages.Generic.INTERNAL_SERVER_ERROR.message;
-      errorCode =
-        error.code || ErrorMessages.Generic.INTERNAL_SERVER_ERROR.code;
-    } else {
-      // Fallback for non-Error objects
-      message = ErrorMessages.Generic.INTERNAL_SERVER_ERROR.message;
-      errorCode = ErrorMessages.Generic.INTERNAL_SERVER_ERROR.code;
+      // Use a type guard to check if the error is an instance of our custom ApiError
+      if (error instanceof ApiError) {
+        statusCode = error.statusCode;
+        errorCode = error.errorCode;
+        message = error.message;
+
+        if (error instanceof InvalidInputError) {
+          details = error.details;
+        } else if (error instanceof ExternalApiError) {
+          details = { source: error.source };
+          // For external API errors, we might want a more generic message in production
+          if (process.env.NODE_ENV === 'production') {
+            message = ErrorMessages.Generic.SOMETHING_WENT_WENT_ERROR.message;
+          }
+        }
+        // For other ApiErrors (NotFoundError, AuthenticationError, UsageLimitExceededError),
+        // message and errorCode are already set correctly from the ApiError base class.
+      } else {
+        // This is the catch-all for unexpected, non-operational errors (bugs)
+        // We create an InternalServerError to ensure a consistent response structure
+        const internalError = new InternalServerError(
+          ErrorMessages.Generic.INTERNAL_SERVER_ERROR.message,
+          ErrorMessages.Generic.INTERNAL_SERVER_ERROR.code
+        );
+        statusCode = internalError.statusCode;
+        errorCode = internalError.errorCode;
+        message = internalError.message;
+
+        // In production, always use a generic message for unexpected errors
+        if (process.env.NODE_ENV === 'production') {
+          message = ErrorMessages.Generic.SOMETHING_WENT_WENT_ERROR.message;
+        }
+      }
+
+      sendErrorResponse(reply, statusCode, errorCode, message, details);
     }
-
-    // Ensure message is generic in production for unexpected errors
-    if (
-      process.env.NODE_ENV === 'production' &&
-      !(
-        error instanceof UsageLimitExceededError ||
-        error instanceof InvalidInputError ||
-        error instanceof AuthenticationError ||
-        error instanceof NotFoundError ||
-        error instanceof ExternalApiError
-      )
-    ) {
-      message = ErrorMessages.Generic.SOMETHING_WENT_WENT_ERROR.message; // Use the most generic message for unhandled errors in production
-      errorCode = ErrorMessages.Generic.INTERNAL_SERVER_ERROR.code; // Ensure generic code too
-    }
-
-    sendErrorResponse(reply, statusCode, errorCode, message, details);
-  });
+  );
 });
