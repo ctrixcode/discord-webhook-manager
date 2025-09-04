@@ -117,7 +117,7 @@ export const uploadAvatar = async (
       reply.status(error.statusCode).send({
         success: false,
         message: error.message,
-        code: error.type,
+        code: error.errorCode,
       });
     } else if (error instanceof Error) {
       reply

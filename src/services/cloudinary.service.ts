@@ -24,7 +24,7 @@ export const uploadImage = async (
     if (await userUsageService.isUserMediaLimitReached(userId, mediaSize)) {
       throw new UsageLimitExceededError(
         'Overall media storage limit exceeded. Upgrade your plan to upload more.',
-        'media_limit',
+        'MEDIA_LIMIT',
         403
       ); // Throw custom error
     }

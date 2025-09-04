@@ -227,7 +227,7 @@ export const sendMessage = async (
   if (await userUsageService.isUserWebhookLimitReached(userId)) {
     throw new UsageLimitExceededError(
       'Daily webhook message limit exceeded. Please try again tomorrow or upgrade your plan.',
-      'webhook_limit',
+      'WEBHOOK_LIMIT',
       403
     ); // Throw custom error
   }
