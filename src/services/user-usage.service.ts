@@ -1,3 +1,4 @@
+import { InternalServerError } from './../utils/errors';
 import UserUsage, { IUserUsage } from '../models/UserUsage';
 import User from '../models/User'; // Import User model
 import { logger } from '../utils';
@@ -9,6 +10,8 @@ import {
   PREMIUM_PLAN_DAILY_WEBHOOK_MESSAGE_LIMIT,
   PREMIUM_PLAN_MEDIA_STORAGE_LIMIT_BYTES,
 } from '../config/usage';
+import { ErrorMessages } from '../utils/errorMessages';
+import { HttpStatusCode } from '../utils/httpcode';
 
 /**
  * Retrieves a user's usage record by userId.
@@ -31,7 +34,11 @@ export const getOrCreateUserUsage = async (
       `Error getting or creating UserUsage for user ${userId}:`,
       error
     );
-    throw new Error('Failed to retrieve or create user usage record.');
+    throw new InternalServerError(
+      ErrorMessages.UserUsage.FETCH_CREATE_ERROR.message,
+      ErrorMessages.UserUsage.FETCH_CREATE_ERROR.code,
+      HttpStatusCode.INTERNAL_SERVER_ERROR
+    );
   }
 };
 
@@ -55,7 +62,11 @@ export const updateUserUsage = async (
     return userUsage;
   } catch (error) {
     logger.error(`Error updating UserUsage for user ${userId}:`, error);
-    throw new Error('Failed to update user usage record.');
+    throw new InternalServerError(
+      ErrorMessages.UserUsage.UPDATE_ERROR.message,
+      ErrorMessages.UserUsage.UPDATE_ERROR.code,
+      HttpStatusCode.INTERNAL_SERVER_ERROR
+    );
   }
 };
 
@@ -67,24 +78,35 @@ export const updateUserUsage = async (
 export const incrementWebhookMessageCount = async (
   userId: string
 ): Promise<IUserUsage> => {
-  const userUsage = await getOrCreateUserUsage(userId);
+  try {
+    const userUsage = await getOrCreateUserUsage(userId);
 
-  const now = new Date();
-  const lastWebhookMessageDate = userUsage.lastWebhookMessageDate;
+    const now = new Date();
+    const lastWebhookMessageDate = userUsage.lastWebhookMessageDate;
 
-  // Check if it's a new day (using UTC for consistency)
-  if (
-    lastWebhookMessageDate.getUTCFullYear() !== now.getUTCFullYear() ||
-    lastWebhookMessageDate.getUTCMonth() !== now.getUTCMonth() ||
-    lastWebhookMessageDate.getUTCDate() !== now.getUTCDate()
-  ) {
-    userUsage.webhookMessagesSentToday = 0; // Reset for new day
+    // Check if it's a new day (using UTC for consistency)
+    if (
+      lastWebhookMessageDate.getUTCFullYear() !== now.getUTCFullYear() ||
+      lastWebhookMessageDate.getUTCMonth() !== now.getUTCMonth() ||
+      lastWebhookMessageDate.getUTCDate() !== now.getUTCDate()
+    ) {
+      userUsage.webhookMessagesSentToday = 0; // Reset for new day
+    }
+
+    userUsage.webhookMessagesSentToday += 1;
+    userUsage.lastWebhookMessageDate = now;
+    return await userUsage.save();
+  } catch (error) {
+    logger.error(
+      `Error incrementing webhook message count for user ${userId}:`,
+      error
+    );
+    throw new InternalServerError(
+      ErrorMessages.UserUsage.UPDATE_ERROR.message,
+      ErrorMessages.UserUsage.UPDATE_ERROR.code,
+      HttpStatusCode.INTERNAL_SERVER_ERROR
+    );
   }
-
-  userUsage.webhookMessagesSentToday += 1;
-  userUsage.lastWebhookMessageDate = now;
-
-  return await userUsage.save();
 };
 
 /**
@@ -97,13 +119,24 @@ export const updateMediaStorageUsed = async (
   userId: string,
   sizeChange: number
 ): Promise<IUserUsage> => {
-  const userUsage = await getOrCreateUserUsage(userId);
-  userUsage.totalMediaStorageUsed += sizeChange;
-  // Ensure totalMediaStorageUsed doesn't go below zero
-  if (userUsage.totalMediaStorageUsed < 0) {
-    userUsage.totalMediaStorageUsed = 0;
+  try {
+    const userUsage = await getOrCreateUserUsage(userId);
+
+    userUsage.totalMediaStorageUsed += sizeChange;
+
+    // Ensure totalMediaStorageUsed doesn't go below zero
+    if (userUsage.totalMediaStorageUsed < 0) {
+      userUsage.totalMediaStorageUsed = 0;
+    }
+    return await userUsage.save();
+  } catch (error) {
+    logger.error(`Error updating media storage for user ${userId}:`, error);
+    throw new InternalServerError(
+      ErrorMessages.UserUsage.UPDATE_ERROR.message,
+      ErrorMessages.UserUsage.UPDATE_ERROR.code,
+      HttpStatusCode.INTERNAL_SERVER_ERROR
+    );
   }
-  return await userUsage.save();
 };
 
 /**
@@ -114,12 +147,20 @@ export const updateMediaStorageUsed = async (
 export const isUserWebhookLimitReached = async (
   userId: string
 ): Promise<boolean> => {
-  const { limits, currentUsage } = await getUserUsageAndLimits(userId);
-  return (
-    currentUsage.webhookMessagesSentToday >= limits.dailyWebhookMessageLimit
-  );
+  try {
+    const { limits, currentUsage } = await getUserUsageAndLimits(userId);
+    return (
+      currentUsage.webhookMessagesSentToday >= limits.dailyWebhookMessageLimit
+    );
+  } catch (error) {
+    logger.error(`Error checking webhook limit for user ${userId}:`, error);
+    throw new InternalServerError(
+      ErrorMessages.UserUsage.FETCH_CREATE_ERROR.message,
+      ErrorMessages.UserUsage.FETCH_CREATE_ERROR.code,
+      HttpStatusCode.INTERNAL_SERVER_ERROR
+    );
+  }
 };
-
 /**
  * Checks if a user will exceed their overall media storage limit with a new upload.
  * @param userId The ID of the user.
@@ -141,66 +182,91 @@ export const isUserMediaLimitReached = async (
  * @returns An object containing the user's current usage and their calculated limits.
  */
 export const getUserUsageAndLimits = async (userId: string) => {
-  const userUsage = await getOrCreateUserUsage(userId);
-  const user = await User.findById(userId);
+  try {
+    const userUsage = await getOrCreateUserUsage(userId);
 
-  if (!user) {
-    logger.warn(`User not found for usage and limits check: ${userId}`);
-    throw new Error('User not found.'); // Or handle as appropriate
-  }
-
-  let dailyWebhookMessageLimit = FREE_PLAN_DAILY_WEBHOOK_MESSAGE_LIMIT;
-  let overallMediaStorageLimit = DEFAULT_MEDIA_STORAGE_LIMIT_BYTES;
-
-  // Apply overrides for webhook messages
-  if (userUsage.overrides?.unlimitedWebhookMessages) {
-    dailyWebhookMessageLimit = Infinity; // Effectively unlimited
-  } else if (
-    userUsage.overrides?.dailyWebhookMessageLimit !== undefined &&
-    userUsage.overrides.dailyWebhookMessageLimit !== null
-  ) {
-    dailyWebhookMessageLimit = userUsage.overrides.dailyWebhookMessageLimit;
-  } else {
-    switch (user.accountType) {
-      case 'paid':
-        dailyWebhookMessageLimit = PAID_PLAN_DAILY_WEBHOOK_MESSAGE_LIMIT;
-        break;
-      case 'premium':
-        dailyWebhookMessageLimit = PREMIUM_PLAN_DAILY_WEBHOOK_MESSAGE_LIMIT;
-        break;
-      case 'free':
-      default:
-        dailyWebhookMessageLimit = FREE_PLAN_DAILY_WEBHOOK_MESSAGE_LIMIT;
-        break;
+    if (!userUsage) {
+      throw new InternalServerError(
+        ErrorMessages.UserUsage.FETCH_CREATE_ERROR.message,
+        ErrorMessages.UserUsage.FETCH_CREATE_ERROR.code,
+        HttpStatusCode.INTERNAL_SERVER_ERROR
+      );
     }
-  }
 
-  // Apply overrides for media storage
-  if (
-    userUsage.overrides?.overallMediaStorageLimit !== undefined &&
-    userUsage.overrides.overallMediaStorageLimit !== null
-  ) {
-    overallMediaStorageLimit = userUsage.overrides.overallMediaStorageLimit;
-  } else {
-    switch (user.accountType) {
-      case 'paid':
-        overallMediaStorageLimit = PAID_PLAN_MEDIA_STORAGE_LIMIT_BYTES;
-        break;
-      case 'premium':
-        overallMediaStorageLimit = PREMIUM_PLAN_MEDIA_STORAGE_LIMIT_BYTES;
-        break;
-      case 'free':
-      default:
-        overallMediaStorageLimit = DEFAULT_MEDIA_STORAGE_LIMIT_BYTES;
-        break;
+    const user = await User.findById(userId);
+
+    if (!user) {
+      logger.warn(`User not found for usage and limits check: ${userId}`);
+      throw new InternalServerError(
+        ErrorMessages.UserUsage.FETCH_CREATE_ERROR.message,
+        ErrorMessages.UserUsage.FETCH_CREATE_ERROR.code,
+        HttpStatusCode.INTERNAL_SERVER_ERROR
+      );
     }
-  }
 
-  return {
-    currentUsage: userUsage,
-    limits: {
-      dailyWebhookMessageLimit,
-      overallMediaStorageLimit,
-    },
-  };
+    let dailyWebhookMessageLimit = FREE_PLAN_DAILY_WEBHOOK_MESSAGE_LIMIT;
+    let overallMediaStorageLimit = DEFAULT_MEDIA_STORAGE_LIMIT_BYTES;
+
+    // Apply overrides for webhook messages
+    if (userUsage.overrides?.unlimitedWebhookMessages) {
+      dailyWebhookMessageLimit = Infinity; // Effectively unlimited
+    } else if (
+      userUsage.overrides?.dailyWebhookMessageLimit !== undefined &&
+      userUsage.overrides.dailyWebhookMessageLimit !== null
+    ) {
+      dailyWebhookMessageLimit = userUsage.overrides.dailyWebhookMessageLimit;
+    } else {
+      switch (user.accountType) {
+        case 'paid':
+          dailyWebhookMessageLimit = PAID_PLAN_DAILY_WEBHOOK_MESSAGE_LIMIT;
+          break;
+        case 'premium':
+          dailyWebhookMessageLimit = PREMIUM_PLAN_DAILY_WEBHOOK_MESSAGE_LIMIT;
+          break;
+        case 'free':
+        default:
+          dailyWebhookMessageLimit = FREE_PLAN_DAILY_WEBHOOK_MESSAGE_LIMIT;
+          break;
+      }
+    }
+
+    // Apply overrides for media storage
+    if (
+      userUsage.overrides?.overallMediaStorageLimit !== undefined &&
+      userUsage.overrides.overallMediaStorageLimit !== null
+    ) {
+      overallMediaStorageLimit = userUsage.overrides.overallMediaStorageLimit;
+    } else {
+      switch (user.accountType) {
+        case 'paid':
+          overallMediaStorageLimit = PAID_PLAN_MEDIA_STORAGE_LIMIT_BYTES;
+          break;
+        case 'premium':
+          overallMediaStorageLimit = PREMIUM_PLAN_MEDIA_STORAGE_LIMIT_BYTES;
+          break;
+        case 'free':
+        default:
+          overallMediaStorageLimit = DEFAULT_MEDIA_STORAGE_LIMIT_BYTES;
+          break;
+      }
+    }
+
+    return {
+      currentUsage: userUsage,
+      limits: {
+        dailyWebhookMessageLimit,
+        overallMediaStorageLimit,
+      },
+    };
+  } catch (error) {
+    logger.error(
+      `Error retrieving usage and limits for user ${userId}:`,
+      error
+    );
+    throw new InternalServerError(
+      ErrorMessages.UserUsage.FETCH_CREATE_ERROR.message,
+      ErrorMessages.UserUsage.FETCH_CREATE_ERROR.code,
+      HttpStatusCode.INTERNAL_SERVER_ERROR
+    );
+  }
 };
