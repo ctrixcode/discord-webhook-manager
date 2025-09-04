@@ -1,12 +1,12 @@
 'use client';
 
 // import { Separator } from '@/components/ui/separator';
-import { BarChart2, Gem } from 'lucide-react';
+import { BarChart2, Gem, Trash2 } from 'lucide-react';
 import { useState } from 'react';
 import { ConfirmationDialog } from '@/components/ui/confirmation-dialog';
 import { SettingsCard } from '@/components/settings/settings-card';
 // import { NotificationToggle } from '@/components/settings/notification-toggle';
-// import { DangerAction } from '@/components/settings/danger-action';
+import { DangerAction } from '@/components/settings/danger-action';
 import { useQuery } from '@tanstack/react-query';
 import { userQueries } from '@/lib/api/queries/user';
 import { Progress } from '@/components/ui/progress';

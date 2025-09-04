@@ -27,8 +27,8 @@ export function parseDiscordMarkdown(text: string, userMap: Map<string, string>)
     }, // User mention
     {
       regex: /<#(\d+)>/g, // Matches <# followed by digits followed by >
-      render: (...args: string[]) => {
-        // const channelId = args[0]; // Not used for now
+      render: (..._args: string[]) => {
+        // const channelId = _args[0]; // Not used for now
         return (
           <span className="text-[#00aff4] bg-[#5865f2]/20 rounded px-1 py-0.5 font-medium">
             #channel
@@ -38,8 +38,8 @@ export function parseDiscordMarkdown(text: string, userMap: Map<string, string>)
     }, // Channel mention
     {
       regex: /<@&(\d+)>/g, // Matches <@& followed by digits followed by >
-      render: (...args: string[]) => {
-        // const roleId = args[0]; // Not used for now
+      render: (..._args: string[]) => {
+        // const roleId = _args[0]; // Not used for now
         return (
           <span className="text-[#00aff4] bg-[#5865f2]/20 rounded px-1 py-0.5 font-medium">
             @role
@@ -49,7 +49,7 @@ export function parseDiscordMarkdown(text: string, userMap: Map<string, string>)
     }, // Role mention
     {
       regex: /@everyone/g, // Matches @everyone
-      render: (...args: string[]) => (
+      render: (..._args: string[]) => (
         <span className="text-[#00aff4] bg-[#5865f2]/20 rounded px-1 py-0.5 font-medium">
           @everyone
         </span>
@@ -57,7 +57,7 @@ export function parseDiscordMarkdown(text: string, userMap: Map<string, string>)
     }, // @everyone mention
     {
       regex: /@here/g, // Matches @here
-      render: (...args: string[]) => (
+      render: (..._args: string[]) => (
         <span className="text-[#00aff4] bg-[#5865f2]/20 rounded px-1 py-0.5 font-medium">
           @here
         </span>
@@ -92,22 +92,22 @@ export function parseDiscordMarkdown(text: string, userMap: Map<string, string>)
         return <strong>{match}</strong>;
       },
     }, // **bold**
-    { regex: /\*(.*?)\*/g, render: (...args: string[]) => {
-      const match = args[0];
+    { regex: /\*(.*?)\*/g, render: (..._args: string[]) => {
+      const match = _args[0];
       return <em>{match}</em>;
     } }, // *italic*
-    { regex: /__(.*?)__/g, render: (...args: string[]) => {
-      const match = args[0];
+    { regex: /__(.*?)__/g, render: (..._args: string[]) => {
+      const match = _args[0];
       return <u>{match}</u>;
     } }, // __underline__
-    { regex: /~~(.*?)~~/g, render: (...args: string[]) => {
-      const match = args[0];
+    { regex: /~~(.*?)~~/g, render: (..._args: string[]) => {
+      const match = _args[0];
       return <s>{match}</s>;
     } }, // ~~strikethrough~~
     {
       regex: /`(.*?)`/g,
-      render: (...args: string[]) => {
-        const match = args[0];
+      render: (..._args: string[]) => {
+        const match = _args[0];
         return (
           <code className="bg-[#202225] px-1 py-0.5 rounded text-[#f8f8ff] text-xs">
             {match}
@@ -117,8 +117,8 @@ export function parseDiscordMarkdown(text: string, userMap: Map<string, string>)
     }, // `code`
     {
       regex: /\|\|(.*?)\|\|/g,
-      render: (...args: string[]) => {
-        const match = args[0];
+      render: (..._args: string[]) => {
+        const match = _args[0];
         return (
           <span
             className="bg-[#202225] text-[#202225] hover:text-[#dcddde] cursor-pointer rounded px-1"
