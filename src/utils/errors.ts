@@ -1,97 +1,102 @@
 import { HttpStatusCode } from './httpcode';
 
-// Custom error class for usage limit exceeded scenarios
-export class UsageLimitExceededError extends Error {
-  statusCode: number;
-  type: 'webhook_limit' | 'media_limit'; // To distinguish between types of usage limits
+export class ApiError extends Error {
+  public readonly statusCode: number;
+  public readonly errorCode: string;
+  public readonly isOperational: boolean;
 
   constructor(
     message: string,
-    type: 'webhook_limit' | 'media_limit',
-    statusCode: number = HttpStatusCode.FORBIDDEN
+    errorCode: string,
+    statusCode: number = HttpStatusCode.INTERNAL_SERVER_ERROR,
+    isOperational = true
   ) {
     super(message);
-    this.name = 'UsageLimitExceededError';
-    this.type = type;
+    this.name = 'ApiError';
     this.statusCode = statusCode;
-    Object.setPrototypeOf(this, UsageLimitExceededError.prototype);
+    this.errorCode = errorCode;
+    this.isOperational = isOperational;
+    Object.setPrototypeOf(this, ApiError.prototype);
   }
 }
 
-// Custom error class for invalid input scenarios
-export class InvalidInputError extends Error {
-  statusCode: number;
-  details?: Record<string, unknown>;
+// For usage limit exceeded scenarios
+export class UsageLimitExceededError extends ApiError {
+  constructor(
+    message: string,
+    errorCode: 'WEBHOOK_LIMIT' | 'MEDIA_LIMIT',
+    statusCode: number = HttpStatusCode.FORBIDDEN
+  ) {
+    super(message, errorCode, statusCode);
+    this.name = 'UsageLimitExceededError';
+  }
+}
+
+// For invalid input scenarios
+export class InvalidInputError extends ApiError {
+  public readonly details?: Record<string, unknown>;
 
   constructor(
     message: string,
+    errorCode: string,
     details?: Record<string, unknown>,
     statusCode: number = HttpStatusCode.BAD_REQUEST
   ) {
-    super(message);
+    super(message, errorCode, statusCode);
     this.name = 'InvalidInputError';
-    this.statusCode = statusCode;
     this.details = details;
-    Object.setPrototypeOf(this, InvalidInputError.prototype);
   }
 }
 
-// Custom error class for authentication failures
-export class AuthenticationError extends Error {
-  statusCode: number;
-
+// For authentication failures
+export class AuthenticationError extends ApiError {
   constructor(
     message: string,
+    errorCode: string,
     statusCode: number = HttpStatusCode.UNAUTHORIZED
   ) {
-    super(message);
+    super(message, errorCode, statusCode);
     this.name = 'AuthenticationError';
-    this.statusCode = statusCode;
-    Object.setPrototypeOf(this, AuthenticationError.prototype);
   }
 }
 
-// Custom error class for resource not found scenarios
-export class NotFoundError extends Error {
-  statusCode: number;
-
-  constructor(message: string, statusCode: number = HttpStatusCode.NOT_FOUND) {
-    super(message);
+// For resource not found scenarios
+export class NotFoundError extends ApiError {
+  constructor(
+    message: string,
+    errorCode: string,
+    statusCode: number = HttpStatusCode.NOT_FOUND
+  ) {
+    super(message, errorCode, statusCode);
     this.name = 'NotFoundError';
-    this.statusCode = statusCode;
-    Object.setPrototypeOf(this, NotFoundError.prototype);
   }
 }
 
-// Custom error class for internal server errors
-export class InternalServerError extends Error {
-  statusCode: number;
-
+// For internal server errors
+export class InternalServerError extends ApiError {
   constructor(
     message: string,
+    errorCode: string,
     statusCode: number = HttpStatusCode.INTERNAL_SERVER_ERROR
   ) {
-    super(message);
+    // Set isOperational to false for unexpected server errors
+    super(message, errorCode, statusCode, false);
     this.name = 'InternalServerError';
-    this.statusCode = statusCode;
-    Object.setPrototypeOf(this, InternalServerError.prototype);
   }
 }
 
-// Custom error class for errors originating from external API calls
-export class ExternalApiError extends Error {
-  statusCode: number;
-  source?: string; // e.g., 'discord', 'cloudinary'
+// For errors originating from external API calls
+export class ExternalApiError extends ApiError {
+  public readonly source?: string; // e.g., 'discord', 'cloudinary'
 
   constructor(
     message: string,
+    errorCode: string,
     source?: string,
-    statusCode: number = HttpStatusCode.INTERNAL_SERVER_ERROR
+    statusCode: number = HttpStatusCode.BAD_GATEWAY // 502 is often more appropriate for external failures
   ) {
-    super(message);
+    super(message, errorCode, statusCode);
     this.name = 'ExternalApiError';
-    this.statusCode = statusCode;
     this.source = source;
-    Object.setPrototypeOf(this, ExternalApiError.prototype);
   }
 }
