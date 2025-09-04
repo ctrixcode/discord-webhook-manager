@@ -82,6 +82,10 @@ export const deleteImage = async (
     return result;
   } catch (error) {
     logger.error('Cloudinary delete error:', error);
-    throw error;
+    throw new InternalServerError(
+      ErrorMessages.Cloudinary.DELETE_ERROR.message,
+      ErrorMessages.Cloudinary.DELETE_ERROR.code,
+      HttpStatusCode.INTERNAL_SERVER_ERROR
+    );
   }
 };
