@@ -106,14 +106,6 @@ export const ErrorMessages = {
     DELETE_ERROR: { message: 'Error deleting user', code: 'DELETE_ERROR' },
     CREATION_ERROR: { message: 'Error creating user', code: 'CREATION_ERROR' },
     FETCH_ERROR: { message: 'Error retrieving user', code: 'FETCH_ERROR' },
-    FETCH_BY_EMAIL_ERROR: {
-      message: 'Error retrieving user by email',
-      code: 'FETCH_BY_EMAIL_ERROR',
-    },
-    FETCH_BY_DISCORD_ID_ERROR: {
-      message: 'Error retrieving user by discord_id',
-      code: 'FETCH_BY_DISCORD_ID_ERROR',
-    },
     NOT_FOUND_FOR_USAGE_LIMITS_ERROR: {
       message: 'User not found for usage and limits check.',
       code: 'NOT_FOUND_FOR_USAGE_LIMITS_ERROR',
