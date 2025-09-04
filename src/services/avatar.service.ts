@@ -8,7 +8,6 @@ import {
   InvalidInputError,
 } from '../utils/errors';
 import { ErrorMessages } from '../utils/errorMessages';
-import { HttpStatusCode } from '../utils/httpcode';
 import { logger } from '../utils';
 
 /**
@@ -29,8 +28,7 @@ export const createAvatar = async (
     if (!newAvatar) {
       throw new InternalServerError(
         ErrorMessages.Avatar.CREATION_ERROR.message,
-        ErrorMessages.Avatar.CREATION_ERROR.code,
-        HttpStatusCode.INTERNAL_SERVER_ERROR
+        ErrorMessages.Avatar.CREATION_ERROR.code
       );
     }
     return newAvatar.save();
@@ -40,15 +38,13 @@ export const createAvatar = async (
       throw new InvalidInputError(
         ErrorMessages.Generic.INVALID_INPUT_ERROR.message,
         ErrorMessages.Generic.INVALID_INPUT_ERROR.code,
-        error.errors,
-        HttpStatusCode.BAD_REQUEST
+        error.errors
       );
     }
     logger.error('Error creating avatar:', error);
     throw new InternalServerError(
       ErrorMessages.Avatar.CREATION_ERROR.message,
-      ErrorMessages.Avatar.CREATION_ERROR.code,
-      HttpStatusCode.INTERNAL_SERVER_ERROR
+      ErrorMessages.Avatar.CREATION_ERROR.code
     );
   }
 };
@@ -93,8 +89,7 @@ export const uploadAvatar = async (
       throw new InvalidInputError(
         ErrorMessages.Generic.INVALID_INPUT_ERROR.message,
         ErrorMessages.Generic.INVALID_INPUT_ERROR.code,
-        error.errors,
-        HttpStatusCode.BAD_REQUEST
+        error.errors
       );
     } else if (
       error instanceof UsageLimitExceededError ||
@@ -105,8 +100,7 @@ export const uploadAvatar = async (
     }
     throw new InternalServerError(
       ErrorMessages.Avatar.UPLOAD_ERROR.message,
-      ErrorMessages.Avatar.UPLOAD_ERROR.code,
-      HttpStatusCode.INTERNAL_SERVER_ERROR
+      ErrorMessages.Avatar.UPLOAD_ERROR.code
     );
   }
 };
@@ -127,8 +121,7 @@ export const getAvatar = async (
     logger.error('Error retrieving avatar:', error);
     throw new InternalServerError(
       ErrorMessages.Avatar.FETCH_ERROR.message,
-      ErrorMessages.Avatar.FETCH_ERROR.code,
-      HttpStatusCode.INTERNAL_SERVER_ERROR
+      ErrorMessages.Avatar.FETCH_ERROR.code
     );
   }
 };
@@ -145,8 +138,7 @@ export const getAvatars = async (userId: string): Promise<IAvatar[]> => {
     logger.error('Error retrieving avatars:', error);
     throw new InternalServerError(
       ErrorMessages.Avatar.FETCH_ERROR.message,
-      ErrorMessages.Avatar.FETCH_ERROR.code,
-      HttpStatusCode.INTERNAL_SERVER_ERROR
+      ErrorMessages.Avatar.FETCH_ERROR.code
     );
   }
 };
@@ -175,15 +167,13 @@ export const updateAvatar = async (
       throw new InvalidInputError(
         ErrorMessages.Generic.INVALID_INPUT_ERROR.message,
         ErrorMessages.Generic.INVALID_INPUT_ERROR.code,
-        error.errors,
-        HttpStatusCode.BAD_REQUEST
+        error.errors
       );
     }
     logger.error('error updating avatar:', error);
     throw new InternalServerError(
       ErrorMessages.Avatar.UPDATE_ERROR.message,
-      ErrorMessages.Avatar.UPDATE_ERROR.code,
-      HttpStatusCode.INTERNAL_SERVER_ERROR
+      ErrorMessages.Avatar.UPDATE_ERROR.code
     );
   }
 };
@@ -215,8 +205,7 @@ export const deleteAvatar = async (
     logger.error('Error deleting avatar:', error);
     throw new InternalServerError(
       ErrorMessages.Avatar.DELETE_ERROR.message,
-      ErrorMessages.Avatar.DELETE_ERROR.code,
-      HttpStatusCode.INTERNAL_SERVER_ERROR
+      ErrorMessages.Avatar.DELETE_ERROR.code
     );
   }
 };

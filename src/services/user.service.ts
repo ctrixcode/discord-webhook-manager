@@ -3,7 +3,6 @@ import UserModel, { IUser } from '../models/User';
 import { logger } from '../utils';
 import { ErrorMessages } from '../utils/errorMessages';
 import { InternalServerError, NotFoundError } from '../utils/errors';
-import { HttpStatusCode } from '../utils/httpcode';
 
 export interface CreateUserData {
   email: string;
@@ -37,15 +36,13 @@ export const createUser = async (userData: CreateUserData): Promise<IUser> => {
       logger.error('Mongoose Validation Error:', error);
       throw new InternalServerError(
         ErrorMessages.Generic.INVALID_INPUT_ERROR.message,
-        ErrorMessages.Generic.INVALID_INPUT_ERROR.code,
-        HttpStatusCode.BAD_REQUEST
+        ErrorMessages.Generic.INVALID_INPUT_ERROR.code
       );
     }
     logger.error('Error creating user:', error);
     throw new InternalServerError(
       ErrorMessages.User.CREATION_ERROR.message,
-      ErrorMessages.User.CREATION_ERROR.code,
-      HttpStatusCode.INTERNAL_SERVER_ERROR
+      ErrorMessages.User.CREATION_ERROR.code
     );
   }
 };
@@ -74,8 +71,7 @@ export const getUsers = async (
     logger.error('Error retrieving users:', error);
     throw new InternalServerError(
       ErrorMessages.User.FETCH_ERROR.message,
-      ErrorMessages.User.FETCH_ERROR.code,
-      HttpStatusCode.INTERNAL_SERVER_ERROR
+      ErrorMessages.User.FETCH_ERROR.code
     );
   }
 };
@@ -96,8 +92,7 @@ export const getUserById = async (userId: string): Promise<IUser | null> => {
     logger.error('Error retrieving user:', error);
     throw new InternalServerError(
       ErrorMessages.User.FETCH_ERROR.message,
-      ErrorMessages.User.FETCH_ERROR.code,
-      HttpStatusCode.INTERNAL_SERVER_ERROR
+      ErrorMessages.User.FETCH_ERROR.code
     );
   }
 };
@@ -124,15 +119,13 @@ export const updateUser = async (
       logger.error('Mongoose Validation Error in updateUser:', error);
       throw new InternalServerError(
         ErrorMessages.Generic.INVALID_INPUT_ERROR.message,
-        ErrorMessages.Generic.INVALID_INPUT_ERROR.code,
-        HttpStatusCode.BAD_REQUEST
+        ErrorMessages.Generic.INVALID_INPUT_ERROR.code
       );
     }
     logger.error('Error updating user:', error);
     throw new InternalServerError(
       ErrorMessages.User.UPDATE_ERROR.message,
-      ErrorMessages.User.UPDATE_ERROR.code,
-      HttpStatusCode.INTERNAL_SERVER_ERROR
+      ErrorMessages.User.UPDATE_ERROR.code
     );
   }
 };
@@ -157,8 +150,7 @@ export const deleteUser = async (userId: string): Promise<boolean> => {
     logger.error('Error deleting user:', error);
     throw new InternalServerError(
       ErrorMessages.User.DELETE_ERROR.message,
-      ErrorMessages.User.DELETE_ERROR.code,
-      HttpStatusCode.INTERNAL_SERVER_ERROR
+      ErrorMessages.User.DELETE_ERROR.code
     );
   }
 };
@@ -189,8 +181,7 @@ export const getUserByEmail = async (email: string): Promise<IUser | null> => {
     logger.error('Error retrieving user by email:', error);
     throw new InternalServerError(
       ErrorMessages.User.FETCH_ERROR.message,
-      ErrorMessages.User.FETCH_ERROR.code,
-      HttpStatusCode.INTERNAL_SERVER_ERROR
+      ErrorMessages.User.FETCH_ERROR.code
     );
   }
 };
@@ -226,8 +217,7 @@ export const getUserByDiscordId = async (
     logger.error('Error retrieving user by discord_id:', error);
     throw new InternalServerError(
       ErrorMessages.User.FETCH_ERROR.message,
-      ErrorMessages.User.FETCH_ERROR.code,
-      HttpStatusCode.INTERNAL_SERVER_ERROR
+      ErrorMessages.User.FETCH_ERROR.code
     );
   }
 };

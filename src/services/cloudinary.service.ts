@@ -29,8 +29,7 @@ export const uploadImage = async (
     if (await userUsageService.isUserMediaLimitReached(userId, mediaSize)) {
       throw new UsageLimitExceededError(
         'Overall media storage limit exceeded. Upgrade your plan to upload more.',
-        'MEDIA_LIMIT',
-        403
+        'MEDIA_LIMIT'
       );
     }
 
@@ -64,8 +63,7 @@ export const uploadImage = async (
 
     throw new InternalServerError(
       ErrorMessages.Cloudinary.UPLOAD_ERROR.message,
-      ErrorMessages.Cloudinary.UPLOAD_ERROR.code,
-      HttpStatusCode.INTERNAL_SERVER_ERROR
+      ErrorMessages.Cloudinary.UPLOAD_ERROR.code
     );
   }
 };
@@ -84,8 +82,7 @@ export const deleteImage = async (
     logger.error('Cloudinary delete error:', error);
     throw new InternalServerError(
       ErrorMessages.Cloudinary.DELETE_ERROR.message,
-      ErrorMessages.Cloudinary.DELETE_ERROR.code,
-      HttpStatusCode.INTERNAL_SERVER_ERROR
+      ErrorMessages.Cloudinary.DELETE_ERROR.code
     );
   }
 };

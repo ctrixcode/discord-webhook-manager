@@ -11,7 +11,6 @@ import {
   PREMIUM_PLAN_MEDIA_STORAGE_LIMIT_BYTES,
 } from '../config/usage';
 import { ErrorMessages } from '../utils/errorMessages';
-import { HttpStatusCode } from '../utils/httpcode';
 
 /**
  * Retrieves a user's usage record by userId.
@@ -36,8 +35,7 @@ export const getOrCreateUserUsage = async (
     );
     throw new InternalServerError(
       ErrorMessages.UserUsage.FETCH_CREATE_ERROR.message,
-      ErrorMessages.UserUsage.FETCH_CREATE_ERROR.code,
-      HttpStatusCode.INTERNAL_SERVER_ERROR
+      ErrorMessages.UserUsage.FETCH_CREATE_ERROR.code
     );
   }
 };
@@ -64,8 +62,7 @@ export const updateUserUsage = async (
     logger.error(`Error updating UserUsage for user ${userId}:`, error);
     throw new InternalServerError(
       ErrorMessages.UserUsage.UPDATE_ERROR.message,
-      ErrorMessages.UserUsage.UPDATE_ERROR.code,
-      HttpStatusCode.INTERNAL_SERVER_ERROR
+      ErrorMessages.UserUsage.UPDATE_ERROR.code
     );
   }
 };
@@ -103,8 +100,7 @@ export const incrementWebhookMessageCount = async (
     );
     throw new InternalServerError(
       ErrorMessages.UserUsage.UPDATE_ERROR.message,
-      ErrorMessages.UserUsage.UPDATE_ERROR.code,
-      HttpStatusCode.INTERNAL_SERVER_ERROR
+      ErrorMessages.UserUsage.UPDATE_ERROR.code
     );
   }
 };
@@ -133,8 +129,7 @@ export const updateMediaStorageUsed = async (
     logger.error(`Error updating media storage for user ${userId}:`, error);
     throw new InternalServerError(
       ErrorMessages.UserUsage.UPDATE_ERROR.message,
-      ErrorMessages.UserUsage.UPDATE_ERROR.code,
-      HttpStatusCode.INTERNAL_SERVER_ERROR
+      ErrorMessages.UserUsage.UPDATE_ERROR.code
     );
   }
 };
@@ -156,8 +151,7 @@ export const isUserWebhookLimitReached = async (
     logger.error(`Error checking webhook limit for user ${userId}:`, error);
     throw new InternalServerError(
       ErrorMessages.UserUsage.FETCH_CREATE_ERROR.message,
-      ErrorMessages.UserUsage.FETCH_CREATE_ERROR.code,
-      HttpStatusCode.INTERNAL_SERVER_ERROR
+      ErrorMessages.UserUsage.FETCH_CREATE_ERROR.code
     );
   }
 };
@@ -188,8 +182,7 @@ export const getUserUsageAndLimits = async (userId: string) => {
     if (!userUsage) {
       throw new InternalServerError(
         ErrorMessages.UserUsage.FETCH_CREATE_ERROR.message,
-        ErrorMessages.UserUsage.FETCH_CREATE_ERROR.code,
-        HttpStatusCode.INTERNAL_SERVER_ERROR
+        ErrorMessages.UserUsage.FETCH_CREATE_ERROR.code
       );
     }
 
@@ -199,8 +192,7 @@ export const getUserUsageAndLimits = async (userId: string) => {
       logger.warn(`User not found for usage and limits check: ${userId}`);
       throw new InternalServerError(
         ErrorMessages.UserUsage.FETCH_CREATE_ERROR.message,
-        ErrorMessages.UserUsage.FETCH_CREATE_ERROR.code,
-        HttpStatusCode.INTERNAL_SERVER_ERROR
+        ErrorMessages.UserUsage.FETCH_CREATE_ERROR.code
       );
     }
 
@@ -265,8 +257,7 @@ export const getUserUsageAndLimits = async (userId: string) => {
     );
     throw new InternalServerError(
       ErrorMessages.UserUsage.FETCH_CREATE_ERROR.message,
-      ErrorMessages.UserUsage.FETCH_CREATE_ERROR.code,
-      HttpStatusCode.INTERNAL_SERVER_ERROR
+      ErrorMessages.UserUsage.FETCH_CREATE_ERROR.code
     );
   }
 };
