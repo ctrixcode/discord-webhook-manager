@@ -1,7 +1,11 @@
 import { v2 as cloudinary } from 'cloudinary';
 import dotenv from 'dotenv';
 import * as userUsageService from './user-usage.service'; // Import userUsageService
-import { InternalServerError, UsageLimitExceededError } from '../utils/errors'; // Import UsageLimitExceededError
+import {
+  ExternalApiError,
+  InternalServerError,
+  UsageLimitExceededError,
+} from '../utils/errors'; // Import UsageLimitExceededError
 import { logger } from '../utils'; // Import logger
 import { HttpStatusCode } from '../utils/httpcode';
 import { ErrorMessages } from '../utils/errorMessages';
@@ -36,6 +40,14 @@ export const uploadImage = async (
       public_id: publicId,
       folder: username,
     });
+    if (!result || !result.secure_url || !result.public_id) {
+      throw new ExternalApiError(
+        ErrorMessages.Cloudinary.UPLOAD_ERROR.message,
+        ErrorMessages.Cloudinary.UPLOAD_ERROR.code,
+        'cloudinary',
+        HttpStatusCode.INTERNAL_SERVER_ERROR
+      );
+    }
 
     // Update user's media storage after successful upload
     await userUsageService.updateMediaStorageUsed(userId, mediaSize);
@@ -43,7 +55,10 @@ export const uploadImage = async (
     return result;
   } catch (error) {
     logger.error('Cloudinary upload error:', error);
-    if (error instanceof UsageLimitExceededError) {
+    if (
+      error instanceof UsageLimitExceededError ||
+      error instanceof ExternalApiError
+    ) {
       throw error;
     }
 
