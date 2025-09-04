@@ -183,8 +183,7 @@ export const getUserByEmail = async (email: string): Promise<IUser | null> => {
       );
       throw new NotFoundError(
         ErrorMessages.User.NOT_FOUND_ERROR.message,
-        ErrorMessages.User.NOT_FOUND_ERROR.code,
-        HttpStatusCode.NOT_FOUND
+        ErrorMessages.User.NOT_FOUND_ERROR.code
       );
     }
     logger.error('Error retrieving user by email:', error);
@@ -221,8 +220,7 @@ export const getUserByDiscordId = async (
       );
       throw new NotFoundError(
         ErrorMessages.User.NOT_FOUND_ERROR.message,
-        ErrorMessages.User.NOT_FOUND_ERROR.code,
-        HttpStatusCode.NOT_FOUND
+        ErrorMessages.User.NOT_FOUND_ERROR.code
       );
     }
     logger.error('Error retrieving user by discord_id:', error);
