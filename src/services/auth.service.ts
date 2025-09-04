@@ -9,6 +9,9 @@ import {
   TokenPayload,
   verifyToken,
 } from '../utils/jwt';
+import { AuthenticationError, InternalServerError } from '../utils/errors';
+import { ErrorMessages } from '../utils/errorMessages';
+import { HttpStatusCode } from '../utils/httpcode';
 
 export const loginWithDiscord = async (
   discordId: string,
@@ -46,7 +49,11 @@ export const loginWithDiscord = async (
   }
 
   if (!user) {
-    throw new Error('Failed to create or update user with Discord info');
+    throw new InternalServerError(
+      ErrorMessages.Auth.FAILED_CREATE_UPDATE_USER_ERROR.message,
+      ErrorMessages.Auth.FAILED_CREATE_UPDATE_USER_ERROR.code,
+      HttpStatusCode.INTERNAL_SERVER_ERROR
+    );
   }
 
   // Ensure UserUsage record exists for the user
@@ -81,7 +88,11 @@ export const refreshTokens = async (
     const user = await userService.getUserById(decodedRefreshToken.userId);
 
     if (!user) {
-      throw new Error('Invalid refresh token: User not found');
+      throw new InternalServerError(
+        ErrorMessages.User.NOT_FOUND_ERROR.message,
+        ErrorMessages.User.NOT_FOUND_ERROR.code,
+        HttpStatusCode.NOT_FOUND
+      );
     }
 
     // Check if the refresh token exists in our database and is not used
@@ -94,13 +105,21 @@ export const refreshTokens = async (
       // If token is not found or already used, it's a potential compromise
       // Revoke all sessions for this user
       await revokeAllUserSessions(decodedRefreshToken.userId);
-      throw new Error('Invalid or compromised refresh token');
+      throw new AuthenticationError(
+        ErrorMessages.Auth.INVALID_REFRESH_TOKEN_ERROR.message,
+        ErrorMessages.Auth.INVALID_REFRESH_TOKEN_ERROR.code,
+        HttpStatusCode.UNAUTHORIZED
+      );
     }
 
     // Validate user agent
     if (existingAuthSessionToken.userAgent !== currentUserAgent) {
       await revokeAllUserSessions(decodedRefreshToken.userId);
-      throw new Error('User agent mismatch. Session revoked.');
+      throw new AuthenticationError(
+        ErrorMessages.Auth.INVALID_REFRESH_TOKEN_ERROR.message,
+        ErrorMessages.Auth.INVALID_REFRESH_TOKEN_ERROR.code,
+        HttpStatusCode.UNAUTHORIZED
+      );
     }
 
     // Mark the current refresh token as used
@@ -124,10 +143,17 @@ export const refreshTokens = async (
   } catch (error) {
     logger.error('Error refreshing tokens:', error);
     // If the error is not already 'Invalid or compromised refresh token', then it's a generic JWT error
-    if (error instanceof Error && error.message.includes('compromised')) {
-      throw error; // Re-throw the specific error
+    if (
+      error instanceof AuthenticationError ||
+      error instanceof InternalServerError
+    ) {
+      throw error;
     }
-    throw new Error('Invalid or expired refresh token');
+    throw new AuthenticationError(
+      ErrorMessages.Auth.INVALID_REFRESH_TOKEN_ERROR.message,
+      ErrorMessages.Auth.INVALID_REFRESH_TOKEN_ERROR.code,
+      HttpStatusCode.UNAUTHORIZED
+    );
   }
 };
 
