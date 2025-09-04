@@ -1,8 +1,10 @@
 import { v2 as cloudinary } from 'cloudinary';
 import dotenv from 'dotenv';
 import * as userUsageService from './user-usage.service'; // Import userUsageService
-import { UsageLimitExceededError } from '../utils/errors'; // Import UsageLimitExceededError
+import { InternalServerError, UsageLimitExceededError } from '../utils/errors'; // Import UsageLimitExceededError
 import { logger } from '../utils'; // Import logger
+import { HttpStatusCode } from '../utils/httpcode';
+import { ErrorMessages } from '../utils/errorMessages';
 
 dotenv.config();
 
@@ -16,17 +18,16 @@ export const uploadImage = async (
   filePath: string,
   username: string,
   avatarName: string,
-  userId: string, // Added userId
-  mediaSize: number // Added mediaSize in bytes
+  userId: string,
+  mediaSize: number
 ) => {
   try {
-    // Check media limit before uploading
     if (await userUsageService.isUserMediaLimitReached(userId, mediaSize)) {
       throw new UsageLimitExceededError(
         'Overall media storage limit exceeded. Upgrade your plan to upload more.',
         'MEDIA_LIMIT',
         403
-      ); // Throw custom error
+      );
     }
 
     const timestamp = new Date().getTime();
@@ -41,8 +42,16 @@ export const uploadImage = async (
 
     return result;
   } catch (error) {
-    logger.error('Cloudinary upload error:', error); // Changed to logger.error
-    throw error; // Re-throw the original error
+    logger.error('Cloudinary upload error:', error);
+    if (error instanceof UsageLimitExceededError) {
+      throw error;
+    }
+
+    throw new InternalServerError(
+      ErrorMessages.Cloudinary.UPLOAD_ERROR.message,
+      ErrorMessages.Cloudinary.UPLOAD_ERROR.code,
+      HttpStatusCode.INTERNAL_SERVER_ERROR
+    );
   }
 };
 
