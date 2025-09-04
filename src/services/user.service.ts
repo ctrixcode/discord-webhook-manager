@@ -2,7 +2,11 @@ import mongoose from 'mongoose';
 import UserModel, { IUser } from '../models/User';
 import { logger } from '../utils';
 import { ErrorMessages } from '../utils/errorMessages';
-import { InternalServerError, NotFoundError } from '../utils/errors';
+import {
+  BadRequestError,
+  InternalServerError,
+  NotFoundError,
+} from '../utils/errors';
 
 export interface CreateUserData {
   email: string;
@@ -34,7 +38,7 @@ export const createUser = async (userData: CreateUserData): Promise<IUser> => {
   } catch (error) {
     if (error instanceof mongoose.Error.ValidationError) {
       logger.error('Mongoose Validation Error:', error);
-      throw new InternalServerError(
+      throw new BadRequestError(
         ErrorMessages.Generic.INVALID_INPUT_ERROR.message,
         ErrorMessages.Generic.INVALID_INPUT_ERROR.code
       );
@@ -117,7 +121,7 @@ export const updateUser = async (
   } catch (error) {
     if (error instanceof mongoose.Error.ValidationError) {
       logger.error('Mongoose Validation Error in updateUser:', error);
-      throw new InternalServerError(
+      throw new BadRequestError(
         ErrorMessages.Generic.INVALID_INPUT_ERROR.message,
         ErrorMessages.Generic.INVALID_INPUT_ERROR.code
       );

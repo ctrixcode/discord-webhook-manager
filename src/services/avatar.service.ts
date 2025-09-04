@@ -25,12 +25,6 @@ export const createAvatar = async (
       ...avatarData,
       user_id: new Types.ObjectId(userId),
     });
-    if (!newAvatar) {
-      throw new InternalServerError(
-        ErrorMessages.Avatar.CREATION_ERROR.message,
-        ErrorMessages.Avatar.CREATION_ERROR.code
-      );
-    }
     return newAvatar.save();
   } catch (error) {
     if (error instanceof mongoose.Error.ValidationError) {

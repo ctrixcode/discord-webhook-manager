@@ -1,4 +1,4 @@
-import { InternalServerError } from './../utils/errors';
+import { BadRequestError, InternalServerError } from './../utils/errors';
 import UserUsage, { IUserUsage } from '../models/UserUsage';
 import User from '../models/User'; // Import User model
 import { logger } from '../utils';
@@ -180,7 +180,7 @@ export const getUserUsageAndLimits = async (userId: string) => {
     const userUsage = await getOrCreateUserUsage(userId);
 
     if (!userUsage) {
-      throw new InternalServerError(
+      throw new BadRequestError(
         ErrorMessages.UserUsage.FETCH_CREATE_ERROR.message,
         ErrorMessages.UserUsage.FETCH_CREATE_ERROR.code
       );
