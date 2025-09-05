@@ -11,7 +11,7 @@ import {
   sendMessage,
   SendMessageData,
 } from '../services/webhook.service';
-import { logger, toWebhookDto } from '../utils';
+import { toWebhookDto } from '../utils';
 import {
   AuthenticationError,
   BadRequestError,
@@ -26,25 +26,20 @@ export const createWebhookHandler = async (
   request: FastifyRequest<{ Body: CreateWebhookData }>,
   reply: FastifyReply
 ) => {
-  try {
-    const userId = request.user?.userId;
-    if (!userId) {
-      throw new AuthenticationError(
-        ErrorMessages.User.NOT_FOUND_ERROR.message,
-        ErrorMessages.User.NOT_FOUND_ERROR.code
-      );
-    }
-    const webhook = await createWebhook(request.body, userId);
-    sendSuccessResponse(
-      reply,
-      HttpStatusCode.CREATED,
-      'Webhook created successfully',
-      toWebhookDto(webhook)
+  const userId = request.user?.userId;
+  if (!userId) {
+    throw new AuthenticationError(
+      ErrorMessages.User.NOT_FOUND_ERROR.message,
+      ErrorMessages.User.NOT_FOUND_ERROR.code
     );
-  } catch (error) {
-    logger.error('Error creating webhook:', error);
-    throw error;
   }
+  const webhook = await createWebhook(request.body, userId);
+  sendSuccessResponse(
+    reply,
+    HttpStatusCode.CREATED,
+    'Webhook created successfully',
+    toWebhookDto(webhook)
+  );
 };
 
 export const getWebhooksHandler = async (
@@ -53,142 +48,109 @@ export const getWebhooksHandler = async (
   }>,
   reply: FastifyReply
 ) => {
-  try {
-    const userId = request.user?.userId;
-    if (!userId) {
-      throw new AuthenticationError(
-        ErrorMessages.User.NOT_FOUND_ERROR.message,
-        ErrorMessages.User.NOT_FOUND_ERROR.code
-      );
-    }
-    const page = request.query.page ? parseInt(request.query.page, 10) : 1;
-    const limit = request.query.limit ? parseInt(request.query.limit, 10) : 10;
-    const status = request.query.status;
-    const { webhooks, total } = await getWebhooksByUserId(
-      userId,
-      page,
-      limit,
-      status
+  const userId = request.user?.userId;
+  if (!userId) {
+    throw new AuthenticationError(
+      ErrorMessages.User.NOT_FOUND_ERROR.message,
+      ErrorMessages.User.NOT_FOUND_ERROR.code
     );
-    sendSuccessResponse(
-      reply,
-      HttpStatusCode.OK,
-      'Webhooks fetched successfully',
-      { webhooks: webhooks.map(toWebhookDto), total, page, limit }
-    );
-  } catch (error) {
-    logger.error('Error getting webhooks:', error);
-    throw error;
   }
+  const page = request.query.page ? parseInt(request.query.page, 10) : 1;
+  const limit = request.query.limit ? parseInt(request.query.limit, 10) : 10;
+  const status = request.query.status;
+  const { webhooks, total } = await getWebhooksByUserId(
+    userId,
+    page,
+    limit,
+    status
+  );
+  sendSuccessResponse(
+    reply,
+    HttpStatusCode.OK,
+    'Webhooks fetched successfully',
+    { webhooks: webhooks.map(toWebhookDto), total, page, limit }
+  );
 };
 
 export const getWebhookHandler = async (
   request: FastifyRequest<{ Params: { id: string } }>,
   reply: FastifyReply
 ) => {
-  try {
-    const userId = request.user?.userId;
-    if (!userId) {
-      throw new AuthenticationError(
-        ErrorMessages.User.NOT_FOUND_ERROR.message,
-        ErrorMessages.User.NOT_FOUND_ERROR.code
-      );
-    }
-    const webhook = await getWebhookById(request.params.id, userId);
-
-    sendSuccessResponse(
-      reply,
-      HttpStatusCode.OK,
-      'Webhook fetched successfully',
-      toWebhookDto(webhook)
+  const userId = request.user?.userId;
+  if (!userId) {
+    throw new AuthenticationError(
+      ErrorMessages.User.NOT_FOUND_ERROR.message,
+      ErrorMessages.User.NOT_FOUND_ERROR.code
     );
-  } catch (error) {
-    logger.error('Error getting webhook:', error);
-    throw error;
   }
+  const webhook = await getWebhookById(request.params.id, userId);
+
+  sendSuccessResponse(
+    reply,
+    HttpStatusCode.OK,
+    'Webhook fetched successfully',
+    toWebhookDto(webhook)
+  );
 };
 
 export const updateWebhookHandler = async (
   request: FastifyRequest<{ Params: { id: string }; Body: UpdateWebhookData }>,
   reply: FastifyReply
 ) => {
-  try {
-    const userId = request.user?.userId;
-    if (!userId) {
-      throw new AuthenticationError(
-        ErrorMessages.User.NOT_FOUND_ERROR.message,
-        ErrorMessages.User.NOT_FOUND_ERROR.code
-      );
-    }
-    const webhook = await updateWebhook(
-      request.params.id,
-      request.body,
-      userId
+  const userId = request.user?.userId;
+  if (!userId) {
+    throw new AuthenticationError(
+      ErrorMessages.User.NOT_FOUND_ERROR.message,
+      ErrorMessages.User.NOT_FOUND_ERROR.code
     );
-    if (!webhook) {
-      throw new NotFoundError(
-        ErrorMessages.Webhook.NOT_FOUND_ERROR.message,
-        ErrorMessages.Webhook.NOT_FOUND_ERROR.code
-      );
-    }
-    reply.send(toWebhookDto(webhook));
-  } catch (error) {
-    logger.error('Error updating webhook:', error);
-    throw error;
   }
+  const webhook = await updateWebhook(request.params.id, request.body, userId);
+  if (!webhook) {
+    throw new NotFoundError(
+      ErrorMessages.Webhook.NOT_FOUND_ERROR.message,
+      ErrorMessages.Webhook.NOT_FOUND_ERROR.code
+    );
+  }
+  reply.send(toWebhookDto(webhook));
 };
 
 export const deleteWebhookHandler = async (
   request: FastifyRequest<{ Params: { id: string } }>,
   reply: FastifyReply
 ) => {
-  try {
-    const userId = request.user?.userId;
-    if (!userId) {
-      throw new AuthenticationError(
-        ErrorMessages.User.NOT_FOUND_ERROR.message,
-        ErrorMessages.User.NOT_FOUND_ERROR.code
-      );
-    }
-    const success = await deleteWebhook(request.params.id, userId);
-    if (!success) {
-      throw new NotFoundError(
-        ErrorMessages.Webhook.NOT_FOUND_ERROR.message,
-        ErrorMessages.Webhook.NOT_FOUND_ERROR.code
-      );
-    }
-    sendSuccessResponse(reply, HttpStatusCode.NO_CONTENT);
-  } catch (error) {
-    logger.error('Error deleting webhook:', error);
-    throw error;
+  const userId = request.user?.userId;
+  if (!userId) {
+    throw new AuthenticationError(
+      ErrorMessages.User.NOT_FOUND_ERROR.message,
+      ErrorMessages.User.NOT_FOUND_ERROR.code
+    );
   }
+  const success = await deleteWebhook(request.params.id, userId);
+  if (!success) {
+    throw new NotFoundError(
+      ErrorMessages.Webhook.NOT_FOUND_ERROR.message,
+      ErrorMessages.Webhook.NOT_FOUND_ERROR.code
+    );
+  }
+  sendSuccessResponse(reply, HttpStatusCode.NO_CONTENT);
 };
 
 export const testWebhookHandler = async (
   request: FastifyRequest<{ Params: { id: string } }>,
   reply: FastifyReply
 ) => {
-  try {
-    const userId = request.user?.userId;
-    if (!userId) {
-      throw new AuthenticationError(
-        ErrorMessages.User.NOT_FOUND_ERROR.message,
-        ErrorMessages.User.NOT_FOUND_ERROR.code
-      );
-    }
-    const webhook = await getWebhookById(request.params.id, userId);
-
-    await testWebhook(webhook);
-
-    sendSuccessResponse(
-      reply,
-      HttpStatusCode.OK,
-      'Webhook tested successfully'
+  const userId = request.user?.userId;
+  if (!userId) {
+    throw new AuthenticationError(
+      ErrorMessages.User.NOT_FOUND_ERROR.message,
+      ErrorMessages.User.NOT_FOUND_ERROR.code
     );
-  } catch (error) {
-    logger.error('Error testing webhook:', error);
-    throw error;
   }
+  const webhook = await getWebhookById(request.params.id, userId);
+
+  await testWebhook(webhook);
+
+  sendSuccessResponse(reply, HttpStatusCode.OK, 'Webhook tested successfully');
 };
 
 export const sendMessageHandler = async (

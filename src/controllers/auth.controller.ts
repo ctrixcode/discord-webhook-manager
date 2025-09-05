@@ -25,33 +25,28 @@ export const refreshAccessToken = async (
   request: FastifyRequest<{ Body: { refreshToken: string } }>,
   reply: FastifyReply
 ): Promise<void> => {
-  try {
-    const { refreshToken } = request.body;
-    if (!refreshToken) {
-      throw new AuthenticationError(
-        ErrorMessages.Auth.NO_TOKEN_ERROR.message,
-        ErrorMessages.Auth.NO_TOKEN_ERROR.code
-      );
-    }
-
-    const { newAccessToken, newRefreshToken } = await authService.refreshTokens(
-      refreshToken,
-      request.headers['user-agent'] || 'unknown'
+  const { refreshToken } = request.body;
+  if (!refreshToken) {
+    throw new AuthenticationError(
+      ErrorMessages.Auth.NO_TOKEN_ERROR.message,
+      ErrorMessages.Auth.NO_TOKEN_ERROR.code
     );
-
-    sendSuccessResponse(
-      reply,
-      HttpStatusCode.OK,
-      'Access token refreshed successfully',
-      {
-        accessToken: newAccessToken,
-        refreshToken: newRefreshToken,
-      }
-    );
-  } catch (error: unknown) {
-    logger.error('Error in refreshAccessToken controller:', error);
-    throw error;
   }
+
+  const { newAccessToken, newRefreshToken } = await authService.refreshTokens(
+    refreshToken,
+    request.headers['user-agent'] || 'unknown'
+  );
+
+  sendSuccessResponse(
+    reply,
+    HttpStatusCode.OK,
+    'Access token refreshed successfully',
+    {
+      accessToken: newAccessToken,
+      refreshToken: newRefreshToken,
+    }
+  );
 };
 
 /**
@@ -62,31 +57,26 @@ export const logoutUser = async (
   request: FastifyRequest<{ Body: { refreshToken: string } }>,
   reply: FastifyReply
 ): Promise<void> => {
-  try {
-    const { refreshToken } = request.body;
+  const { refreshToken } = request.body;
 
-    if (refreshToken) {
-      const decodedRefreshToken = verifyToken(refreshToken) as TokenPayload;
-      if (decodedRefreshToken.userId && decodedRefreshToken.jti) {
-        await authService.logout(
-          decodedRefreshToken.userId,
-          decodedRefreshToken.jti
-        );
-      } else {
-        logger.warn('Logout request: Refresh token missing userId or jti.');
-      }
-    } else {
-      throw new AuthenticationError(
-        ErrorMessages.Auth.NO_TOKEN_ERROR.message,
-        ErrorMessages.Auth.NO_TOKEN_ERROR.code
+  if (refreshToken) {
+    const decodedRefreshToken = verifyToken(refreshToken) as TokenPayload;
+    if (decodedRefreshToken.userId && decodedRefreshToken.jti) {
+      await authService.logout(
+        decodedRefreshToken.userId,
+        decodedRefreshToken.jti
       );
+    } else {
+      logger.warn('Logout request: Refresh token missing userId or jti.');
     }
-
-    sendSuccessResponse(reply, HttpStatusCode.OK, 'Logged out successfully');
-  } catch (error: unknown) {
-    logger.error('Error in logoutUser controller:', error);
-    throw error;
+  } else {
+    throw new AuthenticationError(
+      ErrorMessages.Auth.NO_TOKEN_ERROR.message,
+      ErrorMessages.Auth.NO_TOKEN_ERROR.code
+    );
   }
+
+  sendSuccessResponse(reply, HttpStatusCode.OK, 'Logged out successfully');
 };
 
 /**
@@ -97,13 +87,8 @@ export const discordLogin = async (
   request: FastifyRequest,
   reply: FastifyReply
 ): Promise<void> => {
-  try {
-    const discordAuthUrl = `https://discord.com/oauth2/authorize?client_id=${DISCORD_CLIENT_ID}&redirect_uri=${encodeURIComponent(DISCORD_REDIRECT_URI)}&response_type=code&scope=identify%20email%20guilds`;
-    reply.redirect(discordAuthUrl);
-  } catch (error: unknown) {
-    logger.error('Error in discordLogin controller:', error);
-    throw error;
-  }
+  const discordAuthUrl = `https://discord.com/oauth2/authorize?client_id=${DISCORD_CLIENT_ID}&redirect_uri=${encodeURIComponent(DISCORD_REDIRECT_URI)}&response_type=code&scope=identify%20email%20guilds`;
+  reply.redirect(discordAuthUrl);
 };
 
 /**

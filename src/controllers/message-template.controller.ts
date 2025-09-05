@@ -8,7 +8,6 @@ import {
   CreateMessageTemplateData,
   UpdateMessageTemplateData,
 } from '../services/message-template.service';
-import { logger } from '../utils';
 import { IMessageTemplateParams } from '../schemas/message-template.schema';
 import { sendSuccessResponse } from '../utils/responseHandler';
 import { HttpStatusCode } from '../utils/httpcode';
@@ -23,25 +22,20 @@ export const createMessageTemplateHandler = async (
   request: FastifyRequest<{ Body: CreateMessageTemplateData }>,
   reply: FastifyReply
 ) => {
-  try {
-    const userId = request.user?.userId;
-    if (!userId) {
-      throw new AuthenticationError(
-        ErrorMessages.User.NOT_FOUND_ERROR.message,
-        ErrorMessages.User.NOT_FOUND_ERROR.code
-      );
-    }
-    const messageTemplate = await createMessageTemplate(userId, request.body);
-    sendSuccessResponse(
-      reply,
-      HttpStatusCode.CREATED,
-      'Message Template created',
-      messageTemplate
+  const userId = request.user?.userId;
+  if (!userId) {
+    throw new AuthenticationError(
+      ErrorMessages.User.NOT_FOUND_ERROR.message,
+      ErrorMessages.User.NOT_FOUND_ERROR.code
     );
-  } catch (error) {
-    logger.error('Error creating message template:', error);
-    throw error;
   }
+  const messageTemplate = await createMessageTemplate(userId, request.body);
+  sendSuccessResponse(
+    reply,
+    HttpStatusCode.CREATED,
+    'Message Template created',
+    messageTemplate
+  );
 };
 
 export const getMessageTemplatesHandler = async (
@@ -80,34 +74,29 @@ export const getMessageTemplateHandler = async (
   request: FastifyRequest<{ Params: IMessageTemplateParams }>,
   reply: FastifyReply
 ) => {
-  try {
-    const userId = request.user?.userId;
-    if (!userId) {
-      throw new AuthenticationError(
-        ErrorMessages.User.NOT_FOUND_ERROR.message,
-        ErrorMessages.User.NOT_FOUND_ERROR.code
-      );
-    }
-    const messageTemplate = await getMessageTemplateById(
-      request.params.id,
-      userId
+  const userId = request.user?.userId;
+  if (!userId) {
+    throw new AuthenticationError(
+      ErrorMessages.User.NOT_FOUND_ERROR.message,
+      ErrorMessages.User.NOT_FOUND_ERROR.code
     );
-    if (!messageTemplate) {
-      throw new NotFoundError(
-        ErrorMessages.MessageTemplate.NOT_FOUND_ERROR.message,
-        ErrorMessages.MessageTemplate.NOT_FOUND_ERROR.code
-      );
-    }
-    sendSuccessResponse(
-      reply,
-      HttpStatusCode.OK,
-      'Message Template fetched',
-      messageTemplate
-    );
-  } catch (error) {
-    logger.error('Error getting message template:', error);
-    throw error;
   }
+  const messageTemplate = await getMessageTemplateById(
+    request.params.id,
+    userId
+  );
+  if (!messageTemplate) {
+    throw new NotFoundError(
+      ErrorMessages.MessageTemplate.NOT_FOUND_ERROR.message,
+      ErrorMessages.MessageTemplate.NOT_FOUND_ERROR.code
+    );
+  }
+  sendSuccessResponse(
+    reply,
+    HttpStatusCode.OK,
+    'Message Template fetched',
+    messageTemplate
+  );
 };
 
 export const updateMessageTemplateHandler = async (
@@ -117,59 +106,49 @@ export const updateMessageTemplateHandler = async (
   }>,
   reply: FastifyReply
 ) => {
-  try {
-    const userId = request.user?.userId;
-    if (!userId) {
-      throw new AuthenticationError(
-        ErrorMessages.User.NOT_FOUND_ERROR.message,
-        ErrorMessages.User.NOT_FOUND_ERROR.code
-      );
-    }
-    const messageTemplate = await updateMessageTemplate(
-      request.params.id,
-      request.body,
-      userId
+  const userId = request.user?.userId;
+  if (!userId) {
+    throw new AuthenticationError(
+      ErrorMessages.User.NOT_FOUND_ERROR.message,
+      ErrorMessages.User.NOT_FOUND_ERROR.code
     );
-    if (!messageTemplate) {
-      throw new NotFoundError(
-        ErrorMessages.MessageTemplate.NOT_FOUND_ERROR.message,
-        ErrorMessages.MessageTemplate.NOT_FOUND_ERROR.code
-      );
-    }
-    sendSuccessResponse(
-      reply,
-      HttpStatusCode.OK,
-      'Message Template updated successfully',
-      messageTemplate
-    );
-  } catch (error) {
-    logger.error('Error updating message template:', error);
-    throw error;
   }
+  const messageTemplate = await updateMessageTemplate(
+    request.params.id,
+    request.body,
+    userId
+  );
+  if (!messageTemplate) {
+    throw new NotFoundError(
+      ErrorMessages.MessageTemplate.NOT_FOUND_ERROR.message,
+      ErrorMessages.MessageTemplate.NOT_FOUND_ERROR.code
+    );
+  }
+  sendSuccessResponse(
+    reply,
+    HttpStatusCode.OK,
+    'Message Template updated successfully',
+    messageTemplate
+  );
 };
 
 export const deleteMessageTemplateHandler = async (
   request: FastifyRequest<{ Params: IMessageTemplateParams }>,
   reply: FastifyReply
 ) => {
-  try {
-    const userId = request.user?.userId;
-    if (!userId) {
-      throw new AuthenticationError(
-        ErrorMessages.User.NOT_FOUND_ERROR.message,
-        ErrorMessages.User.NOT_FOUND_ERROR.code
-      );
-    }
-    const success = await deleteMessageTemplate(request.params.id, userId);
-    if (!success) {
-      throw new NotFoundError(
-        ErrorMessages.MessageTemplate.NOT_FOUND_ERROR.message,
-        ErrorMessages.MessageTemplate.NOT_FOUND_ERROR.code
-      );
-    }
-    sendSuccessResponse(reply, HttpStatusCode.NO_CONTENT);
-  } catch (error) {
-    logger.error('Error deleting message template:', error);
-    throw error;
+  const userId = request.user?.userId;
+  if (!userId) {
+    throw new AuthenticationError(
+      ErrorMessages.User.NOT_FOUND_ERROR.message,
+      ErrorMessages.User.NOT_FOUND_ERROR.code
+    );
   }
+  const success = await deleteMessageTemplate(request.params.id, userId);
+  if (!success) {
+    throw new NotFoundError(
+      ErrorMessages.MessageTemplate.NOT_FOUND_ERROR.message,
+      ErrorMessages.MessageTemplate.NOT_FOUND_ERROR.code
+    );
+  }
+  sendSuccessResponse(reply, HttpStatusCode.NO_CONTENT);
 };

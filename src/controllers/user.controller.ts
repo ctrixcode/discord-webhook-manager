@@ -1,7 +1,6 @@
 import { FastifyRequest, FastifyReply } from 'fastify';
 import * as userService from '../services/user.service';
 import * as userUsageService from '../services/user-usage.service';
-import { logger } from '../utils';
 import { UpdateUserData } from '../services/user.service';
 import { getDiscordAvatarURL } from '../utils/discord-api';
 import { toUserPayload } from '../utils/mappers';
@@ -23,66 +22,51 @@ export const getCurrentUser = async (
   request: FastifyRequest,
   reply: FastifyReply
 ): Promise<void> => {
-  try {
-    if (!request.user || !request.user.userId) {
-      throw new AuthenticationError(
-        ErrorMessages.User.NOT_FOUND_ERROR.message,
-        ErrorMessages.User.NOT_FOUND_ERROR.code
-      );
-    }
-    const user = await userService.getUserById(request.user.userId);
-    if (!user) {
-      throw new NotFoundError(
-        ErrorMessages.User.NOT_FOUND_ERROR.message,
-        ErrorMessages.User.NOT_FOUND_ERROR.code
-      );
-    }
-
-    // Attach discord avatar url
-    user.discord_avatar = user.discord_id
-      ? getDiscordAvatarURL(user.discord_id, user.discord_avatar)
-      : user.discord_avatar;
-
-    // attach discord guilds icon urls
-    if (user.guilds) {
-      user.guilds = user.guilds.sort((a, b) => a.name.localeCompare(b.name));
-    }
-
-    sendSuccessResponse(reply, HttpStatusCode.OK, 'User fetched successfully', {
-      data: toUserPayload(user),
-    });
-  } catch (error: unknown) {
-    logger.error('Error in getCurrentUser controller:', error);
-    throw error;
+  if (!request.user || !request.user.userId) {
+    throw new AuthenticationError(
+      ErrorMessages.User.NOT_FOUND_ERROR.message,
+      ErrorMessages.User.NOT_FOUND_ERROR.code
+    );
   }
+  const user = await userService.getUserById(request.user.userId);
+  if (!user) {
+    throw new NotFoundError(
+      ErrorMessages.User.NOT_FOUND_ERROR.message,
+      ErrorMessages.User.NOT_FOUND_ERROR.code
+    );
+  }
+
+  // Attach discord avatar url
+  user.discord_avatar = user.discord_id
+    ? getDiscordAvatarURL(user.discord_id, user.discord_avatar)
+    : user.discord_avatar;
+
+  // attach discord guilds icon urls
+  if (user.guilds) {
+    user.guilds = user.guilds.sort((a, b) => a.name.localeCompare(b.name));
+  }
+
+  sendSuccessResponse(reply, HttpStatusCode.OK, 'User fetched successfully', {
+    data: toUserPayload(user),
+  });
 };
 
 export const getUsers = async (
   request: FastifyRequest<{ Querystring: { page?: string; limit?: string } }>,
   reply: FastifyReply
 ): Promise<void> => {
-  try {
-    const page = parseInt(request.query.page || '1', 10);
-    const limit = parseInt(request.query.limit || '10', 10);
-    const result = await userService.getUsers(page, limit);
+  const page = parseInt(request.query.page || '1', 10);
+  const limit = parseInt(request.query.limit || '10', 10);
+  const result = await userService.getUsers(page, limit);
 
-    sendSuccessResponse(
-      reply,
-      HttpStatusCode.OK,
-      'Users fetched successfully',
-      {
-        data: result.users.map(toUserPayload),
-        pagination: createPagination({
-          page,
-          limit,
-          totalItems: result.total,
-        }),
-      }
-    );
-  } catch (error: unknown) {
-    logger.error('Error in getUsers controller:', error);
-    throw error;
-  }
+  sendSuccessResponse(reply, HttpStatusCode.OK, 'Users fetched successfully', {
+    data: result.users.map(toUserPayload),
+    pagination: createPagination({
+      page,
+      limit,
+      totalItems: result.total,
+    }),
+  });
 };
 
 /**
@@ -93,31 +77,26 @@ export const getUserById = async (
   request: FastifyRequest<{ Params: { id: string } }>,
   reply: FastifyReply
 ): Promise<void> => {
-  try {
-    const { id } = request.params;
-    if (!id) {
-      throw new BadRequestError(
-        ErrorMessages.Generic.INVALID_INPUT_ERROR.message,
-        ErrorMessages.Generic.INVALID_INPUT_ERROR.code
-      );
-    }
-    const user = await userService.getUserById(id);
-    if (!user) {
-      throw new NotFoundError(
-        ErrorMessages.User.NOT_FOUND_ERROR.message,
-        ErrorMessages.User.NOT_FOUND_ERROR.code
-      );
-    }
-    sendSuccessResponse(
-      reply,
-      HttpStatusCode.OK,
-      'User fetched successfully',
-      toUserPayload(user)
+  const { id } = request.params;
+  if (!id) {
+    throw new BadRequestError(
+      ErrorMessages.Generic.INVALID_INPUT_ERROR.message,
+      ErrorMessages.Generic.INVALID_INPUT_ERROR.code
     );
-  } catch (error: unknown) {
-    logger.error('Error in getUserById controller:', error);
-    throw error;
   }
+  const user = await userService.getUserById(id);
+  if (!user) {
+    throw new NotFoundError(
+      ErrorMessages.User.NOT_FOUND_ERROR.message,
+      ErrorMessages.User.NOT_FOUND_ERROR.code
+    );
+  }
+  sendSuccessResponse(
+    reply,
+    HttpStatusCode.OK,
+    'User fetched successfully',
+    toUserPayload(user)
+  );
 };
 
 /**
@@ -128,29 +107,24 @@ export const updateUser = async (
   request: FastifyRequest<{ Params: { id: string }; Body: UpdateUserData }>,
   reply: FastifyReply
 ): Promise<void> => {
-  try {
-    const { id } = request.params;
-    const updateData = request.body;
-    if (!id) {
-      throw new BadRequestError(
-        ErrorMessages.Generic.INVALID_INPUT_ERROR.message,
-        ErrorMessages.Generic.INVALID_INPUT_ERROR.code
-      );
-    }
-    const user = await userService.updateUser(id, updateData);
-    if (!user) {
-      throw new NotFoundError(
-        ErrorMessages.User.NOT_FOUND_ERROR.message,
-        ErrorMessages.User.NOT_FOUND_ERROR.code
-      );
-    }
-    sendSuccessResponse(reply, HttpStatusCode.OK, 'User updated successfully', {
-      data: toUserPayload(user),
-    });
-  } catch (error: unknown) {
-    logger.error('Error in updateUser controller:', error);
-    throw error;
+  const { id } = request.params;
+  const updateData = request.body;
+  if (!id) {
+    throw new BadRequestError(
+      ErrorMessages.Generic.INVALID_INPUT_ERROR.message,
+      ErrorMessages.Generic.INVALID_INPUT_ERROR.code
+    );
   }
+  const user = await userService.updateUser(id, updateData);
+  if (!user) {
+    throw new NotFoundError(
+      ErrorMessages.User.NOT_FOUND_ERROR.message,
+      ErrorMessages.User.NOT_FOUND_ERROR.code
+    );
+  }
+  sendSuccessResponse(reply, HttpStatusCode.OK, 'User updated successfully', {
+    data: toUserPayload(user),
+  });
 };
 
 /**
@@ -161,21 +135,16 @@ export const deleteUser = async (
   request: FastifyRequest<{ Params: { id: string } }>,
   reply: FastifyReply
 ): Promise<void> => {
-  try {
-    const { id } = request.params;
-    if (!id) {
-      throw new BadRequestError(
-        ErrorMessages.Generic.INVALID_INPUT_ERROR.message,
-        ErrorMessages.Generic.INVALID_INPUT_ERROR.code
-      );
-    }
-    await userService.deleteUser(id);
-
-    sendSuccessResponse(reply, HttpStatusCode.NO_CONTENT);
-  } catch (error: unknown) {
-    logger.error('Error in deleteUser controller:', error);
-    throw error;
+  const { id } = request.params;
+  if (!id) {
+    throw new BadRequestError(
+      ErrorMessages.Generic.INVALID_INPUT_ERROR.message,
+      ErrorMessages.Generic.INVALID_INPUT_ERROR.code
+    );
   }
+  await userService.deleteUser(id);
+
+  sendSuccessResponse(reply, HttpStatusCode.NO_CONTENT);
 };
 
 /**
