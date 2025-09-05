@@ -1,8 +1,12 @@
+import { ErrorMessages } from './../utils/errorMessages';
 import { FastifyRequest, FastifyReply } from 'fastify';
 import * as authService from '../services/auth.service';
 import * as discordTokenService from '../services/discord-token.service';
 import { logger } from '../utils';
 import { verifyToken, TokenPayload } from '../utils/jwt';
+import { sendSuccessResponse } from '../utils/responseHandler';
+import { HttpStatusCode } from '../utils/httpcode';
+import { BadRequestError, InternalServerError } from '../utils/errors';
 
 const DISCORD_CLIENT_ID = process.env.DISCORD_CLIENT_ID as string;
 const DISCORD_CLIENT_SECRET = process.env.DISCORD_CLIENT_SECRET as string;
@@ -29,27 +33,18 @@ export const refreshAccessToken = async (
       request.headers['user-agent'] || 'unknown'
     );
 
-    reply.status(200).send({
-      success: true,
-      data: {
+    sendSuccessResponse(
+      reply,
+      HttpStatusCode.OK,
+      'Access token refreshed successfully',
+      {
         accessToken: newAccessToken,
         refreshToken: newRefreshToken,
-      },
-      message: 'Access token refreshed successfully',
-    });
+      }
+    );
   } catch (error: unknown) {
     logger.error('Error in refreshAccessToken controller:', error);
-    if (error instanceof Error) {
-      reply.status(401).send({
-        success: false,
-        message: error.message,
-      });
-    } else {
-      reply.status(500).send({
-        success: false,
-        message: 'Internal server error',
-      });
-    }
+    throw error;
   }
 };
 
@@ -65,31 +60,23 @@ export const logoutUser = async (
     const { refreshToken } = request.body;
 
     if (refreshToken) {
-      try {
-        const decodedRefreshToken = verifyToken(refreshToken) as TokenPayload;
-        if (decodedRefreshToken.userId && decodedRefreshToken.jti) {
-          await authService.logout(
-            decodedRefreshToken.userId,
-            decodedRefreshToken.jti
-          );
-        } else {
-          logger.warn('Logout request: Refresh token missing userId or jti.');
-        }
-      } catch (error) {
-        logger.error('Error verifying refresh token during logout:', error);
+      const decodedRefreshToken = verifyToken(refreshToken) as TokenPayload;
+      if (decodedRefreshToken.userId && decodedRefreshToken.jti) {
+        await authService.logout(
+          decodedRefreshToken.userId,
+          decodedRefreshToken.jti
+        );
+      } else {
+        logger.warn('Logout request: Refresh token missing userId or jti.');
       }
     } else {
       logger.warn('Logout request received without refresh token.');
     }
 
-    reply
-      .status(200)
-      .send({ success: true, message: 'Logged out successfully' });
+    sendSuccessResponse(reply, HttpStatusCode.OK, 'Logged out successfully');
   } catch (error: unknown) {
     logger.error('Error in logoutUser controller:', error);
-    reply
-      .status(500)
-      .send({ success: false, message: 'Internal server error' });
+    throw error;
   }
 };
 
@@ -106,10 +93,7 @@ export const discordLogin = async (
     reply.redirect(discordAuthUrl);
   } catch (error: unknown) {
     logger.error('Error in discordLogin controller:', error);
-    reply.status(500).send({
-      success: false,
-      message: 'Internal server error',
-    });
+    throw error;
   }
 };
 
@@ -125,11 +109,10 @@ export const discordCallback = async (
     const { code } = request.query;
 
     if (!code) {
-      reply.status(400).send({
-        success: false,
-        message: 'Missing authorization code',
-      });
-      return;
+      throw new BadRequestError(
+        ErrorMessages.Auth.MISSING_CODE_ERROR.message,
+        ErrorMessages.Auth.MISSING_CODE_ERROR.code
+      );
     }
 
     // Exchange authorization code for Discord access token
@@ -151,11 +134,10 @@ export const discordCallback = async (
     if (!tokenResponse.ok) {
       const errorData = await tokenResponse.json();
       logger.error('Error exchanging Discord code for token:', errorData);
-      reply.status(400).send({
-        success: false,
-        message: 'Failed to exchange Discord code for token',
-      });
-      return;
+      throw new InternalServerError(
+        ErrorMessages.Discord.FAILED_TOKEN_EXCHANGE_ERROR.message,
+        ErrorMessages.Discord.FAILED_TOKEN_EXCHANGE_ERROR.code
+      );
     }
 
     const { access_token, refresh_token, expires_in } =
@@ -171,11 +153,10 @@ export const discordCallback = async (
     if (!userResponse.ok) {
       const errorData = await userResponse.json();
       logger.error('Error fetching Discord user info:', errorData);
-      reply.status(400).send({
-        success: false,
-        message: 'Failed to fetch Discord user info',
-      });
-      return;
+      throw new InternalServerError(
+        ErrorMessages.Discord.TOKEN_FETCH_ERROR.message,
+        ErrorMessages.Discord.TOKEN_FETCH_ERROR.code
+      );
     }
 
     const discordUser = await userResponse.json();
@@ -239,16 +220,6 @@ export const discordCallback = async (
     );
   } catch (error: unknown) {
     logger.error('Error in discordCallback controller:', error);
-    if (error instanceof Error) {
-      reply.status(500).send({
-        success: false,
-        message: error.message,
-      });
-    } else {
-      reply.status(500).send({
-        success: false,
-        message: 'Internal server error',
-      });
-    }
+    throw error;
   }
 };

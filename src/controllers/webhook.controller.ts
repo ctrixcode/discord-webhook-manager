@@ -12,7 +12,14 @@ import {
   SendMessageData,
 } from '../services/webhook.service';
 import { logger, toWebhookDto } from '../utils';
-import { UsageLimitExceededError } from '../utils/errors'; // Import UsageLimitExceededError
+import {
+  AuthenticationError,
+  BadRequestError,
+  NotFoundError,
+} from '../utils/errors';
+import { ErrorMessages } from '../utils/errorMessages';
+import { sendSuccessResponse } from '../utils/responseHandler';
+import { HttpStatusCode } from '../utils/httpcode';
 
 export const createWebhookHandler = async (
   request: FastifyRequest<{ Body: CreateWebhookData }>,
@@ -21,13 +28,21 @@ export const createWebhookHandler = async (
   try {
     const userId = request.user?.userId;
     if (!userId) {
-      return reply.code(401).send({ message: 'Unauthorized' });
+      throw new AuthenticationError(
+        ErrorMessages.User.NOT_FOUND_ERROR.message,
+        ErrorMessages.User.NOT_FOUND_ERROR.code
+      );
     }
     const webhook = await createWebhook(request.body, userId);
-    reply.code(201).send(toWebhookDto(webhook));
+    sendSuccessResponse(
+      reply,
+      HttpStatusCode.CREATED,
+      'Webhook created successfully',
+      toWebhookDto(webhook)
+    );
   } catch (error) {
     logger.error('Error creating webhook:', error);
-    reply.code(500).send({ message: 'Internal Server Error' });
+    throw error;
   }
 };
 
@@ -40,7 +55,10 @@ export const getWebhooksHandler = async (
   try {
     const userId = request.user?.userId;
     if (!userId) {
-      return reply.code(401).send({ message: 'Unauthorized' });
+      throw new AuthenticationError(
+        ErrorMessages.User.NOT_FOUND_ERROR.message,
+        ErrorMessages.User.NOT_FOUND_ERROR.code
+      );
     }
     const page = request.query.page ? parseInt(request.query.page, 10) : 1;
     const limit = request.query.limit ? parseInt(request.query.limit, 10) : 10;
@@ -51,10 +69,15 @@ export const getWebhooksHandler = async (
       limit,
       status
     );
-    reply.send({ webhooks: webhooks.map(toWebhookDto), total, page, limit });
+    sendSuccessResponse(
+      reply,
+      HttpStatusCode.OK,
+      'Webhooks fetched successfully',
+      { webhooks: webhooks.map(toWebhookDto), total, page, limit }
+    );
   } catch (error) {
     logger.error('Error getting webhooks:', error);
-    reply.code(500).send({ message: 'Internal Server Error' });
+    throw error;
   }
 };
 
@@ -65,16 +88,22 @@ export const getWebhookHandler = async (
   try {
     const userId = request.user?.userId;
     if (!userId) {
-      return reply.code(401).send({ message: 'Unauthorized' });
+      throw new AuthenticationError(
+        ErrorMessages.User.NOT_FOUND_ERROR.message,
+        ErrorMessages.User.NOT_FOUND_ERROR.code
+      );
     }
     const webhook = await getWebhookById(request.params.id, userId);
-    if (!webhook) {
-      return reply.code(404).send({ message: 'Webhook not found' });
-    }
-    reply.send(toWebhookDto(webhook));
+
+    sendSuccessResponse(
+      reply,
+      HttpStatusCode.OK,
+      'Webhook fetched successfully',
+      toWebhookDto(webhook)
+    );
   } catch (error) {
     logger.error('Error getting webhook:', error);
-    reply.code(500).send({ message: 'Internal Server Error' });
+    throw error;
   }
 };
 
@@ -85,7 +114,10 @@ export const updateWebhookHandler = async (
   try {
     const userId = request.user?.userId;
     if (!userId) {
-      return reply.code(401).send({ message: 'Unauthorized' });
+      throw new AuthenticationError(
+        ErrorMessages.User.NOT_FOUND_ERROR.message,
+        ErrorMessages.User.NOT_FOUND_ERROR.code
+      );
     }
     const webhook = await updateWebhook(
       request.params.id,
@@ -93,12 +125,15 @@ export const updateWebhookHandler = async (
       userId
     );
     if (!webhook) {
-      return reply.code(404).send({ message: 'Webhook not found' });
+      throw new NotFoundError(
+        ErrorMessages.Webhook.NOT_FOUND_ERROR.message,
+        ErrorMessages.Webhook.NOT_FOUND_ERROR.code
+      );
     }
     reply.send(toWebhookDto(webhook));
   } catch (error) {
     logger.error('Error updating webhook:', error);
-    reply.code(500).send({ message: 'Internal Server Error' });
+    throw error;
   }
 };
 
@@ -109,20 +144,22 @@ export const deleteWebhookHandler = async (
   try {
     const userId = request.user?.userId;
     if (!userId) {
-      return reply.code(401).send({ message: 'Unauthorized' });
+      throw new AuthenticationError(
+        ErrorMessages.User.NOT_FOUND_ERROR.message,
+        ErrorMessages.User.NOT_FOUND_ERROR.code
+      );
     }
     const success = await deleteWebhook(request.params.id, userId);
     if (!success) {
-      return reply.code(404).send({ message: 'Webhook not found' });
+      throw new NotFoundError(
+        ErrorMessages.Webhook.NOT_FOUND_ERROR.message,
+        ErrorMessages.Webhook.NOT_FOUND_ERROR.code
+      );
     }
-    reply.code(204).send({
-      success: true,
-      message: 'Webhook deleted successfully',
-      data: null,
-    });
+    sendSuccessResponse(reply, HttpStatusCode.NO_CONTENT);
   } catch (error) {
     logger.error('Error deleting webhook:', error);
-    reply.code(500).send({ message: 'Internal Server Error' });
+    throw error;
   }
 };
 
@@ -133,17 +170,23 @@ export const testWebhookHandler = async (
   try {
     const userId = request.user?.userId;
     if (!userId) {
-      return reply.code(401).send({ message: 'Unauthorized' });
+      throw new AuthenticationError(
+        ErrorMessages.User.NOT_FOUND_ERROR.message,
+        ErrorMessages.User.NOT_FOUND_ERROR.code
+      );
     }
     const webhook = await getWebhookById(request.params.id, userId);
-    if (!webhook) {
-      return reply.code(404).send({ message: 'Webhook not found' });
-    }
+
     await testWebhook(webhook);
-    reply.send({ success: true, message: 'Webhook tested successfully' });
+
+    sendSuccessResponse(
+      reply,
+      HttpStatusCode.OK,
+      'Webhook tested successfully'
+    );
   } catch (error) {
     logger.error('Error testing webhook:', error);
-    reply.code(500).send({ message: 'Internal Server Error' });
+    throw error;
   }
 };
 
@@ -156,19 +199,23 @@ export const sendMessageHandler = async (
   try {
     const userId = request.user?.userId;
     if (!userId) {
-      return reply.code(401).send({ message: 'Unauthorized' });
+      throw new AuthenticationError(
+        ErrorMessages.User.NOT_FOUND_ERROR.message,
+        ErrorMessages.User.NOT_FOUND_ERROR.code
+      );
     }
 
     const { webhookIds, messageData } = request.body;
 
     if (!webhookIds || !Array.isArray(webhookIds) || webhookIds.length === 0) {
-      return reply
-        .code(400)
-        .send({ message: 'webhookIds array is required and cannot be empty' });
+      throw new BadRequestError(
+        ErrorMessages.Generic.INVALID_INPUT_ERROR.message,
+        ErrorMessages.Generic.INVALID_INPUT_ERROR.code
+      );
     }
 
     const results = await sendMessage(webhookIds, userId, messageData);
-
+    // TODO: handle errors
     if (results.every(result => result.status === 'failed')) {
       return reply.code(500).send({
         success: false,
@@ -177,22 +224,14 @@ export const sendMessageHandler = async (
       });
     }
 
-    reply.send({
-      success: true,
-      message: 'Message sending process completed',
-      results,
-    });
+    sendSuccessResponse(
+      reply,
+      HttpStatusCode.OK,
+      'Message sent successfully',
+      results
+    );
   } catch (error: unknown) {
-    // Catch unknown error type
-    if (error instanceof UsageLimitExceededError) {
-      reply.status(error.statusCode).send({
-        success: false,
-        message: error.message,
-        code: error.errorCode,
-      });
-    } else {
-      logger.error('Error sending message:', error);
-      reply.code(500).send({ message: 'Internal Server Error' });
-    }
+    logger.error('Error sending message:', error);
+    throw error;
   }
 };

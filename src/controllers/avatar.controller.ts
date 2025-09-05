@@ -12,7 +12,15 @@ import {
 import { IAvatarParams } from '../schemas/avatar.schema';
 import { IAvatar } from '../models/avatar';
 import { toAvatarDto } from '../utils/mappers';
-import { UsageLimitExceededError } from '../utils/errors'; // Import UsageLimitExceededError
+import {
+  AuthenticationError,
+  BadRequestError,
+  NotFoundError,
+} from '../utils/errors'; // Import UsageLimitExceededError
+import { logger } from '../utils';
+import { sendSuccessResponse } from '../utils/responseHandler';
+import { HttpStatusCode } from '../utils/httpcode';
+import { ErrorMessages } from '../utils/errorMessages';
 
 export const createAvatar = async (
   request: FastifyRequest,
@@ -20,25 +28,23 @@ export const createAvatar = async (
 ) => {
   try {
     if (!request.user) {
-      return reply
-        .code(401)
-        .send({ message: 'Unauthorized: User not authenticated.' });
+      throw new AuthenticationError(
+        ErrorMessages.Auth.NO_REFRESH_TOKEN_ERROR.message,
+        ErrorMessages.Auth.NO_REFRESH_TOKEN_ERROR.code
+      );
     }
     const userId = request.user.userId;
     const avatarData = request.body as Partial<IAvatar>;
     const avatar = await createAvatarService(userId, avatarData);
-    reply.code(201).send(toAvatarDto(avatar));
+    sendSuccessResponse(
+      reply,
+      HttpStatusCode.CREATED,
+      'Avatar created successfully',
+      toAvatarDto(avatar)
+    );
   } catch (error: unknown) {
-    if (error instanceof Error) {
-      reply
-        .code(500)
-        .send({ message: 'Error creating avatar', error: error.message });
-    } else {
-      reply.code(500).send({
-        message: 'Error creating avatar',
-        error: 'An unknown error occurred.',
-      });
-    }
+    logger.error('Error in createAvatar controller:', error);
+    throw error;
   }
 };
 
@@ -49,19 +55,25 @@ export const uploadAvatar = async (
   let tempFilePath: string | undefined;
   try {
     if (!request.user) {
-      return reply
-        .code(401)
-        .send({ message: 'Unauthorized: User not authenticated.' });
+      throw new AuthenticationError(
+        ErrorMessages.Auth.NO_REFRESH_TOKEN_ERROR.message,
+        ErrorMessages.Auth.NO_REFRESH_TOKEN_ERROR.code
+      );
     }
 
-    if (!request.isMultipart()) {
-      return reply.code(400).send({ message: 'Request is not multipart' });
-    }
+    if (!request.isMultipart())
+      throw new BadRequestError(
+        ErrorMessages.Generic.INVALID_INPUT_ERROR.message,
+        ErrorMessages.Generic.INVALID_INPUT_ERROR.code
+      );
 
     const data = await request.file();
 
     if (!data) {
-      return reply.code(400).send({ message: 'No file data received' });
+      throw new BadRequestError(
+        ErrorMessages.Generic.NO_FILE_DATA_ERROR.message,
+        ErrorMessages.Generic.NO_FILE_DATA_ERROR.code
+      );
     }
 
     const { filename, fields } = data;
@@ -75,11 +87,17 @@ export const uploadAvatar = async (
     }
 
     if (!filename) {
-      return reply.code(400).send({ message: 'No file uploaded' });
+      throw new BadRequestError(
+        ErrorMessages.Generic.FILE_PROCESSING_ERROR.message,
+        ErrorMessages.Generic.FILE_PROCESSING_ERROR.code
+      );
     }
 
     if (!avatarUsername) {
-      return reply.code(400).send({ message: 'Username field is missing' });
+      throw new BadRequestError(
+        ErrorMessages.Avatar.UPDATE_ERROR.message,
+        ErrorMessages.Avatar.UPDATE_ERROR.code
+      );
     }
 
     const userId = request.user.userId;
@@ -89,15 +107,7 @@ export const uploadAvatar = async (
       fs.mkdirSync(tempDir);
     }
 
-    let fileBuffer: Buffer;
-    try {
-      fileBuffer = await data.toBuffer();
-    } catch (bufferError: unknown) {
-      return reply.code(500).send({
-        message: 'Error processing file',
-        error: (bufferError as Error).message,
-      });
-    }
+    const fileBuffer: Buffer = await data.toBuffer();
 
     tempFilePath = path.join(tempDir, filename);
     await fs.promises.writeFile(tempFilePath as string, fileBuffer);
@@ -109,30 +119,15 @@ export const uploadAvatar = async (
       tempFilePath,
       fileBuffer.byteLength // Pass fileSize
     );
-
-    reply.code(201).send(toAvatarDto(avatar));
+    sendSuccessResponse(
+      reply,
+      HttpStatusCode.CREATED,
+      'Avatar created successfully',
+      toAvatarDto(avatar)
+    );
   } catch (error: unknown) {
-    if (error instanceof UsageLimitExceededError) {
-      // Handle custom error
-      reply.status(error.statusCode).send({
-        success: false,
-        message: error.message,
-        code: error.errorCode,
-      });
-    } else if (error instanceof Error) {
-      reply
-        .code(500)
-        .send({ message: 'Error uploading avatar', error: error.message });
-    } else {
-      reply.code(500).send({
-        message: 'Error uploading avatar',
-        error: 'An unknown error occurred.',
-      });
-    }
-  } finally {
-    if (tempFilePath && fs.existsSync(tempFilePath)) {
-      fs.unlinkSync(tempFilePath); // Ensure temporary file is cleaned up
-    }
+    logger.error('Error in uploadAvatar controller:', error);
+    throw error;
   }
 };
 
@@ -142,9 +137,10 @@ export const getAvatar = async (
 ) => {
   try {
     if (!request.user) {
-      return reply
-        .code(401)
-        .send({ message: 'Unauthorized: User not authenticated.' });
+      throw new AuthenticationError(
+        ErrorMessages.Auth.NO_REFRESH_TOKEN_ERROR.message,
+        ErrorMessages.Auth.NO_REFRESH_TOKEN_ERROR.code
+      );
     }
     const userId = request.user.userId;
     const { id } = request.params as IAvatarParams;
@@ -154,18 +150,15 @@ export const getAvatar = async (
         .code(404)
         .send({ message: 'Avatar not found or not owned by user' });
     }
-    reply.code(200).send(toAvatarDto(avatar));
+    sendSuccessResponse(
+      reply,
+      HttpStatusCode.OK,
+      'Avatar fetched successfully',
+      toAvatarDto(avatar)
+    );
   } catch (error: unknown) {
-    if (error instanceof Error) {
-      reply
-        .code(500)
-        .send({ message: 'Error fetching avatar', error: error.message });
-    } else {
-      reply.code(500).send({
-        message: 'Error fetching avatar',
-        error: 'An unknown error occurred.',
-      });
-    }
+    logger.error('Error in getAvatar controller:', error);
+    throw error;
   }
 };
 
@@ -175,24 +168,17 @@ export const getAvatars = async (
 ) => {
   try {
     if (!request.user) {
-      return reply
-        .code(401)
-        .send({ message: 'Unauthorized: User not authenticated.' });
+      throw new AuthenticationError(
+        ErrorMessages.Auth.NO_REFRESH_TOKEN_ERROR.message,
+        ErrorMessages.Auth.NO_REFRESH_TOKEN_ERROR.code
+      );
     }
     const userId = request.user.userId;
     const avatars = await getAvatarsService(userId);
     reply.code(200).send(avatars.map(toAvatarDto));
   } catch (error: unknown) {
-    if (error instanceof Error) {
-      reply
-        .code(500)
-        .send({ message: 'Error fetching avatars', error: error.message });
-    } else {
-      reply.code(500).send({
-        message: 'Error fetching avatars',
-        error: 'An unknown error occurred.',
-      });
-    }
+    logger.error('Error in getAvatars controller:', error);
+    throw error;
   }
 };
 
@@ -202,31 +188,30 @@ export const updateAvatar = async (
 ) => {
   try {
     if (!request.user) {
-      return reply
-        .code(401)
-        .send({ message: 'Unauthorized: User not authenticated.' });
+      throw new AuthenticationError(
+        ErrorMessages.Auth.NO_REFRESH_TOKEN_ERROR.message,
+        ErrorMessages.Auth.NO_REFRESH_TOKEN_ERROR.code
+      );
     }
     const userId = request.user.userId;
     const { id } = request.params as IAvatarParams;
     const updateData = request.body as Partial<IAvatar>;
     const updatedAvatar = await updateAvatarService(userId, id, updateData);
     if (!updatedAvatar) {
-      return reply
-        .code(404)
-        .send({ message: 'Avatar not found or not owned by user' });
+      throw new NotFoundError(
+        ErrorMessages.Avatar.NOT_FOUND_ERROR.message,
+        ErrorMessages.Avatar.NOT_FOUND_ERROR.code
+      );
     }
-    reply.code(200).send(toAvatarDto(updatedAvatar));
+    sendSuccessResponse(
+      reply,
+      HttpStatusCode.OK,
+      'Avatar updated successfully',
+      toAvatarDto(updatedAvatar)
+    );
   } catch (error: unknown) {
-    if (error instanceof Error) {
-      reply
-        .code(500)
-        .send({ message: 'Error updating avatar', error: error.message });
-    } else {
-      reply.code(500).send({
-        message: 'Error updating avatar',
-        error: 'An unknown error occurred.',
-      });
-    }
+    logger.error('Error in updateAvatar controller:', error);
+    throw error;
   }
 };
 
@@ -236,29 +221,23 @@ export const deleteAvatar = async (
 ) => {
   try {
     if (!request.user) {
-      return reply
-        .code(401)
-        .send({ message: 'Unauthorized: User not authenticated.' });
+      throw new AuthenticationError(
+        ErrorMessages.Auth.NO_REFRESH_TOKEN_ERROR.message,
+        ErrorMessages.Auth.NO_REFRESH_TOKEN_ERROR.code
+      );
     }
     const userId = request.user.userId;
     const { id } = request.params as IAvatarParams;
     const deletedAvatar = await deleteAvatarService(userId, id);
     if (!deletedAvatar) {
-      return reply
-        .code(404)
-        .send({ message: 'Avatar not found or not owned by user' });
+      throw new NotFoundError(
+        ErrorMessages.Avatar.NOT_FOUND_ERROR.message,
+        ErrorMessages.Avatar.NOT_FOUND_ERROR.code
+      );
     }
-    reply.code(204).send(); // No content for successful deletion
+    sendSuccessResponse(reply, HttpStatusCode.NO_CONTENT);
   } catch (error: unknown) {
-    if (error instanceof Error) {
-      reply
-        .code(500)
-        .send({ message: 'Error deleting avatar', error: error.message });
-    } else {
-      reply.code(500).send({
-        message: 'Error deleting avatar',
-        error: 'An unknown error occurred.',
-      });
-    }
+    logger.error('Error in deleteAvatar controller:', error);
+    throw error;
   }
 };
