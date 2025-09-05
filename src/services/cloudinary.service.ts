@@ -2,6 +2,7 @@ import { v2 as cloudinary } from 'cloudinary';
 import dotenv from 'dotenv';
 import * as userUsageService from './user-usage.service'; // Import userUsageService
 import {
+  ApiError,
   ExternalApiError,
   InternalServerError,
   UsageLimitExceededError,
@@ -54,10 +55,7 @@ export const uploadImage = async (
     return result;
   } catch (error) {
     logger.error('Cloudinary upload error:', error);
-    if (
-      error instanceof UsageLimitExceededError ||
-      error instanceof ExternalApiError
-    ) {
+    if (error instanceof ApiError) {
       throw error;
     }
 
@@ -80,6 +78,9 @@ export const deleteImage = async (
     return result;
   } catch (error) {
     logger.error('Cloudinary delete error:', error);
+    if (error instanceof ApiError) {
+      throw error;
+    }
     throw new InternalServerError(
       ErrorMessages.Cloudinary.DELETE_ERROR.message,
       ErrorMessages.Cloudinary.DELETE_ERROR.code

@@ -1,4 +1,8 @@
-import { BadRequestError, InternalServerError } from './../utils/errors';
+import {
+  ApiError,
+  BadRequestError,
+  InternalServerError,
+} from './../utils/errors';
 import UserUsage, { IUserUsage } from '../models/UserUsage';
 import User from '../models/User'; // Import User model
 import { logger } from '../utils';
@@ -11,6 +15,7 @@ import {
   PREMIUM_PLAN_MEDIA_STORAGE_LIMIT_BYTES,
 } from '../config/usage';
 import { ErrorMessages } from '../utils/errorMessages';
+import mongoose from 'mongoose';
 
 /**
  * Retrieves a user's usage record by userId.
@@ -33,6 +38,13 @@ export const getOrCreateUserUsage = async (
       `Error getting or creating UserUsage for user ${userId}:`,
       error
     );
+    if (error instanceof mongoose.Error.CastError) {
+      logger.error('Cast error getting or creating UserUsage:', error);
+      throw new BadRequestError(
+        ErrorMessages.UserUsage.FETCH_CREATE_ERROR.message,
+        ErrorMessages.UserUsage.FETCH_CREATE_ERROR.code
+      );
+    }
     throw new InternalServerError(
       ErrorMessages.UserUsage.FETCH_CREATE_ERROR.message,
       ErrorMessages.UserUsage.FETCH_CREATE_ERROR.code
@@ -60,6 +72,13 @@ export const updateUserUsage = async (
     return userUsage;
   } catch (error) {
     logger.error(`Error updating UserUsage for user ${userId}:`, error);
+    if (error instanceof mongoose.Error.CastError) {
+      logger.error('Cast error updating UserUsage:', error);
+      throw new BadRequestError(
+        ErrorMessages.UserUsage.UPDATE_ERROR.message,
+        ErrorMessages.UserUsage.UPDATE_ERROR.code
+      );
+    }
     throw new InternalServerError(
       ErrorMessages.UserUsage.UPDATE_ERROR.message,
       ErrorMessages.UserUsage.UPDATE_ERROR.code
@@ -98,6 +117,15 @@ export const incrementWebhookMessageCount = async (
       `Error incrementing webhook message count for user ${userId}:`,
       error
     );
+    if (error instanceof ApiError) {
+      throw error;
+    } else if (error instanceof mongoose.Error.CastError) {
+      logger.error('Cast error incrementing webhook message count:', error);
+      throw new BadRequestError(
+        ErrorMessages.UserUsage.UPDATE_ERROR.message,
+        ErrorMessages.UserUsage.UPDATE_ERROR.code
+      );
+    }
     throw new InternalServerError(
       ErrorMessages.UserUsage.UPDATE_ERROR.message,
       ErrorMessages.UserUsage.UPDATE_ERROR.code
@@ -127,6 +155,13 @@ export const updateMediaStorageUsed = async (
     return await userUsage.save();
   } catch (error) {
     logger.error(`Error updating media storage for user ${userId}:`, error);
+    if (error instanceof mongoose.Error.CastError) {
+      logger.error('Cast error updating media storage:', error);
+      throw new BadRequestError(
+        ErrorMessages.UserUsage.UPDATE_ERROR.message,
+        ErrorMessages.UserUsage.UPDATE_ERROR.code
+      );
+    }
     throw new InternalServerError(
       ErrorMessages.UserUsage.UPDATE_ERROR.message,
       ErrorMessages.UserUsage.UPDATE_ERROR.code
@@ -255,6 +290,9 @@ export const getUserUsageAndLimits = async (userId: string) => {
       `Error retrieving usage and limits for user ${userId}:`,
       error
     );
+    if (error instanceof ApiError) {
+      throw error;
+    }
     throw new InternalServerError(
       ErrorMessages.UserUsage.FETCH_CREATE_ERROR.message,
       ErrorMessages.UserUsage.FETCH_CREATE_ERROR.code

@@ -152,6 +152,13 @@ export const deleteUser = async (userId: string): Promise<boolean> => {
     return true;
   } catch (error) {
     logger.error('Error deleting user:', error);
+    if (error instanceof mongoose.Error.CastError) {
+      logger.error('Cast error deleting user:', error);
+      throw new BadRequestError(
+        ErrorMessages.User.DELETE_ERROR.message,
+        ErrorMessages.User.DELETE_ERROR.code
+      );
+    }
     throw new InternalServerError(
       ErrorMessages.User.DELETE_ERROR.message,
       ErrorMessages.User.DELETE_ERROR.code

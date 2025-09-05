@@ -2,6 +2,8 @@ import { IEmbedSchemaDocument } from '../models/embed';
 import MessageHistory, { IMessageHistory } from '../models/MessageHistory';
 import { logger } from '../utils';
 import mongoose from 'mongoose';
+import { InternalServerError } from '../utils/errors';
+import { ErrorMessages } from '../utils/errorMessages';
 
 export const createMessageHistory = async (
   webhookId: mongoose.Types.ObjectId,
@@ -29,6 +31,13 @@ export const createMessageHistory = async (
     return messageHistory;
   } catch (err) {
     logger.error('Error saving message history:', err);
-    throw err;
+    if (err instanceof mongoose.Error.ValidationError) {
+      logger.error('Validation error saving message history:', err);
+      throw new Error('Validation error saving message history');
+    }
+    throw new InternalServerError(
+      ErrorMessages.MessageHistory.SAVE_ERROR.message,
+      ErrorMessages.MessageHistory.SAVE_ERROR.code
+    );
   }
 };
