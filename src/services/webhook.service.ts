@@ -17,6 +17,7 @@ import {
   ApiError,
   BadRequestError,
   InternalServerError,
+  NotFoundError,
   UsageLimitExceededError,
 } from '../utils/errors';
 import { ErrorMessages } from '../utils/errorMessages';
@@ -132,7 +133,7 @@ export const getWebhooksByUserId = async (
 export const getWebhookById = async (
   webhookId: string,
   userId: string
-): Promise<IWebhook | null> => {
+): Promise<IWebhook> => {
   try {
     const webhook = await WebhookModel.findOne({
       _id: webhookId,
@@ -141,7 +142,10 @@ export const getWebhookById = async (
     });
     if (!webhook) {
       logger.warn('Webhook not found', { webhookId, userId });
-      return null;
+      throw new NotFoundError(
+        ErrorMessages.Webhook.NOT_FOUND_ERROR.message,
+        ErrorMessages.Webhook.NOT_FOUND_ERROR.code
+      );
     }
     logger.info('Webhook retrieved successfully', { webhookId, userId });
     return webhook;
