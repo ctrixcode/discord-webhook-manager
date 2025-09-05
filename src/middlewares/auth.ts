@@ -1,28 +1,34 @@
 import { FastifyRequest, FastifyReply } from 'fastify';
-import { TokenExpiredError } from 'jsonwebtoken';
 import { verifyToken } from '../utils/jwt';
+import { AuthenticationError } from '../utils/errors';
+import { ErrorMessages } from '../utils/errorMessages';
+import { logger } from '../utils';
 
-const authenticate = async (request: FastifyRequest, reply: FastifyReply) => {
-  const authHeader = request.headers.authorization;
-
-  if (!authHeader) {
-    return reply.status(401).send({ message: 'No token provided' });
-  }
-
-  const token = authHeader.split(' ')[1];
-
-  if (!token) {
-    return reply.status(401).send({ message: 'No token provided' });
-  }
-
+const authenticate = async (request: FastifyRequest, _reply: FastifyReply) => {
   try {
+    const authHeader = request.headers.authorization;
+
+    if (!authHeader) {
+      throw new AuthenticationError(
+        ErrorMessages.Auth.NO_TOKEN_ERROR.message,
+        ErrorMessages.Auth.NO_TOKEN_ERROR.code
+      );
+    }
+
+    const token = authHeader.split(' ')[1];
+
+    if (!token) {
+      throw new AuthenticationError(
+        ErrorMessages.Auth.NO_TOKEN_ERROR.message,
+        ErrorMessages.Auth.NO_TOKEN_ERROR.code
+      );
+    }
+
     const decoded = verifyToken(token);
     request.user = decoded;
   } catch (error) {
-    if (error instanceof TokenExpiredError) {
-      return reply.status(401).send({ message: 'Access token expired' });
-    }
-    return reply.status(401).send({ message: 'Invalid token' });
+    logger.error('Error in authenticate middleware:', error);
+    throw error;
   }
 };
 export default authenticate;
