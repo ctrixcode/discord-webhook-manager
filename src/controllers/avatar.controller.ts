@@ -29,8 +29,8 @@ export const createAvatar = async (
   try {
     if (!request.user) {
       throw new AuthenticationError(
-        ErrorMessages.Auth.NO_REFRESH_TOKEN_ERROR.message,
-        ErrorMessages.Auth.NO_REFRESH_TOKEN_ERROR.code
+        ErrorMessages.Auth.NO_TOKEN_ERROR.message,
+        ErrorMessages.Auth.NO_TOKEN_ERROR.code
       );
     }
     const userId = request.user.userId;
@@ -56,8 +56,8 @@ export const uploadAvatar = async (
   try {
     if (!request.user) {
       throw new AuthenticationError(
-        ErrorMessages.Auth.NO_REFRESH_TOKEN_ERROR.message,
-        ErrorMessages.Auth.NO_REFRESH_TOKEN_ERROR.code
+        ErrorMessages.Auth.NO_TOKEN_ERROR.message,
+        ErrorMessages.Auth.NO_TOKEN_ERROR.code
       );
     }
 
@@ -138,17 +138,18 @@ export const getAvatar = async (
   try {
     if (!request.user) {
       throw new AuthenticationError(
-        ErrorMessages.Auth.NO_REFRESH_TOKEN_ERROR.message,
-        ErrorMessages.Auth.NO_REFRESH_TOKEN_ERROR.code
+        ErrorMessages.Auth.NO_TOKEN_ERROR.message,
+        ErrorMessages.Auth.NO_TOKEN_ERROR.code
       );
     }
     const userId = request.user.userId;
     const { id } = request.params as IAvatarParams;
     const avatar = await getAvatarService(userId, id);
     if (!avatar) {
-      return reply
-        .code(404)
-        .send({ message: 'Avatar not found or not owned by user' });
+      throw new NotFoundError(
+        ErrorMessages.Avatar.NOT_FOUND_ERROR.message,
+        ErrorMessages.Avatar.NOT_FOUND_ERROR.code
+      );
     }
     sendSuccessResponse(
       reply,
@@ -169,8 +170,8 @@ export const getAvatars = async (
   try {
     if (!request.user) {
       throw new AuthenticationError(
-        ErrorMessages.Auth.NO_REFRESH_TOKEN_ERROR.message,
-        ErrorMessages.Auth.NO_REFRESH_TOKEN_ERROR.code
+        ErrorMessages.Auth.NO_TOKEN_ERROR.message,
+        ErrorMessages.Auth.NO_TOKEN_ERROR.code
       );
     }
     const userId = request.user.userId;
@@ -189,8 +190,8 @@ export const updateAvatar = async (
   try {
     if (!request.user) {
       throw new AuthenticationError(
-        ErrorMessages.Auth.NO_REFRESH_TOKEN_ERROR.message,
-        ErrorMessages.Auth.NO_REFRESH_TOKEN_ERROR.code
+        ErrorMessages.Auth.NO_TOKEN_ERROR.message,
+        ErrorMessages.Auth.NO_TOKEN_ERROR.code
       );
     }
     const userId = request.user.userId;
@@ -222,8 +223,8 @@ export const deleteAvatar = async (
   try {
     if (!request.user) {
       throw new AuthenticationError(
-        ErrorMessages.Auth.NO_REFRESH_TOKEN_ERROR.message,
-        ErrorMessages.Auth.NO_REFRESH_TOKEN_ERROR.code
+        ErrorMessages.Auth.NO_TOKEN_ERROR.message,
+        ErrorMessages.Auth.NO_TOKEN_ERROR.code
       );
     }
     const userId = request.user.userId;

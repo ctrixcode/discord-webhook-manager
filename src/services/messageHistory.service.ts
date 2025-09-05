@@ -33,7 +33,10 @@ export const createMessageHistory = async (
     logger.error('Error saving message history:', err);
     if (err instanceof mongoose.Error.ValidationError) {
       logger.error('Validation error saving message history:', err);
-      throw new Error('Validation error saving message history');
+      throw new InternalServerError(
+        ErrorMessages.MessageHistory.SAVE_ERROR.message,
+        ErrorMessages.MessageHistory.SAVE_ERROR.code
+      );
     }
     throw new InternalServerError(
       ErrorMessages.MessageHistory.SAVE_ERROR.message,

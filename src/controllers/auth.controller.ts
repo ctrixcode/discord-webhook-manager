@@ -6,7 +6,11 @@ import { logger } from '../utils';
 import { verifyToken, TokenPayload } from '../utils/jwt';
 import { sendSuccessResponse } from '../utils/responseHandler';
 import { HttpStatusCode } from '../utils/httpcode';
-import { BadRequestError, InternalServerError } from '../utils/errors';
+import {
+  AuthenticationError,
+  BadRequestError,
+  InternalServerError,
+} from '../utils/errors';
 
 const DISCORD_CLIENT_ID = process.env.DISCORD_CLIENT_ID as string;
 const DISCORD_CLIENT_SECRET = process.env.DISCORD_CLIENT_SECRET as string;
@@ -23,9 +27,10 @@ export const refreshAccessToken = async (
   try {
     const { refreshToken } = request.body;
     if (!refreshToken) {
-      return reply
-        .status(401)
-        .send({ success: false, message: 'No refresh token provided' });
+      throw new AuthenticationError(
+        ErrorMessages.Auth.NO_TOKEN_ERROR.message,
+        ErrorMessages.Auth.NO_TOKEN_ERROR.code
+      );
     }
 
     const { newAccessToken, newRefreshToken } = await authService.refreshTokens(

@@ -15,6 +15,7 @@ import { logger, toWebhookDto } from '../utils';
 import {
   AuthenticationError,
   BadRequestError,
+  InternalServerError,
   NotFoundError,
 } from '../utils/errors';
 import { ErrorMessages } from '../utils/errorMessages';
@@ -215,13 +216,11 @@ export const sendMessageHandler = async (
     }
 
     const results = await sendMessage(webhookIds, userId, messageData);
-    // TODO: handle errors
     if (results.every(result => result.status === 'failed')) {
-      return reply.code(500).send({
-        success: false,
-        message: 'Failed to send message to any webhook',
-        results,
-      });
+      throw new InternalServerError(
+        ErrorMessages.Webhook.SEND_FAILED_ALL_ERROR.message,
+        ErrorMessages.Webhook.SEND_FAILED_ALL_ERROR.code
+      );
     }
 
     sendSuccessResponse(

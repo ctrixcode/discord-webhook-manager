@@ -103,7 +103,12 @@ export const getMessageTemplateHandler = async (
         ErrorMessages.MessageTemplate.NOT_FOUND_ERROR.code
       );
     }
-    reply.send(messageTemplate);
+    sendSuccessResponse(
+      reply,
+      HttpStatusCode.OK,
+      'Message Template fetched',
+      messageTemplate
+    );
   } catch (error) {
     logger.error('Error getting message template:', error);
     throw error;
