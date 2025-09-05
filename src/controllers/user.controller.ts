@@ -1,10 +1,19 @@
 import { FastifyRequest, FastifyReply } from 'fastify';
 import * as userService from '../services/user.service';
-import * as userUsageService from '../services/user-usage.service'; // Import userUsageService
+import * as userUsageService from '../services/user-usage.service';
 import { logger } from '../utils';
 import { UpdateUserData } from '../services/user.service';
 import { getDiscordAvatarURL } from '../utils/discord-api';
 import { toUserPayload } from '../utils/mappers';
+import { ErrorMessages } from '../utils/errorMessages';
+import {
+  AuthenticationError,
+  BadRequestError,
+  NotFoundError,
+} from '../utils/errors';
+import { sendSuccessResponse } from '../utils/responseHandler';
+import { HttpStatusCode } from '../utils/httpcode';
+import { createPagination } from '../utils/helper';
 
 /**
  * Get current authenticated user
@@ -16,19 +25,17 @@ export const getCurrentUser = async (
 ): Promise<void> => {
   try {
     if (!request.user || !request.user.userId) {
-      reply.status(401).send({
-        success: false,
-        message: 'Unauthorized: User information not found in request',
-      });
-      return;
+      throw new AuthenticationError(
+        ErrorMessages.User.NOT_FOUND_ERROR.message,
+        ErrorMessages.User.NOT_FOUND_ERROR.code
+      );
     }
     const user = await userService.getUserById(request.user.userId);
     if (!user) {
-      reply.status(404).send({
-        success: false,
-        message: 'Current user not found',
-      });
-      return;
+      throw new NotFoundError(
+        ErrorMessages.User.NOT_FOUND_ERROR.message,
+        ErrorMessages.User.NOT_FOUND_ERROR.code
+      );
     }
 
     // Attach discord avatar url
@@ -41,23 +48,12 @@ export const getCurrentUser = async (
       user.guilds = user.guilds.sort((a, b) => a.name.localeCompare(b.name));
     }
 
-    reply.status(200).send({
-      success: true,
+    sendSuccessResponse(reply, HttpStatusCode.OK, 'User fetched successfully', {
       data: toUserPayload(user),
     });
   } catch (error: unknown) {
     logger.error('Error in getCurrentUser controller:', error);
-    if (error instanceof Error) {
-      reply.status(500).send({
-        success: false,
-        message: error.message,
-      });
-    } else {
-      reply.status(500).send({
-        success: false,
-        message: 'Internal server error',
-      });
-    }
+    throw error;
   }
 };
 
@@ -69,29 +65,23 @@ export const getUsers = async (
     const page = parseInt(request.query.page || '1', 10);
     const limit = parseInt(request.query.limit || '10', 10);
     const result = await userService.getUsers(page, limit);
-    reply.status(200).send({
-      success: true,
-      data: result.users.map(toUserPayload),
-      pagination: {
-        page,
-        limit,
-        total: result.total,
-        pages: Math.ceil(result.total / limit),
-      },
-    });
+
+    sendSuccessResponse(
+      reply,
+      HttpStatusCode.OK,
+      'Users fetched successfully',
+      {
+        data: result.users.map(toUserPayload),
+        pagination: createPagination({
+          page,
+          limit,
+          totalItems: result.total,
+        }),
+      }
+    );
   } catch (error: unknown) {
     logger.error('Error in getUsers controller:', error);
-    if (error instanceof Error) {
-      reply.status(500).send({
-        success: false,
-        message: error.message,
-      });
-    } else {
-      reply.status(500).send({
-        success: false,
-        message: 'Internal server error',
-      });
-    }
+    throw error;
   }
 };
 
@@ -106,37 +96,27 @@ export const getUserById = async (
   try {
     const { id } = request.params;
     if (!id) {
-      reply.status(400).send({
-        success: false,
-        message: 'User ID is required',
-      });
-      return;
+      throw new BadRequestError(
+        ErrorMessages.Generic.INVALID_INPUT_ERROR.message,
+        ErrorMessages.Generic.INVALID_INPUT_ERROR.code
+      );
     }
     const user = await userService.getUserById(id);
     if (!user) {
-      reply.status(404).send({
-        success: false,
-        message: 'User not found',
-      });
-      return;
+      throw new NotFoundError(
+        ErrorMessages.User.NOT_FOUND_ERROR.message,
+        ErrorMessages.User.NOT_FOUND_ERROR.code
+      );
     }
-    reply.status(200).send({
-      success: true,
-      data: toUserPayload(user),
-    });
+    sendSuccessResponse(
+      reply,
+      HttpStatusCode.OK,
+      'User fetched successfully',
+      toUserPayload(user)
+    );
   } catch (error: unknown) {
     logger.error('Error in getUserById controller:', error);
-    if (error instanceof Error) {
-      reply.status(500).send({
-        success: false,
-        message: error.message,
-      });
-    } else {
-      reply.status(500).send({
-        success: false,
-        message: 'Internal server error',
-      });
-    }
+    throw error;
   }
 };
 
@@ -152,38 +132,24 @@ export const updateUser = async (
     const { id } = request.params;
     const updateData = request.body;
     if (!id) {
-      reply.status(400).send({
-        success: false,
-        message: 'User ID is required',
-      });
-      return;
+      throw new BadRequestError(
+        ErrorMessages.Generic.INVALID_INPUT_ERROR.message,
+        ErrorMessages.Generic.INVALID_INPUT_ERROR.code
+      );
     }
     const user = await userService.updateUser(id, updateData);
     if (!user) {
-      reply.status(404).send({
-        success: false,
-        message: 'User not found',
-      });
-      return;
+      throw new NotFoundError(
+        ErrorMessages.User.NOT_FOUND_ERROR.message,
+        ErrorMessages.User.NOT_FOUND_ERROR.code
+      );
     }
-    reply.status(200).send({
-      success: true,
+    sendSuccessResponse(reply, HttpStatusCode.OK, 'User updated successfully', {
       data: toUserPayload(user),
-      message: 'User updated successfully',
     });
   } catch (error: unknown) {
     logger.error('Error in updateUser controller:', error);
-    if (error instanceof Error) {
-      reply.status(500).send({
-        success: false,
-        message: error.message,
-      });
-    } else {
-      reply.status(500).send({
-        success: false,
-        message: 'Internal server error',
-      });
-    }
+    throw error;
   }
 };
 
@@ -198,37 +164,17 @@ export const deleteUser = async (
   try {
     const { id } = request.params;
     if (!id) {
-      reply.status(400).send({
-        success: false,
-        message: 'User ID is required',
-      });
-      return;
+      throw new BadRequestError(
+        ErrorMessages.Generic.INVALID_INPUT_ERROR.message,
+        ErrorMessages.Generic.INVALID_INPUT_ERROR.code
+      );
     }
-    const success = await userService.deleteUser(id);
-    if (!success) {
-      reply.status(404).send({
-        success: false,
-        message: 'User not found',
-      });
-      return;
-    }
-    reply.status(200).send({
-      success: true,
-      message: 'User deleted successfully',
-    });
+    await userService.deleteUser(id);
+
+    sendSuccessResponse(reply, HttpStatusCode.NO_CONTENT);
   } catch (error: unknown) {
     logger.error('Error in deleteUser controller:', error);
-    if (error instanceof Error) {
-      reply.status(500).send({
-        success: false,
-        message: error.message,
-      });
-    } else {
-      reply.status(500).send({
-        success: false,
-        message: 'Internal server error',
-      });
-    }
+    throw error;
   }
 };
 
@@ -242,37 +188,28 @@ export const getUserUsageHandler = async (
 ): Promise<void> => {
   try {
     if (!request.user || !request.user.userId) {
-      reply.status(401).send({
-        success: false,
-        message: 'Unauthorized: User information not found in request',
-      });
-      return;
+      throw new AuthenticationError(
+        ErrorMessages.User.NOT_FOUND_ERROR.message,
+        ErrorMessages.User.NOT_FOUND_ERROR.code
+      );
     }
     const userId = request.user.userId;
     const { currentUsage, limits } =
       await userUsageService.getUserUsageAndLimits(userId);
 
-    reply.status(200).send({
-      success: true,
-      data: {
+    sendSuccessResponse(
+      reply,
+      HttpStatusCode.OK,
+      'User usage fetched successfully',
+      {
         webhookMessagesSentToday: currentUsage.webhookMessagesSentToday,
         totalMediaStorageUsed: currentUsage.totalMediaStorageUsed,
         dailyWebhookMessageLimit: limits.dailyWebhookMessageLimit,
         overallMediaStorageLimit: limits.overallMediaStorageLimit,
-      },
-    });
+      }
+    );
   } catch (error: unknown) {
     logger.error('Error in getUserUsageHandler controller:', error);
-    if (error instanceof Error) {
-      reply.status(500).send({
-        success: false,
-        message: error.message,
-      });
-    } else {
-      reply.status(500).send({
-        success: false,
-        message: 'Internal server error',
-      });
-    }
+    throw error;
   }
 };
