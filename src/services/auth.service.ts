@@ -184,6 +184,13 @@ export const logout = async (userId: string, refreshTokenJti: string) => {
     );
     logger.warn(`Session revoked for user: ${userId}, jti: ${refreshTokenJti}`);
   } catch (error) {
+    if (error instanceof mongoose.Error.CastError) {
+      logger.error('Cast error updating avatar:', error);
+      throw new BadRequestError(
+        ErrorMessages.User.NOT_FOUND_ERROR.message,
+        ErrorMessages.User.NOT_FOUND_ERROR.code
+      );
+    }
     logger.error('Error in logout:', error);
     throw new InternalServerError(
       ErrorMessages.Generic.INTERNAL_SERVER_ERROR.message,

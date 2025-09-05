@@ -3,9 +3,9 @@ import mongoose, { Types } from 'mongoose';
 import { uploadImage, deleteImage } from '../services/cloudinary.service'; // Import deleteImage
 import {
   InternalServerError,
-  UsageLimitExceededError,
-  ExternalApiError,
   InvalidInputError,
+  ApiError,
+  BadRequestError,
 } from '../utils/errors';
 import { ErrorMessages } from '../utils/errorMessages';
 import { logger } from '../utils';
@@ -27,6 +27,7 @@ export const createAvatar = async (
     });
     return newAvatar.save();
   } catch (error) {
+    logger.error('Error creating avatar:', error);
     if (error instanceof mongoose.Error.ValidationError) {
       logger.error('Validation error creating avatar:', error);
       throw new InvalidInputError(
@@ -35,7 +36,6 @@ export const createAvatar = async (
         error.errors
       );
     }
-    logger.error('Error creating avatar:', error);
     throw new InternalServerError(
       ErrorMessages.Avatar.CREATION_ERROR.message,
       ErrorMessages.Avatar.CREATION_ERROR.code
@@ -85,10 +85,13 @@ export const uploadAvatar = async (
         ErrorMessages.Generic.INVALID_INPUT_ERROR.code,
         error.errors
       );
-    } else if (
-      error instanceof UsageLimitExceededError ||
-      error instanceof ExternalApiError
-    ) {
+    } else if (error instanceof mongoose.Error.CastError) {
+      logger.error('Cast error uploading avatar:', error);
+      throw new BadRequestError(
+        ErrorMessages.Avatar.UPLOAD_ERROR.message,
+        ErrorMessages.Avatar.UPLOAD_ERROR.code
+      );
+    } else if (error instanceof ApiError) {
       logger.error('Error uploading avatar:', error);
       throw error;
     }
@@ -156,6 +159,7 @@ export const updateAvatar = async (
       { new: true }
     );
   } catch (error) {
+    logger.error('error updating avatar:', error);
     if (error instanceof mongoose.Error.ValidationError) {
       logger.error('validation error updating avatar:', error);
       throw new InvalidInputError(
@@ -163,8 +167,13 @@ export const updateAvatar = async (
         ErrorMessages.Generic.INVALID_INPUT_ERROR.code,
         error.errors
       );
+    } else if (error instanceof mongoose.Error.CastError) {
+      logger.error('Cast error updating avatar:', error);
+      throw new BadRequestError(
+        ErrorMessages.Avatar.UPDATE_ERROR.message,
+        ErrorMessages.Avatar.UPDATE_ERROR.code
+      );
     }
-    logger.error('error updating avatar:', error);
     throw new InternalServerError(
       ErrorMessages.Avatar.UPDATE_ERROR.message,
       ErrorMessages.Avatar.UPDATE_ERROR.code
@@ -188,7 +197,7 @@ export const deleteAvatar = async (
       user_id: userId,
     });
     if (!avatarToDelete) {
-      return null; // Avatar not found or not owned by user
+      return null;
     }
 
     // Delete image from Cloudinary and update user usage
@@ -197,6 +206,9 @@ export const deleteAvatar = async (
     return AvatarModel.findOneAndDelete({ _id: avatarId, user_id: userId });
   } catch (error) {
     logger.error('Error deleting avatar:', error);
+    if (error instanceof ApiError) {
+      throw error;
+    }
     throw new InternalServerError(
       ErrorMessages.Avatar.DELETE_ERROR.message,
       ErrorMessages.Avatar.DELETE_ERROR.code
