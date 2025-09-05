@@ -9,9 +9,14 @@ import {
   TokenPayload,
   verifyToken,
 } from '../utils/jwt';
-import { AuthenticationError, InternalServerError } from '../utils/errors';
+import {
+  ApiError,
+  AuthenticationError,
+  BadRequestError,
+  InternalServerError,
+} from '../utils/errors';
 import { ErrorMessages } from '../utils/errorMessages';
-import { HttpStatusCode } from '../utils/httpcode';
+import mongoose from 'mongoose';
 
 export const loginWithDiscord = async (
   discordId: string,
@@ -21,62 +26,84 @@ export const loginWithDiscord = async (
   guilds: { id: string; name: string; icon: string | null }[],
   userAgent: string
 ) => {
-  // Transform guild icons from ID to URL
-  const transformedGuilds = guilds.map(guild => ({
-    ...guild,
-    icon: guild.icon ? getDiscordGuildIconURL(guild.id, guild.icon) : null,
-  }));
+  try {
+    // Transform guild icons from ID to URL
+    const transformedGuilds = guilds.map(guild => ({
+      ...guild,
+      icon: guild.icon ? getDiscordGuildIconURL(guild.id, guild.icon) : null,
+    }));
 
-  let user = await userService.getUserByDiscordId(discordId);
+    let user = await userService.getUserByDiscordId(discordId);
 
-  if (!user) {
-    // User does not exist, create a new one
-    user = await userService.createUser({
-      discord_id: discordId,
-      username: username,
-      email: email,
-      discord_avatar: avatar,
-      guilds: transformedGuilds,
-    });
-  } else {
-    // User exists, update their information
-    user = await userService.updateUser(user.id, {
-      username: username,
-      email: email,
-      discord_avatar: avatar,
-      guilds: transformedGuilds,
-    });
-  }
+    if (!user) {
+      // User does not exist, create a new one
+      user = await userService.createUser({
+        discord_id: discordId,
+        username: username,
+        email: email,
+        discord_avatar: avatar,
+        guilds: transformedGuilds,
+      });
+    } else {
+      // User exists, update their information
+      user = await userService.updateUser(user.id, {
+        username: username,
+        email: email,
+        discord_avatar: avatar,
+        guilds: transformedGuilds,
+      });
+    }
 
-  if (!user) {
-    throw new InternalServerError(
-      ErrorMessages.Auth.FAILED_CREATE_UPDATE_USER_ERROR.message,
-      ErrorMessages.Auth.FAILED_CREATE_UPDATE_USER_ERROR.code,
-      HttpStatusCode.INTERNAL_SERVER_ERROR
-    );
-  }
+    if (!user) {
+      throw new InternalServerError(
+        ErrorMessages.Auth.FAILED_CREATE_UPDATE_USER_ERROR.message,
+        ErrorMessages.Auth.FAILED_CREATE_UPDATE_USER_ERROR.code
+      );
+    }
 
-  // Ensure UserUsage record exists for the user
-  await userUsageService.getOrCreateUserUsage(user.id);
+    // Ensure UserUsage record exists for the user
+    // TODO: infuture we should remove it. seems redundant
+    await userUsageService.getOrCreateUserUsage(user.id);
 
-  const accessToken = generateAccessToken({
-    userId: user.id,
-    email: user.email,
-  });
-  const { refreshToken } = generateRefreshToken(
-    {
+    const accessToken = generateAccessToken({
       userId: user.id,
       email: user.email,
-    },
-    userAgent
-  );
+    });
+    const { refreshToken } = generateRefreshToken(
+      {
+        userId: user.id,
+        email: user.email,
+      },
+      userAgent
+    );
 
-  return { user, accessToken, refreshToken };
+    return { user, accessToken, refreshToken };
+  } catch (error) {
+    logger.error('Error in loginWithDiscord:', error);
+    if (error instanceof mongoose.Error.ValidationError) {
+      logger.error('Mongoose Validation Error in loginWithDiscord:', error);
+      throw new BadRequestError(
+        ErrorMessages.Generic.INVALID_INPUT_ERROR.message,
+        ErrorMessages.Generic.INVALID_INPUT_ERROR.code
+      );
+    }
+    if (error instanceof ApiError) {
+      throw error;
+    }
+    throw new InternalServerError(
+      ErrorMessages.Auth.FAILED_CREATE_UPDATE_USER_ERROR.message,
+      ErrorMessages.Auth.FAILED_CREATE_UPDATE_USER_ERROR.code
+    );
+  }
 };
 
 const revokeAllUserSessions = async (userId: string) => {
-  await AuthSessionTokenModel.deleteMany({ userId: userId });
-  logger.warn(`All sessions revoked for user: ${userId}`);
+  try {
+    await AuthSessionTokenModel.deleteMany({ userId: userId });
+    logger.warn(`All sessions revoked for user: ${userId}`);
+  } catch (error) {
+    logger.error('Error revoking user sessions:', error);
+  }
 };
 
 export const refreshTokens = async (
@@ -90,8 +117,7 @@ export const refreshTokens = async (
     if (!user) {
       throw new InternalServerError(
         ErrorMessages.User.NOT_FOUND_ERROR.message,
-        ErrorMessages.User.NOT_FOUND_ERROR.code,
-        HttpStatusCode.NOT_FOUND
+        ErrorMessages.User.NOT_FOUND_ERROR.code
       );
     }
 
@@ -107,8 +133,7 @@ export const refreshTokens = async (
       await revokeAllUserSessions(decodedRefreshToken.userId);
       throw new AuthenticationError(
         ErrorMessages.Auth.INVALID_REFRESH_TOKEN_ERROR.message,
-        ErrorMessages.Auth.INVALID_REFRESH_TOKEN_ERROR.code,
-        HttpStatusCode.UNAUTHORIZED
+        ErrorMessages.Auth.INVALID_REFRESH_TOKEN_ERROR.code
       );
     }
 
@@ -117,8 +142,7 @@ export const refreshTokens = async (
       await revokeAllUserSessions(decodedRefreshToken.userId);
       throw new AuthenticationError(
         ErrorMessages.Auth.INVALID_REFRESH_TOKEN_ERROR.message,
-        ErrorMessages.Auth.INVALID_REFRESH_TOKEN_ERROR.code,
-        HttpStatusCode.UNAUTHORIZED
+        ErrorMessages.Auth.INVALID_REFRESH_TOKEN_ERROR.code
       );
     }
 
@@ -142,26 +166,28 @@ export const refreshTokens = async (
     return { newAccessToken, newRefreshToken, user, newRefreshTokenJti };
   } catch (error) {
     logger.error('Error refreshing tokens:', error);
-    // If the error is not already 'Invalid or compromised refresh token', then it's a generic JWT error
-    if (
-      error instanceof AuthenticationError ||
-      error instanceof InternalServerError
-    ) {
+    if (error instanceof ApiError) {
       throw error;
     }
     throw new AuthenticationError(
       ErrorMessages.Auth.INVALID_REFRESH_TOKEN_ERROR.message,
-      ErrorMessages.Auth.INVALID_REFRESH_TOKEN_ERROR.code,
-      HttpStatusCode.UNAUTHORIZED
+      ErrorMessages.Auth.INVALID_REFRESH_TOKEN_ERROR.code
     );
   }
 };
 
 export const logout = async (userId: string, refreshTokenJti: string) => {
-  // Invalidate only the specific refresh token used for this session
-  await AuthSessionTokenModel.findOneAndUpdate(
-    { userId: userId, jti: refreshTokenJti },
-    { isUsed: true }
-  );
-  logger.warn(`Session revoked for user: ${userId}, jti: ${refreshTokenJti}`);
+  try {
+    await AuthSessionTokenModel.findOneAndUpdate(
+      { userId: userId, jti: refreshTokenJti },
+      { isUsed: true }
+    );
+    logger.warn(`Session revoked for user: ${userId}, jti: ${refreshTokenJti}`);
+  } catch (error) {
+    logger.error('Error in logout:', error);
+    throw new InternalServerError(
+      ErrorMessages.Generic.INTERNAL_SERVER_ERROR.message,
+      ErrorMessages.Generic.INTERNAL_SERVER_ERROR.code
+    );
+  }
 };
