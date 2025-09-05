@@ -61,8 +61,8 @@ export const getMessageTemplatesHandler = async (
       ErrorMessages.Generic.INVALID_INPUT_ERROR.code
     );
   }
-  const page = request.query.page ? parseInt(request.query.page, 10) : 1;
-  const limit = request.query.limit ? parseInt(request.query.limit, 10) : 10;
+  const page = parseInt(request.query.page || '1', 10);
+  const limit = parseInt(request.query.limit || '10', 10);
   const { messageTemplates, total } = await getMessageTemplatesByUserId(
     userId,
     page,
