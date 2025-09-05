@@ -14,6 +14,7 @@ import {
   AuthenticationError,
   BadRequestError,
   InternalServerError,
+  NotFoundError,
 } from '../utils/errors';
 import { ErrorMessages } from '../utils/errorMessages';
 import mongoose from 'mongoose';
