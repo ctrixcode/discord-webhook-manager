@@ -1,8 +1,8 @@
 export const ErrorMessages = {
   Auth: {
-    NO_REFRESH_TOKEN_ERROR: {
-      message: 'No refresh token provided',
-      code: 'NO_REFRESH_TOKEN_ERROR',
+    NO_TOKEN_ERROR: {
+      message: 'No token provided',
+      code: 'NO_TOKEN_ERROR',
     },
     MISSING_CODE_ERROR: {
       message: 'Missing authorization code',
