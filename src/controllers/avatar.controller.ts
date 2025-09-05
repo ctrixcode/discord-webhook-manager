@@ -187,58 +187,48 @@ export const updateAvatar = async (
   request: FastifyRequest,
   reply: FastifyReply
 ) => {
-  try {
-    if (!request.user) {
-      throw new AuthenticationError(
-        ErrorMessages.Auth.NO_TOKEN_ERROR.message,
-        ErrorMessages.Auth.NO_TOKEN_ERROR.code
-      );
-    }
-    const userId = request.user.userId;
-    const { id } = request.params as IAvatarParams;
-    const updateData = request.body as Partial<IAvatar>;
-    const updatedAvatar = await updateAvatarService(userId, id, updateData);
-    if (!updatedAvatar) {
-      throw new NotFoundError(
-        ErrorMessages.Avatar.NOT_FOUND_ERROR.message,
-        ErrorMessages.Avatar.NOT_FOUND_ERROR.code
-      );
-    }
-    sendSuccessResponse(
-      reply,
-      HttpStatusCode.OK,
-      'Avatar updated successfully',
-      toAvatarDto(updatedAvatar)
+  if (!request.user) {
+    throw new AuthenticationError(
+      ErrorMessages.Auth.NO_TOKEN_ERROR.message,
+      ErrorMessages.Auth.NO_TOKEN_ERROR.code
     );
-  } catch (error: unknown) {
-    logger.error('Error in updateAvatar controller:', error);
-    throw error;
   }
+  const userId = request.user.userId;
+  const { id } = request.params as IAvatarParams;
+  const updateData = request.body as Partial<IAvatar>;
+  const updatedAvatar = await updateAvatarService(userId, id, updateData);
+  if (!updatedAvatar) {
+    throw new NotFoundError(
+      ErrorMessages.Avatar.NOT_FOUND_ERROR.message,
+      ErrorMessages.Avatar.NOT_FOUND_ERROR.code
+    );
+  }
+  sendSuccessResponse(
+    reply,
+    HttpStatusCode.OK,
+    'Avatar updated successfully',
+    toAvatarDto(updatedAvatar)
+  );
 };
 
 export const deleteAvatar = async (
   request: FastifyRequest,
   reply: FastifyReply
 ) => {
-  try {
-    if (!request.user) {
-      throw new AuthenticationError(
-        ErrorMessages.Auth.NO_TOKEN_ERROR.message,
-        ErrorMessages.Auth.NO_TOKEN_ERROR.code
-      );
-    }
-    const userId = request.user.userId;
-    const { id } = request.params as IAvatarParams;
-    const deletedAvatar = await deleteAvatarService(userId, id);
-    if (!deletedAvatar) {
-      throw new NotFoundError(
-        ErrorMessages.Avatar.NOT_FOUND_ERROR.message,
-        ErrorMessages.Avatar.NOT_FOUND_ERROR.code
-      );
-    }
-    sendSuccessResponse(reply, HttpStatusCode.NO_CONTENT);
-  } catch (error: unknown) {
-    logger.error('Error in deleteAvatar controller:', error);
-    throw error;
+  if (!request.user) {
+    throw new AuthenticationError(
+      ErrorMessages.Auth.NO_TOKEN_ERROR.message,
+      ErrorMessages.Auth.NO_TOKEN_ERROR.code
+    );
   }
+  const userId = request.user.userId;
+  const { id } = request.params as IAvatarParams;
+  const deletedAvatar = await deleteAvatarService(userId, id);
+  if (!deletedAvatar) {
+    throw new NotFoundError(
+      ErrorMessages.Avatar.NOT_FOUND_ERROR.message,
+      ErrorMessages.Avatar.NOT_FOUND_ERROR.code
+    );
+  }
+  sendSuccessResponse(reply, HttpStatusCode.NO_CONTENT);
 };

@@ -48,37 +48,32 @@ export const getMessageTemplatesHandler = async (
   request: FastifyRequest<{ Querystring: { page?: string; limit?: string } }>,
   reply: FastifyReply
 ) => {
-  try {
-    const userId = request.user?.userId;
-    if (!userId) {
-      throw new AuthenticationError(
-        ErrorMessages.User.NOT_FOUND_ERROR.message,
-        ErrorMessages.User.NOT_FOUND_ERROR.code
-      );
-    }
-    if (!request.query.page && !request.query.limit) {
-      throw new BadRequestError(
-        ErrorMessages.Generic.INVALID_INPUT_ERROR.message,
-        ErrorMessages.Generic.INVALID_INPUT_ERROR.code
-      );
-    }
-    const page = request.query.page ? parseInt(request.query.page, 10) : 1;
-    const limit = request.query.limit ? parseInt(request.query.limit, 10) : 10;
-    const { messageTemplates, total } = await getMessageTemplatesByUserId(
-      userId,
-      page,
-      limit
+  const userId = request.user?.userId;
+  if (!userId) {
+    throw new AuthenticationError(
+      ErrorMessages.User.NOT_FOUND_ERROR.message,
+      ErrorMessages.User.NOT_FOUND_ERROR.code
     );
-    sendSuccessResponse(reply, HttpStatusCode.OK, 'Message Templates fetched', {
-      messageTemplates,
-      total,
-      page,
-      limit,
-    });
-  } catch (error) {
-    logger.error('Error getting message templates:', error);
-    throw error;
   }
+  if (!request.query.page && !request.query.limit) {
+    throw new BadRequestError(
+      ErrorMessages.Generic.INVALID_INPUT_ERROR.message,
+      ErrorMessages.Generic.INVALID_INPUT_ERROR.code
+    );
+  }
+  const page = request.query.page ? parseInt(request.query.page, 10) : 1;
+  const limit = request.query.limit ? parseInt(request.query.limit, 10) : 10;
+  const { messageTemplates, total } = await getMessageTemplatesByUserId(
+    userId,
+    page,
+    limit
+  );
+  sendSuccessResponse(reply, HttpStatusCode.OK, 'Message Templates fetched', {
+    messageTemplates,
+    total,
+    page,
+    limit,
+  });
 };
 
 export const getMessageTemplateHandler = async (

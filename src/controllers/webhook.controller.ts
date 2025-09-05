@@ -197,40 +197,35 @@ export const sendMessageHandler = async (
   }>,
   reply: FastifyReply
 ) => {
-  try {
-    const userId = request.user?.userId;
-    if (!userId) {
-      throw new AuthenticationError(
-        ErrorMessages.User.NOT_FOUND_ERROR.message,
-        ErrorMessages.User.NOT_FOUND_ERROR.code
-      );
-    }
-
-    const { webhookIds, messageData } = request.body;
-
-    if (!webhookIds || !Array.isArray(webhookIds) || webhookIds.length === 0) {
-      throw new BadRequestError(
-        ErrorMessages.Generic.INVALID_INPUT_ERROR.message,
-        ErrorMessages.Generic.INVALID_INPUT_ERROR.code
-      );
-    }
-
-    const results = await sendMessage(webhookIds, userId, messageData);
-    if (results.every(result => result.status === 'failed')) {
-      throw new InternalServerError(
-        ErrorMessages.Webhook.SEND_FAILED_ALL_ERROR.message,
-        ErrorMessages.Webhook.SEND_FAILED_ALL_ERROR.code
-      );
-    }
-
-    sendSuccessResponse(
-      reply,
-      HttpStatusCode.OK,
-      'Message sent successfully',
-      results
+  const userId = request.user?.userId;
+  if (!userId) {
+    throw new AuthenticationError(
+      ErrorMessages.User.NOT_FOUND_ERROR.message,
+      ErrorMessages.User.NOT_FOUND_ERROR.code
     );
-  } catch (error: unknown) {
-    logger.error('Error sending message:', error);
-    throw error;
   }
+
+  const { webhookIds, messageData } = request.body;
+
+  if (!webhookIds || !Array.isArray(webhookIds) || webhookIds.length === 0) {
+    throw new BadRequestError(
+      ErrorMessages.Generic.INVALID_INPUT_ERROR.message,
+      ErrorMessages.Generic.INVALID_INPUT_ERROR.code
+    );
+  }
+
+  const results = await sendMessage(webhookIds, userId, messageData);
+  if (results.every(result => result.status === 'failed')) {
+    throw new InternalServerError(
+      ErrorMessages.Webhook.SEND_FAILED_ALL_ERROR.message,
+      ErrorMessages.Webhook.SEND_FAILED_ALL_ERROR.code
+    );
+  }
+
+  sendSuccessResponse(
+    reply,
+    HttpStatusCode.OK,
+    'Message sent successfully',
+    results
+  );
 };

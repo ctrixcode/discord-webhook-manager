@@ -186,30 +186,25 @@ export const getUserUsageHandler = async (
   request: FastifyRequest,
   reply: FastifyReply
 ): Promise<void> => {
-  try {
-    if (!request.user || !request.user.userId) {
-      throw new AuthenticationError(
-        ErrorMessages.User.NOT_FOUND_ERROR.message,
-        ErrorMessages.User.NOT_FOUND_ERROR.code
-      );
-    }
-    const userId = request.user.userId;
-    const { currentUsage, limits } =
-      await userUsageService.getUserUsageAndLimits(userId);
-
-    sendSuccessResponse(
-      reply,
-      HttpStatusCode.OK,
-      'User usage fetched successfully',
-      {
-        webhookMessagesSentToday: currentUsage.webhookMessagesSentToday,
-        totalMediaStorageUsed: currentUsage.totalMediaStorageUsed,
-        dailyWebhookMessageLimit: limits.dailyWebhookMessageLimit,
-        overallMediaStorageLimit: limits.overallMediaStorageLimit,
-      }
+  if (!request.user || !request.user.userId) {
+    throw new AuthenticationError(
+      ErrorMessages.User.NOT_FOUND_ERROR.message,
+      ErrorMessages.User.NOT_FOUND_ERROR.code
     );
-  } catch (error: unknown) {
-    logger.error('Error in getUserUsageHandler controller:', error);
-    throw error;
   }
+  const userId = request.user.userId;
+  const { currentUsage, limits } =
+    await userUsageService.getUserUsageAndLimits(userId);
+
+  sendSuccessResponse(
+    reply,
+    HttpStatusCode.OK,
+    'User usage fetched successfully',
+    {
+      webhookMessagesSentToday: currentUsage.webhookMessagesSentToday,
+      totalMediaStorageUsed: currentUsage.totalMediaStorageUsed,
+      dailyWebhookMessageLimit: limits.dailyWebhookMessageLimit,
+      overallMediaStorageLimit: limits.overallMediaStorageLimit,
+    }
+  );
 };

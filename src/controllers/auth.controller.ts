@@ -114,122 +114,117 @@ export const discordCallback = async (
   request: FastifyRequest<{ Querystring: { code: string } }>,
   reply: FastifyReply
 ): Promise<void> => {
-  try {
-    const { code } = request.query;
+  const { code } = request.query;
 
-    if (!code) {
-      throw new BadRequestError(
-        ErrorMessages.Auth.MISSING_CODE_ERROR.message,
-        ErrorMessages.Auth.MISSING_CODE_ERROR.code
-      );
-    }
+  if (!code) {
+    throw new BadRequestError(
+      ErrorMessages.Auth.MISSING_CODE_ERROR.message,
+      ErrorMessages.Auth.MISSING_CODE_ERROR.code
+    );
+  }
 
-    // Exchange authorization code for Discord access token
-    const tokenResponse = await fetch('https://discord.com/api/oauth2/token', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/x-www-form-urlencoded',
-      },
-      body: new URLSearchParams({
-        client_id: DISCORD_CLIENT_ID,
-        client_secret: DISCORD_CLIENT_SECRET,
-        grant_type: 'authorization_code',
-        code,
-        redirect_uri: DISCORD_REDIRECT_URI,
-        scope: 'identify email guilds',
-      }).toString(),
-    });
+  // Exchange authorization code for Discord access token
+  const tokenResponse = await fetch('https://discord.com/api/oauth2/token', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/x-www-form-urlencoded',
+    },
+    body: new URLSearchParams({
+      client_id: DISCORD_CLIENT_ID,
+      client_secret: DISCORD_CLIENT_SECRET,
+      grant_type: 'authorization_code',
+      code,
+      redirect_uri: DISCORD_REDIRECT_URI,
+      scope: 'identify email guilds',
+    }).toString(),
+  });
 
-    if (!tokenResponse.ok) {
-      const errorData = await tokenResponse.json();
-      logger.error('Error exchanging Discord code for token:', errorData);
-      throw new InternalServerError(
-        ErrorMessages.Discord.FAILED_TOKEN_EXCHANGE_ERROR.message,
-        ErrorMessages.Discord.FAILED_TOKEN_EXCHANGE_ERROR.code
-      );
-    }
+  if (!tokenResponse.ok) {
+    const errorData = await tokenResponse.json();
+    logger.error('Error exchanging Discord code for token:', errorData);
+    throw new InternalServerError(
+      ErrorMessages.Discord.FAILED_TOKEN_EXCHANGE_ERROR.message,
+      ErrorMessages.Discord.FAILED_TOKEN_EXCHANGE_ERROR.code
+    );
+  }
 
-    const { access_token, refresh_token, expires_in } =
-      await tokenResponse.json();
+  const { access_token, refresh_token, expires_in } =
+    await tokenResponse.json();
 
-    // Get Discord user info
-    const userResponse = await fetch('https://discord.com/api/users/@me', {
+  // Get Discord user info
+  const userResponse = await fetch('https://discord.com/api/users/@me', {
+    headers: {
+      Authorization: `Bearer ${access_token}`,
+    },
+  });
+
+  if (!userResponse.ok) {
+    const errorData = await userResponse.json();
+    logger.error('Error fetching Discord user info:', errorData);
+    throw new ExternalApiError(
+      ErrorMessages.Discord.TOKEN_FETCH_ERROR.message,
+      ErrorMessages.Discord.TOKEN_FETCH_ERROR.code,
+      'discord'
+    );
+  }
+
+  const discordUser = await userResponse.json();
+
+  // Get Discord user guilds
+  const guildsResponse = await fetch(
+    'https://discord.com/api/users/@me/guilds',
+    {
       headers: {
         Authorization: `Bearer ${access_token}`,
       },
-    });
-
-    if (!userResponse.ok) {
-      const errorData = await userResponse.json();
-      logger.error('Error fetching Discord user info:', errorData);
-      throw new ExternalApiError(
-        ErrorMessages.Discord.TOKEN_FETCH_ERROR.message,
-        ErrorMessages.Discord.TOKEN_FETCH_ERROR.code,
-        'discord'
-      );
     }
+  );
 
-    const discordUser = await userResponse.json();
-
-    // Get Discord user guilds
-    const guildsResponse = await fetch(
-      'https://discord.com/api/users/@me/guilds',
-      {
-        headers: {
-          Authorization: `Bearer ${access_token}`,
-        },
-      }
-    );
-
-    interface DiscordGuild {
-      id: string;
-      name: string;
-      icon: string | null;
-    }
-    let discordGuilds: DiscordGuild[] = [];
-    if (guildsResponse.ok) {
-      discordGuilds = await guildsResponse.json();
-    } else {
-      logger.warn(
-        'Could not fetch Discord user guilds:',
-        await guildsResponse.json()
-      );
-    }
-
-    const { user, accessToken, refreshToken } =
-      await authService.loginWithDiscord(
-        discordUser.id,
-        discordUser.username,
-        discordUser.email,
-        discordUser.avatar,
-        discordGuilds,
-        request.headers['user-agent'] || 'unknown'
-      );
-
-    // Save or update Discord token in our database
-    const existingDiscordToken =
-      await discordTokenService.getDiscordTokenByUserId(user.id);
-    if (existingDiscordToken) {
-      await discordTokenService.updateDiscordToken(user.id, {
-        access_token,
-        refresh_token,
-        expires_in,
-      });
-    } else {
-      await discordTokenService.createDiscordToken({
-        user_id: user.id,
-        access_token,
-        refresh_token,
-        expires_in,
-      });
-    }
-
-    const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:3000';
-    reply.redirect(
-      `${frontendUrl}/auth/callback?access_token=${accessToken}&refresh_token=${refreshToken}`
-    );
-  } catch (error: unknown) {
-    logger.error('Error in discordCallback controller:', error);
-    throw error;
+  interface DiscordGuild {
+    id: string;
+    name: string;
+    icon: string | null;
   }
+  let discordGuilds: DiscordGuild[] = [];
+  if (guildsResponse.ok) {
+    discordGuilds = await guildsResponse.json();
+  } else {
+    logger.warn(
+      'Could not fetch Discord user guilds:',
+      await guildsResponse.json()
+    );
+  }
+
+  const { user, accessToken, refreshToken } =
+    await authService.loginWithDiscord(
+      discordUser.id,
+      discordUser.username,
+      discordUser.email,
+      discordUser.avatar,
+      discordGuilds,
+      request.headers['user-agent'] || 'unknown'
+    );
+
+  // Save or update Discord token in our database
+  const existingDiscordToken =
+    await discordTokenService.getDiscordTokenByUserId(user.id);
+  if (existingDiscordToken) {
+    await discordTokenService.updateDiscordToken(user.id, {
+      access_token,
+      refresh_token,
+      expires_in,
+    });
+  } else {
+    await discordTokenService.createDiscordToken({
+      user_id: user.id,
+      access_token,
+      refresh_token,
+      expires_in,
+    });
+  }
+
+  const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:3000';
+  reply.redirect(
+    `${frontendUrl}/auth/callback?access_token=${accessToken}&refresh_token=${refreshToken}`
+  );
 };
