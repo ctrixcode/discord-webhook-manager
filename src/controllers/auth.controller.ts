@@ -9,6 +9,7 @@ import { HttpStatusCode } from '../utils/httpcode';
 import {
   AuthenticationError,
   BadRequestError,
+  ExternalApiError,
   InternalServerError,
 } from '../utils/errors';
 
@@ -75,7 +76,10 @@ export const logoutUser = async (
         logger.warn('Logout request: Refresh token missing userId or jti.');
       }
     } else {
-      logger.warn('Logout request received without refresh token.');
+      throw new AuthenticationError(
+        ErrorMessages.Auth.NO_TOKEN_ERROR.message,
+        ErrorMessages.Auth.NO_TOKEN_ERROR.code
+      );
     }
 
     sendSuccessResponse(reply, HttpStatusCode.OK, 'Logged out successfully');
@@ -158,9 +162,10 @@ export const discordCallback = async (
     if (!userResponse.ok) {
       const errorData = await userResponse.json();
       logger.error('Error fetching Discord user info:', errorData);
-      throw new InternalServerError(
+      throw new ExternalApiError(
         ErrorMessages.Discord.TOKEN_FETCH_ERROR.message,
-        ErrorMessages.Discord.TOKEN_FETCH_ERROR.code
+        ErrorMessages.Discord.TOKEN_FETCH_ERROR.code,
+        'discord'
       );
     }
 

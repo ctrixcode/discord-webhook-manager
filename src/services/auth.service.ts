@@ -186,7 +186,7 @@ export const logout = async (userId: string, refreshTokenJti: string) => {
   } catch (error) {
     if (error instanceof mongoose.Error.CastError) {
       logger.error('Cast error updating avatar:', error);
-      throw new BadRequestError(
+      throw new NotFoundError(
         ErrorMessages.User.NOT_FOUND_ERROR.message,
         ErrorMessages.User.NOT_FOUND_ERROR.code
       );
