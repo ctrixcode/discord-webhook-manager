@@ -70,36 +70,6 @@ export const getUsers = async (
 };
 
 /**
- * Get user by ID
- * GET /api/users/:id
- */
-export const getUserById = async (
-  request: FastifyRequest<{ Params: { id: string } }>,
-  reply: FastifyReply
-): Promise<void> => {
-  const { id } = request.params;
-  if (!id) {
-    throw new BadRequestError(
-      ErrorMessages.Generic.INVALID_INPUT_ERROR.message,
-      ErrorMessages.Generic.INVALID_INPUT_ERROR.code
-    );
-  }
-  const user = await userService.getUserById(id);
-  if (!user) {
-    throw new NotFoundError(
-      ErrorMessages.User.NOT_FOUND_ERROR.message,
-      ErrorMessages.User.NOT_FOUND_ERROR.code
-    );
-  }
-  sendSuccessResponse(
-    reply,
-    HttpStatusCode.OK,
-    'User fetched successfully',
-    toUserPayload(user)
-  );
-};
-
-/**
  * Update user
  * PUT /api/users/:id
  */
@@ -125,26 +95,6 @@ export const updateUser = async (
   sendSuccessResponse(reply, HttpStatusCode.OK, 'User updated successfully', {
     data: toUserPayload(user),
   });
-};
-
-/**
- * Delete user
- * DELETE /api/users/:id
- */
-export const deleteUser = async (
-  request: FastifyRequest<{ Params: { id: string } }>,
-  reply: FastifyReply
-): Promise<void> => {
-  const { id } = request.params;
-  if (!id) {
-    throw new BadRequestError(
-      ErrorMessages.Generic.INVALID_INPUT_ERROR.message,
-      ErrorMessages.Generic.INVALID_INPUT_ERROR.code
-    );
-  }
-  await userService.deleteUser(id);
-
-  sendSuccessResponse(reply, HttpStatusCode.NO_CONTENT);
 };
 
 /**
