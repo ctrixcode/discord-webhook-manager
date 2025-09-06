@@ -10,6 +10,10 @@ import { Analytics } from '@vercel/analytics/next';
 export const metadata: Metadata = {
   title: 'Discord Webhook Manager',
   description: 'Manage your Discord webhooks with ease',
+  icons: {
+    icon: '/favicon.png',
+    apple: '/favicon.png',
+  },
 };
 
 export default function RootLayout({
@@ -20,8 +24,6 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
-        <link rel="icon" href="/discord-logo.svg" type="image/svg+xml" />
-        <link rel="apple-touch-icon" href="/discord-logo.svg" />
         <style>{`
 html {
   font-family: ${GeistSans.style.fontFamily};
