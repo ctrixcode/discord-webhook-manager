@@ -7,13 +7,11 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { useRouter } from 'next/navigation';
 import { LogOut, Settings, Crown } from 'lucide-react';
-import { DiscordLogo } from '@/components/discord-logo';
 import { Badge } from '@/components/ui/badge';
 import {
   Tooltip,
@@ -21,6 +19,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '@/components/ui/tooltip';
+import Image from "next/image"
 
 export function DashboardHeader() {
   const { user, logout } = useAuth();
@@ -94,7 +93,7 @@ export function DashboardHeader() {
     <header className="border-b border-t border-slate-800/50 bg-slate-900/20 backdrop-blur-xl sticky top-0 z-30">
       <div className="flex h-16 items-center justify-between px-6">
         <div className="flex items-center gap-3 cursor-pointer" onClick={() => router.push('/dashboard/webhooks')}>
-          <DiscordLogo className="w-8 h-8 text-purple-400" />
+          <Image width={40} height={40} src="/favicon.png" alt="Webhook Manager Logo" />
           <div>
             <h1 className="text-lg font-semibold text-white">
               Webhook Manager
