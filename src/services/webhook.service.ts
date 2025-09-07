@@ -33,7 +33,6 @@ export interface UpdateWebhookData {
   description?: string;
   is_active?: boolean;
 }
-
 export interface SendMessageData {
   message: string;
   avatarRefID?: string;
