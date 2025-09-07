@@ -1,6 +1,14 @@
 import AvatarModel, { IAvatar } from '../models/avatar';
-import { Types } from 'mongoose';
+import mongoose, { Types } from 'mongoose';
 import { uploadImage, deleteImage } from '../services/cloudinary.service'; // Import deleteImage
+import {
+  InternalServerError,
+  InvalidInputError,
+  ApiError,
+  BadRequestError,
+} from '../utils/errors';
+import { ErrorMessages } from '../utils/errorMessages';
+import { logger } from '../utils';
 
 /**
  * Creates a new avatar for a specific user.
@@ -12,11 +20,27 @@ export const createAvatar = async (
   userId: string,
   avatarData: Partial<IAvatar>
 ): Promise<IAvatar> => {
-  const newAvatar = new AvatarModel({
-    ...avatarData,
-    user_id: new Types.ObjectId(userId),
-  });
-  return newAvatar.save();
+  try {
+    const newAvatar = new AvatarModel({
+      ...avatarData,
+      user_id: new Types.ObjectId(userId),
+    });
+    return newAvatar.save();
+  } catch (error) {
+    logger.error('Error creating avatar:', error);
+    if (error instanceof mongoose.Error.ValidationError) {
+      logger.error('Validation error creating avatar:', error);
+      throw new InvalidInputError(
+        ErrorMessages.Generic.INVALID_INPUT_ERROR.message,
+        ErrorMessages.Generic.INVALID_INPUT_ERROR.code,
+        error.errors
+      );
+    }
+    throw new InternalServerError(
+      ErrorMessages.Avatar.CREATION_ERROR.message,
+      ErrorMessages.Avatar.CREATION_ERROR.code
+    );
+  }
 };
 
 /**
@@ -35,21 +59,47 @@ export const uploadAvatar = async (
   filePath: string,
   fileSize: number
 ): Promise<IAvatar> => {
-  const uploadResult = await uploadImage(
-    filePath,
-    username,
-    avatarName,
-    userId,
-    fileSize
-  ); // Pass userId and fileSize
-  const newAvatar = new AvatarModel({
-    user_id: new Types.ObjectId(userId),
-    username: username,
-    avatar_url: uploadResult.secure_url,
-    public_id: uploadResult.public_id,
-    size: fileSize,
-  });
-  return newAvatar.save();
+  try {
+    const uploadResult = await uploadImage(
+      filePath,
+      username,
+      avatarName,
+      userId,
+      fileSize
+    );
+
+    const newAvatar = new AvatarModel({
+      user_id: new Types.ObjectId(userId),
+      username: username,
+      avatar_url: uploadResult.secure_url,
+      public_id: uploadResult.public_id,
+      size: fileSize,
+    });
+
+    return newAvatar.save();
+  } catch (error) {
+    if (error instanceof mongoose.Error.ValidationError) {
+      logger.error('Validation error uploading avatar:', error);
+      throw new InvalidInputError(
+        ErrorMessages.Generic.INVALID_INPUT_ERROR.message,
+        ErrorMessages.Generic.INVALID_INPUT_ERROR.code,
+        error.errors
+      );
+    } else if (error instanceof mongoose.Error.CastError) {
+      logger.error('Cast error uploading avatar:', error);
+      throw new BadRequestError(
+        ErrorMessages.Avatar.UPLOAD_ERROR.message,
+        ErrorMessages.Avatar.UPLOAD_ERROR.code
+      );
+    } else if (error instanceof ApiError) {
+      logger.error('Error uploading avatar:', error);
+      throw error;
+    }
+    throw new InternalServerError(
+      ErrorMessages.Avatar.UPLOAD_ERROR.message,
+      ErrorMessages.Avatar.UPLOAD_ERROR.code
+    );
+  }
 };
 
 /**
@@ -62,7 +112,15 @@ export const getAvatar = async (
   userId: string,
   avatarId: string
 ): Promise<IAvatar | null> => {
-  return AvatarModel.findOne({ _id: avatarId, user_id: userId });
+  try {
+    return AvatarModel.findOne({ _id: avatarId, user_id: userId });
+  } catch (error) {
+    logger.error('Error retrieving avatar:', error);
+    throw new InternalServerError(
+      ErrorMessages.Avatar.FETCH_ERROR.message,
+      ErrorMessages.Avatar.FETCH_ERROR.code
+    );
+  }
 };
 
 /**
@@ -71,7 +129,15 @@ export const getAvatar = async (
  * @returns An array of avatar documents.
  */
 export const getAvatars = async (userId: string): Promise<IAvatar[]> => {
-  return AvatarModel.find({ user_id: userId });
+  try {
+    return AvatarModel.find({ user_id: userId });
+  } catch (error) {
+    logger.error('Error retrieving avatars:', error);
+    throw new InternalServerError(
+      ErrorMessages.Avatar.FETCH_ERROR.message,
+      ErrorMessages.Avatar.FETCH_ERROR.code
+    );
+  }
 };
 
 /**
@@ -86,11 +152,33 @@ export const updateAvatar = async (
   avatarId: string,
   updateData: Partial<IAvatar>
 ): Promise<IAvatar | null> => {
-  return AvatarModel.findOneAndUpdate(
-    { _id: avatarId, user_id: userId },
-    { $set: updateData },
-    { new: true }
-  );
+  try {
+    return AvatarModel.findOneAndUpdate(
+      { _id: avatarId, user_id: userId },
+      { $set: updateData },
+      { new: true }
+    );
+  } catch (error) {
+    logger.error('error updating avatar:', error);
+    if (error instanceof mongoose.Error.ValidationError) {
+      logger.error('validation error updating avatar:', error);
+      throw new InvalidInputError(
+        ErrorMessages.Generic.INVALID_INPUT_ERROR.message,
+        ErrorMessages.Generic.INVALID_INPUT_ERROR.code,
+        error.errors
+      );
+    } else if (error instanceof mongoose.Error.CastError) {
+      logger.error('Cast error updating avatar:', error);
+      throw new BadRequestError(
+        ErrorMessages.Avatar.UPDATE_ERROR.message,
+        ErrorMessages.Avatar.UPDATE_ERROR.code
+      );
+    }
+    throw new InternalServerError(
+      ErrorMessages.Avatar.UPDATE_ERROR.message,
+      ErrorMessages.Avatar.UPDATE_ERROR.code
+    );
+  }
 };
 
 /**
@@ -103,16 +191,27 @@ export const deleteAvatar = async (
   userId: string,
   avatarId: string
 ): Promise<IAvatar | null> => {
-  const avatarToDelete = await AvatarModel.findOne({
-    _id: avatarId,
-    user_id: userId,
-  });
-  if (!avatarToDelete) {
-    return null; // Avatar not found or not owned by user
+  try {
+    const avatarToDelete = await AvatarModel.findOne({
+      _id: avatarId,
+      user_id: userId,
+    });
+    if (!avatarToDelete) {
+      return null;
+    }
+
+    // Delete image from Cloudinary and update user usage
+    await deleteImage(avatarToDelete.public_id, userId, avatarToDelete.size!); // Use non-null assertion
+
+    return AvatarModel.findOneAndDelete({ _id: avatarId, user_id: userId });
+  } catch (error) {
+    logger.error('Error deleting avatar:', error);
+    if (error instanceof ApiError) {
+      throw error;
+    }
+    throw new InternalServerError(
+      ErrorMessages.Avatar.DELETE_ERROR.message,
+      ErrorMessages.Avatar.DELETE_ERROR.code
+    );
   }
-
-  // Delete image from Cloudinary and update user usage
-  await deleteImage(avatarToDelete.public_id, userId, avatarToDelete.size!); // Use non-null assertion
-
-  return AvatarModel.findOneAndDelete({ _id: avatarId, user_id: userId });
 };

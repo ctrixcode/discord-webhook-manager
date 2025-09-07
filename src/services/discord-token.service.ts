@@ -1,6 +1,8 @@
 import DiscordTokenModel, { IDiscordToken } from '../models/DiscordToken';
 import { logger } from '../utils';
 import { encrypt, decrypt } from '../utils/encryption';
+import { ErrorMessages } from '../utils/errorMessages';
+import { ApiError, InternalServerError } from '../utils/errors';
 
 export interface CreateDiscordTokenData {
   access_token: string;
@@ -35,7 +37,7 @@ export const createDiscordToken = async (
     const { encryptedData: encryptedRefreshToken } = encrypt(
       tokenData.refresh_token,
       iv
-    ); // Use same IV
+    );
 
     const token = new DiscordTokenModel({
       user_id: tokenData.user_id,
@@ -48,7 +50,13 @@ export const createDiscordToken = async (
     return token;
   } catch (error) {
     logger.error('Error creating discord token:', error);
-    throw error;
+    if (error instanceof ApiError) {
+      throw error;
+    }
+    throw new InternalServerError(
+      ErrorMessages.Generic.INTERNAL_SERVER_ERROR.message,
+      ErrorMessages.Generic.INTERNAL_SERVER_ERROR.code
+    );
   }
 };
 
@@ -66,7 +74,6 @@ export const getDiscordTokenByUserId = async (
     const decryptedAccessToken = decrypt(token.access_token, token.iv);
     const decryptedRefreshToken = decrypt(token.refresh_token, token.iv);
 
-    // Return a new object with decrypted tokens, without modifying the original Mongoose document
     return {
       user_id: token.user_id.toString(),
       access_token: decryptedAccessToken,
@@ -77,7 +84,10 @@ export const getDiscordTokenByUserId = async (
     };
   } catch (error) {
     logger.error('Error retrieving discord token by user ID:', error);
-    throw error;
+    throw new InternalServerError(
+      ErrorMessages.Generic.INTERNAL_SERVER_ERROR.message,
+      ErrorMessages.Generic.INTERNAL_SERVER_ERROR.code
+    );
   }
 };
 
@@ -136,7 +146,10 @@ export const updateDiscordToken = async (
     };
   } catch (error) {
     logger.error('Error updating discord token:', error);
-    throw error;
+    throw new InternalServerError(
+      ErrorMessages.Generic.INTERNAL_SERVER_ERROR.message,
+      ErrorMessages.Generic.INTERNAL_SERVER_ERROR.code
+    );
   }
 };
 
@@ -153,6 +166,9 @@ export const deleteDiscordToken = async (userId: string): Promise<boolean> => {
     return true;
   } catch (error) {
     logger.error('Error deleting discord token:', error);
-    throw error;
+    throw new InternalServerError(
+      ErrorMessages.Generic.INTERNAL_SERVER_ERROR.message,
+      ErrorMessages.Generic.INTERNAL_SERVER_ERROR.code
+    );
   }
 };
