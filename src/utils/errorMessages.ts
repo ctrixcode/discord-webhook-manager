@@ -12,11 +12,11 @@ export const ErrorMessages = {
       message: 'Failed to create or update user with Discord info',
       code: 'FAILED_CREATE_UPDATE_USER_ERROR',
     },
-    INVALID_REFRESH_TOKEN_ERROR: {
+    INVALID_TOKEN_ERROR: {
       message: 'Authentication failed. Please log in again.',
       code: 'INVALID_REFRESH_TOKEN_ERROR',
     },
-    EXPIRED_REFRESH_TOKEN_ERROR: {
+    EXPIRED_TOKEN_ERROR: {
       message: 'Your session has expired. Please log in again.',
       code: 'EXPIRED_REFRESH_TOKEN_ERROR',
     },
