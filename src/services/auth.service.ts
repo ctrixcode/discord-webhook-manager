@@ -159,11 +159,11 @@ export const refreshTokens = async (
 
     return { newAccessToken, newRefreshToken, user, newRefreshTokenJti };
   } catch (error) {
+    logger.error('Unexpected error refreshing tokens:', error); // Log unexpected errors as error
     if (error instanceof ApiError) {
       logger.warn('Warning refreshing tokens:', error.message); // Log as warning
       throw error;
     }
-    logger.error('Unexpected error refreshing tokens:', error); // Log unexpected errors as error
     throw new AuthenticationError(
       ErrorMessages.Auth.INVALID_TOKEN_ERROR.message,
       ErrorMessages.Auth.INVALID_TOKEN_ERROR.code
