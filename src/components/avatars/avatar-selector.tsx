@@ -16,12 +16,12 @@ import { Input } from '@/components/ui/input';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Search, Users, Plus } from 'lucide-react';
 import { getAllAvatars } from '@/lib/api/queries/avatar';
-import type { PredefinedAvatar } from '@/lib/api/types/avatar';
+import type { IAvatar } from '@/lib/api/types/avatar';
 import { useAuth } from '@/contexts/auth-context';
 import { CreateAvatarDialog } from '@/components/avatars/create-avatar-dialog';
 
 interface AvatarSelectorProps {
-  onSelect: (avatar: PredefinedAvatar) => void;
+  onSelect: (avatar: IAvatar) => void;
   children: React.ReactNode;
 }
 
@@ -32,21 +32,21 @@ export function AvatarSelector({ onSelect, children }: AvatarSelectorProps) {
   const [searchQuery, setSearchQuery] = useState('');
   const [showCreateDialog, setShowCreateDialog] = useState(false);
 
-  const { data: avatars = [] } = useQuery<PredefinedAvatar[]>({
+  const { data: avatars = [] } = useQuery<IAvatar[]>({
     queryKey: ['avatars'],
     queryFn: getAllAvatars,
     enabled: !!user && open,
   });
 
   const filteredAvatars = avatars.filter(
-    (avatar: PredefinedAvatar) => {
+    (avatar: IAvatar) => {
       const nameMatches = avatar.username && avatar.username.toLowerCase().includes(searchQuery.toLowerCase());
       const usernameMatches = avatar.username && avatar.username.toLowerCase().includes(searchQuery.toLowerCase());
       return nameMatches || usernameMatches;
     }
   );
 
-  const handleSelect = (avatar: PredefinedAvatar) => {
+  const handleSelect = (avatar: IAvatar) => {
     onSelect(avatar);
     setOpen(false);
     setSearchQuery('');
