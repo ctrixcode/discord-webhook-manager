@@ -12,7 +12,6 @@ import {
 import {
   ApiError,
   AuthenticationError,
-  BadRequestError,
   InternalServerError,
   NotFoundError,
 } from '../utils/errors';
@@ -80,17 +79,11 @@ export const loginWithDiscord = async (
 
     return { user, accessToken, refreshToken };
   } catch (error) {
-    logger.error('Error in loginWithDiscord:', error);
-    if (error instanceof mongoose.Error.ValidationError) {
-      logger.error('Mongoose Validation Error in loginWithDiscord:', error);
-      throw new BadRequestError(
-        ErrorMessages.Generic.INVALID_INPUT_ERROR.message,
-        ErrorMessages.Generic.INVALID_INPUT_ERROR.code
-      );
-    }
     if (error instanceof ApiError) {
+      logger.warn('Warning in loginWithDiscord:', error.message); // Log as warning
       throw error;
     }
+    logger.error('Unexpected error in loginWithDiscord:', error); // Log unexpected errors as error
     throw new InternalServerError(
       ErrorMessages.Auth.FAILED_CREATE_UPDATE_USER_ERROR.message,
       ErrorMessages.Auth.FAILED_CREATE_UPDATE_USER_ERROR.code
@@ -166,10 +159,11 @@ export const refreshTokens = async (
 
     return { newAccessToken, newRefreshToken, user, newRefreshTokenJti };
   } catch (error) {
-    logger.error('Error refreshing tokens:', error);
     if (error instanceof ApiError) {
+      logger.warn('Warning refreshing tokens:', error.message); // Log as warning
       throw error;
     }
+    logger.error('Unexpected error refreshing tokens:', error); // Log unexpected errors as error
     throw new AuthenticationError(
       ErrorMessages.Auth.INVALID_TOKEN_ERROR.message,
       ErrorMessages.Auth.INVALID_TOKEN_ERROR.code

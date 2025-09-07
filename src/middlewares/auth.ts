@@ -1,6 +1,6 @@
 import { FastifyRequest, FastifyReply } from 'fastify';
 import { verifyToken } from '../utils/jwt';
-import { AuthenticationError } from '../utils/errors';
+import { AuthenticationError, ApiError } from '../utils/errors'; // Import ApiError
 import { ErrorMessages } from '../utils/errorMessages';
 import { logger } from '../utils';
 
@@ -27,7 +27,15 @@ const authenticate = async (request: FastifyRequest, _reply: FastifyReply) => {
     const decoded = verifyToken(token);
     request.user = decoded;
   } catch (error) {
-    logger.error('Error in authenticate middleware:', error);
+    if (error instanceof AuthenticationError) {
+      // Check if it's an expected AuthenticationError
+      logger.warn('Authentication warning:', error.message); // Log as warning
+    } else if (error instanceof ApiError) {
+      // Catch other custom API errors
+      logger.warn('API Error in authenticate middleware:', error.message); // Log as warning
+    } else {
+      logger.error('Unexpected error in authenticate middleware:', error); // Log unexpected errors as error
+    }
     throw error;
   }
 };

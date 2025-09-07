@@ -31,8 +31,6 @@ export default fp(async fastify => {
 
   fastify.setErrorHandler(
     (error: Error, request: FastifyRequest, reply: FastifyReply) => {
-      logger.error('Unhandled error:', error);
-
       let statusCode: number = HttpStatusCode.INTERNAL_SERVER_ERROR;
       let errorCode: string = ErrorMessages.Generic.INTERNAL_SERVER_ERROR.code;
       let message: string = ErrorMessages.Generic.INTERNAL_SERVER_ERROR.message;
@@ -40,6 +38,10 @@ export default fp(async fastify => {
 
       // Use a type guard to check if the error is an instance of our custom ApiError
       if (error instanceof ApiError) {
+        logger.warn(`Expected API Error: ${error.message}`, {
+          errorCode: error.errorCode,
+          statusCode: error.statusCode,
+        }); // Log expected API errors as warnings
         statusCode = error.statusCode;
         errorCode = error.errorCode;
         message = error.message;
@@ -56,6 +58,7 @@ export default fp(async fastify => {
         // For other ApiErrors (NotFoundError, AuthenticationError, UsageLimitExceededError),
         // message and errorCode are already set correctly from the ApiError base class.
       } else {
+        logger.error('Unhandled error:', error.message); // Move logging here
         // This is the catch-all for unexpected, non-operational errors (bugs)
         // We create an InternalServerError to ensure a consistent response structure
         const internalError = new InternalServerError(
