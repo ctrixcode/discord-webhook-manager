@@ -14,6 +14,20 @@ export const metadata: Metadata = {
     icon: '/favicon.png',
     apple: '/favicon.png',
   },
+  openGraph: {
+    title: 'Discord Webhook Manager',
+    description: 'Manage your Discord webhooks with ease',
+    url: 'https://discord-webhook-manager.vercel.app',
+    images: [
+      {
+        url: '/favicon.png',
+        width: 256,
+        height: 256,
+        alt: 'Discord Webhook Manager',
+      },
+    ],
+    type: 'website',
+  },
 };
 
 export default function RootLayout({
