@@ -1,10 +1,12 @@
 import MessageTemplateModel, {
   IMessageTemplate,
 } from '../models/message_template';
-import { Types } from 'mongoose';
+import mongoose, { Types } from 'mongoose';
 import { logger } from '../utils';
 
 import { IEmbedSchemaDocument } from '../models/embed';
+import { BadRequestError, InternalServerError } from '../utils/errors';
+import { ErrorMessages } from '../utils/errorMessages';
 
 export interface CreateMessageTemplateData {
   name: string;
@@ -50,7 +52,10 @@ export const createMessageTemplate = async (
     return newMessageTemplate;
   } catch (error) {
     logger.error('Error creating message template:', error);
-    throw error;
+    throw new BadRequestError(
+      ErrorMessages.MessageTemplate.CREATION_ERROR.message,
+      ErrorMessages.MessageTemplate.CREATION_ERROR.code
+    );
   }
 };
 
@@ -83,7 +88,17 @@ export const getMessageTemplateById = async (
     return messageTemplate;
   } catch (error) {
     logger.error('Error retrieving message template:', error);
-    throw error;
+    if (error instanceof mongoose.Error.CastError) {
+      logger.error('Cast error retrieving message template:', error);
+      throw new BadRequestError(
+        ErrorMessages.MessageTemplate.FETCH_ERROR.message,
+        ErrorMessages.MessageTemplate.FETCH_ERROR.code
+      );
+    }
+    throw new InternalServerError(
+      ErrorMessages.MessageTemplate.FETCH_ERROR.message,
+      ErrorMessages.MessageTemplate.FETCH_ERROR.code
+    );
   }
 };
 
@@ -119,7 +134,17 @@ export const getMessageTemplatesByUserId = async (
     return { messageTemplates, total };
   } catch (error) {
     logger.error('Error retrieving message templates for user:', error);
-    throw error;
+    if (error instanceof mongoose.Error.CastError) {
+      logger.error('Cast error retrieving message templates for user:', error);
+      throw new BadRequestError(
+        ErrorMessages.MessageTemplate.FETCH_ERROR.message,
+        ErrorMessages.MessageTemplate.FETCH_ERROR.code
+      );
+    }
+    throw new InternalServerError(
+      ErrorMessages.MessageTemplate.FETCH_ERROR.message,
+      ErrorMessages.MessageTemplate.FETCH_ERROR.code
+    );
   }
 };
 
@@ -155,7 +180,17 @@ export const updateMessageTemplate = async (
     return messageTemplate;
   } catch (error) {
     logger.error('Error updating message template:', error);
-    throw error;
+    if (error instanceof mongoose.Error.CastError) {
+      logger.error('Cast error updating message template:', error);
+      throw new BadRequestError(
+        ErrorMessages.MessageTemplate.UPDATE_ERROR.message,
+        ErrorMessages.MessageTemplate.UPDATE_ERROR.code
+      );
+    }
+    throw new InternalServerError(
+      ErrorMessages.MessageTemplate.UPDATE_ERROR.message,
+      ErrorMessages.MessageTemplate.UPDATE_ERROR.code
+    );
   }
 };
 
@@ -188,6 +223,16 @@ export const deleteMessageTemplate = async (
     return true;
   } catch (error) {
     logger.error('Error deleting message template:', error);
-    throw error;
+    if (error instanceof mongoose.Error.CastError) {
+      logger.error('Cast error deleting message template:', error);
+      throw new BadRequestError(
+        ErrorMessages.MessageTemplate.DELETE_ERROR.message,
+        ErrorMessages.MessageTemplate.DELETE_ERROR.code
+      );
+    }
+    throw new InternalServerError(
+      ErrorMessages.MessageTemplate.DELETE_ERROR.message,
+      ErrorMessages.MessageTemplate.DELETE_ERROR.code
+    );
   }
 };

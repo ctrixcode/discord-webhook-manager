@@ -1,5 +1,12 @@
+import mongoose from 'mongoose';
 import UserModel, { IUser } from '../models/User';
 import { logger } from '../utils';
+import { ErrorMessages } from '../utils/errorMessages';
+import {
+  BadRequestError,
+  InternalServerError,
+  NotFoundError,
+} from '../utils/errors';
 
 export interface CreateUserData {
   email: string;
@@ -29,8 +36,18 @@ export const createUser = async (userData: CreateUserData): Promise<IUser> => {
     await user.save();
     return user;
   } catch (error) {
+    if (error instanceof mongoose.Error.ValidationError) {
+      logger.error('Mongoose Validation Error:', error);
+      throw new BadRequestError(
+        ErrorMessages.Generic.INVALID_INPUT_ERROR.message,
+        ErrorMessages.Generic.INVALID_INPUT_ERROR.code
+      );
+    }
     logger.error('Error creating user:', error);
-    throw error;
+    throw new InternalServerError(
+      ErrorMessages.User.CREATION_ERROR.message,
+      ErrorMessages.User.CREATION_ERROR.code
+    );
   }
 };
 
@@ -56,7 +73,10 @@ export const getUsers = async (
     return { users, total };
   } catch (error) {
     logger.error('Error retrieving users:', error);
-    throw error;
+    throw new InternalServerError(
+      ErrorMessages.User.FETCH_ERROR.message,
+      ErrorMessages.User.FETCH_ERROR.code
+    );
   }
 };
 
@@ -74,7 +94,10 @@ export const getUserById = async (userId: string): Promise<IUser | null> => {
     return user;
   } catch (error) {
     logger.error('Error retrieving user:', error);
-    throw error;
+    throw new InternalServerError(
+      ErrorMessages.User.FETCH_ERROR.message,
+      ErrorMessages.User.FETCH_ERROR.code
+    );
   }
 };
 
@@ -96,8 +119,18 @@ export const updateUser = async (
     logger.info('User updated successfully', { userId });
     return user;
   } catch (error) {
+    if (error instanceof mongoose.Error.ValidationError) {
+      logger.error('Mongoose Validation Error in updateUser:', error);
+      throw new BadRequestError(
+        ErrorMessages.Generic.INVALID_INPUT_ERROR.message,
+        ErrorMessages.Generic.INVALID_INPUT_ERROR.code
+      );
+    }
     logger.error('Error updating user:', error);
-    throw error;
+    throw new InternalServerError(
+      ErrorMessages.User.UPDATE_ERROR.message,
+      ErrorMessages.User.UPDATE_ERROR.code
+    );
   }
 };
 
@@ -119,7 +152,17 @@ export const deleteUser = async (userId: string): Promise<boolean> => {
     return true;
   } catch (error) {
     logger.error('Error deleting user:', error);
-    throw error;
+    if (error instanceof mongoose.Error.CastError) {
+      logger.error('Cast error deleting user:', error);
+      throw new BadRequestError(
+        ErrorMessages.User.DELETE_ERROR.message,
+        ErrorMessages.User.DELETE_ERROR.code
+      );
+    }
+    throw new InternalServerError(
+      ErrorMessages.User.DELETE_ERROR.message,
+      ErrorMessages.User.DELETE_ERROR.code
+    );
   }
 };
 
@@ -136,8 +179,21 @@ export const getUserByEmail = async (email: string): Promise<IUser | null> => {
     logger.info('User retrieved successfully by email', { email });
     return user;
   } catch (error) {
+    if (error instanceof mongoose.Error.DocumentNotFoundError) {
+      logger.error(
+        'Mongoose Document Not Found Error in getUserByEmail:',
+        error
+      );
+      throw new NotFoundError(
+        ErrorMessages.User.NOT_FOUND_ERROR.message,
+        ErrorMessages.User.NOT_FOUND_ERROR.code
+      );
+    }
     logger.error('Error retrieving user by email:', error);
-    throw error;
+    throw new InternalServerError(
+      ErrorMessages.User.FETCH_ERROR.message,
+      ErrorMessages.User.FETCH_ERROR.code
+    );
   }
 };
 
@@ -159,7 +215,20 @@ export const getUserByDiscordId = async (
     logger.info('User retrieved successfully by discord_id', { discordId });
     return user;
   } catch (error) {
+    if (error instanceof mongoose.Error.DocumentNotFoundError) {
+      logger.error(
+        'Mongoose Document Not Found Error in getUserByEmail:',
+        error
+      );
+      throw new NotFoundError(
+        ErrorMessages.User.NOT_FOUND_ERROR.message,
+        ErrorMessages.User.NOT_FOUND_ERROR.code
+      );
+    }
     logger.error('Error retrieving user by discord_id:', error);
-    throw error;
+    throw new InternalServerError(
+      ErrorMessages.User.FETCH_ERROR.message,
+      ErrorMessages.User.FETCH_ERROR.code
+    );
   }
 };

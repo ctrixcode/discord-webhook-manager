@@ -1,8 +1,8 @@
 export const ErrorMessages = {
   Auth: {
-    NO_REFRESH_TOKEN_ERROR: {
-      message: 'No refresh token provided',
-      code: 'NO_REFRESH_TOKEN_ERROR',
+    NO_TOKEN_ERROR: {
+      message: 'No token provided',
+      code: 'NO_TOKEN_ERROR',
     },
     MISSING_CODE_ERROR: {
       message: 'Missing authorization code',
@@ -12,11 +12,11 @@ export const ErrorMessages = {
       message: 'Failed to create or update user with Discord info',
       code: 'FAILED_CREATE_UPDATE_USER_ERROR',
     },
-    INVALID_REFRESH_TOKEN_ERROR: {
+    INVALID_TOKEN_ERROR: {
       message: 'Authentication failed. Please log in again.',
-      code: 'INVALID_REFRESH_TOKEN_ERROR',
+      code: 'INVALID_TOKEN_ERROR',
     },
-    EXPIRED_REFRESH_TOKEN_ERROR: {
+    EXPIRED_TOKEN_ERROR: {
       message: 'Your session has expired. Please log in again.',
       code: 'EXPIRED_REFRESH_TOKEN_ERROR',
     },
@@ -106,14 +106,6 @@ export const ErrorMessages = {
     DELETE_ERROR: { message: 'Error deleting user', code: 'DELETE_ERROR' },
     CREATION_ERROR: { message: 'Error creating user', code: 'CREATION_ERROR' },
     FETCH_ERROR: { message: 'Error retrieving user', code: 'FETCH_ERROR' },
-    FETCH_BY_EMAIL_ERROR: {
-      message: 'Error retrieving user by email',
-      code: 'FETCH_BY_EMAIL_ERROR',
-    },
-    FETCH_BY_DISCORD_ID_ERROR: {
-      message: 'Error retrieving user by discord_id',
-      code: 'FETCH_BY_DISCORD_ID_ERROR',
-    },
     NOT_FOUND_FOR_USAGE_LIMITS_ERROR: {
       message: 'User not found for usage and limits check.',
       code: 'NOT_FOUND_FOR_USAGE_LIMITS_ERROR',

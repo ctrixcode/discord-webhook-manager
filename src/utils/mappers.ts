@@ -9,10 +9,8 @@ export interface UserPayload {
   email: string;
   discord_id?: string;
   discord_avatar?: string;
-  guilds?: { id: string; name: string; icon: string | null }[];
-  accountType: string; // Added accountType
+  accountType: string;
   createdAt: string;
-  updatedAt: string;
 }
 
 export interface WebhookDto {
@@ -42,10 +40,8 @@ export const toUserPayload = (user: IUser): UserPayload => {
     email: user.email,
     discord_id: user.discord_id,
     discord_avatar: user.discord_avatar,
-    guilds: user.guilds,
     accountType: user.accountType,
     createdAt: user.createdAt.toISOString(),
-    updatedAt: user.updatedAt.toISOString(),
   };
 };
 

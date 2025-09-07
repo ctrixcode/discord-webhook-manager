@@ -2,6 +2,8 @@ import jwt, { SignOptions } from 'jsonwebtoken';
 import { v4 as uuidv4 } from 'uuid';
 import AuthSessionTokenModel from '../models/AuthSessionToken';
 import { Types } from 'mongoose';
+import { AuthenticationError } from './errors';
+import { ErrorMessages } from './errorMessages';
 
 const JWT_SECRET = process.env.JWT_SECRET || 'supersecretjwtkey'; // Should be a strong, unique secret
 const JWT_ACCESS_TOKEN_EXPIRES_IN: string | number =
@@ -95,7 +97,22 @@ export const generateRefreshToken = (
  * @returns The decoded payload if the token is valid, otherwise throws an error.
  */
 export const verifyToken = (token: string): TokenPayload => {
-  return jwt.verify(token, JWT_SECRET) as TokenPayload;
+  try {
+    return jwt.verify(token, JWT_SECRET) as TokenPayload;
+  } catch (error) {
+    if (error instanceof jwt.TokenExpiredError) {
+      throw new AuthenticationError(
+        ErrorMessages.Auth.EXPIRED_TOKEN_ERROR.message,
+        ErrorMessages.Auth.EXPIRED_TOKEN_ERROR.code
+      );
+    } else if (error instanceof jwt.JsonWebTokenError) {
+      throw new AuthenticationError(
+        ErrorMessages.Auth.INVALID_TOKEN_ERROR.message,
+        ErrorMessages.Auth.INVALID_TOKEN_ERROR.code
+      );
+    }
+    throw error;
+  }
 };
 
 /**

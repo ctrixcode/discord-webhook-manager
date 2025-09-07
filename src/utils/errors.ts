@@ -92,11 +92,22 @@ export class ExternalApiError extends ApiError {
   constructor(
     message: string,
     errorCode: string,
-    source?: string,
+    source?: 'discord' | 'cloudinary',
     statusCode: number = HttpStatusCode.BAD_GATEWAY // 502 is often more appropriate for external failures
   ) {
     super(message, errorCode, statusCode);
     this.name = 'ExternalApiError';
     this.source = source;
+  }
+}
+
+export class BadRequestError extends ApiError {
+  constructor(
+    message: string,
+    errorCode: string,
+    statusCode: number = HttpStatusCode.BAD_REQUEST
+  ) {
+    super(message, errorCode, statusCode);
+    this.name = 'BadRequestError';
   }
 }
