@@ -133,8 +133,8 @@ export const refreshTokens = async (
       // Revoke all sessions for this user
       await revokeAllUserSessions(decodedRefreshToken.userId);
       throw new AuthenticationError(
-        ErrorMessages.Auth.INVALID_REFRESH_TOKEN_ERROR.message,
-        ErrorMessages.Auth.INVALID_REFRESH_TOKEN_ERROR.code
+        ErrorMessages.Auth.INVALID_TOKEN_ERROR.message,
+        ErrorMessages.Auth.INVALID_TOKEN_ERROR.code
       );
     }
 
@@ -142,8 +142,8 @@ export const refreshTokens = async (
     if (existingAuthSessionToken.userAgent !== currentUserAgent) {
       await revokeAllUserSessions(decodedRefreshToken.userId);
       throw new AuthenticationError(
-        ErrorMessages.Auth.INVALID_REFRESH_TOKEN_ERROR.message,
-        ErrorMessages.Auth.INVALID_REFRESH_TOKEN_ERROR.code
+        ErrorMessages.Auth.INVALID_TOKEN_ERROR.message,
+        ErrorMessages.Auth.INVALID_TOKEN_ERROR.code
       );
     }
 
@@ -171,8 +171,8 @@ export const refreshTokens = async (
       throw error;
     }
     throw new AuthenticationError(
-      ErrorMessages.Auth.INVALID_REFRESH_TOKEN_ERROR.message,
-      ErrorMessages.Auth.INVALID_REFRESH_TOKEN_ERROR.code
+      ErrorMessages.Auth.INVALID_TOKEN_ERROR.message,
+      ErrorMessages.Auth.INVALID_TOKEN_ERROR.code
     );
   }
 };

@@ -14,7 +14,7 @@ export const ErrorMessages = {
     },
     INVALID_TOKEN_ERROR: {
       message: 'Authentication failed. Please log in again.',
-      code: 'INVALID_REFRESH_TOKEN_ERROR',
+      code: 'INVALID_TOKEN_ERROR',
     },
     EXPIRED_TOKEN_ERROR: {
       message: 'Your session has expired. Please log in again.',
