@@ -7,6 +7,8 @@ import { useQuery } from '@tanstack/react-query';
 import { userQueries } from '@/lib/api/queries/user';
 import { Progress } from '@/components/ui/progress';
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import Link from 'next/link';
 
 export default function SettingsPage() {
   const [showClearDataDialog, setShowClearDataDialog] = useState(false);
@@ -152,6 +154,43 @@ export default function SettingsPage() {
         ) : (
           <p className="text-slate-400">Could not load usage data.</p>
         )}
+      </SettingsCard>
+
+      <SettingsCard
+        title="Subscription Plans"
+        description="View details about different subscription tiers and their benefits"
+        icon={<Gem className="h-5 w-5" />}
+      >
+        <Link href="/dashboard/plans">
+          <Button className="bg-purple-600 hover:bg-purple-700 text-white">
+            View Plans
+          </Button>
+        </Link>
+      </SettingsCard>
+
+      <SettingsCard
+        title="Support Us"
+        description="Help us grow by sharing Discord Webhook Manager"
+        icon={<BarChart2 className="h-5 w-5" />}
+      >
+        <div className="space-y-4">
+          <p className="text-slate-300">
+            If you enjoy using Discord Webhook Manager and want to support its
+            development, consider sharing it on X (formerly Twitter)!
+          </p>
+          <a
+            href="https://twitter.com/intent/tweet?text=I%27m%20loving%20Discord%20Webhook%20Manager!%20%40ctrix%2C%20this%20app%20is%20amazing%20for%20managing%20my%20Discord%20webhooks.%20Highly%20recommend!%20%23Discord%20%23Webhooks%20%23DiscordBot&url=https%3A%2F%2Fwebhook.ctrix.pro"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <Button className="bg-blue-500 hover:bg-blue-600 text-white">
+              Share on X (Twitter)
+            </Button>
+          </a>
+          <p className="text-slate-300 pt-2">
+            DM me on X, if you want to get paid subscriptions.
+          </p>
+        </div>
       </SettingsCard>
 
       {/* <SettingsCard
