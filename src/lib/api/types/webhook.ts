@@ -5,33 +5,38 @@ export interface Webhook {
   user_id: string;
   name: string;
   description?: string;
-  is_active: boolean;
-  last_used?: string;
-  createdAt: Date;
-  updatedAt: Date;
+  is_active: string;
+  createdAt: string;
+  updatedAt: string;
+  last_used?: Date | null;
 }
 
 export interface CreateWebhookRequest {
   name: string;
   url: string;
   description?: string;
+  defaultAvatarId?: string;
 }
 
 export interface UpdateWebhookRequest {
   name?: string;
   description?: string;
-  last_used?: string;
-  messageCount?: number;
-  is_active?: boolean;
+  defaultAvatarId?: string;
+  status?: string;
 }
 
 export interface SendMessageData {
   webhookIds: string[];
   messageData: {
-    message: string;
-    avatarRefID?: string;
-    tts: boolean;
+    content?: string;
+    username?: string;
+    avatarUrl?: string;
     embeds?: DiscordEmbed[];
-    message_replace_url?: string;
   };
+}
+
+export interface SendMessageResponse {
+  webhookId: string;
+  status: string;
+  message: string;
 }

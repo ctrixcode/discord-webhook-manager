@@ -4,6 +4,7 @@ import {
   CreateWebhookRequest,
   UpdateWebhookRequest,
   SendMessageData,
+  SendMessageResponse,
 } from '../types/webhook';
 import { ApiResponse } from '../types/api';
 
@@ -19,26 +20,26 @@ export const webhookQueries = {
     }
     const queryString = params.toString();
     const url = queryString ? `/webhook?${queryString}` : '/webhook';
-    type rawResponse = {
+    type GetAllResponse = {
       webhooks: Webhook[];
       total: number;
       page: number;
       limit: number;
     };
-    const response = await apiClient.get<rawResponse>(url);
-    return response.data.webhooks;
+    const response = await apiClient.get<ApiResponse<GetAllResponse>>(url);
+    return response.data.data?.webhooks as Webhook[];
   },
 
   // Get webhook by ID
   getWebhookById: async (id: string): Promise<Webhook> => {
-    const response = await apiClient.get<Webhook>(`/webhook/${id}`);
-    return response.data;
+    const response = await apiClient.get<ApiResponse<Webhook>>(`/webhook/${id}`);
+    return response.data.data as Webhook;
   },
 
   // Create webhook
   createWebhook: async (data: CreateWebhookRequest): Promise<Webhook> => {
-    const response = await apiClient.post<Webhook>('/webhook', data);
-    return response.data;
+    const response = await apiClient.post<ApiResponse<Webhook>>('/webhook', data);
+    return response.data.data as Webhook;
   },
 
   // Update webhook
@@ -46,29 +47,27 @@ export const webhookQueries = {
     id: string,
     data: UpdateWebhookRequest,
   ): Promise<Webhook> => {
-    const response = await apiClient.put<Webhook>(`/webhook/${id}`, data);
-    return response.data;
+    const response = await apiClient.put<ApiResponse<Webhook>>(`/webhook/${id}`, data);
+    return response.data.data as Webhook;
   },
 
   // Delete webhook
-  deleteWebhook: async (id: string): Promise<ApiResponse> => {
-    const response = await apiClient.delete<ApiResponse>(`/webhook/${id}`);
-    return response.data;
+  deleteWebhook: async (id: string): Promise<void> => {
+    await apiClient.delete<ApiResponse<void>>(`/webhook/${id}`);
   },
 
   //test webhook
-  testWebhook: async (id: string): Promise<ApiResponse> => {
-    const response = await apiClient.post<ApiResponse>(`/webhook/${id}/test`);
-    return response.data;
+  testWebhook: async (id: string): Promise<void> => {
+    await apiClient.post<ApiResponse<void>>(`/webhook/${id}/test`);
   },
 
   // send message to webhook
-  sendMessage: async (data: SendMessageData): Promise<ApiResponse> => {
-    const response = await apiClient.post<ApiResponse>(
+  sendMessage: async (data: SendMessageData): Promise<SendMessageResponse[]> => {
+    const response = await apiClient.post<ApiResponse<SendMessageResponse[]>>(
       `/webhook/send-message`,
       data,
     );
-    return response.data;
+    return response.data.data as SendMessageResponse[];
   },
 };
 
