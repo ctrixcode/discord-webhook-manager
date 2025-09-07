@@ -118,6 +118,17 @@ export default async function HomePage() {
               </svg>
               ctrixcode
             </a>
+            <a
+              href="https://ctrix.pro"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center text-lg md:text-xl text-indigo-400 hover:text-indigo-300 transition duration-300 ease-in-out"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+              </svg>
+              My Portfolio
+            </a>
           </div>
         </div>
       </section>
