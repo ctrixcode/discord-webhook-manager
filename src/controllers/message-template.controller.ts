@@ -11,11 +11,7 @@ import {
 import { IMessageTemplateParams } from '../schemas/message-template.schema';
 import { sendSuccessResponse } from '../utils/responseHandler';
 import { HttpStatusCode } from '../utils/httpcode';
-import {
-  AuthenticationError,
-  BadRequestError,
-  NotFoundError,
-} from '../utils/errors';
+import { AuthenticationError, NotFoundError } from '../utils/errors';
 import { ErrorMessages } from '../utils/errorMessages';
 
 export const createMessageTemplateHandler = async (
@@ -43,18 +39,14 @@ export const getMessageTemplatesHandler = async (
   reply: FastifyReply
 ) => {
   const userId = request.user?.userId;
+
   if (!userId) {
     throw new AuthenticationError(
       ErrorMessages.User.NOT_FOUND_ERROR.message,
       ErrorMessages.User.NOT_FOUND_ERROR.code
     );
   }
-  if (!request.query.page && !request.query.limit) {
-    throw new BadRequestError(
-      ErrorMessages.Generic.INVALID_INPUT_ERROR.message,
-      ErrorMessages.Generic.INVALID_INPUT_ERROR.code
-    );
-  }
+
   const page = parseInt(request.query.page || '1', 10);
   const limit = parseInt(request.query.limit || '10', 10);
   const { messageTemplates, total } = await getMessageTemplatesByUserId(
