@@ -1,15 +1,10 @@
 import { FastifyRequest, FastifyReply } from 'fastify';
 import * as userService from '../services/user.service';
 import * as userUsageService from '../services/user-usage.service';
-import { UpdateUserData } from '../services/user.service';
 import { getDiscordAvatarURL } from '../utils/discord-api';
 import { toUserPayload } from '../utils/mappers';
 import { ErrorMessages } from '../utils/errorMessages';
-import {
-  AuthenticationError,
-  BadRequestError,
-  NotFoundError,
-} from '../utils/errors';
+import { AuthenticationError, NotFoundError } from '../utils/errors';
 import { sendSuccessResponse } from '../utils/responseHandler';
 import { HttpStatusCode } from '../utils/httpcode';
 import { createPagination } from '../utils/helper';
@@ -66,34 +61,6 @@ export const getUsers = async (
       limit,
       totalItems: result.total,
     }),
-  });
-};
-
-/**
- * Update user
- * PUT /api/users/:id
- */
-export const updateUser = async (
-  request: FastifyRequest<{ Params: { id: string }; Body: UpdateUserData }>,
-  reply: FastifyReply
-): Promise<void> => {
-  const { id } = request.params;
-  const updateData = request.body;
-  if (!id) {
-    throw new BadRequestError(
-      ErrorMessages.Generic.INVALID_INPUT_ERROR.message,
-      ErrorMessages.Generic.INVALID_INPUT_ERROR.code
-    );
-  }
-  const user = await userService.updateUser(id, updateData);
-  if (!user) {
-    throw new NotFoundError(
-      ErrorMessages.User.NOT_FOUND_ERROR.message,
-      ErrorMessages.User.NOT_FOUND_ERROR.code
-    );
-  }
-  sendSuccessResponse(reply, HttpStatusCode.OK, 'User updated successfully', {
-    data: toUserPayload(user),
   });
 };
 
