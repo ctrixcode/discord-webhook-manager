@@ -445,7 +445,7 @@ export const sendMessage = async (
 
     return results;
   } catch (error) {
-    logger.error('Error sending message:', error);
+    logger.error('Error from webhook controller sending message:', error);
     if (error instanceof mongoose.Error.CastError) {
       logger.error('Cast error sending message:', error);
       throw new BadRequestError(
