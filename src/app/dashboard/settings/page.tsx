@@ -1,12 +1,8 @@
 'use client';
-
-// import { Separator } from '@/components/ui/separator';
-import { BarChart2, Gem, Trash2 } from 'lucide-react';
+import { BarChart2, Gem } from 'lucide-react';
 import { useState } from 'react';
 import { ConfirmationDialog } from '@/components/ui/confirmation-dialog';
 import { SettingsCard } from '@/components/settings/settings-card';
-// import { NotificationToggle } from '@/components/settings/notification-toggle';
-import { DangerAction } from '@/components/settings/danger-action';
 import { useQuery } from '@tanstack/react-query';
 import { userQueries } from '@/lib/api/queries/user';
 import { Progress } from '@/components/ui/progress';
@@ -24,10 +20,6 @@ export default function SettingsPage() {
     queryKey: ['currentUser'],
     queryFn: userQueries.getCurrentUser,
   });
-
-  const handleClearData = () => {
-    setShowClearDataDialog(true);
-  };
 
   const handleConfirmClearData = () => {
     localStorage.clear();
@@ -88,19 +80,19 @@ export default function SettingsPage() {
         {isLoadingUser ? (
           <div className="h-8 bg-slate-700/50 rounded-md animate-pulse" />
         ) : user ? (
-          <div className='flex items-center gap-2'>
-          <Badge
-            className={
-              `text-lg px-4 py-2 font-semibold ` +
-              getAccountTypeBadgeClass(user.accountType)
-            }
+          <div className="flex items-center gap-2">
+            <Badge
+              className={
+                `text-lg px-4 py-2 font-semibold ` +
+                getAccountTypeBadgeClass(user.accountType || 'free')
+              }
             >
-            {user.accountType.toUpperCase()}
-          </Badge>
-          <p className="text-slate-400 text-sm mt-2">
-            {getAccountTypeQuote(user.accountType)}
-          </p>
-            </div>
+              {(user.accountType || 'free').toUpperCase()}
+            </Badge>
+            <p className="text-slate-400 text-sm mt-2">
+              {getAccountTypeQuote(user.accountType || 'free')}
+            </p>
+          </div>
         ) : (
           <p className="text-slate-400">Could not load account type.</p>
         )}
