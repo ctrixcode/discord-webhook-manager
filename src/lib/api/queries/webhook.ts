@@ -57,8 +57,9 @@ export const webhookQueries = {
   },
 
   //test webhook
-  testWebhook: async (id: string): Promise<void> => {
-    await apiClient.post<ApiResponse<ApiResponse>>(`/webhook/${id}/test`);
+  testWebhook: async (id: string): Promise<ApiResponse<void>> => {
+    const resp = await apiClient.post<ApiResponse<void>>(`/webhook/${id}/test`)
+    return resp.data
   },
 
   // send message to webhook

@@ -63,17 +63,9 @@ export function WebhookCard({ webhook, onWebhookUpdated, onCardClick }: WebhookC
   const handleTestWebhook = async () => {
     setIsTestingWebhook(true);
     try {
-      const success = await testWebhook(webhook.id);
+      const resp = await testWebhook(webhook.id);
 
-      if (success) {
-        // Update last used timestamp and message count
-        updateWebhook({
-          id: webhook.id,
-          data: {
-            last_used: new Date().toISOString(),
-            // messageCount: (webhook.messageCount || 0) + 1,
-          },
-        });
+      if (resp.success) {
 
         toast({
           title: 'Test successful!',

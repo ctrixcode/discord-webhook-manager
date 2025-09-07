@@ -21,8 +21,7 @@ export interface CreateWebhookRequest {
 export interface UpdateWebhookRequest {
   name?: string;
   description?: string;
-  defaultAvatarId?: string;
-  status?: string;
+  is_active?: boolean;
 }
 
 export interface SendMessageData {
