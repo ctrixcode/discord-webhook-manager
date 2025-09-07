@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, useRef, ChangeEventHandler } from 'react';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { useMutation } from '@tanstack/react-query';
 import {
   Dialog,
   DialogContent,
@@ -13,7 +13,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { createAvatar, updateAvatar, uploadAvatar } from '@/lib/api/queries/avatar';
-import type { PredefinedAvatar } from '@/lib/api/types/avatar';
+import type { IAvatar } from '@/lib/api/types/avatar';
 import { Image as ImageIcon } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { AxiosError } from 'axios';
@@ -23,7 +23,7 @@ interface CreateAvatarDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onSaveSuccess: () => void;
-  editingAvatar?: PredefinedAvatar | null;
+  editingAvatar?: IAvatar | null;
 }
 
 export function CreateAvatarDialog({
@@ -32,7 +32,6 @@ export function CreateAvatarDialog({
   onSaveSuccess,
   editingAvatar,
 }: CreateAvatarDialogProps) {
-  const queryClient = useQueryClient();
   const [username, setUsername] = useState('');
   const [avatar_url, setAvatar_url] = useState('');
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
@@ -103,8 +102,8 @@ export function CreateAvatarDialog({
       }
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['avatars'] });
       onSaveSuccess();
+      toast({title: 'Avatar created', description: 'Avatar created successfully'});
     },
   });
 
