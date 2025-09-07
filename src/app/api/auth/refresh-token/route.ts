@@ -20,7 +20,7 @@ export async function POST(req: NextRequest) {
     // Make a request to the backend's refresh endpoint
     const userAgent = req.headers.get('user-agent');
 
-    const backendResponse: ApiResponse<RefreshTokenResponse> = await axios.post(
+    const backendResponse = await axios.post(
       `${BACKEND_API_URL}/auth/refresh`,
       { refreshToken }, // Send refresh token in the body
       {
@@ -30,9 +30,12 @@ export async function POST(req: NextRequest) {
         },
       }
     );
+    const respData: ApiResponse<RefreshTokenResponse> | undefined = backendResponse.data;
+    if (!respData) {
+      throw new Error('Failed to refresh token');
+    }
 
-    const { accessToken, refreshToken: newRefreshToken } = backendResponse?.data as RefreshTokenResponse;
-
+    const { accessToken, refreshToken: newRefreshToken } = respData.data!;
     if (!accessToken) {
       return NextResponse.json({ message: 'New access token not found' }, { status: 500 });
     }
