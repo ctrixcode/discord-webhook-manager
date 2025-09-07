@@ -4,6 +4,7 @@ import {
   CreateMessageTemplateRequest,
   UpdateMessageTemplateRequest,
 } from '../types/message-template';
+import { ApiResponse } from '../types/api';
 
 export const templateQueries = {
   // Get all templates for current user
@@ -14,31 +15,31 @@ export const templateQueries = {
       page: number;
       limit: number;
     };
-    const response = await apiClient.get<GetAllResponse>('/message-template');
-    return response.data.messageTemplates;
+    const response = await apiClient.get<ApiResponse<GetAllResponse>>('/message-template');
+    return response.data.data?.messageTemplates as MessageTemplate[];
   },
 
   // Get template by ID
   getTemplateById: async (id: string): Promise<MessageTemplate> => {
-    const response = await apiClient.get<MessageTemplate>(`/message-template/${id}`);
-    return response.data;
+    const response = await apiClient.get<ApiResponse<MessageTemplate>>(`/message-template/${id}`);
+    return response.data.data as MessageTemplate;
   },
 
   // Create template
   createTemplate: async (data: CreateMessageTemplateRequest): Promise<MessageTemplate> => {
-    const response = await apiClient.post<MessageTemplate>('/message-template', data);
-    return response.data;
+    const response = await apiClient.post<ApiResponse<MessageTemplate>>('/message-template', data);
+    return response.data.data as MessageTemplate;
   },
 
   // Update template
   updateTemplate: async (id: string, data: UpdateMessageTemplateRequest): Promise<MessageTemplate> => {
-    const response = await apiClient.put<MessageTemplate>(`/message-template/${id}`, data);
-    return response.data;
+    const response = await apiClient.put<ApiResponse<MessageTemplate>>(`/message-template/${id}`, data);
+    return response.data.data as MessageTemplate;
   },
 
   // Delete template
   deleteTemplate: async (id: string): Promise<void> => {
-    await apiClient.delete<void>(`/message-template/${id}`);
+    await apiClient.delete<ApiResponse<void>>(`/message-template/${id}`);
   },
 };
 
