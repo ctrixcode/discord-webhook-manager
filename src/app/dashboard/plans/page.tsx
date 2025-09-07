@@ -27,8 +27,8 @@ export default function PlansPage() {
       features: [
         { text: '15 Webhook Messages/Day', available: true },
         { text: '15 MB Media Storage', available: true },
-        { text: '5 Webhooks', available: true },
-        { text: 'Basic Analytics', available: true },
+        // { text: '5 Webhooks', available: true },
+        // { text: 'Basic Analytics', available: true },
         { text: 'Custom Avatars', available: true },
         { text: 'Priority Support', available: false },
       ],
@@ -43,8 +43,8 @@ export default function PlansPage() {
       features: [
         { text: '50 Webhook Messages/Day', available: true },
         { text: '50 MB Media Storage', available: true },
-        { text: '50 Webhooks', available: true },
-        { text: 'Advanced Analytics', available: true },
+        // { text: '50 Webhooks', available: true },
+        // { text: 'Advanced Analytics', available: true },
         { text: 'Priority Support', available: true },
         { text: 'Custom Avatars', available: true },
       ],
@@ -59,8 +59,8 @@ export default function PlansPage() {
       features: [
         { text: 'Unlimited Webhook Messages/Day', available: true },
         { text: '1 GB Media Storage', available: true },
-        { text: 'Unlimited Webhooks', available: true },
-        { text: 'Real-time Analytics', available: true },
+        // { text: 'Unlimited Webhooks', available: true },
+        // { text: 'Real-time Analytics', available: true },
         { text: '24/7 Dedicated Support', available: true },
         { text: 'Custom Avatars', available: true },
       ],
