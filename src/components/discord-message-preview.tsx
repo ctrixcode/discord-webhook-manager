@@ -1,6 +1,6 @@
 'use client';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { PredefinedAvatar } from '@/lib/api/types/avatar';
+import { IAvatar } from '@/lib/api/types/avatar';
 import { type DiscordEmbed } from '@/lib/api/types/discord';
 import { discordColorToHex } from '@/lib/discord-utils';
 import { useEffect, useState } from 'react';
@@ -12,7 +12,7 @@ import { parseDiscordMarkdown } from '@/lib/discord-markdown-parser';
 interface DiscordMessagePreviewProps {
   content: string;
   embeds?: DiscordEmbed[];
-  avatar?: PredefinedAvatar;
+  avatar?: IAvatar;
 }
 
 export function DiscordMessagePreview({
@@ -78,9 +78,9 @@ export function DiscordMessagePreview({
   const userQueriesResults = useQueries({
     queries: userIds.map((id) => ({
       queryKey: ['user', id],
-      queryFn: () => userQueries.getUserById(id),
+      queryFn: () => userQueries.getCurrentUser(),
       staleTime: Infinity,
-      enabled: !!id, // Only fetch if ID exists
+      enabled: !!id, 
     })),
   });
 

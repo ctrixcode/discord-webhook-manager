@@ -1,4 +1,11 @@
-import axios, { AxiosError, AxiosHeaders, AxiosInstance, AxiosResponse, InternalAxiosRequestConfig } from 'axios';
+import axios, {
+  AxiosError,
+  AxiosHeaders,
+  AxiosInstance,
+  AxiosResponse,
+  InternalAxiosRequestConfig,
+} from 'axios';
+import { ApiError } from '../error';
 
 // Base URL from the integration guide
 const BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000/api';
@@ -6,7 +13,11 @@ const BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000/api';
 class ApiClient {
   private client: AxiosInstance;
   private isRefreshing = false;
-  private failedQueue: Array<{ resolve: (value: unknown) => void; reject: (reason?: AxiosError) => void; config: InternalAxiosRequestConfig }> = [];
+  private failedQueue: Array<{
+    resolve: (value: unknown) => void;
+    reject: (reason?: AxiosError) => void;
+    config: InternalAxiosRequestConfig;
+  }> = [];
 
   private getAccessToken(): string | null {
     if (typeof window !== 'undefined') {
@@ -47,7 +58,7 @@ class ApiClient {
         }
         return config;
       },
-      (error) => Promise.reject(error)
+      (error) => Promise.reject(error),
     );
 
     // Response interceptor to handle token refresh
@@ -57,10 +68,17 @@ class ApiClient {
         const originalRequest = error.config;
 
         // If the error is 401 and it's not the refresh request itself
-        if (error.response?.status === 401 && originalRequest.url !== '/api/auth/refresh-token') {
+        if (
+          error.response?.status === 401 &&
+          originalRequest.url !== '/api/auth/refresh-token'
+        ) {
           if (this.isRefreshing) {
             return new Promise((resolve, reject) => {
-              this.failedQueue.push({ resolve, reject, config: originalRequest });
+              this.failedQueue.push({
+                resolve,
+                reject,
+                config: originalRequest,
+              });
             });
           }
 
@@ -76,7 +94,8 @@ class ApiClient {
               throw new Error(`HTTP error! status: ${refreshResponse.status}`);
             }
 
-            const { accessToken: newAccessToken } = await refreshResponse.json();
+            const { accessToken: newAccessToken } =
+              await refreshResponse.json();
 
             if (!newAccessToken) {
               throw new Error('New access token not found in refresh response');
@@ -87,11 +106,13 @@ class ApiClient {
             this.processQueue(null, newAccessToken);
             originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;
             return this.client(originalRequest);
-
           } catch (refreshError) {
             this.processQueue(refreshError as AxiosError);
             this.clearAccessToken();
-            console.error('Authentication failed. Please login again.', refreshError);
+            console.error(
+              'Authentication failed. Please login again.',
+              refreshError,
+            );
             return Promise.reject(refreshError);
           } finally {
             this.isRefreshing = false;
@@ -101,18 +122,33 @@ class ApiClient {
         // If 401 on refresh request itself, or other errors
         // The new /api/auth/refresh-token endpoint handles the refresh token cookie directly.
         // If it returns 401, it means the refresh token is invalid/expired.
-        if ((error.response?.status === 401 || error.response?.status === 400) && originalRequest.url === '/api/auth/refresh-token') {
+        if (
+          (error.response?.status === 401 || error.response?.status === 400) &&
+          originalRequest.url === '/api/auth/refresh-token'
+        ) {
           this.clearAccessToken();
           console.error('Refresh token invalid or expired.');
         }
 
+        if (error.response.data) {
+          const backendError = error.response.data;
+          if (backendError && backendError.message && backendError.code) {
+            throw new ApiError(
+              backendError.message,
+              backendError.statusCode,
+              backendError.code,
+              backendError.details,
+            );
+          }
+        }
+
         return Promise.reject(error);
-      }
+      },
     );
   }
 
   private processQueue(error: AxiosError | null, token: string | null = null) {
-    this.failedQueue.forEach(prom => {
+    this.failedQueue.forEach((prom) => {
       if (error) {
         prom.reject(error);
       } else if (token) {

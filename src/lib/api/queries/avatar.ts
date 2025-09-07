@@ -1,45 +1,45 @@
 import { apiClient } from '../client';
-import { PredefinedAvatar } from '../types/avatar';
+import { IAvatar } from '../types/avatar';
+import { ApiResponse } from '../types/api';
 
 export const avatarQueries = {
   // Get all avatars for current user
-  getAllAvatars: async (): Promise<PredefinedAvatar[]> => {
-    const response = await apiClient.get<PredefinedAvatar[]>('/avatar');
-    return response.data;
+  getAllAvatars: async (): Promise<IAvatar[]> => {
+    const response = await apiClient.get<ApiResponse<IAvatar[]>>('/avatar');
+    return response.data.data as IAvatar[];
   },
 
   // Get avatar by ID
-  getAvatarById: async (id: string): Promise<PredefinedAvatar> => {
-    const response = await apiClient.get<PredefinedAvatar>(`/avatar/${id}`);
-    return response.data;
+  getAvatarById: async (id: string): Promise<IAvatar> => {
+    const response = await apiClient.get<ApiResponse<IAvatar>>(`/avatar/${id}`);
+    return response.data.data as IAvatar;
   },
 
   // Create avatar
-  createAvatar: async (data: Omit<PredefinedAvatar, 'id' | 'createdAt' | 'updatedAt' | 'user_id'>): Promise<PredefinedAvatar> => {
-    const response = await apiClient.post<PredefinedAvatar>('/avatar', data);
-    return response.data;
+  createAvatar: async (data: Omit<IAvatar, 'id' | 'createdAt' | 'updatedAt' | 'user_id'>): Promise<IAvatar> => {
+    const response = await apiClient.post<ApiResponse<IAvatar>>('/avatar', data);
+    return response.data.data as IAvatar;
   },
 
   // Update avatar
-  updateAvatar: async (id: string, data: Partial<PredefinedAvatar>): Promise<PredefinedAvatar> => {
-    const response = await apiClient.put<PredefinedAvatar>(`/avatar/${id}`, data);
-    return response.data;
+  updateAvatar: async (id: string, data: Partial<Omit<IAvatar,"id" | "createdAt" | "updatedAt" | "user_id">>): Promise<IAvatar> => {
+    const response = await apiClient.put<ApiResponse<IAvatar>>(`/avatar/${id}`, data);
+    return response.data.data as IAvatar;
   },
 
   // Delete avatar
-  deleteAvatar: async (id: string): Promise<{ success: boolean; message: string }> => {
-    const response = await apiClient.delete<{ success: boolean; message: string }>(`/avatar/${id}`);
-    return response.data;
+  deleteAvatar: async (id: string): Promise<void> => {
+    await apiClient.delete<ApiResponse<void>>(`/avatar/${id}`);
   },
 
   // Upload avatar
-  uploadAvatar: async (data: FormData): Promise<PredefinedAvatar> => {
-    const response = await apiClient.post<PredefinedAvatar>('/avatar/upload', data, {
+  uploadAvatar: async (data: FormData): Promise<IAvatar> => {
+    const response = await apiClient.post<ApiResponse<IAvatar>>('/avatar/upload', data, {
       headers: {
         'Content-Type': 'multipart/form-data',
       },
     });
-    return response.data;
+    return response.data.data as IAvatar;
   },
 };
 

@@ -54,9 +54,9 @@ export default function TemplatesPage() {
   const deleteMutation = useMutation({
     mutationFn: templateQueries.deleteTemplate,
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['messageTemplates'] });
-      toast({ title: 'Template deleted', description: `"${deleteDialogTemplate?.name}" has been removed` });
+      toast({ title: 'Template deleted', description: "Template has been removed" });
       setDeleteDialogTemplate(null);
+      queryClient.invalidateQueries({ queryKey: ['messageTemplates'] });
     },
   });
 

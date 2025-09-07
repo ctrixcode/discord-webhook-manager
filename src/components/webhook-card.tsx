@@ -32,7 +32,11 @@ interface WebhookCardProps {
   onCardClick?: (webhook: Webhook) => void;
 }
 
-export function WebhookCard({ webhook, onWebhookUpdated, onCardClick }: WebhookCardProps) {
+export function WebhookCard({
+  webhook,
+  onWebhookUpdated,
+  onCardClick,
+}: WebhookCardProps) {
   const { toast } = useToast();
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [isTestingWebhook, setIsTestingWebhook] = useState(false);
@@ -43,8 +47,15 @@ export function WebhookCard({ webhook, onWebhookUpdated, onCardClick }: WebhookC
     mutationFn: ({ id, data }: { id: string; data: UpdateWebhookRequest }) =>
       api.webhook.updateWebhook(id, data),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['webhooks'] });
       onWebhookUpdated();
+      toast({title: 'Webhook updated', description: 'Webhook updated successfully'});
+    },
+    onError: (error) => {
+      toast({
+        title: 'Error updating webhook',
+        description: error.message,
+        variant: 'destructive',
+      });
     },
   });
 
@@ -63,18 +74,9 @@ export function WebhookCard({ webhook, onWebhookUpdated, onCardClick }: WebhookC
   const handleTestWebhook = async () => {
     setIsTestingWebhook(true);
     try {
-      const success = await testWebhook(webhook.id);
+      const resp = await testWebhook(webhook.id);
 
-      if (success) {
-        // Update last used timestamp and message count
-        updateWebhook({
-          id: webhook.id,
-          data: {
-            last_used: new Date().toISOString(),
-            // messageCount: (webhook.messageCount || 0) + 1,
-          },
-        });
-
+      if (resp.success) {
         toast({
           title: 'Test successful!',
           description: 'Test message sent to Discord',
@@ -82,7 +84,7 @@ export function WebhookCard({ webhook, onWebhookUpdated, onCardClick }: WebhookC
       } else {
         toast({
           title: 'Test failed',
-          description: 'Could not send test message. Check your webhook URL.',
+          description: resp.message,
           variant: 'destructive',
         });
       }
@@ -111,7 +113,10 @@ export function WebhookCard({ webhook, onWebhookUpdated, onCardClick }: WebhookC
         className="bg-slate-900/20 backdrop-blur-sm border-slate-700/50 text-white cursor-pointer"
         onClick={(e) => {
           // Check if the click originated from within the dropdown menu
-          if (dropdownRef.current && dropdownRef.current.contains(e.target as Node)) {
+          if (
+            dropdownRef.current &&
+            dropdownRef.current.contains(e.target as Node)
+          ) {
             return; // Do nothing if click is inside dropdown
           }
           onCardClick?.(webhook); // Otherwise, proceed with card click
@@ -142,7 +147,9 @@ export function WebhookCard({ webhook, onWebhookUpdated, onCardClick }: WebhookC
                 </>
               )}
             </Badge>
-            <div ref={dropdownRef}> {/* Add this ref */}
+            <div ref={dropdownRef}>
+              {' '}
+              {/* Add this ref */}
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button
@@ -158,7 +165,10 @@ export function WebhookCard({ webhook, onWebhookUpdated, onCardClick }: WebhookC
                   className="bg-slate-800/95 backdrop-blur-sm border-slate-700/50 text-white"
                 >
                   <DropdownMenuItem
-                    onClick={(e) => { e.stopPropagation(); handleTestWebhook(); }}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleTestWebhook();
+                    }}
                     disabled={isTestingWebhook}
                     className="hover:bg-slate-700/50 focus:bg-slate-700/50"
                   >
@@ -166,7 +176,10 @@ export function WebhookCard({ webhook, onWebhookUpdated, onCardClick }: WebhookC
                     {isTestingWebhook ? 'Testing...' : 'Test Webhook'}
                   </DropdownMenuItem>
                   <DropdownMenuItem
-                    onClick={(e) => { e.stopPropagation(); toggleActive(); }}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      toggleActive();
+                    }}
                     className="hover:bg-slate-700/50 focus:bg-slate-700/50"
                   >
                     {webhook.is_active ? (
@@ -177,7 +190,10 @@ export function WebhookCard({ webhook, onWebhookUpdated, onCardClick }: WebhookC
                     {webhook.is_active ? 'Deactivate' : 'Activate'}
                   </DropdownMenuItem>
                   <DropdownMenuItem
-                    onClick={(e) => { e.stopPropagation(); setShowDeleteDialog(true); }}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setShowDeleteDialog(true);
+                    }}
                     className="text-red-400 hover:bg-red-500/20 focus:bg-red-500/20"
                   >
                     <Trash2 className="mr-2 h-4 w-4" />

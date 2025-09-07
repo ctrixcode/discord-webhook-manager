@@ -19,20 +19,18 @@ import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Send, Webhook } from 'lucide-react';
 import { api } from '@/lib/api';
-import type { PredefinedAvatar } from '@/lib/api/types/avatar';
+import type { IAvatar } from '@/lib/api/types/avatar';
 import { useQuery } from '@tanstack/react-query';
 import { AvatarSelector } from '@/components/avatars/avatar-selector';
 import { DiscordMessagePreview } from '@/components/discord-message-preview';
 import type { DiscordEmbed } from '@/lib/api/types/discord';
 import { useToast } from '@/hooks/use-toast';
 import { SendMessageData } from '@/lib/api/types/webhook';
-import {
-  
-  DISCORD_MAX_MESSAGE_LENGTH,
-} from '@/constants/discord';
+import { DISCORD_MAX_MESSAGE_LENGTH } from '@/constants/discord';
 import { AxiosError } from 'axios';
 import Link from 'next/link';
 import { EmbedBuilder } from '../../../components/embed-builder';
+import { ApiError } from '@/lib/error';
 
 export default function SendMessagePage() {
   const { toast } = useToast();
@@ -58,9 +56,7 @@ export default function SendMessagePage() {
   const [selectedTemplateId, setSelectedTemplateId] = useState<
     string | undefined
   >(undefined);
-  const [selectedAvatar, setSelectedAvatar] = useState<
-    PredefinedAvatar | undefined
-  >();
+  const [selectedAvatar, setSelectedAvatar] = useState<IAvatar | undefined>();
   const [hideSelectTemplate, setHideSelectTemplate] = useState(false);
 
   const handleClearMessage = () => {
@@ -162,7 +158,7 @@ export default function SendMessagePage() {
     }
   };
 
-  const handleAvatarSelect = (avatar: PredefinedAvatar) => {
+  const handleAvatarSelect = (avatar: IAvatar) => {
     setMessage((prev) => ({
       ...prev,
       avatarRefID: avatar.id, // Use avatar.id as avatarRefID
@@ -174,8 +170,6 @@ export default function SendMessagePage() {
     newSearchParams.set('avatarId', avatar.id);
     router.replace(`${pathname}?${newSearchParams.toString()}`);
   };
-
-  
 
   const handleSendMessage = async () => {
     if (selectedWebhooks.length === 0) {
@@ -226,22 +220,17 @@ export default function SendMessagePage() {
         });
       }
     } catch (error) {
-      if (error instanceof AxiosError && error.response?.status === 403) {
-        const errorData = error.response.data as {
-          success: boolean;
-          message: string;
-          code: 'webhook_limit' | 'media_limit';
-        };
+      if (error instanceof ApiError) {
         if (
-          errorData.code === 'webhook_limit' ||
-          errorData.code === 'media_limit'
+          error.errCode === 'WEBHOOK_LIMIT' ||
+          error.errCode === 'MEDIA_LIMIT'
         ) {
           const toastResponse = toast({
             variant: 'destructive',
             title: 'Limit Reached',
             description: (
               <div>
-                <p>{errorData.message}</p>
+                <p>{error.message}</p>
                 <Link
                   href="/dashboard/settings"
                   className="text-blue-400 hover:underline"
@@ -252,20 +241,18 @@ export default function SendMessagePage() {
               </div>
             ),
           });
-          
         } else {
           toast({
             variant: 'destructive',
             title: 'Error',
-            description:
-              error.response?.data?.message || 'An unexpected error occurred',
+            description: error.message || 'An unexpected error occurred',
           });
         }
       } else {
         toast({
           variant: 'destructive',
           title: 'Error',
-          description: 'An unexpected error occurred',
+          description: 'something went wrong',
         });
       }
     } finally {
@@ -504,8 +491,6 @@ export default function SendMessagePage() {
                       </div>
                     </div>
                   </TabsContent>
-
-                  
 
                   <TabsContent value="embeds" className="space-y-4 mt-4">
                     <EmbedBuilder

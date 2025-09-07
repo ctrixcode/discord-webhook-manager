@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useRef } from 'react';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { useMutation } from '@tanstack/react-query';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -23,15 +23,16 @@ import {
 } from '@/components/ui/alert-dialog';
 import { MoreHorizontal, Edit, Trash2, Copy } from 'lucide-react';
 import { deleteAvatar } from '@/lib/api/queries/avatar';
-import type { PredefinedAvatar } from '@/lib/api/types/avatar';
+import type { IAvatar } from '@/lib/api/types/avatar';
+import { toast } from '@/hooks/use-toast';
 
 interface AvatarCardProps {
-  avatar: PredefinedAvatar;
-  onEdit: (avatar: PredefinedAvatar) => void;
+  avatar: IAvatar;
+  onEdit: (avatar: IAvatar) => void;
   onDeleteSuccess: () => void;
-  onSelect?: (avatar: PredefinedAvatar) => void;
+  onSelect?: (avatar: IAvatar) => void;
   selectable?: boolean;
-  onCardClick?: (avatar: PredefinedAvatar) => void;
+  onCardClick?: (avatar: IAvatar) => void;
 }
 
 export function AvatarCard({
@@ -42,16 +43,25 @@ export function AvatarCard({
   selectable = false,
   onCardClick,
 }: AvatarCardProps) {
-  const queryClient = useQueryClient();
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   const { mutate: deleteAvatarMutation } = useMutation({
     mutationFn: deleteAvatar,
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['avatars'] });
       setShowDeleteDialog(false);
       onDeleteSuccess();
+      toast({
+        title: 'Avatar deleted',
+        description: 'Avatar deleted successfully',
+      });
+    },
+    onError: (error) => {
+      toast({
+        title: 'Error deleting avatar',
+        description: error.message,
+        variant: 'destructive',
+      });
     },
   });
 
@@ -61,6 +71,10 @@ export function AvatarCard({
 
   const handleCopyUrl = () => {
     navigator.clipboard.writeText(avatar.avatar_url);
+    toast({
+      title: 'Avatar URL copied',
+      description: 'Avatar URL copied to clipboard',
+    });
   };
 
   return (
@@ -69,7 +83,10 @@ export function AvatarCard({
         className="bg-slate-900/50 backdrop-blur-sm border-slate-700/50 hover:bg-slate-800/50 transition-all duration-200 cursor-pointer"
         onClick={(e) => {
           // Check if the click originated from within the dropdown menu
-          if (dropdownRef.current && dropdownRef.current.contains(e.target as Node)) {
+          if (
+            dropdownRef.current &&
+            dropdownRef.current.contains(e.target as Node)
+          ) {
             return; // Do nothing if click is inside dropdown
           }
           onCardClick?.(avatar); // Otherwise, proceed with card click
@@ -93,7 +110,9 @@ export function AvatarCard({
               </div>
             </div>
 
-            <div ref={dropdownRef}> {/* Add ref here */}
+            <div ref={dropdownRef}>
+              {' '}
+              {/* Add ref here */}
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button
@@ -107,21 +126,30 @@ export function AvatarCard({
                 </DropdownMenuTrigger>
                 <DropdownMenuContent className="bg-slate-800 border-slate-700">
                   <DropdownMenuItem
-                    onClick={(e) => { e.stopPropagation(); onEdit(avatar); }}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onEdit(avatar);
+                    }}
                     className="text-slate-300 hover:text-white hover:bg-slate-700"
                   >
                     <Edit className="w-4 h-4 mr-2" />
                     Edit
                   </DropdownMenuItem>
                   <DropdownMenuItem
-                    onClick={(e) => { e.stopPropagation(); handleCopyUrl(); }}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleCopyUrl();
+                    }}
                     className="text-slate-300 hover:text-white hover:bg-slate-700"
                   >
                     <Copy className="w-4 h-4 mr-2" />
                     Copy Avatar URL
                   </DropdownMenuItem>
                   <DropdownMenuItem
-                    onClick={(e) => { e.stopPropagation(); setShowDeleteDialog(true); }}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setShowDeleteDialog(true);
+                    }}
                     className="text-red-400 hover:text-red-300 hover:bg-red-900/20"
                   >
                     <Trash2 className="w-4 h-4 mr-2" />
@@ -154,8 +182,8 @@ export function AvatarCard({
               Delete Avatar
             </AlertDialogTitle>
             <AlertDialogDescription className="text-slate-400">
-              Are you sure you want to delete &quot;{avatar.username}&quot;? This action
-              cannot be undone.
+              Are you sure you want to delete &quot;{avatar.username}&quot;?
+              This action cannot be undone.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
