@@ -119,13 +119,13 @@ export default function SettingsPage() {
                 </span>
                 <span className="text-sm font-medium text-slate-400">
                   {usage.webhookMessagesSentToday} /{' '}
-                  {usage.dailyWebhookMessageLimit}
+                  {usage.dailyWebhookMessageLimit === null ? '∞' : usage.dailyWebhookMessageLimit}
                 </span>
               </div>
               <Progress
                 value={
                   (usage.webhookMessagesSentToday /
-                    usage.dailyWebhookMessageLimit) *
+                    (usage.dailyWebhookMessageLimit === null ? 10000000000 : usage.dailyWebhookMessageLimit)) *
                   100
                 }
                 className="bg-slate-700/50"
