@@ -3,6 +3,7 @@ import { verifyToken } from '../utils/jwt';
 import { AuthenticationError, ApiError } from '../utils/errors'; // Import ApiError
 import { ErrorMessages } from '../utils/errorMessages';
 import { logger } from '../utils';
+import { resetDailyWebhookLimit } from '../services/user-usage.service';
 
 const authenticate = async (request: FastifyRequest, _reply: FastifyReply) => {
   try {
@@ -25,6 +26,10 @@ const authenticate = async (request: FastifyRequest, _reply: FastifyReply) => {
     }
 
     const decoded = verifyToken(token);
+
+    // reset daily webhook limit if new day
+    await resetDailyWebhookLimit(decoded.userId);
+
     request.user = decoded;
   } catch (error) {
     if (error instanceof AuthenticationError) {

@@ -91,7 +91,7 @@ export const updateUserUsage = async (
  * @param userUsage The user's usage record.
  * @param alwaysReset Whether to reset the limit even if the date hasn't changed.
  */
-const resetDailyWebhookLimit = async (
+export const resetDailyWebhookLimit = async (
   userID: string,
   alwaysReset = false
 ): Promise<void> => {
@@ -119,8 +119,6 @@ export const incrementWebhookMessageCount = async (
   userId: string
 ): Promise<IUserUsage> => {
   try {
-    resetDailyWebhookLimit(userId);
-
     const userUsage = await getOrCreateUserUsage(userId);
 
     userUsage.webhookMessagesSentToday += 1;
