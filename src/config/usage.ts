@@ -10,4 +10,4 @@ export const PAID_PLAN_MEDIA_STORAGE_LIMIT_BYTES = 50 * 1024 * 1024; // Example:
 
 // Premium
 export const PREMIUM_PLAN_DAILY_WEBHOOK_MESSAGE_LIMIT = 100; // Example: 1000 messages for premium users
-export const PREMIUM_PLAN_MEDIA_STORAGE_LIMIT_BYTES = 100 * 1024 * 1024; // Example: 100 MB for premium users
+export const PREMIUM_PLAN_MEDIA_STORAGE_LIMIT_BYTES = 1024 * 1024 * 1024; // Example: 1 GB for premium users
