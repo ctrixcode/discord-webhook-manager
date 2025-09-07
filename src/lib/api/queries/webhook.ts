@@ -77,12 +77,12 @@ export const webhookQueries = {
   // send message to webhook
   sendMessage: async (
     data: SendMessageData,
-  ): Promise<SendMessageResponse[]> => {
+  ): Promise<ApiResponse<SendMessageResponse[]>> => {
     const response = await apiClient.post<ApiResponse<SendMessageResponse[]>>(
       `/webhook/send-message`,
       data,
     );
-    return response.data.data as SendMessageResponse[];
+    return response.data;
   },
 };
 

@@ -27,10 +27,11 @@ export interface UpdateWebhookRequest {
 export interface SendMessageData {
   webhookIds: string[];
   messageData: {
-    content?: string;
-    username?: string;
-    avatarUrl?: string;
+    message: string;
+    avatarRefID?: string;
+    tts: boolean;
     embeds?: DiscordEmbed[];
+    message_replace_url?: string; // Optional: ID of the message to edit
   };
 }
 
