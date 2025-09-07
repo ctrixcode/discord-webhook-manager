@@ -106,6 +106,10 @@ class ApiClient {
           console.error('Refresh token invalid or expired.');
         }
 
+        if(error.response.data){
+          return Promise.reject(error.response.data);
+        }
+                
         return Promise.reject(error);
       }
     );

@@ -8,17 +8,21 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Button } from '@/components/ui/button';
 
 import { templateQueries } from '@/lib/api/queries/message-template';
-import type { MessageTemplate, CreateMessageTemplateRequest, UpdateMessageTemplateRequest } from '@/lib/api/types/message-template';
+import type {
+  MessageTemplate,
+  CreateMessageTemplateRequest,
+  UpdateMessageTemplateRequest,
+} from '@/lib/api/types/message-template';
 import { TemplateForm } from '@/components/template-form';
 import { ArrowLeft, Save } from 'lucide-react';
 import { Spinner } from '@/components/ui/spinner';
+import { toast } from '@/hooks/use-toast';
 
 export default function CreateTemplatePage() {
   const router = useRouter();
   const queryClient = useQueryClient();
   const searchParams = useSearchParams();
   const templateId = searchParams.get('edit');
-
   interface TemplateFormRef {
     submit: () => void;
   }
@@ -33,19 +37,34 @@ export default function CreateTemplatePage() {
   const {
     mutate: saveTemplate,
     isPending,
-    error,
   } = useMutation({
     mutationFn: (
       templateData: CreateMessageTemplateRequest | UpdateMessageTemplateRequest,
     ) => {
       if (templateId) {
-        return templateQueries.updateTemplate(templateId, templateData as UpdateMessageTemplateRequest);
+        return templateQueries.updateTemplate(
+          templateId,
+          templateData as UpdateMessageTemplateRequest,
+        );
       }
-      return templateQueries.createTemplate(templateData as CreateMessageTemplateRequest);
+      return templateQueries.createTemplate(
+        templateData as CreateMessageTemplateRequest,
+      );
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['templates'] });
       router.push('/dashboard/templates');
+      toast({
+        title: 'Template saved',
+        description: 'Template saved successfully!',
+      });
+    },
+    onError: (error) => {
+      toast({
+        title: 'Error saving template',
+        description: error.message,
+        variant: 'destructive',
+      });
     },
   });
 
@@ -98,7 +117,6 @@ export default function CreateTemplatePage() {
           initialData={existingTemplate}
           onSave={saveTemplate}
           isSaving={isPending}
-          saveError={error}
         />
       )}
     </div>

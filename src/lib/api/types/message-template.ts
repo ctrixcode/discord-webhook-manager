@@ -1,11 +1,14 @@
 import { DiscordEmbed } from './discord';
 
 export interface MessageTemplate {
-  id: string;
-  userId: string;
+  _id: string;
+  user_id: string;
   name: string;
+  description?: string;
   content: string;
+  avatar_ref?: string;
   embeds?: DiscordEmbed[];
+  attachments?: string[];
   createdAt: string;
   updatedAt: string;
 }
