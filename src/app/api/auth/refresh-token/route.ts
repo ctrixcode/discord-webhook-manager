@@ -1,7 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server';
 import axios from 'axios';
+import { ApiResponse } from '@/lib/api/types/api';
 
 const BACKEND_API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000/api';
+
+interface RefreshTokenResponse {
+  accessToken: string;
+  refreshToken: string;
+}
 
 export async function POST(req: NextRequest) {
   try {
@@ -14,7 +20,7 @@ export async function POST(req: NextRequest) {
     // Make a request to the backend's refresh endpoint
     const userAgent = req.headers.get('user-agent');
 
-    const backendResponse = await axios.post(
+    const backendResponse: ApiResponse<RefreshTokenResponse> = await axios.post(
       `${BACKEND_API_URL}/auth/refresh`,
       { refreshToken }, // Send refresh token in the body
       {
@@ -25,7 +31,7 @@ export async function POST(req: NextRequest) {
       }
     );
 
-    const { accessToken, refreshToken: newRefreshToken } = backendResponse.data.data;
+    const { accessToken, refreshToken: newRefreshToken } = backendResponse?.data as RefreshTokenResponse;
 
     if (!accessToken) {
       return NextResponse.json({ message: 'New access token not found' }, { status: 500 });
