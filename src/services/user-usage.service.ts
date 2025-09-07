@@ -87,6 +87,30 @@ export const updateUserUsage = async (
 };
 
 /**
+ * Resets the daily webhook message limit if a new day has started.
+ * @param userUsage The user's usage record.
+ * @param alwaysReset Whether to reset the limit even if the date hasn't changed.
+ */
+const resetDailyWebhookLimit = async (
+  userID: string,
+  alwaysReset = false
+): Promise<void> => {
+  const userUsage = await getOrCreateUserUsage(userID);
+  const now = new Date();
+
+  if (alwaysReset) {
+    userUsage.webhookMessagesSentToday = 0;
+  } else if (
+    userUsage.lastWebhookMessageDate.getUTCFullYear() !==
+      now.getUTCFullYear() ||
+    userUsage.lastWebhookMessageDate.getUTCMonth() !== now.getUTCMonth() ||
+    userUsage.lastWebhookMessageDate.getUTCDate() !== now.getUTCDate()
+  ) {
+    userUsage.webhookMessagesSentToday = 0; // Reset for new day
+  }
+};
+
+/**
  * Increments webhook message count and handles daily reset.
  * @param userId The ID of the user.
  * @returns The updated user usage record.
@@ -95,22 +119,12 @@ export const incrementWebhookMessageCount = async (
   userId: string
 ): Promise<IUserUsage> => {
   try {
+    resetDailyWebhookLimit(userId);
+
     const userUsage = await getOrCreateUserUsage(userId);
 
-    const now = new Date();
-    const lastWebhookMessageDate = userUsage.lastWebhookMessageDate;
-
-    // Check if it's a new day (using UTC for consistency)
-    if (
-      lastWebhookMessageDate.getUTCFullYear() !== now.getUTCFullYear() ||
-      lastWebhookMessageDate.getUTCMonth() !== now.getUTCMonth() ||
-      lastWebhookMessageDate.getUTCDate() !== now.getUTCDate()
-    ) {
-      userUsage.webhookMessagesSentToday = 0; // Reset for new day
-    }
-
     userUsage.webhookMessagesSentToday += 1;
-    userUsage.lastWebhookMessageDate = now;
+    userUsage.lastWebhookMessageDate = new Date();
     return await userUsage.save();
   } catch (error) {
     logger.error(
