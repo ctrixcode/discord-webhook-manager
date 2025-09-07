@@ -41,9 +41,12 @@ export const getCurrentUser = async (
     user.guilds = user.guilds.sort((a, b) => a.name.localeCompare(b.name));
   }
 
-  sendSuccessResponse(reply, HttpStatusCode.OK, 'User fetched successfully', {
-    data: toUserPayload(user),
-  });
+  sendSuccessResponse(
+    reply,
+    HttpStatusCode.OK,
+    'User fetched successfully',
+    toUserPayload(user)
+  );
 };
 
 export const getUsers = async (
