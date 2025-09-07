@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect} from 'react';
+import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -17,7 +17,7 @@ import type {
 } from '@/lib/api/types/message-template';
 import type { DiscordEmbed } from '@/lib/api/types/discord';
 import { FileText, MessageSquare, Layers, Users } from 'lucide-react';
-import { PredefinedAvatar } from '@/lib/api/types/avatar';
+import { IAvatar } from '@/lib/api/types/avatar';
 import { EmbedBuilder } from '@/components/embed-builder';
 import { useQuery } from '@tanstack/react-query';
 import { api } from '@/lib/api';
@@ -28,7 +28,6 @@ interface TemplateFormProps {
     data: CreateMessageTemplateRequest | UpdateMessageTemplateRequest,
   ) => void;
   isSaving: boolean;
-  saveError: Error | null;
 }
 
 interface TemplateFormRef {
@@ -36,13 +35,13 @@ interface TemplateFormRef {
 }
 
 export const TemplateForm = React.forwardRef(function TemplateForm(
-  { initialData, onSave, saveError }: TemplateFormProps,
+  { initialData, onSave,isSaving }: TemplateFormProps,
   ref: React.Ref<TemplateFormRef>,
 ) {
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
   const [content, setContent] = useState('');
-  const [selectedAvatar, setSelectedAvatar] = useState<PredefinedAvatar>({
+  const [selectedAvatar, setSelectedAvatar] = useState<IAvatar>({
     username: 'Webhook Manager',
     avatar_url: '/placeholder.svg',
     createdAt: new Date().toISOString(),
@@ -51,20 +50,21 @@ export const TemplateForm = React.forwardRef(function TemplateForm(
     user_id: 'predefined-user-id',
   });
   const [embeds, setEmbeds] = useState<DiscordEmbed[]>([]);
-  const { data: avatars = [] } = useQuery<PredefinedAvatar[]>({
+  const { data: avatars = [] } = useQuery<IAvatar[]>({
     queryKey: ['avatars'],
     queryFn: api.avatar.getAllAvatars,
   });
 
   React.useImperativeHandle(ref, () => ({
     submit: () => {
-      const payload:CreateMessageTemplateRequest ={
+      if(isSaving) return;
+      const payload: CreateMessageTemplateRequest = {
         name,
         description,
         content,
         embeds,
-      }
-      if(selectedAvatar && avatars.some(a => a.id === selectedAvatar.id)) {
+      };
+      if (selectedAvatar && avatars.some((a) => a.id === selectedAvatar.id)) {
         payload.avatar_ref = selectedAvatar.id;
       }
       onSave(payload);
@@ -78,9 +78,7 @@ export const TemplateForm = React.forwardRef(function TemplateForm(
       setContent(initialData.content);
       if (avatars && avatars.length > 0) {
         setSelectedAvatar(
-          avatars.find(
-            (a) => a.id === initialData.avatar_ref,
-          ) as PredefinedAvatar,
+          avatars.find((a) => a.id === initialData.avatar_ref) as IAvatar,
         );
       }
       // For display, if initialData has avatar_ref, we might need to fetch the actual URL
@@ -163,12 +161,6 @@ export const TemplateForm = React.forwardRef(function TemplateForm(
                   />
                 </div>
               </div>
-
-              {saveError && (
-                <div className="text-red-400 text-sm">
-                  Error: {saveError.message}
-                </div>
-              )}
             </div>
           </TabsContent>
 

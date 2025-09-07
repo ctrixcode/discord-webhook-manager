@@ -1,7 +1,5 @@
-'use client';
-
 import { useState, useEffect, useRef, ChangeEventHandler } from 'react';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { useMutation } from '@tanstack/react-query';
 import {
   Dialog,
   DialogContent,
@@ -11,9 +9,9 @@ import {
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Avatar as UIAvatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { createAvatar, updateAvatar, uploadAvatar } from '@/lib/api/queries/avatar';
-import type { PredefinedAvatar } from '@/lib/api/types/avatar';
+import type { IAvatar } from '@/lib/api/types/avatar';
 import { Image as ImageIcon } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { AxiosError } from 'axios';
@@ -23,7 +21,7 @@ interface CreateAvatarDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onSaveSuccess: () => void;
-  editingAvatar?: PredefinedAvatar | null;
+  editingAvatar?: IAvatar | null;
 }
 
 export function CreateAvatarDialog({
@@ -32,7 +30,6 @@ export function CreateAvatarDialog({
   onSaveSuccess,
   editingAvatar,
 }: CreateAvatarDialogProps) {
-  const queryClient = useQueryClient();
   const [username, setUsername] = useState('');
   const [avatar_url, setAvatar_url] = useState('');
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
@@ -41,7 +38,7 @@ export function CreateAvatarDialog({
 
   useEffect(() => {
     if (editingAvatar) {
-      setUsername(editingAvatar.username);
+      setUsername(editingAvatar.username || '');
       setAvatar_url(editingAvatar.avatar_url || '');
       setSelectedFile(null); // Clear selected file when editing existing avatar
     } else {
@@ -51,85 +48,98 @@ export function CreateAvatarDialog({
     }
   }, [editingAvatar]);
 
-  const { mutate: saveAvatar, isPending } = useMutation({
-    mutationFn: async (data: { id?: string; username: string; avatar_url?: string; file?: File }) => {
-      try {
-        if (data.file) {
-          const formData = new FormData();
-          formData.append('username', data.username);
-          formData.append('avatar', data.file);
-          return await uploadAvatar(formData);
-        } else if (data.id) {
-          return await updateAvatar(data.id, { username: data.username, avatar_url: data.avatar_url });
-        } else {
-          return await createAvatar({ username: data.username, avatar_url: data.avatar_url || '' });
-        }
-      } catch (error) {
-        if (error instanceof AxiosError && error.response?.status === 403) {
-          handleClear();
-          handleClose();
-          const errorData = error.response.data as { success: boolean; message: string; code: 'webhook_limit' | 'media_limit' };
-          if (errorData.code === 'media_limit') {
-            const toastResponse =  toast({
-              title: 'Limit Reached',
-              description: (
-                <div>
-                  <p>{errorData.message}</p>
-                  <Link href="/dashboard/settings" onClick={() => toastResponse.dismiss()} className="text-blue-400 hover:underline">
-                    Check your usage in settings.
-                  </Link>
-                </div>
-              ),
-              variant: 'destructive',
-            });
-          } else {
-            toast({
-              title: 'Error',
-              description: errorData.message || 'An unexpected error occurred',
-              variant: 'destructive',
-            });
-          }
-        } else {
-          toast({
-            title: 'Error',
-            description: 'An unexpected error occurred',
-            variant: 'destructive',
-          });
-        }
-        throw error; // Re-throw to ensure mutation is marked as failed
-      }
-      finally{
-        handleClear();
-      }
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['avatars'] });
-      onSaveSuccess();
-    },
-  });
-
-  const handleSave = () => {
-    if (!username.trim()) return;
-
-    if (selectedFile) {
-      saveAvatar({ username: username.trim(), file: selectedFile });
-    } else if (editingAvatar) {
-      saveAvatar({ id: editingAvatar.id, username: username.trim(), avatar_url: avatar_url.trim() });
-    } else {
-      saveAvatar({ username: username.trim(), avatar_url: avatar_url.trim() });
-    }
-  };
-
   const handleClear = () => {
     setUsername('');
     setAvatar_url('');
-    setSelectedFile(null);
     setSelectedFile(null);
   };
 
   const handleClose = () => {
     onOpenChange(false);
   };
+
+  const handleError = (error: unknown) => {
+    if (error instanceof AxiosError && error.response?.status === 403) {
+      handleClear();
+      handleClose();
+      const errorData = error.response.data as { success: boolean; message: string; code: 'webhook_limit' | 'media_limit' };
+      if (errorData.code === 'media_limit') {
+        const toastResponse =  toast({
+          title: 'Limit Reached',
+          description: (
+            <div>
+              <p>{errorData.message}</p>
+              <Link href="/dashboard/settings" onClick={() => toastResponse.dismiss()} className="text-blue-400 hover:underline">
+                Check your usage in settings.
+              </Link>
+            </div>
+          ),
+          variant: 'destructive',
+        });
+      } else {
+        toast({
+          title: 'Error',
+          description: errorData.message || 'An unexpected error occurred',
+          variant: 'destructive',
+        });
+      }
+    } else {
+      toast({
+        title: 'Error',
+        description: 'An unexpected error occurred',
+        variant: 'destructive',
+      });
+    }
+  };
+
+  const createAvatarMutation = useMutation({
+    mutationFn: async (data: { username: string; avatar_url?: string; file?: File }) => {
+      if (data.file) {
+        const formData = new FormData();
+        formData.append('name', data.username);
+        formData.append('image', data.file);
+        return await uploadAvatar(formData);
+      } else {
+        return await createAvatar({ username: data.username, avatar_url: data.avatar_url || '' });
+      }
+    },
+    onSuccess: () => {
+      onSaveSuccess();
+      toast({title: 'Avatar created', description: 'Avatar created successfully'});
+      handleClear();
+      handleClose();
+    },
+    onError: handleError,
+  });
+
+  const updateAvatarMutation = useMutation({
+    mutationFn: async (data: { id: string; username: string; avatar_url?: string }) => {
+      return await updateAvatar(data.id, { username: data.username, avatar_url: data.avatar_url });
+    },
+    onSuccess: () => {
+      onSaveSuccess();
+      toast({title: 'Avatar updated', description: 'Avatar updated successfully'});
+      handleClear();
+      handleClose();
+    },
+    onError: handleError,
+  });
+
+  const handleSave = () => {
+    if (!username.trim()) return;
+
+    if (editingAvatar) {
+      updateAvatarMutation.mutate({ id: editingAvatar.id, username: username.trim(), avatar_url: avatar_url.trim() });
+    } else {
+      if (selectedFile) {
+        createAvatarMutation.mutate({ username: username.trim(), file: selectedFile });
+      } else {
+        createAvatarMutation.mutate({ username: username.trim(), avatar_url: avatar_url.trim() });
+      }
+    }
+  };
+
+  const isPending = createAvatarMutation.isPending || updateAvatarMutation.isPending;
 
   const handleFileChange: ChangeEventHandler<HTMLInputElement> = (event) => {
     if (event.target.files && event.target.files[0]) {
@@ -156,7 +166,7 @@ export function CreateAvatarDialog({
         <div className="space-y-6">
           {/* Preview */}
           <div className="flex items-center justify-center">
-            <Avatar className="w-20 h-20 ring-2 ring-purple-500/20 cursor-pointer" onClick={handleBrowseClick}>
+            <UIAvatar className="w-20 h-20 ring-2 ring-purple-500/20 cursor-pointer" onClick={handleBrowseClick}>
               <AvatarImage
                 src={previewUrl}
                 alt={username}
@@ -164,7 +174,7 @@ export function CreateAvatarDialog({
               <AvatarFallback className="bg-purple-500/20 text-purple-300 text-lg">
                 {username.slice(0, 2).toUpperCase() || '??'}
               </AvatarFallback>
-            </Avatar>
+            </UIAvatar>
           </div>
 
           {/* Form */}

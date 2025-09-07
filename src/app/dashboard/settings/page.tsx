@@ -1,16 +1,14 @@
 'use client';
-
-// import { Separator } from '@/components/ui/separator';
-import { BarChart2, Gem, Trash2 } from 'lucide-react';
+import { BarChart2, Gem } from 'lucide-react';
 import { useState } from 'react';
 import { ConfirmationDialog } from '@/components/ui/confirmation-dialog';
 import { SettingsCard } from '@/components/settings/settings-card';
-// import { NotificationToggle } from '@/components/settings/notification-toggle';
-import { DangerAction } from '@/components/settings/danger-action';
 import { useQuery } from '@tanstack/react-query';
 import { userQueries } from '@/lib/api/queries/user';
 import { Progress } from '@/components/ui/progress';
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import Link from 'next/link';
 
 export default function SettingsPage() {
   const [showClearDataDialog, setShowClearDataDialog] = useState(false);
@@ -24,10 +22,6 @@ export default function SettingsPage() {
     queryKey: ['currentUser'],
     queryFn: userQueries.getCurrentUser,
   });
-
-  const handleClearData = () => {
-    setShowClearDataDialog(true);
-  };
 
   const handleConfirmClearData = () => {
     localStorage.clear();
@@ -88,19 +82,19 @@ export default function SettingsPage() {
         {isLoadingUser ? (
           <div className="h-8 bg-slate-700/50 rounded-md animate-pulse" />
         ) : user ? (
-          <div className='flex items-center gap-2'>
-          <Badge
-            className={
-              `text-lg px-4 py-2 font-semibold ` +
-              getAccountTypeBadgeClass(user.accountType)
-            }
+          <div className="flex items-center gap-2">
+            <Badge
+              className={
+                `text-lg px-4 py-2 font-semibold ` +
+                getAccountTypeBadgeClass(user.accountType || 'free')
+              }
             >
-            {user.accountType.toUpperCase()}
-          </Badge>
-          <p className="text-slate-400 text-sm mt-2">
-            {getAccountTypeQuote(user.accountType)}
-          </p>
-            </div>
+              {(user.accountType || 'free').toUpperCase()}
+            </Badge>
+            <p className="text-slate-400 text-sm mt-2">
+              {getAccountTypeQuote(user.accountType || 'free')}
+            </p>
+          </div>
         ) : (
           <p className="text-slate-400">Could not load account type.</p>
         )}
@@ -125,13 +119,13 @@ export default function SettingsPage() {
                 </span>
                 <span className="text-sm font-medium text-slate-400">
                   {usage.webhookMessagesSentToday} /{' '}
-                  {usage.dailyWebhookMessageLimit}
+                  {usage.dailyWebhookMessageLimit === null ? '∞' : usage.dailyWebhookMessageLimit}
                 </span>
               </div>
               <Progress
                 value={
                   (usage.webhookMessagesSentToday /
-                    usage.dailyWebhookMessageLimit) *
+                    (usage.dailyWebhookMessageLimit === null ? 10000000000 : usage.dailyWebhookMessageLimit)) *
                   100
                 }
                 className="bg-slate-700/50"
@@ -160,6 +154,43 @@ export default function SettingsPage() {
         ) : (
           <p className="text-slate-400">Could not load usage data.</p>
         )}
+      </SettingsCard>
+
+      <SettingsCard
+        title="Subscription Plans"
+        description="View details about different subscription tiers and their benefits"
+        icon={<Gem className="h-5 w-5" />}
+      >
+        <Link href="/dashboard/plans">
+          <Button className="bg-purple-600 hover:bg-purple-700 text-white">
+            View Plans
+          </Button>
+        </Link>
+      </SettingsCard>
+
+      <SettingsCard
+        title="Support Us"
+        description="Help us grow by sharing Discord Webhook Manager"
+        icon={<BarChart2 className="h-5 w-5" />}
+      >
+        <div className="space-y-4">
+          <p className="text-slate-300">
+            If you enjoy using Discord Webhook Manager and want to support its
+            development, consider sharing it on X (formerly Twitter)!
+          </p>
+          <a
+            href="https://twitter.com/intent/tweet?text=I%27m%20loving%20Discord%20Webhook%20Manager!%20%40ctrix%2C%20this%20app%20is%20amazing%20for%20managing%20my%20Discord%20webhooks.%20Highly%20recommend!%20%23Discord%20%23Webhooks%20%23DiscordBot&url=https%3A%2F%2Fwebhook.ctrix.pro"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <Button className="bg-blue-500 hover:bg-blue-600 text-white">
+              Share on X (Twitter)
+            </Button>
+          </a>
+          <p className="text-slate-300 pt-2">
+            DM me on X, if you want to get paid subscriptions.
+          </p>
+        </div>
       </SettingsCard>
 
       {/* <SettingsCard
