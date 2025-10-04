@@ -1,8 +1,9 @@
+import { config as baseConfig } from '@repo/eslint-config/base';
 import globals from 'globals';
-import tseslint from 'typescript-eslint';
-import { defineConfig } from 'eslint/config';
 
-export default defineConfig([
+/** @type {import("eslint").Linter.Config[]} */
+export default [
+  ...baseConfig,
   {
     files: ['**/*.{js,mjs,cjs,ts,mts,cts}'],
     languageOptions: { globals: globals.node },
@@ -16,6 +17,5 @@ export default defineConfig([
         },
       ],
     },
-  },
-  tseslint.configs.recommended,
-]);
+  }
+];
