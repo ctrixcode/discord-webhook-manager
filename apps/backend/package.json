@@ -1,5 +1,5 @@
 {
-  "name": "discord-webhook-manager-backend",
+  "name": "backend",
   "version": "1.0.0",
   "main": "dist/server.js",
   "scripts": {
@@ -25,6 +25,7 @@
     "@fastify/helmet": "^13.0.1",
     "@fastify/multipart": "^9.0.3",
     "@fastify/rate-limit": "^10.3.0",
+    "@repo/shared-types": "workspace:^",
     "@types/body-parser": "^1.19.6",
     "@types/cookie-parser": "^1.4.9",
     "@types/cors": "^2.8.19",
