@@ -392,8 +392,13 @@ export const sendMessage = async (
     );
 
     for (let i = 0; i < settledResults.length; i++) {
-      const result = settledResults[i];
-      const { webhookId } = webhookPromises[i];
+      const result = settledResults[i]!;
+      const webhookPromise = webhookPromises[i];
+      if (!webhookPromise) {
+        logger.warn(`Webhook promise not found at index ${i}`);
+        continue;
+      }
+      const { webhookId } = webhookPromise;
 
       if (result.status === 'fulfilled') {
         logger.info(`Message sent successfully to webhook ID: ${webhookId}`, {
@@ -411,8 +416,11 @@ export const sendMessage = async (
         // Increment webhook message count after successful send
         await userUsageService.incrementWebhookMessageCount(userId);
       } else {
+        // This implies result.status === 'rejected'
         let errorMessage: string;
-        const error = result.reason; // The error object from the rejected promise
+        // Explicitly cast result to PromiseRejectedResult to access 'reason'
+        const rejectedResult = result as PromiseRejectedResult;
+        const error = rejectedResult.reason;
 
         if (error instanceof WebhookError) {
           errorMessage = `Webhook Error: ${(error as Error).message}`;
