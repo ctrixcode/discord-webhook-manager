@@ -1,3 +1,4 @@
+import React from 'react';
 import { cookies } from 'next/headers';
 import type { Metadata } from 'next';
 

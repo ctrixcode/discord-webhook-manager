@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useRef } from 'react';
+import React, { useState, useRef } from 'react';
 import { useMutation } from '@tanstack/react-query';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';

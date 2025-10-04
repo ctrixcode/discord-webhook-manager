@@ -1,5 +1,6 @@
 'use client';
 import { BarChart2, Gem } from 'lucide-react';
+import React from 'react';
 import { useState } from 'react';
 import { ConfirmationDialog } from '@/components/ui/confirmation-dialog';
 import { SettingsCard } from '@/components/settings/settings-card';

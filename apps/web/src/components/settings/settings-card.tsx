@@ -5,7 +5,7 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
-import type { ReactNode } from 'react';
+import React, { type ReactNode } from 'react';
 import { cn } from '@/lib/utils';
 
 interface SettingsCardProps {

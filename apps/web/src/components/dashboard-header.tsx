@@ -1,5 +1,7 @@
 'use client';
 
+import React from 'react';
+
 import { useAuth } from '@/contexts/auth-context';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';

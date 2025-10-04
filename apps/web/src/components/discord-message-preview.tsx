@@ -3,7 +3,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { IAvatar } from '@/lib/api/types/avatar';
 import { type DiscordEmbed } from '@/lib/api/types/discord';
 import { discordColorToHex } from '@/lib/discord-utils';
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Image from 'next/image';
 import { useQueries } from '@tanstack/react-query';
 import { userQueries } from '@/lib/api/queries/user';
@@ -37,7 +37,7 @@ export function DiscordMessagePreview({
       const userMentionRegex = /<@(\d+)>/g;
       let match;
       while ((match = userMentionRegex.exec(text)) !== null) {
-        ids.push(match[1]);
+        ids.push(match[1] as string);
       }
       return ids;
     };
@@ -88,7 +88,7 @@ export function DiscordMessagePreview({
     const newUserMap = new Map<string, string>();
     userQueriesResults.forEach((result, index) => {
       if (result.isSuccess && result.data) {
-        newUserMap.set(userIds[index], result.data.username);
+        newUserMap.set(userIds[index] as string, result.data.username);
       }
     });
 

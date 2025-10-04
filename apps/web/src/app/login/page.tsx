@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { api } from '@/lib/api';
 import { DiscordLogo } from '@/components/discord-logo';
@@ -17,7 +17,6 @@ export default function LoginPage() {
         // If the above call succeeds, the user is authenticated.
         router.push('/dashboard');
       } catch (_error) {
-        // eslint-disable-line @typescript-eslint/no-unused-vars
         // If it fails, it means no valid session exists. Stay on the login page.
         setIsChecking(false);
       }

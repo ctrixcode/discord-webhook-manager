@@ -1,10 +1,10 @@
 import { AuthProvider } from '@/contexts/auth-context';
 import type React from 'react';
 
-export default function AuthLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+interface LayoutProps {
+  children: any; // Changed to any
+}
+
+export default function AuthLayout({ children }: LayoutProps) {
   return <AuthProvider>{children}</AuthProvider>;
 }

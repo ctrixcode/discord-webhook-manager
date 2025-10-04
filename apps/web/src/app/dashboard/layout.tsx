@@ -1,13 +1,12 @@
 'use client';
 
-import type React from 'react';
+import React, { useEffect } from 'react';
 import { ProtectedRoute } from '@/components/protected-route';
 import { DashboardHeader } from '@/components/dashboard-header';
 import { FloatingNavigation } from '@/components/floating-navigation';
 import { AuthProvider } from '@/contexts/auth-context';
 import { useQueryClient } from '@tanstack/react-query';
 import { api } from '@/lib/api';
-import { useEffect } from 'react';
 import { STALE_TIME_FIVE_MINUTES } from '@/constants/app';
 
 export default function DashboardLayout({

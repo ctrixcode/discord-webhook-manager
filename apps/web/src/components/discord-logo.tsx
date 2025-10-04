@@ -1,3 +1,5 @@
+import React from 'react';
+
 export function DiscordLogo({ className }: { className?: string }) {
   return (
     <svg className={className} fill="currentColor" viewBox="0 0 24 24">

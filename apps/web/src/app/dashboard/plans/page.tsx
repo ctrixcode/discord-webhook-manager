@@ -1,7 +1,7 @@
 'use client';
-import { BarChart2, Gem, CheckCircle2 } from 'lucide-react';
+import React from 'react';
+import { Gem, CheckCircle2 } from 'lucide-react';
 import { SettingsCard } from '@/components/settings/settings-card';
-import { Progress } from '@/components/ui/progress';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';

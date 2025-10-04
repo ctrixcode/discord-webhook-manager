@@ -1,5 +1,6 @@
 'use client';
 
+import React from 'react';
 import { useState, useEffect } from 'react';
 import { useSearchParams, useRouter, usePathname } from 'next/navigation';
 import {
@@ -133,7 +134,7 @@ export default function SendMessagePage() {
   useEffect(() => {
     const newSearchParams = new URLSearchParams(searchParams.toString());
     if (selectedWebhooks.length === 1) {
-      newSearchParams.set('webhookId', selectedWebhooks[0]);
+      newSearchParams.set('webhookId', selectedWebhooks[0] as string);
     } else {
       newSearchParams.delete('webhookId');
     }
