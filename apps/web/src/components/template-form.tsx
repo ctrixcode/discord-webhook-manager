@@ -25,7 +25,7 @@ import { api } from '@/lib/api';
 interface TemplateFormProps {
   initialData?: MessageTemplate | null;
   onSave: (
-    data: CreateMessageTemplateRequest | UpdateMessageTemplateRequest,
+    data: CreateMessageTemplateRequest | UpdateMessageTemplateRequest
   ) => void;
   isSaving: boolean;
 }
@@ -35,8 +35,8 @@ interface TemplateFormRef {
 }
 
 export const TemplateForm = React.forwardRef(function TemplateForm(
-  { initialData, onSave,isSaving }: TemplateFormProps,
-  ref: React.Ref<TemplateFormRef>,
+  { initialData, onSave, isSaving }: TemplateFormProps,
+  ref: React.Ref<TemplateFormRef>
 ) {
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
@@ -57,14 +57,14 @@ export const TemplateForm = React.forwardRef(function TemplateForm(
 
   React.useImperativeHandle(ref, () => ({
     submit: () => {
-      if(isSaving) return;
+      if (isSaving) return;
       const payload: CreateMessageTemplateRequest = {
         name,
         description,
         content,
         embeds,
       };
-      if (selectedAvatar && avatars.some((a) => a.id === selectedAvatar.id)) {
+      if (selectedAvatar && avatars.some(a => a.id === selectedAvatar.id)) {
         payload.avatar_ref = selectedAvatar.id;
       }
       onSave(payload);
@@ -78,7 +78,7 @@ export const TemplateForm = React.forwardRef(function TemplateForm(
       setContent(initialData.content);
       if (avatars && avatars.length > 0) {
         setSelectedAvatar(
-          avatars.find((a) => a.id === initialData.avatar_ref) as IAvatar,
+          avatars.find(a => a.id === initialData.avatar_ref) as IAvatar
         );
       }
       // For display, if initialData has avatar_ref, we might need to fetch the actual URL
@@ -140,7 +140,7 @@ export const TemplateForm = React.forwardRef(function TemplateForm(
                   <Input
                     id="name"
                     value={name}
-                    onChange={(e) => setName(e.target.value)}
+                    onChange={e => setName(e.target.value)}
                     placeholder="My Awesome Template"
                     required
                     className="bg-slate-800/50 border-slate-600 text-white placeholder:text-slate-400 focus:border-purple-500"
@@ -154,7 +154,7 @@ export const TemplateForm = React.forwardRef(function TemplateForm(
                   <Textarea
                     id="description"
                     value={description}
-                    onChange={(e) => setDescription(e.target.value)}
+                    onChange={e => setDescription(e.target.value)}
                     placeholder="What is this template for? Describe its purpose..."
                     rows={4}
                     className="resize-none bg-slate-800/50 border-slate-600 text-white placeholder:text-slate-400 focus:border-purple-500"
@@ -178,7 +178,7 @@ export const TemplateForm = React.forwardRef(function TemplateForm(
                     <Textarea
                       id="content"
                       value={content}
-                      onChange={(e) => setContent(e.target.value)}
+                      onChange={e => setContent(e.target.value)}
                       placeholder="Enter your message content here... (Max 2000 characters)"
                       rows={8}
                       maxLength={2000}
@@ -196,7 +196,7 @@ export const TemplateForm = React.forwardRef(function TemplateForm(
                       Message Avatar
                     </h3>
                     <AvatarSelector
-                      onSelect={(avatar) => {
+                      onSelect={avatar => {
                         setSelectedAvatar(avatar);
                       }}
                     >

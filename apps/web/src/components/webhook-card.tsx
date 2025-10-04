@@ -48,9 +48,12 @@ export function WebhookCard({
       api.webhook.updateWebhook(id, data),
     onSuccess: () => {
       onWebhookUpdated();
-      toast({title: 'Webhook updated', description: 'Webhook updated successfully'});
+      toast({
+        title: 'Webhook updated',
+        description: 'Webhook updated successfully',
+      });
     },
-    onError: (error) => {
+    onError: error => {
       toast({
         title: 'Error updating webhook',
         description: error.message,
@@ -111,7 +114,7 @@ export function WebhookCard({
     <>
       <Card
         className="bg-slate-900/20 backdrop-blur-sm border-slate-700/50 text-white cursor-pointer"
-        onClick={(e) => {
+        onClick={e => {
           // Check if the click originated from within the dropdown menu
           if (
             dropdownRef.current &&
@@ -155,7 +158,7 @@ export function WebhookCard({
                   <Button
                     variant="ghost"
                     className="h-8 w-8 p-0 text-slate-400 hover:text-white hover:bg-slate-700/50"
-                    onClick={(e) => e.stopPropagation()} // Add stopPropagation here
+                    onClick={e => e.stopPropagation()} // Add stopPropagation here
                   >
                     <MoreHorizontal className="h-4 w-4" />
                   </Button>
@@ -165,7 +168,7 @@ export function WebhookCard({
                   className="bg-slate-800/95 backdrop-blur-sm border-slate-700/50 text-white"
                 >
                   <DropdownMenuItem
-                    onClick={(e) => {
+                    onClick={e => {
                       e.stopPropagation();
                       handleTestWebhook();
                     }}
@@ -176,7 +179,7 @@ export function WebhookCard({
                     {isTestingWebhook ? 'Testing...' : 'Test Webhook'}
                   </DropdownMenuItem>
                   <DropdownMenuItem
-                    onClick={(e) => {
+                    onClick={e => {
                       e.stopPropagation();
                       toggleActive();
                     }}
@@ -190,7 +193,7 @@ export function WebhookCard({
                     {webhook.is_active ? 'Deactivate' : 'Activate'}
                   </DropdownMenuItem>
                   <DropdownMenuItem
-                    onClick={(e) => {
+                    onClick={e => {
                       e.stopPropagation();
                       setShowDeleteDialog(true);
                     }}

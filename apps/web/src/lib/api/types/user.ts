@@ -4,7 +4,7 @@ export interface User {
   email: string;
   discord_id?: string;
   discord_avatar?: string;
-  accountType?: string;  
+  accountType?: string;
   createdAt: string;
   updatedAt: string;
 }

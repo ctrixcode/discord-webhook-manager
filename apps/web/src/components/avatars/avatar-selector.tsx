@@ -38,13 +38,15 @@ export function AvatarSelector({ onSelect, children }: AvatarSelectorProps) {
     enabled: !!user && open,
   });
 
-  const filteredAvatars = avatars.filter(
-    (avatar: IAvatar) => {
-      const nameMatches = avatar.username && avatar.username.toLowerCase().includes(searchQuery.toLowerCase());
-      const usernameMatches = avatar.username && avatar.username.toLowerCase().includes(searchQuery.toLowerCase());
-      return nameMatches || usernameMatches;
-    }
-  );
+  const filteredAvatars = avatars.filter((avatar: IAvatar) => {
+    const nameMatches =
+      avatar.username &&
+      avatar.username.toLowerCase().includes(searchQuery.toLowerCase());
+    const usernameMatches =
+      avatar.username &&
+      avatar.username.toLowerCase().includes(searchQuery.toLowerCase());
+    return nameMatches || usernameMatches;
+  });
 
   const handleSelect = (avatar: IAvatar) => {
     onSelect(avatar);
@@ -70,7 +72,7 @@ export function AvatarSelector({ onSelect, children }: AvatarSelectorProps) {
               <Input
                 placeholder="Search avatars..."
                 value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
+                onChange={e => setSearchQuery(e.target.value)}
                 className="pl-10 bg-slate-700/50 border-slate-600 text-white placeholder:text-slate-400 focus:border-purple-500"
               />
             </div>
@@ -97,7 +99,7 @@ export function AvatarSelector({ onSelect, children }: AvatarSelectorProps) {
               </div>
             ) : (
               <div className="grid grid-cols-1 gap-2">
-                {filteredAvatars.map((avatar) => (
+                {filteredAvatars.map(avatar => (
                   <Button
                     key={avatar.id}
                     variant="ghost"

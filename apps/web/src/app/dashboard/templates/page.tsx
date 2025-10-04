@@ -43,7 +43,8 @@ export default function TemplatesPage() {
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const [searchQuery, setSearchQuery] = useState('');
-  const [deleteDialogTemplate, setDeleteDialogTemplate] = useState<MessageTemplate | null>(null);
+  const [deleteDialogTemplate, setDeleteDialogTemplate] =
+    useState<MessageTemplate | null>(null);
 
   const { data: templates = [], isLoading } = useQuery<MessageTemplate[]>({
     queryKey: ['messageTemplates'],
@@ -54,7 +55,10 @@ export default function TemplatesPage() {
   const deleteMutation = useMutation({
     mutationFn: templateQueries.deleteTemplate,
     onSuccess: () => {
-      toast({ title: 'Template deleted', description: "Template has been removed" });
+      toast({
+        title: 'Template deleted',
+        description: 'Template has been removed',
+      });
       setDeleteDialogTemplate(null);
       queryClient.invalidateQueries({ queryKey: ['messageTemplates'] });
     },
@@ -62,9 +66,12 @@ export default function TemplatesPage() {
 
   const filteredTemplates = useMemo(() => {
     return templates.filter(
-      (template) =>
+      template =>
         template.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        (template.description && template.description.toLowerCase().includes(searchQuery.toLowerCase())) ||
+        (template.description &&
+          template.description
+            .toLowerCase()
+            .includes(searchQuery.toLowerCase())) ||
         template.content.toLowerCase().includes(searchQuery.toLowerCase())
     );
   }, [templates, searchQuery]);
@@ -104,7 +111,7 @@ export default function TemplatesPage() {
           <Input
             placeholder="Search templates..."
             value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
+            onChange={e => setSearchQuery(e.target.value)}
             className="pl-8 bg-white/10 backdrop-blur-md border-white/20 text-white placeholder:text-gray-400 focus:border-purple-500/50 focus:ring-purple-500/20"
           />
         </div>
@@ -117,7 +124,7 @@ export default function TemplatesPage() {
         </div>
       ) : filteredTemplates.length > 0 ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {filteredTemplates.map((template) => (
+          {filteredTemplates.map(template => (
             <Card
               key={template._id}
               className="bg-white/10 backdrop-blur-md border-white/20 hover:bg-white/15 transition-all duration-200 hover:shadow-lg hover:shadow-purple-500/10"
@@ -246,7 +253,8 @@ export default function TemplatesPage() {
             </AlertDialogTitle>
             <AlertDialogDescription className="text-gray-300">
               This action cannot be undone. This will permanently delete the
-              template &quot;{deleteDialogTemplate?.name}&quot; from your account.
+              template &quot;{deleteDialogTemplate?.name}&quot; from your
+              account.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
@@ -254,7 +262,10 @@ export default function TemplatesPage() {
               Cancel
             </AlertDialogCancel>
             <AlertDialogAction
-              onClick={() => deleteDialogTemplate && deleteMutation.mutate(deleteDialogTemplate._id)}
+              onClick={() =>
+                deleteDialogTemplate &&
+                deleteMutation.mutate(deleteDialogTemplate._id)
+              }
               className="bg-red-600 text-white hover:bg-red-700"
             >
               Delete

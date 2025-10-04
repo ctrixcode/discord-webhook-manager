@@ -56,7 +56,7 @@ export function AvatarCard({
         description: 'Avatar deleted successfully',
       });
     },
-    onError: (error) => {
+    onError: error => {
       toast({
         title: 'Error deleting avatar',
         description: error.message,
@@ -81,7 +81,7 @@ export function AvatarCard({
     <>
       <Card
         className="bg-slate-900/50 backdrop-blur-sm border-slate-700/50 hover:bg-slate-800/50 transition-all duration-200 cursor-pointer"
-        onClick={(e) => {
+        onClick={e => {
           // Check if the click originated from within the dropdown menu
           if (
             dropdownRef.current &&
@@ -119,14 +119,14 @@ export function AvatarCard({
                     variant="ghost"
                     size="sm"
                     className="text-slate-400 hover:text-white"
-                    onClick={(e) => e.stopPropagation()} // Add stopPropagation here
+                    onClick={e => e.stopPropagation()} // Add stopPropagation here
                   >
                     <MoreHorizontal className="w-4 h-4" />
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent className="bg-slate-800 border-slate-700">
                   <DropdownMenuItem
-                    onClick={(e) => {
+                    onClick={e => {
                       e.stopPropagation();
                       onEdit(avatar);
                     }}
@@ -136,7 +136,7 @@ export function AvatarCard({
                     Edit
                   </DropdownMenuItem>
                   <DropdownMenuItem
-                    onClick={(e) => {
+                    onClick={e => {
                       e.stopPropagation();
                       handleCopyUrl();
                     }}
@@ -146,7 +146,7 @@ export function AvatarCard({
                     Copy Avatar URL
                   </DropdownMenuItem>
                   <DropdownMenuItem
-                    onClick={(e) => {
+                    onClick={e => {
                       e.stopPropagation();
                       setShowDeleteDialog(true);
                     }}

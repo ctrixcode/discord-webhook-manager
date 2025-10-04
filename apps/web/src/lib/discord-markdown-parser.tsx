@@ -7,7 +7,10 @@ interface Pattern {
   render: RenderFunction;
 }
 
-export function parseDiscordMarkdown(text: string, userMap: Map<string, string>): ReactNode[] {
+export function parseDiscordMarkdown(
+  text: string,
+  userMap: Map<string, string>
+): ReactNode[] {
   if (!text) return [];
 
   const parts: ReactNode[] = [];
@@ -68,7 +71,12 @@ export function parseDiscordMarkdown(text: string, userMap: Map<string, string>)
       render: (...args: string[]) => {
         const [linkText, url] = args;
         return (
-          <a href={url} target="_blank" rel="noopener noreferrer" className="text-[#00aff4] hover:underline">
+          <a
+            href={url}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-[#00aff4] hover:underline"
+          >
             {linkText}
           </a>
         );
@@ -92,18 +100,27 @@ export function parseDiscordMarkdown(text: string, userMap: Map<string, string>)
         return <strong>{match}</strong>;
       },
     }, // **bold**
-    { regex: /\*(.*?)\*/g, render: (..._args: string[]) => {
-      const match = _args[0];
-      return <em>{match}</em>;
-    } }, // *italic*
-    { regex: /__(.*?)__/g, render: (..._args: string[]) => {
-      const match = _args[0];
-      return <u>{match}</u>;
-    } }, // __underline__
-    { regex: /~~(.*?)~~/g, render: (..._args: string[]) => {
-      const match = _args[0];
-      return <s>{match}</s>;
-    } }, // ~~strikethrough~~
+    {
+      regex: /\*(.*?)\*/g,
+      render: (..._args: string[]) => {
+        const match = _args[0];
+        return <em>{match}</em>;
+      },
+    }, // *italic*
+    {
+      regex: /__(.*?)__/g,
+      render: (..._args: string[]) => {
+        const match = _args[0];
+        return <u>{match}</u>;
+      },
+    }, // __underline__
+    {
+      regex: /~~(.*?)~~/g,
+      render: (..._args: string[]) => {
+        const match = _args[0];
+        return <s>{match}</s>;
+      },
+    }, // ~~strikethrough~~
     {
       regex: /`(.*?)`/g,
       render: (..._args: string[]) => {
@@ -135,7 +152,7 @@ export function parseDiscordMarkdown(text: string, userMap: Map<string, string>)
   const replacements: { start: number; end: number; element: ReactNode }[] = [];
 
   // Find all matches
-  patterns.forEach((pattern) => {
+  patterns.forEach(pattern => {
     let match;
     const regex = new RegExp(pattern.regex.source, pattern.regex.flags);
     while ((match = regex.exec(workingText)) !== null) {

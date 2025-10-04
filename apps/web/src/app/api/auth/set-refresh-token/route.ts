@@ -9,7 +9,10 @@ export async function POST(request: Request) {
     const { refreshToken } = await request.json();
 
     if (!refreshToken) {
-      return NextResponse.json({ message: 'Refresh token is required' }, { status: 400 });
+      return NextResponse.json(
+        { message: 'Refresh token is required' },
+        { status: 400 }
+      );
     }
 
     const cookieStore = await cookies();
@@ -22,9 +25,15 @@ export async function POST(request: Request) {
       maxAge: 7 * 60 * 24 * 30, // 30 days
     });
 
-    return NextResponse.json({ message: 'Refresh token set successfully' }, { status: 200 });
+    return NextResponse.json(
+      { message: 'Refresh token set successfully' },
+      { status: 200 }
+    );
   } catch (error) {
     console.error('Error setting refresh token:', error);
-    return NextResponse.json({ message: 'Internal server error' }, { status: 500 });
+    return NextResponse.json(
+      { message: 'Internal server error' },
+      { status: 500 }
+    );
   }
 }

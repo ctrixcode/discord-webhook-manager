@@ -37,7 +37,7 @@ export const webhookQueries = {
   // Get webhook by ID
   getWebhookById: async (id: string): Promise<Webhook> => {
     const response = await apiClient.get<ApiResponse<Webhook>>(
-      `/webhook/${id}`,
+      `/webhook/${id}`
     );
     return response.data.data as Webhook;
   },
@@ -46,7 +46,7 @@ export const webhookQueries = {
   createWebhook: async (data: CreateWebhookRequest): Promise<Webhook> => {
     const response = await apiClient.post<ApiResponse<Webhook>>(
       '/webhook',
-      data,
+      data
     );
     return response.data.data as Webhook;
   },
@@ -54,11 +54,11 @@ export const webhookQueries = {
   // Update webhook
   updateWebhook: async (
     id: string,
-    data: UpdateWebhookRequest,
+    data: UpdateWebhookRequest
   ): Promise<ApiResponse<Webhook>> => {
     const response = await apiClient.put<ApiResponse<Webhook>>(
       `/webhook/${id}`,
-      data,
+      data
     );
     return response.data;
   },
@@ -76,11 +76,11 @@ export const webhookQueries = {
 
   // send message to webhook
   sendMessage: async (
-    data: SendMessageData,
+    data: SendMessageData
   ): Promise<ApiResponse<SendMessageResponse[]>> => {
     const response = await apiClient.post<ApiResponse<SendMessageResponse[]>>(
       `/webhook/send-message`,
-      data,
+      data
     );
     return response.data;
   },

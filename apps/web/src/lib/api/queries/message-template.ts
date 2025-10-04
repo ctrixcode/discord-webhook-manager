@@ -15,25 +15,39 @@ export const templateQueries = {
       page: number;
       limit: number;
     };
-    const response = await apiClient.get<ApiResponse<GetAllResponse>>('/message-template');
+    const response =
+      await apiClient.get<ApiResponse<GetAllResponse>>('/message-template');
     return response.data.data?.messageTemplates as MessageTemplate[];
   },
 
   // Get template by ID
   getTemplateById: async (id: string): Promise<MessageTemplate> => {
-    const response = await apiClient.get<ApiResponse<MessageTemplate>>(`/message-template/${id}`);
+    const response = await apiClient.get<ApiResponse<MessageTemplate>>(
+      `/message-template/${id}`
+    );
     return response.data.data as MessageTemplate;
   },
 
   // Create template
-  createTemplate: async (data: CreateMessageTemplateRequest): Promise<MessageTemplate> => {
-    const response = await apiClient.post<ApiResponse<MessageTemplate>>('/message-template', data);
+  createTemplate: async (
+    data: CreateMessageTemplateRequest
+  ): Promise<MessageTemplate> => {
+    const response = await apiClient.post<ApiResponse<MessageTemplate>>(
+      '/message-template',
+      data
+    );
     return response.data.data as MessageTemplate;
   },
 
   // Update template
-  updateTemplate: async (id: string, data: UpdateMessageTemplateRequest): Promise<MessageTemplate> => {
-    const response = await apiClient.put<ApiResponse<MessageTemplate>>(`/message-template/${id}`, data);
+  updateTemplate: async (
+    id: string,
+    data: UpdateMessageTemplateRequest
+  ): Promise<MessageTemplate> => {
+    const response = await apiClient.put<ApiResponse<MessageTemplate>>(
+      `/message-template/${id}`,
+      data
+    );
     return response.data.data as MessageTemplate;
   },
 

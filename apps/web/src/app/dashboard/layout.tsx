@@ -1,4 +1,4 @@
-"use client";
+'use client';
 
 import type React from 'react';
 import { ProtectedRoute } from '@/components/protected-route';
@@ -21,7 +21,10 @@ export default function DashboardLayout({
     // Prefetch webhooks
     queryClient.prefetchQuery({
       queryKey: ['webhooks', { isActive: true }],
-      queryFn: ({ queryKey }) => api.webhook.getAllWebhooks({ queryKey: queryKey as [string, { isActive?: boolean }] }),
+      queryFn: ({ queryKey }) =>
+        api.webhook.getAllWebhooks({
+          queryKey: queryKey as [string, { isActive?: boolean }],
+        }),
       staleTime: STALE_TIME_FIVE_MINUTES, // 5 minutes
     });
 

@@ -29,7 +29,6 @@ export function EmbedBuilder({ embeds, onEmbedsChange }: EmbedBuilderProps) {
     onEmbedsChange([...embeds, newEmbed]);
   };
 
-
   const updateEmbed = (index: number, updatedEmbed: DiscordEmbed) => {
     const newEmbeds = embeds.map((e, i) => {
       if (i === index) {
@@ -66,12 +65,12 @@ export function EmbedBuilder({ embeds, onEmbedsChange }: EmbedBuilderProps) {
   const updateField = (
     embedIndex: number,
     fieldIndex: number,
-    field: { name: string; value: string; inline?: boolean },
+    field: { name: string; value: string; inline?: boolean }
   ) => {
     const newEmbeds = [...embeds];
     if (newEmbeds[embedIndex] && newEmbeds[embedIndex].fields) {
       newEmbeds[embedIndex].fields = newEmbeds[embedIndex].fields!.map(
-        (f, i) => (i === fieldIndex ? field : f),
+        (f, i) => (i === fieldIndex ? field : f)
       );
     }
     onEmbedsChange(newEmbeds);
@@ -81,7 +80,7 @@ export function EmbedBuilder({ embeds, onEmbedsChange }: EmbedBuilderProps) {
     const newEmbeds = [...embeds];
     if (newEmbeds[embedIndex] && newEmbeds[embedIndex].fields) {
       newEmbeds[embedIndex].fields = newEmbeds[embedIndex].fields!.filter(
-        (_, i) => i !== fieldIndex,
+        (_, i) => i !== fieldIndex
       );
     }
     onEmbedsChange(newEmbeds);
@@ -142,7 +141,7 @@ export function EmbedBuilder({ embeds, onEmbedsChange }: EmbedBuilderProps) {
                       type="text"
                       placeholder="Embed title"
                       value={embed.title || ''}
-                      onChange={(e) =>
+                      onChange={e =>
                         updateEmbed(index, {
                           ...embed,
                           title: e.target.value,
@@ -157,7 +156,7 @@ export function EmbedBuilder({ embeds, onEmbedsChange }: EmbedBuilderProps) {
                       type="url"
                       placeholder="Embed URL"
                       value={embed.url || ''}
-                      onChange={(e) =>
+                      onChange={e =>
                         updateEmbed(index, {
                           ...embed,
                           url: e.target.value,
@@ -173,7 +172,7 @@ export function EmbedBuilder({ embeds, onEmbedsChange }: EmbedBuilderProps) {
                   <Textarea
                     placeholder="Embed description"
                     value={embed.description || ''}
-                    onChange={(e) =>
+                    onChange={e =>
                       updateEmbed(index, {
                         ...embed,
                         description: e.target.value,
@@ -188,8 +187,10 @@ export function EmbedBuilder({ embeds, onEmbedsChange }: EmbedBuilderProps) {
                   <Label className="text-slate-300 text-sm">Color</Label>
                   <input
                     type="color"
-                    value={discordColorToHex(embed.color || DISCORD_BLURPLE_COLOR)}
-                    onChange={(e) =>
+                    value={discordColorToHex(
+                      embed.color || DISCORD_BLURPLE_COLOR
+                    )}
+                    onChange={e =>
                       updateEmbed(index, {
                         ...embed,
                         color: hexToDiscordColor(e.target.value),
@@ -218,7 +219,7 @@ export function EmbedBuilder({ embeds, onEmbedsChange }: EmbedBuilderProps) {
                       </div>
                     ) : (
                       <AvatarSelector
-                        onSelect={(avatar) => {
+                        onSelect={avatar => {
                           updateEmbed(index, {
                             ...embed,
                             author: {
@@ -264,7 +265,7 @@ export function EmbedBuilder({ embeds, onEmbedsChange }: EmbedBuilderProps) {
                             type="text"
                             placeholder="Author name"
                             value={embed.author?.name || ''}
-                            onChange={(e) =>
+                            onChange={e =>
                               updateEmbed(index, {
                                 ...embed,
                                 author: {
@@ -284,7 +285,7 @@ export function EmbedBuilder({ embeds, onEmbedsChange }: EmbedBuilderProps) {
                             type="url"
                             placeholder="Author icon URL"
                             value={embed.author?.icon_url || ''}
-                            onChange={(e) =>
+                            onChange={e =>
                               updateEmbed(index, {
                                 ...embed,
                                 author: {
@@ -302,7 +303,7 @@ export function EmbedBuilder({ embeds, onEmbedsChange }: EmbedBuilderProps) {
                         type="url"
                         placeholder="Author URL"
                         value={embed.author?.url || ''}
-                        onChange={(e) =>
+                        onChange={e =>
                           updateEmbed(index, {
                             ...embed,
                             author: {
@@ -354,7 +355,7 @@ export function EmbedBuilder({ embeds, onEmbedsChange }: EmbedBuilderProps) {
                               type="text"
                               placeholder="Field name"
                               value={field.name}
-                              onChange={(e) =>
+                              onChange={e =>
                                 updateField(index, fieldIndex, {
                                   ...field,
                                   name: e.target.value,
@@ -370,7 +371,7 @@ export function EmbedBuilder({ embeds, onEmbedsChange }: EmbedBuilderProps) {
                             <Textarea
                               placeholder="Field value"
                               value={field.value}
-                              onChange={(e) =>
+                              onChange={e =>
                                 updateField(index, fieldIndex, {
                                   ...field,
                                   value: e.target.value,
@@ -383,7 +384,7 @@ export function EmbedBuilder({ embeds, onEmbedsChange }: EmbedBuilderProps) {
                           <div className="flex items-center space-x-2 mt-2">
                             <Checkbox
                               checked={field.inline}
-                              onCheckedChange={(checked) =>
+                              onCheckedChange={checked =>
                                 updateField(index, fieldIndex, {
                                   ...field,
                                   inline: !!checked,
@@ -408,7 +409,7 @@ export function EmbedBuilder({ embeds, onEmbedsChange }: EmbedBuilderProps) {
                       type="url"
                       placeholder="Image URL"
                       value={embed.image?.url || ''}
-                      onChange={(e) =>
+                      onChange={e =>
                         updateEmbed(index, {
                           ...embed,
                           image: { url: e.target.value },
@@ -426,7 +427,7 @@ export function EmbedBuilder({ embeds, onEmbedsChange }: EmbedBuilderProps) {
                       type="url"
                       placeholder="Thumbnail URL"
                       value={embed.thumbnail?.url || ''}
-                      onChange={(e) =>
+                      onChange={e =>
                         updateEmbed(index, {
                           ...embed,
                           thumbnail: { url: e.target.value },
@@ -446,7 +447,7 @@ export function EmbedBuilder({ embeds, onEmbedsChange }: EmbedBuilderProps) {
                         type="text"
                         placeholder="Footer text"
                         value={embed.footer?.text || ''}
-                        onChange={(e) =>
+                        onChange={e =>
                           updateEmbed(index, {
                             ...embed,
                             footer: {
@@ -464,7 +465,7 @@ export function EmbedBuilder({ embeds, onEmbedsChange }: EmbedBuilderProps) {
                         type="url"
                         placeholder="Footer icon URL"
                         value={embed.footer?.icon_url || ''}
-                        onChange={(e) =>
+                        onChange={e =>
                           updateEmbed(index, {
                             ...embed,
                             footer: {
@@ -490,7 +491,7 @@ export function EmbedBuilder({ embeds, onEmbedsChange }: EmbedBuilderProps) {
                         ? new Date(embed.timestamp).toISOString().slice(0, 16)
                         : ''
                     }
-                    onChange={(e) =>
+                    onChange={e =>
                       updateEmbed(index, {
                         ...embed,
                         timestamp: e.target.value

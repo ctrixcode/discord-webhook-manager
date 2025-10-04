@@ -34,21 +34,18 @@ export default function CreateTemplatePage() {
     enabled: !!templateId,
   });
 
-  const {
-    mutate: saveTemplate,
-    isPending,
-  } = useMutation({
+  const { mutate: saveTemplate, isPending } = useMutation({
     mutationFn: (
-      templateData: CreateMessageTemplateRequest | UpdateMessageTemplateRequest,
+      templateData: CreateMessageTemplateRequest | UpdateMessageTemplateRequest
     ) => {
       if (templateId) {
         return templateQueries.updateTemplate(
           templateId,
-          templateData as UpdateMessageTemplateRequest,
+          templateData as UpdateMessageTemplateRequest
         );
       }
       return templateQueries.createTemplate(
-        templateData as CreateMessageTemplateRequest,
+        templateData as CreateMessageTemplateRequest
       );
     },
     onSuccess: () => {
@@ -59,7 +56,7 @@ export default function CreateTemplatePage() {
         description: 'Template saved successfully!',
       });
     },
-    onError: (error) => {
+    onError: error => {
       toast({
         title: 'Error saving template',
         description: error.message,

@@ -29,9 +29,8 @@ export default function AvatarsPage() {
   });
 
   const filteredAvatars = useMemo(() => {
-    return avatars.filter(
-      (avatar) =>
-        avatar.username.toLowerCase().includes(searchQuery.toLowerCase())
+    return avatars.filter(avatar =>
+      avatar.username.toLowerCase().includes(searchQuery.toLowerCase())
     );
   }, [avatars, searchQuery]);
 
@@ -88,7 +87,7 @@ export default function AvatarsPage() {
           <Input
             placeholder="Search avatars..."
             value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
+            onChange={e => setSearchQuery(e.target.value)}
             className="pl-10 bg-slate-800/50 border-slate-700 text-white placeholder:text-slate-400 focus:border-purple-500"
           />
         </div>
@@ -123,7 +122,7 @@ export default function AvatarsPage() {
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {filteredAvatars.map((avatar) => (
+            {filteredAvatars.map(avatar => (
               <AvatarCard
                 key={avatar.id}
                 avatar={avatar}

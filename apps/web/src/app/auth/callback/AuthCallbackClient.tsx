@@ -31,10 +31,10 @@ export default function AuthCallbackClient() {
           // The AuthProvider will typically handle this, but we can be explicit
           await api.user.getCurrentUser(); // This re-validates and populates the auth context
           router.push('/dashboard');
-
         } catch (err) {
           console.error('Auth callback error:', err);
-          const errorMessage = err instanceof Error ? err.message : 'An unknown error occurred.';
+          const errorMessage =
+            err instanceof Error ? err.message : 'An unknown error occurred.';
           setError(`Authentication process failed: ${errorMessage}`);
           setTimeout(() => router.push('/login'), 5000);
         }
@@ -54,9 +54,7 @@ export default function AuthCallbackClient() {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="text-center space-y-4 p-4">
-          <div className="text-red-500 text-lg font-medium">
-            {error}
-          </div>
+          <div className="text-red-500 text-lg font-medium">{error}</div>
           <div className="text-muted-foreground">
             Redirecting to login page...
           </div>

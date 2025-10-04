@@ -2,7 +2,8 @@ import { NextRequest, NextResponse } from 'next/server';
 import axios from 'axios';
 import { ApiResponse } from '@/lib/api/types/api';
 
-const BACKEND_API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000/api';
+const BACKEND_API_URL =
+  process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000/api';
 
 interface RefreshTokenResponse {
   accessToken: string;
@@ -14,7 +15,10 @@ export async function POST(req: NextRequest) {
     const refreshToken = req.cookies.get('refreshToken')?.value;
 
     if (!refreshToken) {
-      return NextResponse.json({ message: 'Refresh token not provided' }, { status: 400 });
+      return NextResponse.json(
+        { message: 'Refresh token not provided' },
+        { status: 400 }
+      );
     }
 
     // Make a request to the backend's refresh endpoint
@@ -30,14 +34,18 @@ export async function POST(req: NextRequest) {
         },
       }
     );
-    const respData: ApiResponse<RefreshTokenResponse> | undefined = backendResponse.data;
+    const respData: ApiResponse<RefreshTokenResponse> | undefined =
+      backendResponse.data;
     if (!respData) {
       throw new Error('Failed to refresh token');
     }
 
     const { accessToken, refreshToken: newRefreshToken } = respData.data!;
     if (!accessToken) {
-      return NextResponse.json({ message: 'New access token not found' }, { status: 500 });
+      return NextResponse.json(
+        { message: 'New access token not found' },
+        { status: 500 }
+      );
     }
 
     const response = NextResponse.json({ accessToken }, { status: 200 });
@@ -57,9 +65,19 @@ export async function POST(req: NextRequest) {
   } catch (error) {
     console.error('Error refreshing token:', error);
     if (axios.isAxiosError(error)) {
-      console.error('Axios error details:', error.response?.data, error.response?.status, error.response?.headers);
-      return NextResponse.json(error.response?.data, { status: error.response?.status });
+      console.error(
+        'Axios error details:',
+        error.response?.data,
+        error.response?.status,
+        error.response?.headers
+      );
+      return NextResponse.json(error.response?.data, {
+        status: error.response?.status,
+      });
     }
-    return NextResponse.json({ message: 'Internal server error' }, { status: 500 });
+    return NextResponse.json(
+      { message: 'Internal server error' },
+      { status: 500 }
+    );
   }
 }

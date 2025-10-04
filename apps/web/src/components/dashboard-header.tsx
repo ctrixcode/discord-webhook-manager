@@ -19,7 +19,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '@/components/ui/tooltip';
-import Image from "next/image"
+import Image from 'next/image';
 
 export function DashboardHeader() {
   const { user, logout } = useAuth();
@@ -31,8 +31,8 @@ export function DashboardHeader() {
   };
 
   const getAccountTypeBadge = (accountType: string) => {
-    const commonBadgeClasses = "ml-2";
-    let quote = "";
+    const commonBadgeClasses = 'ml-2';
+    let quote = '';
 
     switch (accountType) {
       case 'free':
@@ -41,7 +41,9 @@ export function DashboardHeader() {
           <TooltipProvider>
             <Tooltip>
               <TooltipTrigger asChild>
-                <Badge className={`${commonBadgeClasses} bg-blue-500/80 text-white text-xs px-1 py-0.5 rounded-full`}>
+                <Badge
+                  className={`${commonBadgeClasses} bg-blue-500/80 text-white text-xs px-1 py-0.5 rounded-full`}
+                >
                   Free
                 </Badge>
               </TooltipTrigger>
@@ -57,7 +59,9 @@ export function DashboardHeader() {
           <TooltipProvider>
             <Tooltip>
               <TooltipTrigger asChild>
-                <Badge className={`${commonBadgeClasses} bg-purple-500/80 text-white text-xs px-1 py-0.5 rounded-full`}>
+                <Badge
+                  className={`${commonBadgeClasses} bg-purple-500/80 text-white text-xs px-1 py-0.5 rounded-full`}
+                >
                   Paid
                 </Badge>
               </TooltipTrigger>
@@ -92,8 +96,16 @@ export function DashboardHeader() {
   return (
     <header className="border-b border-t border-slate-800/50 bg-slate-900/20 backdrop-blur-xl sticky top-0 z-30">
       <div className="flex h-16 items-center justify-between px-6">
-        <div className="flex items-center gap-3 cursor-pointer" onClick={() => router.push('/dashboard/webhooks')}>
-          <Image width={40} height={40} src="/favicon.png" alt="Webhook Manager Logo" />
+        <div
+          className="flex items-center gap-3 cursor-pointer"
+          onClick={() => router.push('/dashboard/webhooks')}
+        >
+          <Image
+            width={40}
+            height={40}
+            src="/favicon.png"
+            alt="Webhook Manager Logo"
+          />
           <div>
             <h1 className="text-lg font-semibold text-white">
               Webhook Manager

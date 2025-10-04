@@ -16,7 +16,8 @@ export default function LoginPage() {
         await api.user.getCurrentUser();
         // If the above call succeeds, the user is authenticated.
         router.push('/dashboard');
-      } catch (_error) { // eslint-disable-line @typescript-eslint/no-unused-vars
+      } catch (_error) {
+        // eslint-disable-line @typescript-eslint/no-unused-vars
         // If it fails, it means no valid session exists. Stay on the login page.
         setIsChecking(false);
       }

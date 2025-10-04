@@ -58,13 +58,13 @@ class ApiClient {
         }
         return config;
       },
-      (error) => Promise.reject(error),
+      error => Promise.reject(error)
     );
 
     // Response interceptor to handle token refresh
     this.client.interceptors.response.use(
       (response: AxiosResponse) => response, // Success responses pass through
-      async (error) => {
+      async error => {
         const originalRequest = error.config;
 
         // If the error is 401 and it's not the refresh request itself
@@ -111,7 +111,7 @@ class ApiClient {
             this.clearAccessToken();
             console.error(
               'Authentication failed. Please login again.',
-              refreshError,
+              refreshError
             );
             return Promise.reject(refreshError);
           } finally {
@@ -137,18 +137,18 @@ class ApiClient {
               backendError.message,
               backendError.statusCode,
               backendError.code,
-              backendError.details,
+              backendError.details
             );
           }
         }
 
         return Promise.reject(error);
-      },
+      }
     );
   }
 
   private processQueue(error: AxiosError | null, token: string | null = null) {
-    this.failedQueue.forEach((prom) => {
+    this.failedQueue.forEach(prom => {
       if (error) {
         prom.reject(error);
       } else if (token) {

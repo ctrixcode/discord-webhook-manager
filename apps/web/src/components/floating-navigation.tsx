@@ -4,15 +4,7 @@ import { useState } from 'react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { DiscordLogo } from '@/components/discord-logo';
-import {
-
-  Webhook,
-  FileText,
-  Settings,
-  X,
-  Users,
-  Send,
-} from 'lucide-react';
+import { Webhook, FileText, Settings, X, Users, Send } from 'lucide-react';
 import Link from 'next/link';
 
 const navigation = [
@@ -89,7 +81,7 @@ export function FloatingNavigation() {
           'fixed z-50 transition-all duration-500 ease-out',
           isOpen
             ? 'top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2'
-            : 'bottom-6 right-6',
+            : 'bottom-6 right-6'
         )}
       >
         {/* Navigation Items in Radial Pattern */}
@@ -103,7 +95,7 @@ export function FloatingNavigation() {
                   key={item.name}
                   className={cn(
                     'absolute transition-all duration-700 ease-out',
-                    isOpen ? 'opacity-100 scale-100' : 'opacity-0 scale-0',
+                    isOpen ? 'opacity-100 scale-100' : 'opacity-0 scale-0'
                   )}
                   style={{
                     left: `calc(50% + ${x}px)`,
@@ -119,7 +111,7 @@ export function FloatingNavigation() {
                         className={cn(
                           'w-14 h-14 rounded-full shadow-xl transition-all duration-300',
                           item.color,
-                          'hover:scale-110 active:scale-95',
+                          'hover:scale-110 active:scale-95'
                         )}
                       >
                         <item.icon className="w-7 h-7 text-white" />
@@ -144,12 +136,12 @@ export function FloatingNavigation() {
             'bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700',
             'hover:scale-110 active:scale-95 relative z-10',
             'flex items-center justify-center', // Added explicit flex centering for perfect icon alignment
-            isOpen && 'scale-125 rotate-45',
+            isOpen && 'scale-125 rotate-45'
           )}
         >
           {isOpen ? (
-            <Link href={"/dashboard"}>
-            <X className="w-7 h-7 text-white transition-all duration-300" />
+            <Link href={'/dashboard'}>
+              <X className="w-7 h-7 text-white transition-all duration-300" />
             </Link>
           ) : (
             <DiscordLogo className="w-7 h-7 text-white transition-all duration-300" />

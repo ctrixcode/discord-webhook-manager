@@ -48,12 +48,12 @@ export function DiscordMessagePreview({
     }
 
     if (embeds) {
-      embeds.forEach((embed) => {
+      embeds.forEach(embed => {
         if (embed.description) {
           allUserIds = allUserIds.concat(extractUserIds(embed.description));
         }
         if (embed.fields) {
-          embed.fields.forEach((field) => {
+          embed.fields.forEach(field => {
             allUserIds = allUserIds.concat(extractUserIds(field.name));
             allUserIds = allUserIds.concat(extractUserIds(field.value));
           });
@@ -76,11 +76,11 @@ export function DiscordMessagePreview({
   }, [content, embeds]);
 
   const userQueriesResults = useQueries({
-    queries: userIds.map((id) => ({
+    queries: userIds.map(id => ({
       queryKey: ['user', id],
       queryFn: () => userQueries.getCurrentUser(),
       staleTime: Infinity,
-      enabled: !!id, 
+      enabled: !!id,
     })),
   });
 
@@ -201,7 +201,7 @@ export function DiscordMessagePreview({
                             className="grid gap-2 mb-3"
                             style={{
                               gridTemplateColumns: embed.fields.some(
-                                (f) => f.inline,
+                                f => f.inline
                               )
                                 ? 'repeat(3, 1fr)'
                                 : '1fr',

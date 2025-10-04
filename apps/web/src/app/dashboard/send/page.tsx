@@ -41,7 +41,7 @@ export default function SendMessagePage() {
   const initialWebhookId = searchParams.get('webhookId');
 
   const [selectedWebhooks, setSelectedWebhooks] = useState<string[]>(
-    initialWebhookId ? [initialWebhookId] : [],
+    initialWebhookId ? [initialWebhookId] : []
   );
   const [message, setMessage] = useState({
     content: '',
@@ -75,7 +75,7 @@ export default function SendMessagePage() {
 
   const handleTemplateSelect = (templateId: string) => {
     setSelectedTemplateId(templateId);
-    const selectedTemplate = templates.find((t) => t._id === templateId);
+    const selectedTemplate = templates.find(t => t._id === templateId);
     if (selectedTemplate) {
       setMessage({
         content: selectedTemplate.content || '',
@@ -86,9 +86,7 @@ export default function SendMessagePage() {
         message_replace_url: '',
       });
       if (selectedTemplate.avatar_ref) {
-        const avatar = avatars.find(
-          (a) => a.id === selectedTemplate.avatar_ref,
-        );
+        const avatar = avatars.find(a => a.id === selectedTemplate.avatar_ref);
         setSelectedAvatar(avatar);
       } else {
         setSelectedAvatar(undefined);
@@ -115,10 +113,10 @@ export default function SendMessagePage() {
 
   useEffect(() => {
     if (initialAvatarId && avatars.length > 0) {
-      const avatar = avatars.find((a) => a.id === initialAvatarId);
+      const avatar = avatars.find(a => a.id === initialAvatarId);
       if (avatar) {
         setSelectedAvatar(avatar);
-        setMessage((prev) => ({ ...prev, avatarRefID: avatar.id }));
+        setMessage(prev => ({ ...prev, avatarRefID: avatar.id }));
       }
     }
   }, [initialAvatarId, avatars]);
@@ -143,10 +141,10 @@ export default function SendMessagePage() {
   }, [selectedWebhooks, router, pathname, searchParams]);
 
   const handleWebhookToggle = (webhookId: string) => {
-    setSelectedWebhooks((prev) =>
+    setSelectedWebhooks(prev =>
       prev.includes(webhookId)
-        ? prev.filter((id) => id !== webhookId)
-        : [...prev, webhookId],
+        ? prev.filter(id => id !== webhookId)
+        : [...prev, webhookId]
     );
   };
 
@@ -154,12 +152,12 @@ export default function SendMessagePage() {
     if (selectedWebhooks.length === webhooks.length) {
       setSelectedWebhooks([]);
     } else {
-      setSelectedWebhooks(webhooks.map((w) => w.id));
+      setSelectedWebhooks(webhooks.map(w => w.id));
     }
   };
 
   const handleAvatarSelect = (avatar: IAvatar) => {
-    setMessage((prev) => ({
+    setMessage(prev => ({
       ...prev,
       avatarRefID: avatar.id, // Use avatar.id as avatarRefID
     }));
@@ -316,7 +314,7 @@ export default function SendMessagePage() {
                             <SelectValue placeholder="Select a template" />
                           </SelectTrigger>
                           <SelectContent className="bg-slate-800 border-slate-700 text-white">
-                            {templates.map((template) => (
+                            {templates.map(template => (
                               <SelectItem
                                 key={template._id}
                                 value={template._id}
@@ -377,8 +375,8 @@ export default function SendMessagePage() {
                         id="content"
                         placeholder="Enter your message content..."
                         value={message.content}
-                        onChange={(e) =>
-                          setMessage((prev) => ({
+                        onChange={e =>
+                          setMessage(prev => ({
                             ...prev,
                             content: e.target.value,
                           }))
@@ -437,8 +435,8 @@ export default function SendMessagePage() {
                         </div>
                         <Checkbox
                           checked={message.tts}
-                          onCheckedChange={(checked) =>
-                            setMessage((prev) => ({ ...prev, tts: !!checked }))
+                          onCheckedChange={checked =>
+                            setMessage(prev => ({ ...prev, tts: !!checked }))
                           }
                           className="border-slate-500"
                         />
@@ -453,8 +451,8 @@ export default function SendMessagePage() {
                           type="text"
                           placeholder="Create a new thread with this name"
                           value={message.threadName || ''}
-                          onChange={(e) =>
-                            setMessage((prev) => ({
+                          onChange={e =>
+                            setMessage(prev => ({
                               ...prev,
                               threadName: e.target.value,
                             }))
@@ -475,9 +473,9 @@ export default function SendMessagePage() {
                           type="url"
                           placeholder="e.g., https://discord.com/channels/guild_id/channel_id/message_id"
                           value={message.message_replace_url || ''}
-                          onChange={(e) => {
+                          onChange={e => {
                             const url = e.target.value;
-                            setMessage((prev) => ({
+                            setMessage(prev => ({
                               ...prev,
                               message_replace_url: url,
                             }));
@@ -495,8 +493,8 @@ export default function SendMessagePage() {
                   <TabsContent value="embeds" className="space-y-4 mt-4">
                     <EmbedBuilder
                       embeds={message.embeds}
-                      onEmbedsChange={(newEmbeds) =>
-                        setMessage((prev) => ({ ...prev, embeds: newEmbeds }))
+                      onEmbedsChange={newEmbeds =>
+                        setMessage(prev => ({ ...prev, embeds: newEmbeds }))
                       }
                     />
                   </TabsContent>
@@ -529,7 +527,7 @@ export default function SendMessagePage() {
                           No webhooks available. Add some webhooks first.
                         </p>
                       ) : (
-                        webhooks.map((webhook) => (
+                        webhooks.map(webhook => (
                           <div
                             key={webhook.id}
                             className="flex items-center space-x-3 p-3 rounded-lg bg-slate-700/30 hover:bg-slate-700/50 transition-colors"

@@ -28,7 +28,11 @@ export function AddWebhookDialog() {
   const [url, setUrl] = useState('');
   const [description, setDescription] = useState('');
 
-  const { mutate: createWebhookMutation, isPending: isLoading, error: apiError } = useMutation({
+  const {
+    mutate: createWebhookMutation,
+    isPending: isLoading,
+    error: apiError,
+  } = useMutation({
     mutationFn: createWebhook,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['webhooks'] });
@@ -86,7 +90,7 @@ export function AddWebhookDialog() {
                 id="name"
                 placeholder="My Discord Webhook"
                 value={name}
-                onChange={(e) => setName(e.target.value)}
+                onChange={e => setName(e.target.value)}
                 required
                 className="bg-slate-800/50 border-slate-600/50 text-white placeholder:text-slate-400 focus:border-purple-500/50 focus:ring-purple-500/20"
               />
@@ -99,7 +103,7 @@ export function AddWebhookDialog() {
                 id="url"
                 placeholder="https://discord.com/api/webhooks/..."
                 value={url}
-                onChange={(e) => setUrl(e.target.value)}
+                onChange={e => setUrl(e.target.value)}
                 required
                 className="bg-slate-800/50 border-slate-600/50 text-white placeholder:text-slate-400 focus:border-purple-500/50 focus:ring-purple-500/20"
               />
@@ -112,7 +116,7 @@ export function AddWebhookDialog() {
                 id="description"
                 placeholder="What is this webhook used for?"
                 value={description}
-                onChange={(e) => setDescription(e.target.value)}
+                onChange={e => setDescription(e.target.value)}
                 rows={3}
                 className="bg-slate-800/50 border-slate-600/50 text-white placeholder:text-slate-400 focus:border-purple-500/50 focus:ring-purple-500/20 resize-none"
               />

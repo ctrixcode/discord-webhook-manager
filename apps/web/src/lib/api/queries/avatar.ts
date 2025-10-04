@@ -16,14 +16,25 @@ export const avatarQueries = {
   },
 
   // Create avatar
-  createAvatar: async (data: Omit<IAvatar, 'id' | 'createdAt' | 'updatedAt' | 'user_id'>): Promise<IAvatar> => {
-    const response = await apiClient.post<ApiResponse<IAvatar>>('/avatar', data);
+  createAvatar: async (
+    data: Omit<IAvatar, 'id' | 'createdAt' | 'updatedAt' | 'user_id'>
+  ): Promise<IAvatar> => {
+    const response = await apiClient.post<ApiResponse<IAvatar>>(
+      '/avatar',
+      data
+    );
     return response.data.data as IAvatar;
   },
 
   // Update avatar
-  updateAvatar: async (id: string, data: Partial<Omit<IAvatar,"id" | "createdAt" | "updatedAt" | "user_id">>): Promise<IAvatar> => {
-    const response = await apiClient.put<ApiResponse<IAvatar>>(`/avatar/${id}`, data);
+  updateAvatar: async (
+    id: string,
+    data: Partial<Omit<IAvatar, 'id' | 'createdAt' | 'updatedAt' | 'user_id'>>
+  ): Promise<IAvatar> => {
+    const response = await apiClient.put<ApiResponse<IAvatar>>(
+      `/avatar/${id}`,
+      data
+    );
     return response.data.data as IAvatar;
   },
 
@@ -34,11 +45,15 @@ export const avatarQueries = {
 
   // Upload avatar
   uploadAvatar: async (data: FormData): Promise<IAvatar> => {
-    const response = await apiClient.post<ApiResponse<IAvatar>>('/avatar/upload', data, {
-      headers: {
-        'Content-Type': 'multipart/form-data',
-      },
-    });
+    const response = await apiClient.post<ApiResponse<IAvatar>>(
+      '/avatar/upload',
+      data,
+      {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      }
+    );
     return response.data.data as IAvatar;
   },
 };

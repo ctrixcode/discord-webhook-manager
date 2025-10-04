@@ -34,7 +34,8 @@ const transports = [
         if (info.stack) {
           return `${info.timestamp} ${info.level}: ${info.message}\n${info.stack}`;
         }
-        if (info.error) { // Check for the 'error' property added by errorHandler
+        if (info.error) {
+          // Check for the 'error' property added by errorHandler
           return `${info.timestamp} ${info.level}: ${info.message} ${JSON.stringify(info.error)}`;
         }
         return `${info.timestamp} ${info.level}: ${info.message}`;

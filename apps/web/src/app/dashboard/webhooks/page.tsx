@@ -19,25 +19,39 @@ export default function WebhooksPage() {
   const router = useRouter();
 
   const [searchQuery, setSearchQuery] = useState('');
-  const [filterStatus, setFilterStatus] = useState<'all' | 'active' | 'inactive'>('all');
+  const [filterStatus, setFilterStatus] = useState<
+    'all' | 'active' | 'inactive'
+  >('all');
 
   const queryClient = useQueryClient();
 
   const { data: webhooks = [], isLoading } = useQuery<Webhook[]>({
-    queryKey: ['webhooks', { isActive: filterStatus === 'active' ? true : filterStatus === 'inactive' ? false : undefined }],
-    queryFn: ({ queryKey }) => getAllWebhooks({ queryKey: queryKey as [string, { isActive?: boolean }] }),
+    queryKey: [
+      'webhooks',
+      {
+        isActive:
+          filterStatus === 'active'
+            ? true
+            : filterStatus === 'inactive'
+              ? false
+              : undefined,
+      },
+    ],
+    queryFn: ({ queryKey }) =>
+      getAllWebhooks({
+        queryKey: queryKey as [string, { isActive?: boolean }],
+      }),
     enabled: !!user,
   });
 
   const filteredWebhooks = useMemo(() => {
     if (!webhooks) return [];
-    return webhooks.filter(
-      (webhook) =>
-        webhook.name.toLowerCase().includes(searchQuery.toLowerCase()),
+    return webhooks.filter(webhook =>
+      webhook.name.toLowerCase().includes(searchQuery.toLowerCase())
     );
   }, [webhooks, searchQuery]);
 
-  const activeWebhooks = webhooks.filter((w) => w.is_active).length;
+  const activeWebhooks = webhooks.filter(w => w.is_active).length;
 
   const handleCardClick = (webhook: Webhook) => {
     router.push(`/dashboard/send?webhookId=${webhook.id}`);
@@ -103,7 +117,7 @@ export default function WebhooksPage() {
           <Input
             placeholder="Search webhooks..."
             value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
+            onChange={e => setSearchQuery(e.target.value)}
             className="pl-8 bg-slate-900/50 backdrop-blur-xl border-slate-700/50 text-white placeholder:text-slate-400 focus:border-purple-500/50"
           />
         </div>
@@ -111,21 +125,33 @@ export default function WebhooksPage() {
           <Button
             variant={filterStatus === 'all' ? 'default' : 'outline'}
             onClick={() => setFilterStatus('all')}
-            className={filterStatus === 'all' ? 'bg-purple-600 hover:bg-purple-700 text-white' : 'border-slate-600 text-slate-300 hover:bg-slate-700 bg-transparent'}
+            className={
+              filterStatus === 'all'
+                ? 'bg-purple-600 hover:bg-purple-700 text-white'
+                : 'border-slate-600 text-slate-300 hover:bg-slate-700 bg-transparent'
+            }
           >
             All
           </Button>
           <Button
             variant={filterStatus === 'active' ? 'default' : 'outline'}
             onClick={() => setFilterStatus('active')}
-            className={filterStatus === 'active' ? 'bg-green-600 hover:bg-green-700 text-white' : 'border-slate-600 text-slate-300 hover:bg-slate-700 bg-transparent'}
+            className={
+              filterStatus === 'active'
+                ? 'bg-green-600 hover:bg-green-700 text-white'
+                : 'border-slate-600 text-slate-300 hover:bg-slate-700 bg-transparent'
+            }
           >
             Active
           </Button>
           <Button
             variant={filterStatus === 'inactive' ? 'default' : 'outline'}
             onClick={() => setFilterStatus('inactive')}
-            className={filterStatus === 'inactive' ? 'bg-red-600 hover:bg-red-700 text-white' : 'border-slate-600 text-slate-300 hover:bg-slate-700 bg-transparent'}
+            className={
+              filterStatus === 'inactive'
+                ? 'bg-red-600 hover:bg-red-700 text-white'
+                : 'border-slate-600 text-slate-300 hover:bg-slate-700 bg-transparent'
+            }
           >
             Inactive
           </Button>
@@ -139,11 +165,25 @@ export default function WebhooksPage() {
         </div>
       ) : filteredWebhooks.length > 0 ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {filteredWebhooks.map((webhook) => (
+          {filteredWebhooks.map(webhook => (
             <WebhookCard
               key={webhook.id}
               webhook={webhook}
-              onWebhookUpdated={() => queryClient.invalidateQueries({ queryKey: ['webhooks', { isActive: filterStatus === 'active' ? true : filterStatus === 'inactive' ? false : undefined }] })}
+              onWebhookUpdated={() =>
+                queryClient.invalidateQueries({
+                  queryKey: [
+                    'webhooks',
+                    {
+                      isActive:
+                        filterStatus === 'active'
+                          ? true
+                          : filterStatus === 'inactive'
+                            ? false
+                            : undefined,
+                    },
+                  ],
+                })
+              }
               onCardClick={handleCardClick}
             />
           ))}

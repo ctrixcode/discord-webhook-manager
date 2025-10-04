@@ -14,8 +14,14 @@ export const api = {
   user: userQueries,
   webhook: webhookQueries,
   template: templateQueries,
-  
+
   avatar: avatarQueries,
 } as const;
 
-export { authQueries, userQueries, webhookQueries, templateQueries, avatarQueries };
+export {
+  authQueries,
+  userQueries,
+  webhookQueries,
+  templateQueries,
+  avatarQueries,
+};

@@ -30,14 +30,14 @@ export function SettingsCard({
       className={cn(
         'bg-slate-900/20 backdrop-blur-xl border-slate-700/50 shadow-xl',
         variant === 'danger' && 'border-red-500/50',
-        className,
+        className
       )}
     >
       <CardHeader>
         <CardTitle
           className={cn(
             'flex items-center gap-2 text-white',
-            variant === 'danger' && 'text-red-400',
+            variant === 'danger' && 'text-red-400'
           )}
         >
           {icon}

@@ -16,9 +16,15 @@ export async function POST() {
       maxAge: 0,
     });
 
-    return NextResponse.json({ message: 'Logged out successfully' }, { status: 200 });
+    return NextResponse.json(
+      { message: 'Logged out successfully' },
+      { status: 200 }
+    );
   } catch (error) {
     console.error('Error logging out:', error);
-    return NextResponse.json({ message: 'Internal server error' }, { status: 500 });
+    return NextResponse.json(
+      { message: 'Internal server error' },
+      { status: 500 }
+    );
   }
 }
