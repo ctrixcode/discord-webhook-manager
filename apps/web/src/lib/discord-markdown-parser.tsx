@@ -20,7 +20,7 @@ export function parseDiscordMarkdown(
     {
       regex: /<@(\d+)>/g, // Matches <@ followed by digits followed by >
       render: (...args: string[]) => {
-        const userId = args[0];
+        const userId = args[0] as string;
         return (
           <span className="text-[#00aff4] bg-[#5865f2]/20 rounded px-1 py-0.5 font-medium">
             @{userMap.get(userId) || 'user'}
