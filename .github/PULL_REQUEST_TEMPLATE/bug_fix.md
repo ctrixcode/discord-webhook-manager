@@ -29,7 +29,7 @@ Please describe the tests that you ran to verify your changes. Provide instructi
 
 **Test Configuration Details:**
 - OS: [e.g. Windows, macOS, Linux]
-- Browser: [e.g. Chrome, Firefox, Safari]
+- Browser: Chrome
 - Node.js Version: [e.g. 18.x, 20.x]
 - Database State: [e.g. empty, pre-populated with X data]
 - Environment Variables: [e.g. .env files configured, specific variables set]
