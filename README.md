@@ -141,6 +141,7 @@ discord-webhook-manager-backend/
     `NEXT_PUBLIC_API_URL` should point to your backend API. During local development, this will typically be `http://localhost:4000`.
 
 4.  **Start MongoDB** (if using local installation)
+    *   **Recommendation for Windows Users:** For a simpler setup, especially on Windows, consider using **MongoDB Atlas** (MongoDB's cloud service). You can create a free-tier cluster and obtain a connection string. Update your `MONGODB_URL` in `apps/backend/.env` with this connection string.
     ```bash
     # macOS with Homebrew
     brew services start mongodb-community
@@ -151,6 +152,7 @@ discord-webhook-manager-backend/
     # Or use Docker
     docker run -d -p 27017:27017 --name mongodb mongo:latest
     ```
+    *For detailed local installation instructions for Windows, please refer to the official MongoDB documentation.*
 
 ### 🚀 Usage
 
