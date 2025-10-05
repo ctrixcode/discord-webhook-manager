@@ -76,6 +76,10 @@ We love new ideas! If you have a suggestion for an enhancement or a new feature,
 
 For detailed instructions on setting up your development environment, including prerequisites and environment variables, please refer to the main [`README.md`](./README.md) file.
 
+## GitHub Contribution Guides
+
+For detailed examples on how to use our Issue and Pull Request templates, and how to manage the `CHANGELOG.md`, please refer to our [GitHub Contribution Guides](./docs/github/README.MD).
+
 ## License
 
 By contributing to Discord Webhook Manager, you agree that your contributions will be licensed under its ISC License.
