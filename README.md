@@ -114,13 +114,23 @@ discord-webhook-manager-backend/
     cp .env.example .env
     ```
     Edit the `.env` file with your configuration. Essential variables include:
+
+    **Discord OAuth Credentials:**
+    You must create your own Discord application at [https://discord.com/developers/applications](https://discord.com/developers/applications) and obtain your Client ID, Client Secret, and set up a Redirect URI.
+
+    **Cloudinary Credentials:**
+    You must create a Cloudinary account at [https://cloudinary.com/](https://cloudinary.com/) and obtain your credentials.
+
+     **Mongodb Credentials:**
+    You need mongodb installed locally or in the cloud. You can use [MongoDB Atlas](https://www.mongodb.com/cloud/atlas) or [MongoDB Community](https://www.mongodb.com/try/download/community) for a free tier.
+
     ```env
     PORT=4000
     MONGODB_URL=mongodb://localhost:27017/discord-webhook-manager
     NODE_ENV=development
     JWT_SECRET=your-super-secret-jwt-key
     DISCORD_CLIENT_ID=your_discord_client_id
-    DISCORD_CLIENT_SECRET=your_discord_client_secret
+    DISCORD_CLIENT_SECRET=your_discord_client_SECRET
     DISCORD_REDIRECT_URI=http://localhost:3000/auth/callback # Frontend callback URL
     CLOUDINARY_CLOUD_NAME=your_cloudinary_cloud_name
     CLOUDINARY_API_KEY=your_cloudinary_api_key
