@@ -1,5 +1,5 @@
 {
-  "name": "discord-webhook-manager",
+  "name": "web",
   "version": "1.7.6",
   "private": true,
   "scripts": {
