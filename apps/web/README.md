@@ -35,7 +35,20 @@ This platform is specifically geared towards:
 *   Tailwind CSS
 
 ## Getting Started
-*(Instructions on how to set up and run the project will go here.)*
+
+1.  **Set up environment variables**
+    Create a `.env` file in the `apps/web` directory based on `.env.example`.
+    ```bash
+    cp .env.example .env
+    ```
+    Edit the `.env` file with your configuration. Essential variables include:
+    ```env
+    NODE_ENV=development
+    NEXT_PUBLIC_API_URL=http://localhost:4000 # Or your deployed backend URL
+    ```
+    `NEXT_PUBLIC_API_URL` should point to your backend API. During local development, this will typically be `http://localhost:4000`.
+
+*(Further instructions on how to set up and run the project will go here.)*
 
 ## Contributing
 *(Guidelines for contributing to the project will go here.)*

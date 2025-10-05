@@ -1,135 +1,217 @@
-# Turborepo starter
+# Discord Webhook Manager - Monorepo
 
-This Turborepo starter is maintained by the Turborepo core team.
+The Discord Webhook Manager is a powerful and intuitive platform designed to streamline and enhance how Discord server administrators and users manage their server announcements and messages. It eliminates the need for manual work, expensive paid bots, or complex custom bot development by providing a centralized, user-friendly interface for all your Discord messaging needs.
 
-## Using this example
+This monorepo contains two main applications:
+- **`apps/web`**: The Next.js frontend application providing the user interface.
+- **`apps/backend`**: The Node.js (Fastify) backend API services.
 
-Run the following command:
+## Problem Solved
 
-```sh
-npx create-turbo@latest
-```
+Discord server administrators often face challenges when trying to send custom announcements with unique avatars and usernames. This typically requires:
 
-## What's inside?
+*   **Manual Work**: Tediously creating and sending messages through webhooks for each announcement.
+*   **Paid Bots**: Investing in premium bot services that offer custom messaging features.
+*   **Custom Bots**: Developing and maintaining their own custom Discord bots, which can be time-consuming and require technical expertise.
 
-This Turborepo includes the following packages/apps:
+The Discord Webhook Manager addresses these pain points by offering a free, convenient, and feature-rich alternative.
 
-### Apps and Packages
+## Frontend: Discord Webhook Manager (Web App)
 
-- `docs`: a [Next.js](https://nextjs.org/) app
-- `web`: another [Next.js](https://nextjs.org/) app
-- `@repo/ui`: a stub React component library shared by both `web` and `docs` applications
-- `@repo/eslint-config`: `eslint` configurations (includes `eslint-config-next` and `eslint-config-prettier`)
-- `@repo/typescript-config`: `tsconfig.json`s used throughout the monorepo
+This is the user-facing application that provides a comprehensive dashboard for managing Discord webhooks, avatars, and message templates.
 
-Each package/app is 100% [TypeScript](https://www.typescriptlang.org/).
+### Key Features (Frontend)
+*   **Comprehensive Webhook Management**: Easily create, view, edit, and delete all your Discord webhooks from a single dashboard.
+*   **Custom Avatar Creation**: Design and save multiple custom avatars for different announcement types or personas, allowing for dynamic and engaging messaging.
+*   **Reusable Message Templates**: Create and store message templates, including rich embeds, to quickly send recurring announcements or pre-formatted content.
+*   **Intuitive Message Composer**: Compose messages with a user-friendly interface, incorporating custom avatars, usernames, and embeds.
+*   **Real-time Discord Preview**: See exactly how your message will appear on Discord before you send it, ensuring perfect formatting and presentation.
+*   **No Coding Required**: A completely no-code solution, making advanced Discord messaging accessible to everyone.
+*   **Cost-Effective**: Eliminate the need for paid bot subscriptions or the overhead of custom bot development.
 
-### Utilities
+### Technologies Used (Frontend)
+*   Next.js
+*   React
+*   TypeScript
+*   TanStack Query
+*   Radix UI
+*   Tailwind CSS
 
-This Turborepo has some additional tools already setup for you:
+## Backend: Discord Webhook Manager (API)
 
-- [TypeScript](https://www.typescriptlang.org/) for static type checking
-- [ESLint](https://eslint.org/) for code linting
-- [Prettier](https://prettier.io) for code formatting
+This backend provides the API infrastructure that powers the frontend application, handling data persistence, authentication, and core business logic.
 
-### Build
+### 🚀 Features (Backend)
+The backend provides the following key functionalities:
 
-To build all apps and packages, run the following command:
+-   **User Authentication and Authorization**: Secure user registration, login, and session management, likely integrating with Discord's OAuth for seamless user experience.
+-   **Discord Webhook Management**: API endpoints for creating, retrieving, updating, and deleting Discord webhooks associated with user accounts.
+-   **Predefined Avatar Management**: Services to manage a collection of predefined avatars that users can utilize when composing messages.
+-   **Message Template Management**: Functionality to create, store, and retrieve reusable message templates, supporting rich content like embeds.
+-   **Discord Message Sending**: API to send messages to Discord channels using configured webhooks, incorporating selected avatars and saved templates.
+-   **User Settings and Preferences**: Management of various user-specific application settings.
 
-```
-cd my-turborepo
+### 💻 Technical Stack (Backend)
+The backend is built with a modern and scalable technology stack:
 
-# With [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation) installed (recommended)
-turbo build
+-   **Framework**: [Fastify](https://www.fastify.io/) - A fast and low-overhead web framework for Node.js.
+-   **Language**: [TypeScript](https://www.typescriptlang.org/) - For type safety and enhanced developer experience.
+-   **Database**: [MongoDB](https://www.mongodb.com/) - A NoSQL document database.
+-   **ODM**: [Mongoose](https://mongoosejs.com/) - MongoDB object data modeling for Node.js.
+-   **Authentication**: [JWT (JSON Web Tokens)](https://jwt.io/) - For secure API authentication.
+-   **File Storage**: [Cloudinary](https://cloudinary.com/) - For cloud-based image and video management (likely for avatars).
+-   **Logging**: [Winston](https://github.com/winstonjs/winston) - A versatile logging library.
+-   **Environment Variables**: [Dotenv](https://github.com/motdotla/dotenv) - For managing environment-specific configurations.
 
-# Without [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation), use your package manager
-npx turbo build
-yarn dlx turbo build
-pnpm exec turbo build
-```
-
-You can build a specific package by using a [filter](https://turborepo.com/docs/crafting-your-repository/running-tasks#using-filters):
-
-```
-# With [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation) installed (recommended)
-turbo build --filter=docs
-
-# Without [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation), use your package manager
-npx turbo build --filter=docs
-yarn exec turbo build --filter=docs
-pnpm exec turbo build --filter=docs
-```
-
-### Develop
-
-To develop all apps and packages, run the following command:
-
-```
-cd my-turborepo
-
-# With [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation) installed (recommended)
-turbo dev
-
-# Without [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation), use your package manager
-npx turbo dev
-yarn exec turbo dev
-pnpm exec turbo dev
-```
-
-You can develop a specific package by using a [filter](https://turborepo.com/docs/crafting-your-repository/running-tasks#using-filters):
+### 📁 Project Structure (Backend)
 
 ```
-# With [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation) installed (recommended)
-turbo dev --filter=web
-
-# Without [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation), use your package manager
-npx turbo dev --filter=web
-yarn exec turbo dev --filter=web
-pnpm exec turbo dev --filter=web
+discord-webhook-manager-backend/
+├── src/
+│   ├── app.ts                 # Fastify app configuration
+│   ├── server.ts              # Server entry point
+│   ├── config/                # Configuration files (DB, usage limits)
+│   ├── controllers/           # Route handlers and business logic
+│   ├── middlewares/           # Custom Fastify middleware
+│   ├── models/                # Mongoose schemas and models
+│   ├── routes/                # API endpoint definitions
+│   ├── services/              # Reusable business logic
+│   ├── schemas/               # Validation schemas (e.g., Zod)
+│   ├── utils/                 # Utility functions (JWT, errors, logging)
+│   └── types/                 # TypeScript custom types
+├── tests/                     # Unit and integration tests
+├── dist/                      # Compiled JavaScript (generated)
+├── package.json               # Project metadata and dependencies
+├── tsconfig.json              # TypeScript configuration
+└── README.md                  # Project documentation
 ```
 
-### Remote Caching
+## Getting Started (Monorepo)
 
-> [!TIP]
-> Vercel Remote Cache is free for all plans. Get started today at [vercel.com](https://vercel.com/signup?/signup?utm_source=remote-cache-sdk&utm_campaign=free_remote_cache).
+### 🛠️ Prerequisites
 
-Turborepo can use a technique known as [Remote Caching](https://turborepo.com/docs/core-concepts/remote-caching) to share cache artifacts across machines, enabling you to share build caches with your team and CI/CD pipelines.
+-   **Node.js** (v16 or higher)
+-   **MongoDB** (local installation or MongoDB Atlas)
+-   **pnpm** (recommended package manager for this monorepo)
 
-By default, Turborepo will cache locally. To enable Remote Caching you will need an account with Vercel. If you don't have an account you can [create one](https://vercel.com/signup?utm_source=turborepo-examples), then enter the following commands:
+### 📦 Installation
 
+1.  **Clone the repository**
+    ```bash
+    git clone <your-repo-url>
+    cd monorepo
+    ```
+
+2.  **Install dependencies for the entire monorepo**
+    ```bash
+    pnpm install
+    ```
+
+3.  **Set up environment variables for the backend**
+    Navigate to `apps/backend` and copy the example environment file:
+    ```bash
+    cd apps/backend
+    cp .env.example .env
+    ```
+    Edit the `.env` file with your configuration. Essential variables include:
+    ```env
+    PORT=4000
+    MONGODB_URI=mongodb://localhost:27017/discord-webhook-manager
+    NODE_ENV=development
+    JWT_SECRET=your-super-secret-jwt-key
+    DISCORD_CLIENT_ID=your_discord_client_id
+    DISCORD_CLIENT_SECRET=your_discord_client_secret
+    DISCORD_REDIRECT_URI=http://localhost:3000/auth/callback # Frontend callback URL
+    CLOUDINARY_CLOUD_NAME=your_cloudinary_cloud_name
+    CLOUDINARY_API_KEY=your_cloudinary_api_key
+    CLOUDINARY_API_SECRET=your_cloudinary_api_secret
+    ```
+
+4.  **Set up environment variables for the frontend**
+    Navigate to `apps/web` and copy the example environment file:
+    ```bash
+    cd apps/web
+    cp .env.example .env
+    ```
+    Edit the `.env` file with your configuration. Essential variables include:
+    ```env
+    NODE_ENV=development
+    NEXT_PUBLIC_API_URL=http://localhost:4000 # Or your deployed backend URL
+    ```
+    `NEXT_PUBLIC_API_URL` should point to your backend API. During local development, this will typically be `http://localhost:4000`.
+
+4.  **Start MongoDB** (if using local installation)
+    ```bash
+    # macOS with Homebrew
+    brew services start mongodb-community
+
+    # Ubuntu/Debian
+    sudo systemctl start mongod
+
+    # Or use Docker
+    docker run -d -p 27017:27017 --name mongodb mongo:latest
+    ```
+
+### 🚀 Usage
+
+From the root of the monorepo:
+
+#### Development
+
+To run both frontend and backend in development mode (using Turborepo):
+```bash
+pnpm dev
 ```
-cd my-turborepo
+*(This assumes you have `dev` scripts configured in your root `package.json` or `turbo.json` to run both `apps/web` and `apps/backend` dev servers.)*
 
-# With [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation) installed (recommended)
-turbo login
+Alternatively, you can run them separately:
 
-# Without [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation), use your package manager
-npx turbo login
-yarn exec turbo login
-pnpm exec turbo login
+**Backend Development:**
+```bash
+cd apps/backend
+pnpm dev
 ```
 
-This will authenticate the Turborepo CLI with your [Vercel account](https://vercel.com/docs/concepts/personal-accounts/overview).
-
-Next, you can link your Turborepo to your Remote Cache by running the following command from the root of your Turborepo:
-
-```
-# With [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation) installed (recommended)
-turbo link
-
-# Without [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation), use your package manager
-npx turbo link
-yarn exec turbo link
-pnpm exec turbo link
+**Frontend Development:**
+```bash
+cd apps/web
+pnpm dev
 ```
 
-## Useful Links
+#### Production
 
-Learn more about the power of Turborepo:
+**Build the entire monorepo:**
+```bash
+pnpm build
+```
+*(This assumes a `build` script in your root `package.json` or `turbo.json` to build both `apps/web` and `apps/backend`.)*
 
-- [Tasks](https://turborepo.com/docs/crafting-your-repository/running-tasks)
-- [Caching](https://turborepo.com/docs/crafting-your-repository/caching)
-- [Remote Caching](https://turborepo.com/docs/core-concepts/remote-caching)
-- [Filtering](https://turborepo.com/docs/crafting-your-repository/running-tasks#using-filters)
-- [Configuration Options](https://turborepo.com/docs/reference/configuration)
-- [CLI Usage](https://turborepo.com/docs/reference/command-line-reference)
+## 📈 Deployment
+
+This monorepo can be deployed to Vercel.
+
+-   **Frontend (`apps/web`)**: Deploy directly to Vercel, specifying `apps/web` as the root directory. Vercel's native Next.js support will handle the rest.
+-   **Backend (`apps/backend`)**: Deploy to Vercel as Serverless Functions, specifying `apps/backend` as the root directory. Ensure you have a `vercel.json` file in `apps/backend` to configure the build and routing for the API.
+
+## 🤝 Contributing
+
+1.  Fork the repository
+2.  Create a feature branch
+3.  Make your changes
+4.  Add tests if applicable
+5.  Submit a pull request
+
+## 📄 License
+
+This project is licensed under the ISC License.
+
+## 🆘 Support
+
+If you encounter any issues or have questions:
+1.  Check the existing issues
+2.  Create a new issue with detailed information
+3.  Provide steps to reproduce the problem
+
+---
+
+**Happy Coding! 🎉**
