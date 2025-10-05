@@ -116,7 +116,7 @@ discord-webhook-manager-backend/
     Edit the `.env` file with your configuration. Essential variables include:
     ```env
     PORT=4000
-    MONGODB_URI=mongodb://localhost:27017/discord-webhook-manager
+    MONGODB_URL=mongodb://localhost:27017/discord-webhook-manager
     NODE_ENV=development
     JWT_SECRET=your-super-secret-jwt-key
     DISCORD_CLIENT_ID=your_discord_client_id
@@ -162,7 +162,6 @@ To run both frontend and backend in development mode (using Turborepo):
 ```bash
 pnpm dev
 ```
-*(This assumes you have `dev` scripts configured in your root `package.json` or `turbo.json` to run both `apps/web` and `apps/backend` dev servers.)*
 
 Alternatively, you can run them separately:
 
@@ -184,7 +183,6 @@ pnpm dev
 ```bash
 pnpm build
 ```
-*(This assumes a `build` script in your root `package.json` or `turbo.json` to build both `apps/web` and `apps/backend`.)*
 
 ## 📈 Deployment
 
@@ -195,11 +193,7 @@ This monorepo can be deployed to Vercel.
 
 ## 🤝 Contributing
 
-1.  Fork the repository
-2.  Create a feature branch
-3.  Make your changes
-4.  Add tests if applicable
-5.  Submit a pull request
+We welcome contributions to this project! Please see our [CONTRIBUTING.md](./CONTRIBUTING.md) for detailed guidelines on how to contribute, report bugs, and suggest features.
 
 ## 📄 License
 
