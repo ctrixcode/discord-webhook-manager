@@ -1,6 +1,6 @@
 {
   "name": "web",
-  "version": "1.7.6",
+  "version": "1.7.7",
   "private": true,
   "scripts": {
     "dev": "next dev --turbopack",
@@ -76,6 +76,7 @@
     "eslint-config-next": "15.4.6",
     "postcss": "^8.5.6",
     "tailwindcss": "^4.1.12",
-    "tw-animate-css": "^1.3.6"
+    "tw-animate-css": "^1.3.6",
+    "typescript": "5.9.2"
   }
 }
