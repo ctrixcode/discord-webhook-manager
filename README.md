@@ -205,9 +205,10 @@ This project is licensed under the ISC License.
 ## 🆘 Support
 
 If you encounter any issues or have questions:
-1.  Check the existing issues
-2.  Create a new issue with detailed information
-3.  Provide steps to reproduce the problem
+1.  Join our Discord server for community support: [https://discord.gg/YbtyTRAFv2](https://discord.gg/YbtyTRAFv2)
+2.  Check the existing issues
+3.  Create a new issue with detailed information
+4.  Provide steps to reproduce the problem
 
 ---
 
