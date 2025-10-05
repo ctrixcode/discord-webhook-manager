@@ -11,9 +11,6 @@
 
 # 2. SPECIFIC OWNERS (Tagged for specific code paths)
 
-# Backend application
-<!-- /apps/backend/ @backend-team -->
-
 # Web (Frontend) application
 /apps/web/ @Anmol-TheDev
 
