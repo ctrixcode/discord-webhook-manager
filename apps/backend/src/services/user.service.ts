@@ -1,5 +1,6 @@
 import mongoose from 'mongoose';
 import UserModel, { IUser } from '../models/User';
+import { CreateUserData, UpdateUserData } from '@repo/shared-types';
 import { logger } from '../utils';
 import { ErrorMessages } from '../utils/errorMessages';
 import {
@@ -7,24 +8,6 @@ import {
   InternalServerError,
   NotFoundError,
 } from '../utils/errors';
-
-export interface CreateUserData {
-  email: string;
-  password?: string;
-  discord_id?: string;
-  username?: string;
-  discord_avatar?: string;
-  guilds?: { id: string; name: string; icon: string | null }[];
-}
-
-export interface UpdateUserData {
-  email?: string;
-  password?: string;
-  discord_id?: string;
-  username?: string;
-  discord_avatar?: string;
-  guilds?: { id: string; name: string; icon: string | null }[];
-}
 
 /**
  * Create a new user

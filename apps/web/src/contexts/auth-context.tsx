@@ -9,7 +9,7 @@ import React, {
 } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
 import { api } from '@/lib/api';
-import { type User } from '@/lib/api/types/user';
+import { type User } from '@repo/shared-types';
 import { AxiosError } from 'axios';
 
 interface AuthContextType {

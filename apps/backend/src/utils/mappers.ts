@@ -2,16 +2,7 @@ import mongoose from 'mongoose';
 import { IUser } from '../models/User';
 import { IWebhook } from '../models/Webhook';
 import { IAvatar } from '../models/avatar';
-
-export interface UserPayload {
-  id: string;
-  username: string;
-  email: string;
-  discord_id?: string;
-  discord_avatar?: string;
-  accountType: string;
-  createdAt: string;
-}
+import { User } from '@repo/shared-types';
 
 export interface WebhookDto {
   id: string;
@@ -33,7 +24,7 @@ export interface AvatarDto {
   updatedAt: Date;
 }
 
-export const toUserPayload = (user: IUser): UserPayload => {
+export const toUserPayload = (user: IUser): User => {
   return {
     id: (user._id as mongoose.Types.ObjectId).toString(),
     username: user.username,
@@ -42,6 +33,7 @@ export const toUserPayload = (user: IUser): UserPayload => {
     discord_avatar: user.discord_avatar,
     accountType: user.accountType,
     createdAt: user.createdAt.toISOString(),
+    updatedAt: user.updatedAt.toISOString(),
   };
 };
 

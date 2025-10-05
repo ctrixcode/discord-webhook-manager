@@ -1,5 +1,5 @@
 import { apiClient } from '../client';
-import { User, UserUsage } from '../types/user';
+import { User, UserUsage } from '@repo/shared-types';
 import { ApiResponse } from '../types/api';
 
 export const userQueries = {
