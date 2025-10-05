@@ -87,4 +87,4 @@ For detailed examples on how to use our Issue and Pull Request templates, and ho
 
 ## License
 
-By contributing to Discord Webhook Manager, you agree that your contributions will be licensed under its ISC License.
+By contributing to Discord Webhook Manager, you agree that your contributions will be licensed under its GNU General Public License v3.0.

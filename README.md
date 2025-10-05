@@ -210,7 +210,7 @@ We welcome contributions to this project! Please see our [CONTRIBUTING.md](./CON
 
 ## 📄 License
 
-This project is licensed under the ISC License.
+This project is licensed under the GNU General Public License v3.0.
 
 ## 🆘 Support
 
