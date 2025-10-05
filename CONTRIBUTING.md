@@ -36,8 +36,11 @@ We love new ideas! If you have a suggestion for an enhancement or a new feature,
     ```bash
     pnpm install
     ```
-4.  **Create a new branch:**
+4.  **Create a new branch from `development`:**
+    *   **Important:** All new features and bug fixes should be branched off the `development` branch. Do NOT branch directly from `launchpad` (our production branch).
     ```bash
+    git checkout development
+    git pull origin development # Ensure your development branch is up-to-date
     git checkout -b feature/your-feature-name
     # or
     git checkout -b bugfix/your-bug-fix-name
@@ -68,7 +71,9 @@ We love new ideas! If you have a suggestion for an enhancement or a new feature,
     ```bash
     git push origin feature/your-feature-name
     ```
-10. **Open a Pull Request (PR):** Go to the original `discord-webhook-manager` repository on GitHub and open a new pull request from your branch.
+10. **Open a Pull Request (PR) to `development`:**
+    *   Go to the original `discord-webhook-manager` repository on GitHub and open a new pull request from your branch.
+    *   **Ensure the base branch for your PR is `development`**, not `launchpad`.
     *   Provide a clear title and description for your PR.
     *   Reference any related issues.
 
