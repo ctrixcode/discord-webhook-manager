@@ -20,7 +20,7 @@ import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Send, Webhook } from 'lucide-react';
 import { api } from '@/lib/api';
-import type { IAvatar } from '@/lib/api/types/avatar';
+import type { Avatar } from '@repo/shared-types';
 import { useQuery } from '@tanstack/react-query';
 import { AvatarSelector } from '@/components/avatars/avatar-selector';
 import { DiscordMessagePreview } from '@/components/discord-message-preview';
@@ -28,7 +28,6 @@ import type { DiscordEmbed } from '@/lib/api/types/discord';
 import { useToast } from '@/hooks/use-toast';
 import { SendMessageData } from '@/lib/api/types/webhook';
 import { DISCORD_MAX_MESSAGE_LENGTH } from '@/constants/discord';
-import { AxiosError } from 'axios';
 import Link from 'next/link';
 import { EmbedBuilder } from '../../../components/embed-builder';
 import { ApiError } from '@/lib/error';
@@ -57,7 +56,7 @@ export default function SendMessagePage() {
   const [selectedTemplateId, setSelectedTemplateId] = useState<
     string | undefined
   >(undefined);
-  const [selectedAvatar, setSelectedAvatar] = useState<IAvatar | undefined>();
+  const [selectedAvatar, setSelectedAvatar] = useState<Avatar | undefined>();
   const [hideSelectTemplate, setHideSelectTemplate] = useState(false);
 
   const handleClearMessage = () => {
@@ -157,7 +156,7 @@ export default function SendMessagePage() {
     }
   };
 
-  const handleAvatarSelect = (avatar: IAvatar) => {
+  const handleAvatarSelect = (avatar: Avatar) => {
     setMessage(prev => ({
       ...prev,
       avatarRefID: avatar.id, // Use avatar.id as avatarRefID

@@ -2,7 +2,7 @@ import mongoose from 'mongoose';
 import { IUser } from '../models/User';
 import { IWebhook } from '../models/Webhook';
 import { IAvatar } from '../models/avatar';
-import { User } from '@repo/shared-types';
+import { User, Avatar } from '@repo/shared-types';
 
 export interface WebhookDto {
   id: string;
@@ -13,15 +13,6 @@ export interface WebhookDto {
   createdAt: Date;
   updatedAt: Date;
   last_used?: Date | null;
-}
-
-export interface AvatarDto {
-  id: string;
-  user_id: string;
-  username: string;
-  avatar_url?: string;
-  createdAt: Date;
-  updatedAt: Date;
 }
 
 export const toUserPayload = (user: IUser): User => {
@@ -50,13 +41,13 @@ export const toWebhookDto = (webhook: IWebhook): WebhookDto => {
   };
 };
 
-export const toAvatarDto = (avatar: IAvatar): AvatarDto => {
+export const toAvatarDto = (avatar: IAvatar): Avatar => {
   return {
     id: String(avatar._id),
     user_id: String(avatar.user_id),
     username: avatar.username,
     avatar_url: avatar.avatar_url,
-    createdAt: avatar.createdAt,
-    updatedAt: avatar.updatedAt,
+    createdAt: avatar.createdAt.toISOString(),
+    updatedAt: avatar.updatedAt.toISOString(),
   };
 };

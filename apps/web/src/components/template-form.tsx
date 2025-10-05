@@ -17,7 +17,7 @@ import type {
 } from '@/lib/api/types/message-template';
 import type { DiscordEmbed } from '@/lib/api/types/discord';
 import { FileText, MessageSquare, Layers, Users } from 'lucide-react';
-import { IAvatar } from '@/lib/api/types/avatar';
+import { Avatar } from '@repo/shared-types';
 import { EmbedBuilder } from '@/components/embed-builder';
 import { useQuery } from '@tanstack/react-query';
 import { api } from '@/lib/api';
@@ -41,7 +41,7 @@ export const TemplateForm = React.forwardRef(function TemplateForm(
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
   const [content, setContent] = useState('');
-  const [selectedAvatar, setSelectedAvatar] = useState<IAvatar>({
+  const [selectedAvatar, setSelectedAvatar] = useState<Avatar>({
     username: 'Webhook Manager',
     avatar_url: '/placeholder.svg',
     createdAt: new Date().toISOString(),
@@ -50,7 +50,7 @@ export const TemplateForm = React.forwardRef(function TemplateForm(
     user_id: 'predefined-user-id',
   });
   const [embeds, setEmbeds] = useState<DiscordEmbed[]>([]);
-  const { data: avatars = [] } = useQuery<IAvatar[]>({
+  const { data: avatars = [] } = useQuery<Avatar[]>({
     queryKey: ['avatars'],
     queryFn: api.avatar.getAllAvatars,
   });
@@ -78,7 +78,7 @@ export const TemplateForm = React.forwardRef(function TemplateForm(
       setContent(initialData.content);
       if (avatars && avatars.length > 0) {
         setSelectedAvatar(
-          avatars.find(a => a.id === initialData.avatar_ref) as IAvatar
+          avatars.find(a => a.id === initialData.avatar_ref) as Avatar
         );
       }
       // For display, if initialData has avatar_ref, we might need to fetch the actual URL

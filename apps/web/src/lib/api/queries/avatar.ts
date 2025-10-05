@@ -1,41 +1,38 @@
 import { apiClient } from '../client';
-import { IAvatar } from '../types/avatar';
+import { Avatar } from '@repo/shared-types';
 import { ApiResponse } from '../types/api';
 
 export const avatarQueries = {
   // Get all avatars for current user
-  getAllAvatars: async (): Promise<IAvatar[]> => {
-    const response = await apiClient.get<ApiResponse<IAvatar[]>>('/avatar');
-    return response.data.data as IAvatar[];
+  getAllAvatars: async (): Promise<Avatar[]> => {
+    const response = await apiClient.get<ApiResponse<Avatar[]>>('/avatar');
+    return response.data.data as Avatar[];
   },
 
   // Get avatar by ID
-  getAvatarById: async (id: string): Promise<IAvatar> => {
-    const response = await apiClient.get<ApiResponse<IAvatar>>(`/avatar/${id}`);
-    return response.data.data as IAvatar;
+  getAvatarById: async (id: string): Promise<Avatar> => {
+    const response = await apiClient.get<ApiResponse<Avatar>>(`/avatar/${id}`);
+    return response.data.data as Avatar;
   },
 
   // Create avatar
   createAvatar: async (
-    data: Omit<IAvatar, 'id' | 'createdAt' | 'updatedAt' | 'user_id'>
-  ): Promise<IAvatar> => {
-    const response = await apiClient.post<ApiResponse<IAvatar>>(
-      '/avatar',
-      data
-    );
-    return response.data.data as IAvatar;
+    data: Omit<Avatar, 'id' | 'createdAt' | 'updatedAt' | 'user_id'>
+  ): Promise<Avatar> => {
+    const response = await apiClient.post<ApiResponse<Avatar>>('/avatar', data);
+    return response.data.data as Avatar;
   },
 
   // Update avatar
   updateAvatar: async (
     id: string,
-    data: Partial<Omit<IAvatar, 'id' | 'createdAt' | 'updatedAt' | 'user_id'>>
-  ): Promise<IAvatar> => {
-    const response = await apiClient.put<ApiResponse<IAvatar>>(
+    data: Partial<Omit<Avatar, 'id' | 'createdAt' | 'updatedAt' | 'user_id'>>
+  ): Promise<Avatar> => {
+    const response = await apiClient.put<ApiResponse<Avatar>>(
       `/avatar/${id}`,
       data
     );
-    return response.data.data as IAvatar;
+    return response.data.data as Avatar;
   },
 
   // Delete avatar
@@ -44,8 +41,8 @@ export const avatarQueries = {
   },
 
   // Upload avatar
-  uploadAvatar: async (data: FormData): Promise<IAvatar> => {
-    const response = await apiClient.post<ApiResponse<IAvatar>>(
+  uploadAvatar: async (data: FormData): Promise<Avatar> => {
+    const response = await apiClient.post<ApiResponse<Avatar>>(
       '/avatar/upload',
       data,
       {
@@ -54,7 +51,7 @@ export const avatarQueries = {
         },
       }
     );
-    return response.data.data as IAvatar;
+    return response.data.data as Avatar;
   },
 };
 

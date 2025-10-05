@@ -11,15 +11,19 @@ import {
   DialogTrigger,
 } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import {
+  Avatar as AvatarComponent,
+  AvatarFallback,
+  AvatarImage,
+} from '@/components/ui/avatar';
 import { Search, Users, Plus } from 'lucide-react';
 import { getAllAvatars } from '@/lib/api/queries/avatar';
-import type { IAvatar } from '@/lib/api/types/avatar';
+import type { Avatar } from '@repo/shared-types';
 import { useAuth } from '@/contexts/auth-context';
 import { CreateAvatarDialog } from '@/components/avatars/create-avatar-dialog';
 
 interface AvatarSelectorProps {
-  onSelect: (avatar: IAvatar) => void;
+  onSelect: (avatar: Avatar) => void;
   children: React.ReactNode;
 }
 
@@ -30,13 +34,13 @@ export function AvatarSelector({ onSelect, children }: AvatarSelectorProps) {
   const [searchQuery, setSearchQuery] = useState('');
   const [showCreateDialog, setShowCreateDialog] = useState(false);
 
-  const { data: avatars = [] } = useQuery<IAvatar[]>({
+  const { data: avatars = [] } = useQuery<Avatar[]>({
     queryKey: ['avatars'],
     queryFn: getAllAvatars,
     enabled: !!user && open,
   });
 
-  const filteredAvatars = avatars.filter((avatar: IAvatar) => {
+  const filteredAvatars = avatars.filter((avatar: Avatar) => {
     const nameMatches =
       avatar.username &&
       avatar.username.toLowerCase().includes(searchQuery.toLowerCase());
@@ -46,7 +50,7 @@ export function AvatarSelector({ onSelect, children }: AvatarSelectorProps) {
     return nameMatches || usernameMatches;
   });
 
-  const handleSelect = (avatar: IAvatar) => {
+  const handleSelect = (avatar: Avatar) => {
     onSelect(avatar);
     setOpen(false);
     setSearchQuery('');
@@ -104,7 +108,7 @@ export function AvatarSelector({ onSelect, children }: AvatarSelectorProps) {
                     onClick={() => handleSelect(avatar)}
                     className="flex items-center gap-3 p-3 h-auto justify-start hover:bg-slate-700/50"
                   >
-                    <Avatar className="w-10 h-10 ring-2 ring-purple-500/20">
+                    <AvatarComponent className="w-10 h-10 ring-2 ring-purple-500/20">
                       <AvatarImage
                         src={avatar.avatar_url || '/placeholder.svg'}
                         alt={avatar.username}
@@ -112,7 +116,7 @@ export function AvatarSelector({ onSelect, children }: AvatarSelectorProps) {
                       <AvatarFallback className="bg-purple-500/20 text-purple-300">
                         {avatar.username.slice(0, 2).toUpperCase()}
                       </AvatarFallback>
-                    </Avatar>
+                    </AvatarComponent>
                     <div className="text-left">
                       <div className="font-medium text-white">
                         {avatar.username}

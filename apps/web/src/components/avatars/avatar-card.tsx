@@ -4,7 +4,11 @@ import React, { useState, useRef } from 'react';
 import { useMutation } from '@tanstack/react-query';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import {
+  Avatar as AvatarComponent,
+  AvatarFallback,
+  AvatarImage,
+} from '@/components/ui/avatar';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -23,16 +27,16 @@ import {
 } from '@/components/ui/alert-dialog';
 import { MoreHorizontal, Edit, Trash2, Copy } from 'lucide-react';
 import { deleteAvatar } from '@/lib/api/queries/avatar';
-import type { IAvatar } from '@/lib/api/types/avatar';
+import type { Avatar } from '@repo/shared-types';
 import { toast } from '@/hooks/use-toast';
 
 interface AvatarCardProps {
-  avatar: IAvatar;
-  onEdit: (avatar: IAvatar) => void;
+  avatar: Avatar;
+  onEdit: (avatar: Avatar) => void;
   onDeleteSuccess: () => void;
-  onSelect?: (avatar: IAvatar) => void;
+  onSelect?: (avatar: Avatar) => void;
   selectable?: boolean;
-  onCardClick?: (avatar: IAvatar) => void;
+  onCardClick?: (avatar: Avatar) => void;
 }
 
 export function AvatarCard({
@@ -70,11 +74,13 @@ export function AvatarCard({
   };
 
   const handleCopyUrl = () => {
-    navigator.clipboard.writeText(avatar.avatar_url);
-    toast({
-      title: 'Avatar URL copied',
-      description: 'Avatar URL copied to clipboard',
-    });
+    if (avatar.avatar_url) {
+      navigator.clipboard.writeText(avatar.avatar_url);
+      toast({
+        title: 'Avatar URL copied',
+        description: 'Avatar URL copied to clipboard',
+      });
+    }
   };
 
   return (
@@ -95,7 +101,7 @@ export function AvatarCard({
         <CardContent className="p-4">
           <div className="flex items-start justify-between mb-3">
             <div className="flex items-center gap-3">
-              <Avatar className="w-12 h-12 ring-2 ring-purple-500/20">
+              <AvatarComponent className="w-12 h-12 ring-2 ring-purple-500/20">
                 <AvatarImage
                   src={avatar.avatar_url || '/placeholder.svg'}
                   alt={avatar.username}
@@ -103,7 +109,7 @@ export function AvatarCard({
                 <AvatarFallback className="bg-purple-500/20 text-purple-300">
                   {avatar.username.slice(0, 2).toUpperCase()}
                 </AvatarFallback>
-              </Avatar>
+              </AvatarComponent>
               <div>
                 <h3 className="font-semibold text-white">{avatar.username}</h3>
                 <p className="text-sm text-slate-400">@{avatar.username}</p>

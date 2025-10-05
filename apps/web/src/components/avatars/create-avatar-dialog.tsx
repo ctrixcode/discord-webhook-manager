@@ -19,7 +19,7 @@ import {
   updateAvatar,
   uploadAvatar,
 } from '@/lib/api/queries/avatar';
-import type { IAvatar } from '@/lib/api/types/avatar';
+import type { Avatar } from '@repo/shared-types';
 import { Image as ImageIcon } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { AxiosError } from 'axios';
@@ -29,7 +29,7 @@ interface CreateAvatarDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onSaveSuccess: () => void;
-  editingAvatar?: IAvatar | null;
+  editingAvatar?: Avatar | null;
 }
 
 export function CreateAvatarDialog({

@@ -8,7 +8,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Plus, Search, Users } from 'lucide-react';
 import { getAllAvatars } from '@/lib/api/queries/avatar';
-import { type IAvatar } from '@/lib/api/types/avatar';
+import { type Avatar } from '@repo/shared-types';
 import { useAuth } from '@/contexts/auth-context';
 import { AvatarCard } from '@/components/avatars/avatar-card';
 import { CreateAvatarDialog } from '@/components/avatars/create-avatar-dialog';
@@ -21,9 +21,9 @@ export default function AvatarsPage() {
   const queryClient = useQueryClient();
   const [searchQuery, setSearchQuery] = useState('');
   const [showCreateDialog, setShowCreateDialog] = useState(false);
-  const [editingAvatar, setEditingAvatar] = useState<IAvatar | null>(null);
+  const [editingAvatar, setEditingAvatar] = useState<Avatar | null>(null);
 
-  const { data: avatars = [], isLoading } = useQuery<IAvatar[]>({
+  const { data: avatars = [], isLoading } = useQuery<Avatar[]>({
     queryKey: ['avatars'],
     queryFn: getAllAvatars,
     enabled: !!user,
@@ -35,7 +35,7 @@ export default function AvatarsPage() {
     );
   }, [avatars, searchQuery]);
 
-  const handleEdit = (avatar: IAvatar) => {
+  const handleEdit = (avatar: Avatar) => {
     setEditingAvatar(avatar);
     setShowCreateDialog(true);
   };
@@ -56,7 +56,7 @@ export default function AvatarsPage() {
     setEditingAvatar(null);
   };
 
-  const handleCardClick = (avatar: IAvatar) => {
+  const handleCardClick = (avatar: Avatar) => {
     router.push(`/dashboard/send?avatarId=${avatar.id}`);
   };
 
