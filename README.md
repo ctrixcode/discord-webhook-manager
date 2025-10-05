@@ -99,7 +99,7 @@ discord-webhook-manager-backend/
 1.  **Clone the repository**
     ```bash
     git clone <your-repo-url>
-    cd monorepo
+    cd discord-webhook-manager
     ```
 
 2.  **Install dependencies for the entire monorepo**
