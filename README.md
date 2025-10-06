@@ -33,7 +33,9 @@ The Discord Webhook Manager addresses these pain points by offering a free, conv
 *   **Cost-Effective**: Eliminate the need for paid bot subscriptions or the overhead of custom bot development.
 *   **User Settings and Preferences**: Manage various application settings and preferences specific to each user.
 
-<img src="./docs/assets/demo.gif" alt="Discord Webhook Manager Demo" width="600" />
+<p align="center">
+  <img src="./docs/assets/demo.gif" alt="Discord Webhook Manager Demo" />
+</p>
 
 ## 📈 Deployment
 
