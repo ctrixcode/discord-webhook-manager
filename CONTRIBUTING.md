@@ -4,6 +4,14 @@ We welcome contributions to the Discord Webhook Manager project! By contributing
 
 Please take a moment to review this document to make the contribution process as smooth as possible.
 
+## Why Contribute?
+Your contributions are invaluable to the Discord Webhook Manager project! By contributing, you help us:
+*   **Improve and Expand:** Add new features, fix bugs, and enhance existing functionality.
+*   **Learn and Grow:** Collaborate with other developers and learn new skills.
+*   **Make an Impact:** Help create a better tool for Discord server administrators and users.
+
+We appreciate your time and effort, and we're excited to have you as part of our community!
+
 ## Code of Conduct
 
 Please note that this project is released with a Contributor Code of Conduct. By participating in this project, you agree to abide by its terms.
@@ -23,6 +31,10 @@ If you find a bug, please open an issue on GitHub. When reporting a bug, please 
 ### Suggesting Enhancements
 
 We love new ideas! If you have a suggestion for an enhancement or a new feature, please open an issue on GitHub. Describe your idea clearly and explain why you think it would be beneficial.
+
+### Good First Issues
+
+If you're looking for a good place to start contributing, check out our [Good First Issues](https://github.com/ctrixcode/discord-webhook-manager/labels/good%20first%20issue) on GitHub. These are tasks specifically designed for new contributors to get familiar with the codebase.
 
 ## Technical Stack
 
