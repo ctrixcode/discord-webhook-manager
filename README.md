@@ -62,6 +62,7 @@ The backend is built with a modern and scalable technology stack:
 -   **File Storage**: [Cloudinary](https://cloudinary.com/) - For cloud-based image and video management (likely for avatars).
 -   **Logging**: [Winston](https://github.com/winstonjs/winston) - A versatile logging library.
 -   **Environment Variables**: [Dotenv](https://github.com/motdotla/dotenv) - For managing environment-specific configurations.
+-   **Discord Webhook Library**: We maintain our own in-house library for handling Discord webhook interactions. If you need to add a feature that requires changes to the webhook functionality, you may need to contribute to this library as well. You can find the repository here: [discord-webhook-library](https://github.com/ctrixcode/discord-webhook-library).
 
 ### 📁 Project Structure (Backend)
 
