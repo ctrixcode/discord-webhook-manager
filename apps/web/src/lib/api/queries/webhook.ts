@@ -1,11 +1,11 @@
 import { apiClient } from '../client';
-import { SendMessageData, SendMessageResponse } from '../types/webhook';
+import { SendMessageData, SendWebhookResponse } from '../types/webhook';
 import {
   Webhook,
   CreateWebhookData,
   UpdateWebhookData,
 } from '@repo/shared-types';
-import { ApiResponse } from '../types/api';
+import { ApiResponse } from '@repo/shared-types';
 
 export const webhookQueries = {
   // Get all webhooks
@@ -76,8 +76,8 @@ export const webhookQueries = {
   // send message to webhook
   sendMessage: async (
     data: SendMessageData
-  ): Promise<ApiResponse<SendMessageResponse[]>> => {
-    const response = await apiClient.post<ApiResponse<SendMessageResponse[]>>(
+  ): Promise<ApiResponse<SendWebhookResponse[]>> => {
+    const response = await apiClient.post<ApiResponse<SendWebhookResponse[]>>(
       `/webhook/send-message`,
       data
     );

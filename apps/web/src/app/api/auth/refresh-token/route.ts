@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import axios from 'axios';
-import { ApiResponse } from '@/lib/api/types/api';
+import { SuccessResponse } from '@repo/shared-types';
 
 const BACKEND_API_URL =
   process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000/api';
@@ -34,7 +34,7 @@ export async function POST(req: NextRequest) {
         },
       }
     );
-    const respData: ApiResponse<RefreshTokenResponse> | undefined =
+    const respData: SuccessResponse<RefreshTokenResponse> | undefined =
       backendResponse.data;
     if (!respData) {
       throw new Error('Failed to refresh token');

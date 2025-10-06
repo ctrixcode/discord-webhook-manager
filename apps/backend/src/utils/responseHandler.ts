@@ -1,17 +1,5 @@
 import { FastifyReply } from 'fastify';
-
-interface SuccessResponse<T = unknown> {
-  success: true;
-  message?: string;
-  data?: T;
-}
-
-interface ErrorResponse {
-  success: false;
-  code?: string;
-  message?: string;
-  details?: unknown;
-}
+import { SuccessResponse, ErrorResponse } from '@repo/shared-types';
 
 export const sendSuccessResponse = <T = unknown>(
   reply: FastifyReply,

@@ -1,7 +1,6 @@
 import { apiClient } from '../client';
 import { Avatar } from '@repo/shared-types';
-import { ApiResponse } from '../types/api';
-
+import { ApiResponse } from '@repo/shared-types';
 export const avatarQueries = {
   // Get all avatars for current user
   getAllAvatars: async (): Promise<Avatar[]> => {

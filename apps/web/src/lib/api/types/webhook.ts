@@ -11,8 +11,9 @@ export interface SendMessageData {
   };
 }
 
-export interface SendMessageResponse {
+export interface SendWebhookResponse {
   webhookId: string;
   status: string;
   message: string;
+  error?: string;
 }

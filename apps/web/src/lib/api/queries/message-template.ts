@@ -3,8 +3,8 @@ import {
   MessageTemplate,
   CreateMessageTemplateRequest,
   UpdateMessageTemplateRequest,
+  ApiResponse,
 } from '@repo/shared-types';
-import { ApiResponse } from '../types/api';
 
 export const templateQueries = {
   // Get all templates for current user

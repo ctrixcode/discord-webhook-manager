@@ -1,6 +1,6 @@
 import { apiClient } from '../client';
 import { User, UserUsage } from '@repo/shared-types';
-import { ApiResponse } from '../types/api';
+import { ApiResponse } from '@repo/shared-types';
 
 export const userQueries = {
   // Get current authenticated user
