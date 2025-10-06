@@ -28,16 +28,16 @@ export const toUserPayload = (user: IUser): User => {
   };
 };
 
-export const toWebhookDto = (webhook: IWebhook): WebhookDto => {
+export const toWebhookDto = (webhook: IWebhook): Webhook => {
   return {
     id: String(webhook._id),
     user_id: webhook.user_id,
     name: webhook.name,
     description: webhook.description,
     is_active: webhook.is_active,
-    createdAt: webhook.createdAt,
-    updatedAt: webhook.updatedAt,
-    last_used: webhook.last_used,
+    createdAt: webhook.createdAt.toISOString(),
+    updatedAt: webhook.updatedAt.toISOString(),
+    last_used: webhook.last_used ? webhook.last_used.toISOString() : null,
   };
 };
 

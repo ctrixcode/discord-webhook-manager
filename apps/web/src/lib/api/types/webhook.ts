@@ -1,28 +1,11 @@
 import { DiscordEmbed } from './discord';
+import {
+  Webhook,
+  CreateWebhookData,
+  UpdateWebhookData,
+} from '@repo/shared-types';
 
-export interface Webhook {
-  id: string;
-  user_id: string;
-  name: string;
-  description?: string;
-  is_active: string;
-  createdAt: string;
-  updatedAt: string;
-  last_used?: Date | null;
-}
-
-export interface CreateWebhookRequest {
-  name: string;
-  url: string;
-  description?: string;
-  defaultAvatarId?: string;
-}
-
-export interface UpdateWebhookRequest {
-  name?: string;
-  description?: string;
-  is_active?: boolean;
-}
+export type { Webhook, CreateWebhookData, UpdateWebhookData };
 
 export interface SendMessageData {
   webhookIds: string[];

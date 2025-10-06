@@ -43,7 +43,7 @@ export const webhookQueries = {
   },
 
   // Create webhook
-  createWebhook: async (data: CreateWebhookRequest): Promise<Webhook> => {
+  createWebhook: async (data: CreateWebhookData): Promise<Webhook> => {
     const response = await apiClient.post<ApiResponse<Webhook>>(
       '/webhook',
       data
@@ -54,7 +54,7 @@ export const webhookQueries = {
   // Update webhook
   updateWebhook: async (
     id: string,
-    data: UpdateWebhookRequest
+    data: UpdateWebhookData
   ): Promise<ApiResponse<Webhook>> => {
     const response = await apiClient.put<ApiResponse<Webhook>>(
       `/webhook/${id}`,

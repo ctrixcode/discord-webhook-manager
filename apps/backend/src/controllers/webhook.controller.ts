@@ -5,8 +5,6 @@ import {
   getWebhookById,
   updateWebhook,
   deleteWebhook,
-  CreateWebhookData,
-  UpdateWebhookData,
   testWebhook,
   sendMessage,
   SendMessageData,
@@ -21,6 +19,7 @@ import {
 import { ErrorMessages } from '../utils/errorMessages';
 import { sendSuccessResponse } from '../utils/responseHandler';
 import { HttpStatusCode } from '../utils/httpcode';
+import { CreateWebhookData, UpdateWebhookData } from '@repo/shared-types';
 
 export const createWebhookHandler = async (
   request: FastifyRequest<{ Body: CreateWebhookData }>,

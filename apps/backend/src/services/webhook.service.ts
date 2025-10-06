@@ -21,18 +21,8 @@ import {
   UsageLimitExceededError,
 } from '../utils/errors';
 import { ErrorMessages } from '../utils/errorMessages';
+import { CreateWebhookData, UpdateWebhookData } from '@repo/shared-types';
 
-export interface CreateWebhookData {
-  name: string;
-  description?: string;
-  url: string;
-}
-
-export interface UpdateWebhookData {
-  name?: string;
-  description?: string;
-  is_active?: boolean;
-}
 export interface SendMessageData {
   message: string;
   avatarRefID?: string;

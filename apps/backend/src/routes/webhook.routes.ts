@@ -9,11 +9,7 @@ import {
   sendMessageHandler,
 } from '../controllers/webhook.controller';
 import { authenticate } from '../middlewares';
-import {
-  CreateWebhookData,
-  UpdateWebhookData,
-  SendMessageData,
-} from '../services/webhook.service';
+import { SendMessageData } from '../services/webhook.service';
 import {
   createWebhookSchema,
   updateWebhookSchema,
@@ -21,6 +17,7 @@ import {
   getWebhooksQuerySchema,
   webhookSendMessageSchema,
 } from '../schemas/webhook.schema';
+import { CreateWebhookData, UpdateWebhookData } from '@repo/shared-types';
 
 const webhookRoutes = async (server: FastifyInstance) => {
   server.post<{ Body: CreateWebhookData }>(
