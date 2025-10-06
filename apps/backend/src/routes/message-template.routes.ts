@@ -8,9 +8,9 @@ import {
 } from '../controllers/message-template.controller';
 import { authenticate } from '../middlewares';
 import {
-  CreateMessageTemplateData,
-  UpdateMessageTemplateData,
-} from '../services/message-template.service';
+  CreateMessageTemplateRequest,
+  UpdateMessageTemplateRequest,
+} from '@repo/shared-types';
 import {
   createMessageTemplateSchema,
   updateMessageTemplateSchema,
@@ -20,7 +20,7 @@ import {
 } from '../schemas/message-template.schema';
 
 const messageTemplateRoutes = async (server: FastifyInstance) => {
-  server.post<{ Body: CreateMessageTemplateData }>(
+  server.post<{ Body: CreateMessageTemplateRequest }>(
     '/',
     { schema: createMessageTemplateSchema, preHandler: [authenticate] },
     createMessageTemplateHandler
@@ -40,7 +40,7 @@ const messageTemplateRoutes = async (server: FastifyInstance) => {
 
   server.put<{
     Params: IMessageTemplateParams;
-    Body: UpdateMessageTemplateData;
+    Body: UpdateMessageTemplateRequest;
   }>(
     '/:id',
     { schema: updateMessageTemplateSchema, preHandler: [authenticate] },

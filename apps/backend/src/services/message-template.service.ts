@@ -4,27 +4,12 @@ import MessageTemplateModel, {
 import mongoose, { Types } from 'mongoose';
 import { logger } from '../utils';
 
-import { IEmbedSchemaDocument } from '../models/embed';
+import {
+  CreateMessageTemplateRequest,
+  UpdateMessageTemplateRequest,
+} from '@repo/shared-types';
 import { BadRequestError, InternalServerError } from '../utils/errors';
 import { ErrorMessages } from '../utils/errorMessages';
-
-export interface CreateMessageTemplateData {
-  name: string;
-  description?: string;
-  content: string;
-  avatar_ref: string;
-  embeds?: IEmbedSchemaDocument[];
-  attachments?: string[];
-}
-
-export interface UpdateMessageTemplateData {
-  name?: string;
-  description?: string;
-  content?: string;
-  avatar_ref?: string;
-  embeds?: IEmbedSchemaDocument[];
-  attachments?: string[];
-}
 
 /**
  * Creates a new message template for a specific user.
@@ -34,7 +19,7 @@ export interface UpdateMessageTemplateData {
  */
 export const createMessageTemplate = async (
   userId: string,
-  templateData: CreateMessageTemplateData
+  templateData: CreateMessageTemplateRequest
 ): Promise<IMessageTemplate> => {
   try {
     logger.info('Creating new message template', {
@@ -157,7 +142,7 @@ export const getMessageTemplatesByUserId = async (
  */
 export const updateMessageTemplate = async (
   templateId: string,
-  updateData: UpdateMessageTemplateData,
+  updateData: UpdateMessageTemplateRequest,
   userId: string
 ): Promise<IMessageTemplate | null> => {
   try {

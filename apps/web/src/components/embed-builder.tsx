@@ -8,7 +8,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { AvatarSelector } from '@/components/avatars/avatar-selector';
 import { Users } from 'lucide-react';
-import type { DiscordEmbed } from '@/lib/api/types/discord';
+import type { DiscordEmbed } from '@repo/shared-types';
 import { DISCORD_BLURPLE_COLOR, DISCORD_MAX_EMBEDS } from '@/constants/discord';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { discordColorToHex, hexToDiscordColor } from '@/lib/discord-utils';

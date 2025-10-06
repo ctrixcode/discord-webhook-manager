@@ -3,7 +3,7 @@ import {
   MessageTemplate,
   CreateMessageTemplateRequest,
   UpdateMessageTemplateRequest,
-} from '../types/message-template';
+} from '@repo/shared-types';
 import { ApiResponse } from '../types/api';
 
 export const templateQueries = {

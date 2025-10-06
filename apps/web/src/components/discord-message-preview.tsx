@@ -5,7 +5,7 @@ import {
   AvatarImage,
 } from '@/components/ui/avatar';
 import { Avatar } from '@repo/shared-types';
-import { type DiscordEmbed } from '@/lib/api/types/discord';
+import { type DiscordEmbed } from '@repo/shared-types';
 import { discordColorToHex } from '@/lib/discord-utils';
 import React, { useEffect, useState } from 'react';
 import Image from 'next/image';

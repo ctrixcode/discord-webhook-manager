@@ -25,7 +25,7 @@ import {
 } from '@/components/ui/alert-dialog';
 import { useAuth } from '@/contexts/auth-context';
 import { templateQueries } from '@/lib/api/queries/message-template';
-import type { MessageTemplate } from '@/lib/api/types/message-template';
+import type { MessageTemplate } from '@repo/shared-types';
 import {
   Search,
   FileText,

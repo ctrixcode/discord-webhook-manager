@@ -5,9 +5,11 @@ import {
   getMessageTemplatesByUserId,
   updateMessageTemplate,
   deleteMessageTemplate,
-  CreateMessageTemplateData,
-  UpdateMessageTemplateData,
 } from '../services/message-template.service';
+import {
+  CreateMessageTemplateRequest,
+  UpdateMessageTemplateRequest,
+} from '@repo/shared-types';
 import { IMessageTemplateParams } from '../schemas/message-template.schema';
 import { sendSuccessResponse } from '../utils/responseHandler';
 import { HttpStatusCode } from '../utils/httpcode';
@@ -15,7 +17,7 @@ import { AuthenticationError, NotFoundError } from '../utils/errors';
 import { ErrorMessages } from '../utils/errorMessages';
 
 export const createMessageTemplateHandler = async (
-  request: FastifyRequest<{ Body: CreateMessageTemplateData }>,
+  request: FastifyRequest<{ Body: CreateMessageTemplateRequest }>,
   reply: FastifyReply
 ) => {
   const userId = request.user?.userId;
@@ -94,7 +96,7 @@ export const getMessageTemplateHandler = async (
 export const updateMessageTemplateHandler = async (
   request: FastifyRequest<{
     Params: IMessageTemplateParams;
-    Body: UpdateMessageTemplateData;
+    Body: UpdateMessageTemplateRequest;
   }>,
   reply: FastifyReply
 ) => {

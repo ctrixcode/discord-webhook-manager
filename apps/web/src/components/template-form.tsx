@@ -11,11 +11,11 @@ import { DiscordMessagePreview } from '@/components/discord-message-preview';
 import { AvatarSelector } from '@/components/avatars/avatar-selector';
 
 import type {
+  DiscordEmbed,
   MessageTemplate,
   CreateMessageTemplateRequest,
   UpdateMessageTemplateRequest,
-} from '@/lib/api/types/message-template';
-import type { DiscordEmbed } from '@/lib/api/types/discord';
+} from '@repo/shared-types';
 import { FileText, MessageSquare, Layers, Users } from 'lucide-react';
 import { Avatar } from '@repo/shared-types';
 import { EmbedBuilder } from '@/components/embed-builder';

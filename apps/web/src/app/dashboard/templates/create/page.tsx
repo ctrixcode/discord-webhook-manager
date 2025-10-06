@@ -11,7 +11,7 @@ import type {
   MessageTemplate,
   CreateMessageTemplateRequest,
   UpdateMessageTemplateRequest,
-} from '@/lib/api/types/message-template';
+} from '@repo/shared-types';
 import { TemplateForm } from '@/components/template-form';
 import { ArrowLeft, Save } from 'lucide-react';
 import { Spinner } from '@/components/ui/spinner';

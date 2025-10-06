@@ -1,4 +1,4 @@
-import { DiscordEmbed } from './discord';
+import { DiscordEmbed } from '@repo/shared-types';
 
 export interface SendMessageData {
   webhookIds: string[];

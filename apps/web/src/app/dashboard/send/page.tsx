@@ -24,7 +24,7 @@ import type { Avatar } from '@repo/shared-types';
 import { useQuery } from '@tanstack/react-query';
 import { AvatarSelector } from '@/components/avatars/avatar-selector';
 import { DiscordMessagePreview } from '@/components/discord-message-preview';
-import type { DiscordEmbed } from '@/lib/api/types/discord';
+import type { DiscordEmbed } from '@repo/shared-types';
 import { useToast } from '@/hooks/use-toast';
 import { SendMessageData } from '@/lib/api/types/webhook';
 import { DISCORD_MAX_MESSAGE_LENGTH } from '@/constants/discord';
