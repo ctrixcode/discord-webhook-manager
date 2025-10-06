@@ -1,8 +1,14 @@
-# Discord Webhook Manager - Monorepo
+# Discord Webhook Manager
+
+[![License](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
+[![Contributors](https://img.shields.io/github/contributors/ctrixcode/discord-webhook-manager)](https://github.com/ctrixcode/discord-webhook-manager/graphs/contributors)
+[![Next.js](https://img.shields.io/badge/Next.js-black?style=for-the-badge&logo=next.js&logoColor=white)](https://nextjs.org/)
+[![Fastify](https://img.shields.io/badge/Fastify-black?style=for-the-badge&logo=fastify&logoColor=white)](https://www.fastify.io/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-007ACC?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
 
 The Discord Webhook Manager is a powerful and intuitive platform designed to streamline and enhance how Discord server administrators and users manage their server announcements and messages. It eliminates the need for manual work, expensive paid bots, or complex custom bot development by providing a centralized, user-friendly interface for all your Discord messaging needs.
 
-This monorepo contains two main applications:
+This project contains two main applications:
 - **`apps/web`**: The Next.js frontend application providing the user interface.
 - **`apps/backend`**: The Node.js (Fastify) backend API services.
 
@@ -16,194 +22,24 @@ Discord server administrators often face challenges when trying to send custom a
 
 The Discord Webhook Manager addresses these pain points by offering a free, convenient, and feature-rich alternative.
 
-## Frontend: Discord Webhook Manager (Web App)
+## Features
 
-This is the user-facing application that provides a comprehensive dashboard for managing Discord webhooks, avatars, and message templates.
-
-### Key Features (Frontend)
-*   **Comprehensive Webhook Management**: Easily create, view, edit, and delete all your Discord webhooks from a single dashboard.
-*   **Custom Avatar Creation**: Design and save multiple custom avatars for different announcement types or personas, allowing for dynamic and engaging messaging.
-*   **Reusable Message Templates**: Create and store message templates, including rich embeds, to quickly send recurring announcements or pre-formatted content.
-*   **Intuitive Message Composer**: Compose messages with a user-friendly interface, incorporating custom avatars, usernames, and embeds.
-*   **Real-time Discord Preview**: See exactly how your message will appear on Discord before you send it, ensuring perfect formatting and presentation.
-*   **No Coding Required**: A completely no-code solution, making advanced Discord messaging accessible to everyone.
+*   **Comprehensive Discord Webhook Management**: Create, view, edit, and delete Discord webhooks through a user-friendly interface.
+*   **Custom Avatar and Username Support**: Design and save multiple custom avatars and define custom usernames for dynamic and engaging messages.
+*   **Reusable Message Templates with Rich Embeds**: Create, store, and manage message templates, including rich embeds, for quick and consistent announcements.
+*   **Intuitive Message Composer with Real-time Preview**: Compose messages easily with custom avatars, usernames, and embeds, and see a real-time preview of how they will appear on Discord.
+*   **Secure User Authentication and Authorization**: Seamlessly manage user accounts with secure registration, login, and session management, likely integrated with Discord's OAuth.
+*   **No-Code Solution**: Advanced Discord messaging accessible to everyone without any coding knowledge.
 *   **Cost-Effective**: Eliminate the need for paid bot subscriptions or the overhead of custom bot development.
+*   **User Settings and Preferences**: Manage various application settings and preferences specific to each user.
 
-### Technologies Used (Frontend)
-*   Next.js
-*   React
-*   TypeScript
-*   TanStack Query
-*   Radix UI
-*   Tailwind CSS
-
-## Backend: Discord Webhook Manager (API)
-
-This backend provides the API infrastructure that powers the frontend application, handling data persistence, authentication, and core business logic.
-
-### 🚀 Features (Backend)
-The backend provides the following key functionalities:
-
--   **User Authentication and Authorization**: Secure user registration, login, and session management, likely integrating with Discord's OAuth for seamless user experience.
--   **Discord Webhook Management**: API endpoints for creating, retrieving, updating, and deleting Discord webhooks associated with user accounts.
--   **Predefined Avatar Management**: Services to manage a collection of predefined avatars that users can utilize when composing messages.
--   **Message Template Management**: Functionality to create, store, and retrieve reusable message templates, supporting rich content like embeds.
--   **Discord Message Sending**: API to send messages to Discord channels using configured webhooks, incorporating selected avatars and saved templates.
--   **User Settings and Preferences**: Management of various user-specific application settings.
-
-### 💻 Technical Stack (Backend)
-The backend is built with a modern and scalable technology stack:
-
--   **Framework**: [Fastify](https://www.fastify.io/) - A fast and low-overhead web framework for Node.js.
--   **Language**: [TypeScript](https://www.typescriptlang.org/) - For type safety and enhanced developer experience.
--   **Database**: [MongoDB](https://www.mongodb.com/) - A NoSQL document database.
--   **ODM**: [Mongoose](https://mongoosejs.com/) - MongoDB object data modeling for Node.js.
--   **Authentication**: [JWT (JSON Web Tokens)](https://jwt.io/) - For secure API authentication.
--   **File Storage**: [Cloudinary](https://cloudinary.com/) - For cloud-based image and video management (likely for avatars).
--   **Logging**: [Winston](https://github.com/winstonjs/winston) - A versatile logging library.
--   **Environment Variables**: [Dotenv](https://github.com/motdotla/dotenv) - For managing environment-specific configurations.
--   **Discord Webhook Library**: We maintain our own in-house library for handling Discord webhook interactions. If you need to add a feature that requires changes to the webhook functionality, you may need to contribute to this library as well. You can find the repository here: [discord-webhook-library](https://github.com/ctrixcode/discord-webhook-library).
-
-### 📁 Project Structure (Backend)
-
-```
-discord-webhook-manager-backend/
-├── src/
-│   ├── app.ts                 # Fastify app configuration
-│   ├── server.ts              # Server entry point
-│   ├── config/                # Configuration files (DB, usage limits)
-│   ├── controllers/           # Route handlers and business logic
-│   ├── middlewares/           # Custom Fastify middleware
-│   ├── models/                # Mongoose schemas and models
-│   ├── routes/                # API endpoint definitions
-│   ├── services/              # Reusable business logic
-│   ├── schemas/               # Validation schemas (e.g., Zod)
-│   ├── utils/                 # Utility functions (JWT, errors, logging)
-│   └── types/                 # TypeScript custom types
-├── tests/                     # Unit and integration tests
-├── dist/                      # Compiled JavaScript (generated)
-├── package.json               # Project metadata and dependencies
-├── tsconfig.json              # TypeScript configuration
-└── README.md                  # Project documentation
-```
-
-## Getting Started (Monorepo)
-
-### 🛠️ Prerequisites
-
--   **Node.js** (v16 or higher)
--   **MongoDB** (local installation or MongoDB Atlas)
--   **pnpm** (recommended package manager for this monorepo)
-
-### 📦 Installation
-
-1.  **Clone the repository**
-    ```bash
-    git clone <your-repo-url>
-    cd discord-webhook-manager
-    ```
-
-2.  **Install dependencies for the entire monorepo**
-    ```bash
-    pnpm install
-    ```
-
-3.  **Set up environment variables for the backend**
-    Navigate to `apps/backend` and copy the example environment file:
-    ```bash
-    cd apps/backend
-    cp .env.example .env
-    ```
-    Edit the `.env` file with your configuration. Essential variables include:
-
-    **Discord OAuth Credentials:**
-    You must create your own Discord application at [https://discord.com/developers/applications](https://discord.com/developers/applications) and obtain your Client ID, Client Secret, and set up a Redirect URI.
-
-    **Cloudinary Credentials:**
-    You must create a Cloudinary account at [https://cloudinary.com/](https://cloudinary.com/) and obtain your credentials.
-
-     **Mongodb Credentials:**
-    You need mongodb installed locally or in the cloud. You can use [MongoDB Atlas](https://www.mongodb.com/cloud/atlas) or [MongoDB Community](https://www.mongodb.com/try/download/community) for a free tier.
-
-    ```env
-    PORT=4000
-    MONGODB_URL=mongodb://localhost:27017/discord-webhook-manager
-    NODE_ENV=development
-    JWT_SECRET=your-super-secret-jwt-key
-    DISCORD_CLIENT_ID=your_discord_client_id
-    DISCORD_CLIENT_SECRET=your_discord_client_SECRET
-    DISCORD_REDIRECT_URI=http://localhost:3000/auth/callback # Frontend callback URL
-    CLOUDINARY_CLOUD_NAME=your_cloudinary_cloud_name
-    CLOUDINARY_API_KEY=your_cloudinary_api_key
-    CLOUDINARY_API_SECRET=your_cloudinary_api_secret
-    ```
-
-4.  **Set up environment variables for the frontend**
-    Navigate to `apps/web` and copy the example environment file:
-    ```bash
-    cd apps/web
-    cp .env.example .env
-    ```
-    Edit the `.env` file with your configuration. Essential variables include:
-    ```env
-    NODE_ENV=development
-    NEXT_PUBLIC_API_URL=http://localhost:4000 # Or your deployed backend URL
-    ```
-    `NEXT_PUBLIC_API_URL` should point to your backend API. During local development, this will typically be `http://localhost:4000`.
-
-4.  **Start MongoDB** (if using local installation)
-    *   **Recommendation for Windows Users:** For a simpler setup, especially on Windows, consider using **MongoDB Atlas** (MongoDB's cloud service). You can create a free-tier cluster and obtain a connection string. Update your `MONGODB_URL` in `apps/backend/.env` with this connection string.
-    ```bash
-    # macOS with Homebrew
-    brew services start mongodb-community
-
-    # Ubuntu/Debian
-    sudo systemctl start mongod
-
-    # Or use Docker
-    docker run -d -p 27017:27017 --name mongodb mongo:latest
-    ```
-    *For detailed local installation instructions for Windows, please refer to the official MongoDB documentation.*
-
-### 🚀 Usage
-
-From the root of the monorepo:
-
-#### Development
-
-To run both frontend and backend in development mode (using Turborepo):
-```bash
-pnpm dev
-```
-
-Alternatively, you can run them separately:
-
-**Backend Development:**
-```bash
-cd apps/backend
-pnpm dev
-```
-
-**Frontend Development:**
-```bash
-cd apps/web
-pnpm dev
-```
-
-#### Production
-
-**Build the entire monorepo:**
-```bash
-pnpm build
-```
+<p align="center">
+  <img src="./docs/assets/demo.gif" alt="Discord Webhook Manager Demo" />
+</p>
 
 ## 📈 Deployment
 
-This monorepo can be deployed to Vercel.
-
--   **Frontend (`apps/web`)**: Deploy directly to Vercel, specifying `apps/web` as the root directory. Vercel's native Next.js support will handle the rest.
-    *   **Important for Vercel Deployment:** Due to Vercel's default `NODE_ENV=production` setting during builds, you must explicitly set the "Install Command" in your Vercel project settings for the frontend to `pnpm install --prod=false`. This ensures `devDependencies` (like `typescript`) are installed correctly.
--   **Backend (`apps/backend`)**: Deploy to Vercel as Serverless Functions, specifying `apps/backend` as the root directory. Ensure you have a `vercel.json` file in `apps/backend` to configure the build and routing for the API.
+This project can be deployed to Vercel. For detailed deployment instructions, please refer to [DEPLOYMENT.md](./DEPLOYMENT.md).
 
 ## 🤝 Contributing
 
