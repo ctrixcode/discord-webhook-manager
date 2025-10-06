@@ -11,9 +11,8 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { ConfirmationDialog } from '@/components/ui/confirmation-dialog';
-import { type Webhook } from '@/lib/api/types/webhook';
 import { api } from '@/lib/api';
-import { UpdateWebhookRequest } from '@/lib/api/types/webhook';
+import { UpdateWebhookData, Webhook } from '@repo/shared-types';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import {
   MoreHorizontal,
@@ -44,7 +43,7 @@ export function WebhookCard({
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   const { mutate: updateWebhook } = useMutation({
-    mutationFn: ({ id, data }: { id: string; data: UpdateWebhookRequest }) =>
+    mutationFn: ({ id, data }: { id: string; data: UpdateWebhookData }) =>
       api.webhook.updateWebhook(id, data),
     onSuccess: () => {
       onWebhookUpdated();

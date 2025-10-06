@@ -1,11 +1,10 @@
 import { apiClient } from '../client';
+import { SendMessageData, SendMessageResponse } from '../types/webhook';
 import {
   Webhook,
-  CreateWebhookRequest,
-  UpdateWebhookRequest,
-  SendMessageData,
-  SendMessageResponse,
-} from '../types/webhook';
+  CreateWebhookData,
+  UpdateWebhookData,
+} from '@repo/shared-types';
 import { ApiResponse } from '../types/api';
 
 export const webhookQueries = {

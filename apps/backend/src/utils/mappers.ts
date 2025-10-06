@@ -2,7 +2,7 @@ import mongoose from 'mongoose';
 import { IUser } from '../models/User';
 import { IWebhook } from '../models/Webhook';
 import { IAvatar } from '../models/avatar';
-import { User, Avatar } from '@repo/shared-types';
+import { User, Avatar, Webhook } from '@repo/shared-types';
 
 export interface WebhookDto {
   id: string;
