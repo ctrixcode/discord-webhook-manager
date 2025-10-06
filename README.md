@@ -1,5 +1,13 @@
 # Discord Webhook Manager
 
+[![Build Status](https://github.com/ctrixcode/discord-webhook-manager/actions/workflows/main.yml/badge.svg)](https://github.com/ctrixcode/discord-webhook-manager/actions/workflows/main.yml)
+[![License](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
+[![Discord](https://img.shields.io/discord/1197161057085566986?label=Discord&logo=discord&logoColor=white&color=7289DA)](https://discord.gg/YbtyTRAFv2)
+[![Contributors](https://img.shields.io/github/contributors/ctrixcode/discord-webhook-manager)](https://github.com/ctrixcode/discord-webhook-manager/graphs/contributors)
+[![Next.js](https://img.shields.io/badge/Next.js-black?style=for-the-badge&logo=next.js&logoColor=white)](https://nextjs.org/)
+[![Fastify](https://img.shields.io/badge/Fastify-black?style=for-the-badge&logo=fastify&logoColor=white)](https://www.fastify.io/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-007ACC?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
+
 The Discord Webhook Manager is a powerful and intuitive platform designed to streamline and enhance how Discord server administrators and users manage their server announcements and messages. It eliminates the need for manual work, expensive paid bots, or complex custom bot development by providing a centralized, user-friendly interface for all your Discord messaging needs.
 
 This project contains two main applications:
