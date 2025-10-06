@@ -59,4 +59,6 @@ If you encounter any issues or have questions:
 
 ---
 
+If you find this project useful, please consider giving it a ⭐ on GitHub! Your support helps us grow and improve.
+
 **Happy Coding! 🎉**
