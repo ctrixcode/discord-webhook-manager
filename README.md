@@ -12,8 +12,6 @@ This project contains two main applications:
 - **`apps/web`**: The Next.js frontend application providing the user interface.
 - **`apps/backend`**: The Node.js (Fastify) backend API services.
 
-<img src="./docs/assets/demo.gif" alt="Discord Webhook Manager Demo" width="600" />
-
 ## Problem Solved
 
 Discord server administrators often face challenges when trying to send custom announcements with unique avatars and usernames. This typically requires:
@@ -34,6 +32,8 @@ The Discord Webhook Manager addresses these pain points by offering a free, conv
 *   **No-Code Solution**: Advanced Discord messaging accessible to everyone without any coding knowledge.
 *   **Cost-Effective**: Eliminate the need for paid bot subscriptions or the overhead of custom bot development.
 *   **User Settings and Preferences**: Manage various application settings and preferences specific to each user.
+
+<img src="./docs/assets/demo.gif" alt="Discord Webhook Manager Demo" width="600" />
 
 ## 📈 Deployment
 
