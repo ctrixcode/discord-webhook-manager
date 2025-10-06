@@ -12,6 +12,8 @@ This project contains two main applications:
 - **`apps/web`**: The Next.js frontend application providing the user interface.
 - **`apps/backend`**: The Node.js (Fastify) backend API services.
 
+![Discord Webhook Manager Demo](./docs/assets/demo.gif)
+
 ## Problem Solved
 
 Discord server administrators often face challenges when trying to send custom announcements with unique avatars and usernames. This typically requires:
