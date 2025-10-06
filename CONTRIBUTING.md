@@ -58,6 +58,7 @@ The backend is built with a modern and scalable technology stack:
 -   **Logging**: Winston
 -   **Environment Variables**: Dotenv
 -   **Discord Webhook Library**: We maintain our own in-house library for handling Discord webhook interactions. If you need to add a feature that requires changes to the webhook functionality, you may need to contribute to this library as well. You can find the repository here: [discord-webhook-library](https://github.com/ctrixcode/discord-webhook-library).
+    *   **Workflow for Library Changes:** If your contribution requires changes to the `discord-webhook-library`, please open a Pull Request in that repository first. Once those changes are merged and a new version is released, you can then update the dependency in this project and proceed with your contribution here.
 
 ## Development Environment Setup
 
