@@ -27,33 +27,6 @@ The Discord Webhook Manager addresses these pain points by offering a free, conv
 *   **Cost-Effective**: Eliminate the need for paid bot subscriptions or the overhead of custom bot development.
 *   **User Settings and Preferences**: Manage various application settings and preferences specific to each user.
 
-
-
-### 📁 Project Structure (Backend)
-
-```
-discord-webhook-manager-backend/
-├── src/
-│   ├── app.ts                 # Fastify app configuration
-│   ├── server.ts              # Server entry point
-│   ├── config/                # Configuration files (DB, usage limits)
-│   ├── controllers/           # Route handlers and business logic
-│   ├── middlewares/           # Custom Fastify middleware
-│   ├── models/                # Mongoose schemas and models
-│   ├── routes/                # API endpoint definitions
-│   ├── services/              # Reusable business logic
-│   ├── schemas/               # Validation schemas (e.g., Zod)
-│   ├── utils/                 # Utility functions (JWT, errors, logging)
-│   └── types/                 # TypeScript custom types
-├── tests/                     # Unit and integration tests
-├── dist/                      # Compiled JavaScript (generated)
-├── package.json               # Project metadata and dependencies
-├── tsconfig.json              # TypeScript configuration
-└── README.md                  # Project documentation
-```
-
-
-
 ## 📈 Deployment
 
 This project can be deployed to Vercel.
