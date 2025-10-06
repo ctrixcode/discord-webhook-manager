@@ -62,6 +62,9 @@ We love new ideas! If you have a suggestion for an enhancement or a new feature,
     ```
     *(These commands assume you have root-level scripts configured in `package.json` or `turbo.json` to run these across the monorepo, or you can run them within `apps/web` or `apps/backend` directories.)*
 8.  **Commit your changes:** Write a clear and descriptive commit message.
+
+    **A note on pre-commit checks:** This project uses a pre-commit hook to ensure code quality and consistency. When you try to commit, it will automatically run ESLint and Prettier on all staged files. If any linting errors are found or files need reformatting, the commit will be aborted. You will need to fix the reported issues and `git add` the files again before you can successfully commit.
+
     ```bash
     git commit -m "feat: Add new feature X"
     # or
