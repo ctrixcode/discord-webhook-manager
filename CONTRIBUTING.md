@@ -64,11 +64,52 @@ The backend is built with a modern and scalable technology stack:
 
 ### Prerequisites
 
+-   **Node.js** (v16 or higher) - *Required only if not using Docker*
+-   **MongoDB** (local installation or MongoDB Atlas) - *Required only if not using Docker*
+-   **pnpm** (recommended package manager for this project) - *Required only if not using Docker*
+-   **Docker and Docker Compose** (recommended for simplified setup)
+
+### Docker Setup (Recommended)
+
+For the easiest and most consistent development experience, use Docker. This eliminates the need to install Node.js, MongoDB, or pnpm locally.
+
+1.  **Clone the repository**
+    ```bash
+    git clone <your-repo-url>
+    cd discord-webhook-manager
+    ```
+
+2.  **Set up environment variables**
+    Copy the example environment files and configure them:
+    ```bash
+    cp apps/backend/.env.example apps/backend/.env
+    cp apps/web/.env.example apps/web/.env
+    ```
+    Edit the `.env` files with your configuration (same as described in the manual setup below).
+
+3.  **Start the development environment**
+    ```bash
+    docker-compose up --build
+    ```
+
+4.  **Access the applications**
+    - Frontend: http://localhost:3000
+    - Backend API: http://localhost:4000
+    - MongoDB: localhost:27017
+
+The Docker setup includes hot reloading, so changes to your code will automatically refresh the applications.
+
+### Manual Setup (Alternative)
+
+If you prefer not to use Docker, follow these steps:
+
+#### Prerequisites
+
 -   **Node.js** (v16 or higher)
 -   **MongoDB** (local installation or MongoDB Atlas)
 -   **pnpm** (recommended package manager for this project)
 
-### Installation
+#### Installation
 
 1.  **Clone the repository**
     ```bash
