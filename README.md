@@ -1,8 +1,6 @@
 # Discord Webhook Manager
 
-[![Build Status](https://github.com/ctrixcode/discord-webhook-manager/actions/workflows/main.yml/badge.svg)](https://github.com/ctrixcode/discord-webhook-manager/actions/workflows/main.yml)
 [![License](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
-[![Discord](https://img.shields.io/discord/1197161057085566986?label=Discord&logo=discord&logoColor=white&color=7289DA)](https://discord.gg/YbtyTRAFv2)
 [![Contributors](https://img.shields.io/github/contributors/ctrixcode/discord-webhook-manager)](https://github.com/ctrixcode/discord-webhook-manager/graphs/contributors)
 [![Next.js](https://img.shields.io/badge/Next.js-black?style=for-the-badge&logo=next.js&logoColor=white)](https://nextjs.org/)
 [![Fastify](https://img.shields.io/badge/Fastify-black?style=for-the-badge&logo=fastify&logoColor=white)](https://www.fastify.io/)
