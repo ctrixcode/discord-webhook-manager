@@ -107,6 +107,7 @@ export const resetDailyWebhookLimit = async (
     userUsage.lastWebhookMessageDate.getUTCDate() !== now.getUTCDate()
   ) {
     userUsage.webhookMessagesSentToday = 0; // Reset for new day
+    await userUsage.save();
   }
 };
 
