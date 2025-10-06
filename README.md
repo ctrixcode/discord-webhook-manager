@@ -12,7 +12,7 @@ This project contains two main applications:
 - **`apps/web`**: The Next.js frontend application providing the user interface.
 - **`apps/backend`**: The Node.js (Fastify) backend API services.
 
-![Discord Webhook Manager Demo](./docs/assets/demo.gif)
+<img src="./docs/assets/demo.gif" alt="Discord Webhook Manager Demo" width="600" />
 
 ## Problem Solved
 
