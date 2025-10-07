@@ -68,7 +68,8 @@ services:
       - NEXT_PUBLIC_API_URL=http://backend:4000
       - CHOKIDAR_USEPOLLING=true
       - WATCHPACK_POLLING=true
-    command: pnpm run dev --filter web -- --hostname 0.0.0.0 --turbopack
+    # in docker-compose.yml, around line 71
+    command: pnpm --filter web dev -- --hostname 0.0.0.0 --turbopack
     depends_on:
       - backend
 
