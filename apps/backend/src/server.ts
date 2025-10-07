@@ -9,7 +9,7 @@ const PORT = process.env.PORT || 4000;
 
 (async () => {
   await connectDB();
-  await app.listen({ port: Number(PORT), host: '0.0.0.0' }, (err, address) => {
+  app.listen({ port: Number(PORT), host: '0.0.0.0' }, (err, address) => {
     if (err) {
       logger.error(address, err);
       process.exit(1);
