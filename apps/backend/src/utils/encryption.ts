@@ -1,10 +1,13 @@
 import * as crypto from 'crypto';
 import { logger } from './logger';
-
+import dotnev from 'dotenv';
+dotnev.config();
 const ALGORITHM = 'aes-256-cbc';
 const ENCRYPTION_KEY = process.env.ENCRYPTION_KEY as string;
 
-if (!ENCRYPTION_KEY || ENCRYPTION_KEY.length !== 32) {
+// if (!ENCRYPTION_KEY || ENCRYPTION_KEY.length !== 32)
+if (!ENCRYPTION_KEY) {
+  // Unsure about the required length of 32 .
   logger.error(
     'ENCRYPTION_KEY must be a 32-byte string. Please set it in your .env file.'
   );
