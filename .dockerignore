@@ -1,0 +1,14 @@
+node_modules
+.pnpm-store
+.git
+.gitignore
+Dockerfile
+**/dist
+**/.next
+**/build
+*.log
+.env
+.env.local
+.DS_Store
+coverage
+.turbo

@@ -80,24 +80,40 @@ For the easiest and most consistent development experience, use Docker. This eli
     ```
 
 2.  **Set up environment variables**
-    Copy the example environment files and configure them:
+    Copy the root `.env.example` file and configure it with your credentials:
     ```bash
-    cp apps/backend/.env.example apps/backend/.env
-    cp apps/web/.env.example apps/web/.env
+    cp .env.example .env
     ```
-    Edit the `.env` files with your configuration (same as described in the manual setup below).
+    Edit the `.env` file with your actual Discord and Cloudinary credentials:
+    ```env
+    # Discord OAuth2 - Get from https://discord.com/developers/applications
+    DISCORD_CLIENT_ID=your_actual_discord_client_id
+    DISCORD_CLIENT_SECRET=your_actual_discord_client_secret
+    
+    # Cloudinary - Get from https://cloudinary.com/
+    CLOUDINARY_CLOUD_NAME=your_actual_cloudinary_cloud_name
+    CLOUDINARY_API_KEY=your_actual_cloudinary_api_key
+    CLOUDINARY_API_SECRET=your_actual_cloudinary_api_secret
+    
+    # Encryption - Generate a random 32-character key
+    ENCRYPTION_KEY=your_actual_32_character_encryption_key
+    ```
+    
+    **Note:** With Docker, you don't need to create individual `.env` files for backend and web. The `docker-compose.yml` reads from the root `.env` file and passes variables to the appropriate services.
 
 3.  **Start the development environment**
     ```bash
-    docker-compose up --build
+    docker compose up --build
     ```
 
 4.  **Access the applications**
-    - Frontend: http://localhost:3000
-    - Backend API: http://localhost:4000
+    - Frontend: <http://localhost:3000>
+    - Backend API: <http://localhost:4000>
     - MongoDB: localhost:27017
 
 The Docker setup includes hot reloading, so changes to your code will automatically refresh the applications.
+
+**Note for Windows/WSL2 users:** File watching is configured with polling to ensure reliable hot reloading across all operating systems.
 
 ### Manual Setup (Alternative)
 
@@ -140,16 +156,36 @@ If you prefer not to use Docker, follow these steps:
     You need mongodb installed locally or in the cloud. You can use [MongoDB Atlas](https://www.mongodb.com/cloud/atlas) or [MongoDB Community](https://www.mongodb.com/try/download/community) for a free tier.
 
     ```env
+    # Server Configuration
     PORT=4000
-    MONGODB_URL=mongodb://localhost:27017/discord-webhook-manager
     NODE_ENV=development
-    JWT_SECRET=your-super-secret-jwt-key
+
+    # Database Configuration
+    MONGO_URL=mongodb://localhost:27017/discord-webhook-manager
+
+    # CORS Configuration
+    ALLOWED_ORIGINS=http://localhost:3000
+
+    # Security
+    JWT_SECRET=your-super-secret-jwt-key-change-this-in-production
+    JWT_ACCESS_TOKEN_EXPIRES_IN=15m
+    JWT_REFRESH_TOKEN_EXPIRES_IN=7d
+
+    # Optional: Logging
+    LOG_LEVEL=info
+
+    # Discord OAuth2
     DISCORD_CLIENT_ID=your_discord_client_id
-    DISCORD_CLIENT_SECRET=your_discord_client_SECRET
-    DISCORD_REDIRECT_URI=http://localhost:3000/auth/callback # Frontend callback URL
+    DISCORD_CLIENT_SECRET=your_discord_client_secret
+    DISCORD_REDIRECT_URI=http://localhost:3000/api/auth/discord/callback
+
+    # Cloudinary Configuration
     CLOUDINARY_CLOUD_NAME=your_cloudinary_cloud_name
     CLOUDINARY_API_KEY=your_cloudinary_api_key
     CLOUDINARY_API_SECRET=your_cloudinary_api_secret
+
+    # Encryption
+    ENCRYPTION_KEY=your_32_byte_encryption_key_here # Generate a random 32-character key
     ```
 
 4.  **Set up environment variables for the frontend**
@@ -166,7 +202,7 @@ If you prefer not to use Docker, follow these steps:
     `NEXT_PUBLIC_API_URL` should point to your backend API. During local development, this will typically be `http://localhost:4000`.
 
 4.  **Start MongoDB** (if using local installation)
-    *   **Recommendation for Windows Users:** For a simpler setup, especially on Windows, consider using **MongoDB Atlas** (MongoDB's cloud service). You can create a free-tier cluster and obtain a connection string. Update your `MONGODB_URL` in `apps/backend/.env` with this connection string.
+    *   **Recommendation for Windows Users:** For a simpler setup, especially on Windows, consider using **MongoDB Atlas** (MongoDB's cloud service). You can create a free-tier cluster and obtain a connection string. Update your `MONGO_URL` in `apps/backend/.env` with this connection string.
     ```bash
     # macOS with Homebrew
     brew services start mongodb-community

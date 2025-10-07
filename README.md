@@ -37,7 +37,30 @@ The Discord Webhook Manager addresses these pain points by offering a free, conv
   <img src="./docs/assets/demo.gif" alt="Discord Webhook Manager Demo" />
 </p>
 
-## 📈 Deployment
+## � Quick Start with Docker (Recommended)
+
+Get started in minutes with Docker:
+
+```bash
+# Clone the repository
+git clone <your-repo-url>
+cd discord-webhook-manager
+
+# Set up environment variables
+cp .env.example .env
+# Edit .env with your Discord and Cloudinary credentials
+
+# Start all services
+docker compose up --build
+```
+
+Then visit:
+- Frontend: http://localhost:3000
+- Backend API: http://localhost:4000
+
+For detailed Docker setup instructions, see [docs/DOCKER_SETUP.md](./docs/DOCKER_SETUP.md)
+
+## �📈 Deployment
 
 This project can be deployed to Vercel. For detailed deployment instructions, please refer to [DEPLOYMENT.md](./DEPLOYMENT.md).
 

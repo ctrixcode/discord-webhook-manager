@@ -1,21 +1,20 @@
-FROM node:18-alpine
+FROM node:20-alpine
 
 WORKDIR /app
 
-# Install pnpm
-RUN npm install -g pnpm
+# Enable pnpm via Corepack (bundled with Node 20)
+RUN corepack enable && corepack prepare pnpm@latest --activate
 
-# Copy package files
-COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
+# Copy lockfile and workspace files first (better cache)
+COPY pnpm-lock.yaml pnpm-workspace.yaml package.json ./
+RUN pnpm fetch
 
-# Copy packages
+# Copy sources
 COPY packages/ ./packages/
-
-# Copy backend app
 COPY apps/backend/ ./apps/backend/
 
-# Install dependencies
-RUN pnpm install --frozen-lockfile
+# Install from local store (cached by fetch)
+RUN pnpm install --frozen-lockfile --offline
 
 # Expose port
 EXPOSE 4000
