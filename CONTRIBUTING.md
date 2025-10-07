@@ -80,11 +80,20 @@ For the easiest and most consistent development experience, use Docker. This eli
     ```
 
 2.  **Set up environment variables**
-    Copy the root `.env.example` file and configure it with your credentials:
+    
+    Docker Compose loads environment variables from multiple sources in this order (later sources override earlier ones):
+    1. Root `.env` file (shared credentials like Discord, Cloudinary)
+    2. App-specific `.env` files (`apps/backend/.env` and `apps/web/.env`)
+    3. Environment variables defined in `docker-compose.yml`
+    
+    **Option A: Simple Setup (Recommended for beginners)**
     ```bash
+    # Copy and edit only the root .env file
     cp .env.example .env
+    nano .env  # Edit with your credentials
     ```
-    Edit the `.env` file with your actual Discord and Cloudinary credentials:
+    
+    The root `.env` file contains shared credentials:
     ```env
     # Discord OAuth2 - Get from https://discord.com/developers/applications
     DISCORD_CLIENT_ID=your_actual_discord_client_id
@@ -99,7 +108,23 @@ For the easiest and most consistent development experience, use Docker. This eli
     ENCRYPTION_KEY=your_actual_32_character_encryption_key
     ```
     
-    **Note:** With Docker, you don't need to create individual `.env` files for backend and web. The `docker-compose.yml` reads from the root `.env` file and passes variables to the appropriate services.
+    **Option B: Advanced Setup (For custom configurations)**
+    ```bash
+    # Set up root .env for shared credentials
+    cp .env.example .env
+    
+    # Set up app-specific .env files for custom settings
+    cp apps/backend/.env.example apps/backend/.env
+    cp apps/web/.env.example apps/web/.env
+    
+    # Edit each file as needed
+    nano .env
+    nano apps/backend/.env
+    nano apps/web/.env
+    ```
+    
+    App-specific `.env` files can override defaults or add additional variables.
+    For example, `apps/backend/.env` might override `PORT` or `LOG_LEVEL`.
 
 3.  **Start the development environment**
     ```bash
