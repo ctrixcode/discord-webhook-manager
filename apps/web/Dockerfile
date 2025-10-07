@@ -20,4 +20,4 @@ RUN pnpm install --frozen-lockfile --offline
 EXPOSE 3000
 
 # Run dev server
-CMD ["pnpm", "run", "dev", "--filter", "web"]
+CMD ["pnpm", "--filter", "web", "run", "dev"]
