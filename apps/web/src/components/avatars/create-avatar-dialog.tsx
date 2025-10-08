@@ -116,7 +116,7 @@ export function CreateAvatarDialog({
     }) => {
       if (data.file) {
         const formData = new FormData();
-        formData.append('name', data.username);
+        formData.append('username', data.username);
         formData.append('image', data.file);
         return await uploadAvatar(formData);
       } else {
