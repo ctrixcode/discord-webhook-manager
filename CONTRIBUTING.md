@@ -81,50 +81,46 @@ For the easiest and most consistent development experience, use Docker. This eli
 
 2.  **Set up environment variables**
     
-    Docker Compose loads environment variables from multiple sources in this order (later sources override earlier ones):
-    1. Root `.env` file (shared credentials like Discord, Cloudinary)
-    2. App-specific `.env` files (`apps/backend/.env` and `apps/web/.env`)
-    3. Environment variables defined in `docker-compose.yml`
-    
-    **Option A: Simple Setup (Recommended for beginners)**
+    Copy the example environment files and configure them:
     ```bash
-    # Copy and edit only the root .env file
-    cp .env.example .env
-    nano .env  # Edit with your credentials
-    ```
-    
-    The root `.env` file contains shared credentials:
-    ```env
-    # Discord OAuth2 - Get from https://discord.com/developers/applications
-    DISCORD_CLIENT_ID=your_actual_discord_client_id
-    DISCORD_CLIENT_SECRET=your_actual_discord_client_secret
-    
-    # Cloudinary - Get from https://cloudinary.com/
-    CLOUDINARY_CLOUD_NAME=your_actual_cloudinary_cloud_name
-    CLOUDINARY_API_KEY=your_actual_cloudinary_api_key
-    CLOUDINARY_API_SECRET=your_actual_cloudinary_api_secret
-    
-    # Encryption - Generate a random 32-character key
-    ENCRYPTION_KEY=your_actual_32_character_encryption_key
-    ```
-    
-    **Option B: Advanced Setup (For custom configurations)**
-    ```bash
-    # Set up root .env for shared credentials
-    cp .env.example .env
-    
-    # Set up app-specific .env files for custom settings
     cp apps/backend/.env.example apps/backend/.env
     cp apps/web/.env.example apps/web/.env
-    
-    # Edit each file as needed
-    nano .env
-    nano apps/backend/.env
-    nano apps/web/.env
     ```
     
-    App-specific `.env` files can override defaults or add additional variables.
-    For example, `apps/backend/.env` might override `PORT` or `LOG_LEVEL`.
+    Edit `apps/backend/.env` with your credentials:
+    ```bash
+    nano apps/backend/.env  # or use your preferred editor
+    ```
+    
+    Essential variables to configure:
+    
+    **Discord OAuth Credentials:**
+    Get these from <https://discord.com/developers/applications>
+    ```env
+    DISCORD_CLIENT_ID=your_discord_client_id
+    DISCORD_CLIENT_SECRET=your_discord_client_secret
+    DISCORD_REDIRECT_URI=http://localhost:3000/api/auth/discord/callback
+    ```
+    
+    **Cloudinary Credentials:**
+    Get these from <https://cloudinary.com/>
+    ```env
+    CLOUDINARY_CLOUD_NAME=your_cloudinary_cloud_name
+    CLOUDINARY_API_KEY=your_cloudinary_api_key
+    CLOUDINARY_API_SECRET=your_cloudinary_api_secret
+    ```
+    
+    **Encryption Key:**
+    Generate a random 32-character key:
+    ```bash
+    openssl rand -base64 32
+    ```
+    Then add it to `apps/backend/.env`:
+    ```env
+    ENCRYPTION_KEY=your_generated_32_character_key
+    ```
+    
+    The `apps/web/.env` file typically doesn't need changes for local development, but you can customize the API URL if needed.
 
 3.  **Start the development environment**
     ```bash

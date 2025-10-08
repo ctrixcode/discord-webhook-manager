@@ -1,12 +1,13 @@
 version: '3.8'
 
 # Environment Variable Loading Order (later sources override earlier ones):
-# 1. Root .env file (shared credentials: Discord, Cloudinary, Encryption Key)
-# 2. App-specific .env files (apps/backend/.env, apps/web/.env)
-# 3. Environment variables defined in this file
+# 1. App-specific .env files (apps/backend/.env, apps/web/.env)
+# 2. Environment variables defined in this file
 #
-# Quick Start: Copy .env.example to .env and fill in your credentials
-# Advanced: Also create apps/backend/.env and apps/web/.env for custom overrides
+# Setup: 
+#   cp apps/backend/.env.example apps/backend/.env
+#   cp apps/web/.env.example apps/web/.env
+# Then edit the .env files with your credentials (Discord, Cloudinary, etc.)
 
 services:
   mongo:
@@ -37,24 +38,10 @@ services:
       - /app/apps/backend/node_modules
       - pnpm_store:/root/.local/share/pnpm/store
     env_file:
-      - .env                           # Root .env (for shared credentials)
-      - apps/backend/.env              # Backend-specific .env
+      - apps/backend/.env              # Backend environment variables
     environment:
-      - NODE_ENV=development
+      # Override for Docker network
       - MONGO_URL=mongodb://mongo:27017/discord-webhook-manager-dev
-      - PORT=4000
-      - JWT_SECRET=your-super-secret-jwt-key-change-this-in-production
-      - JWT_ACCESS_TOKEN_EXPIRES_IN=15m
-      - JWT_REFRESH_TOKEN_EXPIRES_IN=7d
-      - LOG_LEVEL=info
-      - ALLOWED_ORIGINS=http://localhost:3000
-      - DISCORD_CLIENT_ID=${DISCORD_CLIENT_ID}
-      - DISCORD_CLIENT_SECRET=${DISCORD_CLIENT_SECRET}
-      - DISCORD_REDIRECT_URI=http://localhost:3000/api/auth/discord/callback
-      - CLOUDINARY_CLOUD_NAME=${CLOUDINARY_CLOUD_NAME}
-      - CLOUDINARY_API_KEY=${CLOUDINARY_API_KEY}
-      - CLOUDINARY_API_SECRET=${CLOUDINARY_API_SECRET}
-      - ENCRYPTION_KEY=${ENCRYPTION_KEY}
     depends_on:
       mongo:
         condition: service_healthy
@@ -72,14 +59,13 @@ services:
       - /app/apps/web/node_modules
       - pnpm_store:/root/.local/share/pnpm/store
     env_file:
-      - .env                           # Root .env (for shared credentials)
-      - apps/web/.env                  # Web-specific .env
+      - apps/web/.env                  # Web environment variables
     environment:
-      - NODE_ENV=development
+      # Override for Docker network (web connects to backend via Docker DNS)
       - NEXT_PUBLIC_API_URL=http://backend:4000
+      # Enable file watching for hot reload on all platforms
       - CHOKIDAR_USEPOLLING=true
       - WATCHPACK_POLLING=true
-    # in docker-compose.yml, around line 71
     command: pnpm --filter web dev -- --hostname 0.0.0.0 --turbopack
     depends_on:
       - backend
