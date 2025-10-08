@@ -16,7 +16,7 @@ const PORT = process.env.PORT || 4000;
 let cleanupJobInterval: NodeJS.Timeout | null = null;
 
 (async () => {
-  await connectDB();
+  //await connectDB();
   app.listen({ port: Number(PORT), host: '0.0.0.0' }, (err, address) => {
     if (err) {
       logger.error(address, err);
