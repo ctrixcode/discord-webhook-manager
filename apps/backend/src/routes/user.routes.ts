@@ -2,6 +2,11 @@ import { FastifyInstance } from 'fastify';
 import * as userController from '../controllers/user.controller';
 import { authenticate } from '../middlewares';
 import { getUsersQuerySchema } from '../schemas/user.schema';
+import {
+  responseSchemas,
+  userProfileResponseSchema,
+  userUsageResponseSchema,
+} from '../schemas/shared.schema';
 
 const userRoutes = async (fastify: FastifyInstance) => {
   fastify.get(
@@ -15,9 +20,12 @@ const userRoutes = async (fastify: FastifyInstance) => {
           'Retrieves the profile information for the currently authenticated user.',
         tags: ['user'],
         response: {
-          200: { description: 'Current user profile details.' },
-          401: { description: 'Error: Unauthorized.' },
-          500: { description: 'Error: Internal Server Error' },
+          200: {
+            description: 'Current user profile details.',
+            ...userProfileResponseSchema,
+          },
+          401: responseSchemas[401],
+          500: responseSchemas[500]('Error fetching user profile'),
         },
       },
     },
@@ -34,9 +42,12 @@ const userRoutes = async (fastify: FastifyInstance) => {
           'Retrieves the API usage statistics for the currently authenticated user (e.g., number of webhooks, avatars).',
         tags: ['user'],
         response: {
-          200: { description: 'User API usage statistics.' },
-          401: { description: 'Error: Unauthorized.' },
-          500: { description: 'Error: Internal Server Error' },
+          200: {
+            description: 'User API usage statistics.',
+            ...userUsageResponseSchema,
+          },
+          401: responseSchemas[401],
+          500: responseSchemas[500]('Error fetching user usage'),
         },
       },
     },

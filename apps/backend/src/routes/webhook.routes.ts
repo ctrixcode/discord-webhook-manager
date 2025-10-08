@@ -18,6 +18,10 @@ import {
   webhookSendMessageSchema,
 } from '../schemas/webhook.schema';
 import { CreateWebhookData, UpdateWebhookData } from '@repo/shared-types';
+import {
+  responseSchemas,
+  webhookResponseSchema,
+} from '../schemas/shared.schema';
 
 const webhookRoutes = async (server: FastifyInstance) => {
   server.post<{ Body: CreateWebhookData }>(
@@ -30,10 +34,13 @@ const webhookRoutes = async (server: FastifyInstance) => {
         description: 'Creates a new webhook for the authenticated user.',
         tags: ['webhook'],
         response: {
-          201: { description: 'Webhook created successfully.' },
-          400: { description: 'Invalid data provided.' },
-          401: { description: 'Error: Unauthorized.' },
-          500: { description: 'Internal Server Error.' },
+          201: {
+            description: 'Webhook created successfully.',
+            ...webhookResponseSchema,
+          },
+          400: responseSchemas[400](),
+          401: responseSchemas[401],
+          500: responseSchemas[500]('Error creating webhook'),
         },
       },
     },
@@ -53,9 +60,21 @@ const webhookRoutes = async (server: FastifyInstance) => {
           'Retrieves a list of all webhooks belonging to the authenticated user, with pagination and status filtering.',
         tags: ['webhook'],
         response: {
-          200: { description: 'A list of user webhooks.' },
-          401: { description: 'Error: Unauthorized.' },
-          500: { description: 'Internal Server Error.' },
+          200: {
+            description: 'A list of user webhooks.',
+            type: 'object',
+            properties: {
+              webhooks: {
+                type: 'array',
+                items: webhookResponseSchema,
+              },
+              total: { type: 'number' },
+              page: { type: 'number' },
+              limit: { type: 'number' },
+            },
+          },
+          401: responseSchemas[401],
+          500: responseSchemas[500]('Error fetching webhooks'),
         },
       },
     },
@@ -72,10 +91,10 @@ const webhookRoutes = async (server: FastifyInstance) => {
         description: 'Retrieves a single webhook by its ID.',
         tags: ['webhook'],
         response: {
-          200: { description: 'Webhook details.' },
-          401: { description: 'Error: Unauthorized.' },
-          404: { description: 'Webhook not found.' },
-          500: { description: 'Internal Server Error.' },
+          200: { description: 'Webhook details.', ...webhookResponseSchema },
+          401: responseSchemas[401],
+          404: responseSchemas[404]('Webhook not found'),
+          500: responseSchemas[500]('Error fetching webhook'),
         },
       },
     },
@@ -92,11 +111,14 @@ const webhookRoutes = async (server: FastifyInstance) => {
         description: 'Updates the details of a specific webhook by its ID.',
         tags: ['webhook'],
         response: {
-          200: { description: 'Webhook updated successfully.' },
-          400: { description: 'Invalid data provided.' },
-          401: { description: 'Error: Unauthorized.' },
-          404: { description: 'Webhook not found.' },
-          500: { description: 'Internal Server Error.' },
+          200: {
+            description: 'Webhook updated successfully.',
+            ...webhookResponseSchema,
+          },
+          400: responseSchemas[400](),
+          401: responseSchemas[401],
+          404: responseSchemas[404]('Webhook not found'),
+          500: responseSchemas[500]('Error updating webhook'),
         },
       },
     },
@@ -113,10 +135,10 @@ const webhookRoutes = async (server: FastifyInstance) => {
         description: 'Deletes a specific webhook by its ID.',
         tags: ['webhook'],
         response: {
-          200: { description: 'Webhook deleted successfully.' },
-          401: { description: 'Error: Unauthorized.' },
-          404: { description: 'Webhook not found.' },
-          500: { description: 'Internal Server Error.' },
+          204: { description: 'Webhook deleted successfully.', type: 'null' },
+          401: responseSchemas[401],
+          404: responseSchemas[404]('Webhook not found'),
+          500: responseSchemas[500]('Error deleting webhook'),
         },
       },
     },
@@ -134,9 +156,19 @@ const webhookRoutes = async (server: FastifyInstance) => {
           'Sends a test message to the specified webhook to verify its functionality.',
         tags: ['webhook'],
         response: {
-          200: { description: 'Test message sent successfully.' },
-          401: { description: 'Error: Unauthorized.' },
-          404: { description: 'Webhook not found.' },
+          200: {
+            description: 'Test message sent successfully.',
+            type: 'object',
+            properties: {
+              message: {
+                type: 'string',
+                example: 'Test message sent successfully',
+              },
+            },
+          },
+          401: responseSchemas[401],
+          404: responseSchemas[404]('Webhook not found'),
+          500: responseSchemas[500]('Error sending test message'),
         },
       },
     },
@@ -154,10 +186,14 @@ const webhookRoutes = async (server: FastifyInstance) => {
           'Sends a message to one or more specified webhooks using provided message data.',
         tags: ['webhook'],
         response: {
-          200: { description: 'Message sent successfully.' },
-          400: { description: 'Invalid data provided.' },
-          401: { description: 'Error: Unauthorized.' },
-          500: { description: 'Failed to send message.' },
+          200: {
+            description: 'Message sent successfully.',
+            type: 'object',
+            properties: { message: { type: 'string' } },
+          },
+          400: responseSchemas[400](),
+          401: responseSchemas[401],
+          500: responseSchemas[500]('Failed to send message'),
         },
       },
     },
