@@ -62,9 +62,17 @@ const messageTemplateRoutes = async (server: FastifyInstance) => {
         tags: ['message-template'],
         response: {
           200: {
-            description: 'A list of user message templates.',
-            type: 'array',
-            items: messageTemplateResponseSchema,
+            description: 'A paginated list of user message templates.',
+            type: 'object',
+            properties: {
+              messageTemplates: {
+                type: 'array',
+                items: messageTemplateResponseSchema,
+              },
+              total: { type: 'number' },
+              page: { type: 'number' },
+              limit: { type: 'number' },
+            },
           },
           401: responseSchemas[401],
           500: responseSchemas[500]('Error fetching message templates'),
