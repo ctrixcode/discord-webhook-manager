@@ -19,6 +19,11 @@ import {
   IMessageTemplateParams,
 } from '../schemas/message-template.schema';
 
+import {
+  responseSchemas,
+  messageTemplateResponseSchema,
+} from '../schemas/shared.schema';
+
 const messageTemplateRoutes = async (server: FastifyInstance) => {
   server.post<{ Body: CreateMessageTemplateRequest }>(
     '/',
@@ -31,10 +36,13 @@ const messageTemplateRoutes = async (server: FastifyInstance) => {
           'Creates a new message template for the authenticated user.',
         tags: ['message-template'],
         response: {
-          201: { description: 'Message template created successfully.' },
-          400: { description: 'Invalid data provided.' },
-          401: { description: 'Error: Unauthorized.' },
-          500: { description: 'Error: Internal Server Error' },
+          201: {
+            description: 'Message template created successfully.',
+            ...messageTemplateResponseSchema,
+          },
+          400: responseSchemas[400](),
+          401: responseSchemas[401],
+          500: responseSchemas[500]('Error creating message template'),
         },
       },
     },
@@ -53,9 +61,13 @@ const messageTemplateRoutes = async (server: FastifyInstance) => {
           'Retrieves a list of all message templates belonging to the authenticated user, with pagination.',
         tags: ['message-template'],
         response: {
-          200: { description: 'A list of user message templates.' },
-          401: { description: 'Error: Unauthorized.' },
-          500: { description: 'Error: Internal Server Error' },
+          200: {
+            description: 'A list of user message templates.',
+            type: 'array',
+            items: messageTemplateResponseSchema,
+          },
+          401: responseSchemas[401],
+          500: responseSchemas[500]('Error fetching message templates'),
         },
       },
     },
@@ -72,10 +84,13 @@ const messageTemplateRoutes = async (server: FastifyInstance) => {
         description: 'Retrieves a single message template by its ID.',
         tags: ['message-template'],
         response: {
-          200: { description: 'Message template details.' },
-          401: { description: 'Error: Unauthorized.' },
-          404: { description: 'Message template not found.' },
-          500: { description: 'Error: Internal Server Error' },
+          200: {
+            description: 'Message template details.',
+            ...messageTemplateResponseSchema,
+          },
+          401: responseSchemas[401],
+          404: responseSchemas[404]('Message template not found'),
+          500: responseSchemas[500]('Error fetching message template'),
         },
       },
     },
@@ -96,11 +111,14 @@ const messageTemplateRoutes = async (server: FastifyInstance) => {
           'Updates the details of a specific message template by its ID.',
         tags: ['message-template'],
         response: {
-          200: { description: 'Message template updated successfully.' },
-          400: { description: 'Invalid data provided.' },
-          401: { description: 'Error: Unauthorized.' },
-          404: { description: 'Message template not found.' },
-          500: { description: 'Error: Internal Server Error' },
+          200: {
+            description: 'Message template updated successfully.',
+            ...messageTemplateResponseSchema,
+          },
+          400: responseSchemas[400](),
+          401: responseSchemas[401],
+          404: responseSchemas[404]('Message template not found'),
+          500: responseSchemas[500]('Error updating message template'),
         },
       },
     },
@@ -117,10 +135,13 @@ const messageTemplateRoutes = async (server: FastifyInstance) => {
         description: 'Deletes a specific message template by its ID.',
         tags: ['message-template'],
         response: {
-          200: { description: 'Message template deleted successfully.' },
-          401: { description: 'Error: Unauthorized.' },
-          404: { description: 'Message template not found.' },
-          500: { description: 'Error: Internal Server Error' },
+          204: {
+            description: 'Message template deleted successfully.',
+            type: 'null',
+          },
+          401: responseSchemas[401],
+          404: responseSchemas[404]('Message template not found'),
+          500: responseSchemas[500]('Error deleting message template'),
         },
       },
     },

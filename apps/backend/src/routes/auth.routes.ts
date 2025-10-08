@@ -1,5 +1,6 @@
 import { FastifyInstance } from 'fastify';
 import * as authController from '../controllers/auth.controller';
+import { responseSchemas } from '../schemas/shared.schema';
 
 const authRoutes = async (fastify: FastifyInstance) => {
   fastify.post(
@@ -32,24 +33,8 @@ const authRoutes = async (fastify: FastifyInstance) => {
               },
             },
           },
-          401: {
-            description:
-              'Unauthorized. The refresh token is invalid or expired.',
-            type: 'object',
-            properties: {
-              message: {
-                type: 'string',
-                example: 'Invalid or expired refresh token.',
-              },
-            },
-          },
-          500: {
-            description: 'Internal Server Error. Could not refresh token.',
-            type: 'object',
-            properties: {
-              message: { type: 'string' },
-            },
-          },
+          401: responseSchemas[401],
+          500: responseSchemas[500]('Could not refresh token.'),
         },
       },
     },
@@ -79,16 +64,7 @@ const authRoutes = async (fastify: FastifyInstance) => {
               message: { type: 'string', example: 'Logged out' },
             },
           },
-          401: {
-            description: 'Unauthorized. No refresh token was provided.',
-            type: 'object',
-            properties: {
-              message: {
-                type: 'string',
-                example: 'Refresh token is required.',
-              },
-            },
-          },
+          401: responseSchemas[400]('Refresh token is required.'),
         },
       },
     },
@@ -105,7 +81,7 @@ const authRoutes = async (fastify: FastifyInstance) => {
         tags: ['auth'],
         response: {
           302: {
-            description: 'Redirect to the frontend application with tokens.',
+            description: 'Redirect to Discord for authentication.',
           },
         },
       },
@@ -135,27 +111,8 @@ const authRoutes = async (fastify: FastifyInstance) => {
           302: {
             description: 'Redirect to the frontend application with tokens.',
           },
-          400: {
-            description: 'Bad Request. The authorization code is missing.',
-            type: 'object',
-            properties: {
-              message: {
-                type: 'string',
-                example: 'Authorization code is missing.',
-              },
-            },
-          },
-          500: {
-            description:
-              'Internal Server Error. Failed to exchange code for token.',
-            type: 'object',
-            properties: {
-              message: {
-                type: 'string',
-                example: 'Failed to exchange code for token.',
-              },
-            },
-          },
+          400: responseSchemas[400]('Authorization code is missing.'),
+          500: responseSchemas[500]('Failed to exchange code for token.'),
         },
       },
     },

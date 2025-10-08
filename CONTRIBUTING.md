@@ -178,7 +178,7 @@ pnpm build
  ```bash
  pnpm dev
  ```
- The swaggerUI will be available on https://localhost:{PORT}/docs
+ The swaggerUI will be available on http://localhost:{PORT}/docs
 
 **Frontend Documentation:**
 ```bash
