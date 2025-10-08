@@ -1,6 +1,7 @@
 import { FastifyInstance } from 'fastify';
 import * as userController from '../controllers/user.controller';
 import { authenticate } from '../middlewares';
+import { getUsersQuerySchema } from '../schemas/user.schema';
 
 const userRoutes = async (fastify: FastifyInstance) => {
   fastify.get(
@@ -8,6 +9,7 @@ const userRoutes = async (fastify: FastifyInstance) => {
     {
       preHandler: [authenticate],
       schema: {
+        ...getUsersQuerySchema,
         summary: 'Get current user profile',
         description:
           'Retrieves the profile information for the currently authenticated user.',

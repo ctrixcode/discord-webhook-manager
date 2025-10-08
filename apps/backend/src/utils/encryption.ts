@@ -1,5 +1,6 @@
 import * as crypto from 'crypto';
 import { logger } from './logger';
+
 const ALGORITHM = 'aes-256-cbc';
 const ENCRYPTION_KEY = process.env.ENCRYPTION_KEY as string;
 
