@@ -111,9 +111,9 @@ For the easiest and most consistent development experience, use Docker. This eli
     ```
     
     **Encryption Key:**
-    Generate a random 32-character key:
+    Generate a 32-character base64 key (base64 of 24 random bytes):
     ```bash
-    openssl rand -base64 32
+    openssl rand -base64 24 | tr -d '\n'
     ```
     Then add it to `apps/backend/.env`:
     ```env
@@ -206,7 +206,9 @@ If you prefer not to use Docker, follow these steps:
     CLOUDINARY_API_SECRET=your_cloudinary_api_secret
 
     # Encryption
-    ENCRYPTION_KEY=your_32_byte_encryption_key_here # Generate a random 32-character key
+    # Generate with: openssl rand -base64 24 | tr -d '\n'
+    # Must be exactly 32 characters (base64 of 24 random bytes)
+    ENCRYPTION_KEY=your_32_character_base64_key_here
     ```
 
 4.  **Set up environment variables for the frontend**
