@@ -64,7 +64,7 @@ const authRoutes = async (fastify: FastifyInstance) => {
               message: { type: 'string', example: 'Logged out' },
             },
           },
-          401: responseSchemas[400]('Refresh token is required.'),
+          401: responseSchemas[401],
         },
       },
     },

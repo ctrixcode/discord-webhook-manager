@@ -173,14 +173,14 @@ pnpm build
 #### DOCUMENTATIONS
 
 
-###  Backend Documentation
+### Backend Documentation
  run
  ```bash
  pnpm dev
  ```
- The swaggerUI will be available on http://localhost:{PORT}/docs
+ The swaggerUI will be available on `http://localhost:{PORT}/docs`
 
-**Frontend Documentation:**
+### Frontend Documentation
 ```bash
 npx typedoc --out docs/ --entryPointStrategy expand --exclude "**/*.test.ts" --exclude "**/*.test.tsx" --exclude ".next/**/*" src/
 ```

@@ -1,4 +1,5 @@
 export const errorSchema = (description: string, example: string) => ({
+  description,
   type: 'object',
   properties: {
     message: { type: 'string', example },
