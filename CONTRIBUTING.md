@@ -181,10 +181,11 @@ pnpm build
  The swaggerUI will be available on `http://localhost:{PORT}/docs`
 
 ### Frontend Documentation
+
 ```bash
 npx typedoc --out docs/ --entryPointStrategy expand --exclude "**/*.test.ts" --exclude "**/*.test.tsx" --exclude ".next/**/*" src/
 ```
-HTML Files will be available in `web/docs` directory
+Static HTML Files will be available in `web/docs` directory
 
 
 
