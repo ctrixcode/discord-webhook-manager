@@ -93,7 +93,7 @@
       "noWebhooksSubtitle": "Comienza agregando tu primer webhook de Discord"
     },
     "search": {
-      "placeholder": "Search webhooks..."
+      "placeholder": "Buscar webhooks..."
     },
     "templates": {
       "title": "Plantillas de Mensajes",

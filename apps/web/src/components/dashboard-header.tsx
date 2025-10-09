@@ -135,12 +135,6 @@ export function DashboardHeader() {
               align="end"
               forceMount
             >
-              {/* <DropdownMenuItem className="text-slate-300 hover:bg-purple-500/20 hover:text-white"> */}
-              {/*   English */}
-              {/* </DropdownMenuItem> */}
-              {/* <DropdownMenuItem className="text-slate-300 hover:bg-purple-500/20 hover:text-white"> */}
-              {/*   Spanish */}
-              {/* </DropdownMenuItem> */}
               {Object.keys(localeMap).map(loc => (
                 <DropdownMenuItem
                   key={loc}

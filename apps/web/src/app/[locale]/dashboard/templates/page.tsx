@@ -192,7 +192,6 @@ export default function TemplatesPage() {
                       >
                         {t('embedCount', {
                           count: template.embeds.length,
-                          plural: template.embeds.length > 1 ? 's' : '',
                         })}
                       </Badge>
                     )}
