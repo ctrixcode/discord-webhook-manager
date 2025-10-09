@@ -12,7 +12,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { useRouter } from 'next/navigation';
+import { useRouter, usePathname } from '@/i18n/navigation';
 import { LogOut, Settings, Crown } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import {
@@ -22,10 +22,14 @@ import {
   TooltipTrigger,
 } from '@/components/ui/tooltip';
 import Image from 'next/image';
+import { useLocale } from 'next-intl';
+import { localeMap } from '@/i18n/routing';
 
 export function DashboardHeader() {
   const { user, logout } = useAuth();
   const router = useRouter();
+  const locale = useLocale();
+  const pathname = usePathname();
 
   const handleLogout = () => {
     logout();
@@ -117,6 +121,39 @@ export function DashboardHeader() {
         </div>
 
         <div className="flex items-center gap-4">
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button
+                variant="ghost"
+                className="relative h-10 w-fit rounded hover:bg-purple-500/20 text-white"
+              >
+                Lang ({locale})
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent
+              className="w-56 bg-slate-900/95 border-slate-700 backdrop-blur-xl"
+              align="end"
+              forceMount
+            >
+              {/* <DropdownMenuItem className="text-slate-300 hover:bg-purple-500/20 hover:text-white"> */}
+              {/*   English */}
+              {/* </DropdownMenuItem> */}
+              {/* <DropdownMenuItem className="text-slate-300 hover:bg-purple-500/20 hover:text-white"> */}
+              {/*   Spanish */}
+              {/* </DropdownMenuItem> */}
+              {Object.keys(localeMap).map(loc => (
+                <DropdownMenuItem
+                  key={loc}
+                  onClick={() => {
+                    router.replace(pathname, { locale: loc });
+                  }}
+                  className="text-slate-300 hover:bg-purple-500/20 hover:text-white"
+                >
+                  {localeMap[loc as keyof typeof localeMap]}
+                </DropdownMenuItem>
+              ))}
+            </DropdownMenuContent>
+          </DropdownMenu>
           {user?.username && (
             <span className="text-white text-lg font-semibold mr-2 flex items-center">
               {user.username}

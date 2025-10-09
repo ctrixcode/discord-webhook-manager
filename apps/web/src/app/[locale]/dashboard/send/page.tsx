@@ -3,6 +3,7 @@
 import React from 'react';
 import { useState, useEffect } from 'react';
 import { useSearchParams, useRouter, usePathname } from 'next/navigation';
+import { useTranslations } from 'next-intl';
 import {
   Select,
   SelectContent,
@@ -29,10 +30,12 @@ import { useToast } from '@/hooks/use-toast';
 import { SendMessageData } from '@/lib/api/types/webhook';
 import { DISCORD_MAX_MESSAGE_LENGTH } from '@/constants/discord';
 import Link from 'next/link';
-import { EmbedBuilder } from '../../../components/embed-builder';
+import { EmbedBuilder } from '../../../../components/embed-builder';
 import { ApiError } from '@/lib/error';
 
 export default function SendMessagePage() {
+  // 2. Initialize the translation function for the "sendMessagePage" namespace
+  const t = useTranslations('dashboard.sendMessagePage');
   const { toast } = useToast();
   const searchParams = useSearchParams();
   const router = useRouter();
@@ -174,7 +177,8 @@ export default function SendMessagePage() {
       toast({
         variant: 'destructive',
         title: 'Error',
-        description: 'Please select at least one webhook',
+        // 3. Translate errorSelect
+        description: t('errorSelect'),
       });
       return;
     }
@@ -183,7 +187,8 @@ export default function SendMessagePage() {
       toast({
         variant: 'destructive',
         title: 'Error',
-        description: 'Please enter a message or add an embed',
+        // 4. Translate errorContent
+        description: t('errorContent'),
       });
       return;
     }
@@ -208,13 +213,14 @@ export default function SendMessagePage() {
         toast({
           variant: 'success',
           title: 'Success',
-          description: `Message sent successfully to ${selectedWebhooks.length} webhook${selectedWebhooks.length > 1 ? 's' : ''}`,
+          // 5. Use translation with count pluralization for success message
+          description: t('success', { count: selectedWebhooks.length }),
         });
       } else {
         toast({
           variant: 'destructive',
           title: 'Error',
-          description: response.message || 'Failed to send message',
+          description: response.message || t('errorGeneral'), // 6. Use fallback translation
         });
       }
     } catch (error) {
@@ -234,6 +240,7 @@ export default function SendMessagePage() {
                   className="text-blue-400 hover:underline"
                   onClick={() => toastResponse.dismiss()}
                 >
+                  {/* Note: This specific link text 'Check your usage in settings.' is not in the provided translation object, so it remains hardcoded or requires a new key */}
                   Check your usage in settings.
                 </Link>
               </div>
@@ -243,14 +250,15 @@ export default function SendMessagePage() {
           toast({
             variant: 'destructive',
             title: 'Error',
-            description: error.message || 'An unexpected error occurred',
+            description: error.message || t('errorGeneral'),
           });
         }
       } else {
         toast({
           variant: 'destructive',
           title: 'Error',
-          description: 'something went wrong',
+          // 7. Translate general error
+          description: t('errorGeneral'),
         });
       }
     } finally {
@@ -264,10 +272,10 @@ export default function SendMessagePage() {
         {/* Header */}
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-3xl font-bold text-white">Send Message</h1>
-            <p className="text-slate-300 mt-1">
-              Send messages immediately to one or multiple webhooks
-            </p>
+            {/* 8. Translate title */}
+            <h1 className="text-3xl font-bold text-white">{t('title')}</h1>
+            {/* 9. Translate subtitle */}
+            <p className="text-slate-300 mt-1">{t('subtitle')}</p>
           </div>
           <Button
             onClick={handleSendMessage}
@@ -276,8 +284,10 @@ export default function SendMessagePage() {
           >
             <Send className="w-4 h-4 mr-2" />
             {isSending
-              ? 'Sending...'
-              : `Send to ${selectedWebhooks.length} webhook${selectedWebhooks.length !== 1 ? 's' : ''}`}
+              ? // 10. Translate sending text
+                t('sending')
+              : // 11. Use translation with count pluralization for send button
+                t('sendTo', { count: selectedWebhooks.length })}
           </Button>
         </div>
 
@@ -287,7 +297,8 @@ export default function SendMessagePage() {
             {/* Message Composer */}
             <Card className="bg-slate-800/50 backdrop-blur-sm border-slate-700/50 text-white">
               <CardHeader>
-                <CardTitle>Compose Message</CardTitle>
+                {/* 12. Translate Card Title */}
+                <CardTitle>{t('composeMessage')}</CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="flex items-center justify-between mb-4">
@@ -298,7 +309,8 @@ export default function SendMessagePage() {
                           htmlFor="template-select"
                           className="text-slate-200"
                         >
-                          Load Template
+                          {/* 13. Translate loadTemplate */}
+                          {t('loadTemplate')}
                         </Label>
                         <Select
                           onValueChange={handleTemplateSelect}
@@ -335,7 +347,8 @@ export default function SendMessagePage() {
                     className="mt-auto border-red-600 text-red-400 hover:bg-red-600 hover:text-white bg-transparent"
                   >
                     <XCircle className="w-4 h-4 mr-2" />
-                    Clear
+                    {/* 14. Translate clear button */}
+                    {t('clear')}
                   </Button>
                 </div>
                 <Tabs defaultValue="content" className="w-full">
@@ -344,36 +357,42 @@ export default function SendMessagePage() {
                       value="content"
                       className="data-[state=active]:bg-purple-600"
                     >
-                      Content
+                      {/* 15. Translate content tab */}
+                      {t('tabs.content')}
                     </TabsTrigger>
                     <TabsTrigger
                       value="settings"
                       className="data-[state=active]:bg-purple-600"
                     >
-                      Settings
+                      {/* 16. Translate settings tab */}
+                      {t('tabs.settings')}
                     </TabsTrigger>
                     <TabsTrigger
                       value="embeds"
                       className="data-[state=active]:bg-purple-600"
                     >
-                      Embeds
+                      {/* 17. Translate embeds tab */}
+                      {t('tabs.embeds')}
                     </TabsTrigger>
                     <TabsTrigger
                       value="webhooks"
                       className="data-[state=active]:bg-purple-600"
                     >
-                      Webhooks
+                      {/* 18. Translate webhooks tab */}
+                      {t('tabs.webhooks')}
                     </TabsTrigger>
                   </TabsList>
 
                   <TabsContent value="content" className="space-y-4 mt-4">
                     <div>
                       <Label htmlFor="content" className="text-slate-200">
-                        Message Text
+                        {/* 19. Translate messageText label */}
+                        {t('messageText')}
                       </Label>
                       <Textarea
                         id="content"
-                        placeholder="Enter your message content..."
+                        // 20. Translate messagePlaceholder
+                        placeholder={t('messagePlaceholder')}
                         value={message.content}
                         onChange={e =>
                           setMessage(prev => ({
@@ -385,7 +404,8 @@ export default function SendMessagePage() {
                       />
                       <p className="text-xs text-slate-400 mt-1">
                         {message.content.length}/{DISCORD_MAX_MESSAGE_LENGTH}{' '}
-                        characters
+                        {t('characters')}{' '}
+                        {/* 21. Add 'characters' key to JSON */}
                       </p>
                     </div>
                   </TabsContent>
@@ -394,9 +414,11 @@ export default function SendMessagePage() {
                     <div className="space-y-4">
                       <div>
                         <Label className="text-slate-200">
-                          Message Appearance
+                          {/* 22. Translate appearance title */}
+                          {t('appearance')}
                         </Label>
                         <p className="text-sm text-slate-400">
+                          {/* Note: This line 'Choose how the webhook message will appear in Discord' is not in the JSON, so it remains hardcoded or requires a new key */}
                           Choose how the webhook message will appear in Discord
                         </p>
                       </div>
@@ -405,10 +427,12 @@ export default function SendMessagePage() {
                       <div className="flex items-center justify-between p-4 rounded-lg bg-slate-700/30 border border-slate-600/50">
                         <div>
                           <p className="text-slate-200 font-medium">
+                            {/* Note: This line 'Select Predefined Avatar' is not in the JSON, so it remains hardcoded or requires a new key */}
                             Select Predefined Avatar
                           </p>
                           <p className="text-sm text-slate-400">
-                            Choose from your saved avatar profiles
+                            {/* 23. Translate chooseAvatar hint */}
+                            {t('chooseAvatar')}
                           </p>
                         </div>
                         <AvatarSelector onSelect={handleAvatarSelect}>
@@ -417,6 +441,7 @@ export default function SendMessagePage() {
                             size="sm"
                             className="bg-slate-700 border-slate-600 text-white hover:bg-slate-600"
                           >
+                            {/* Note: This line 'Select Avatar' is not in the JSON, so it remains hardcoded or requires a new key */}
                             Select Avatar
                           </Button>
                         </AvatarSelector>
@@ -427,10 +452,12 @@ export default function SendMessagePage() {
                       <div className="flex items-center justify-between p-4 rounded-lg bg-slate-700/30 border border-slate-600/50">
                         <div>
                           <Label className="text-slate-200 font-medium">
-                            Text-to-Speech
+                            {/* 24. Translate tts title */}
+                            {t('tts')}
                           </Label>
                           <p className="text-sm text-slate-400">
-                            Enable TTS for this message
+                            {/* 25. Translate enableTts hint */}
+                            {t('enableTts')}
                           </p>
                         </div>
                         <Checkbox
@@ -444,11 +471,13 @@ export default function SendMessagePage() {
 
                       <div>
                         <Label htmlFor="thread-name" className="text-slate-200">
-                          Thread Name (Optional)
+                          {/* 26. Translate threadName label */}
+                          {t('threadName')}
                         </Label>
                         <input
                           id="thread-name"
                           type="text"
+                          // Note: Placeholder 'Create a new thread with this name' is not in the JSON, so it remains hardcoded or requires a new key
                           placeholder="Create a new thread with this name"
                           value={message.threadName || ''}
                           onChange={e =>
@@ -460,13 +489,15 @@ export default function SendMessagePage() {
                           className="mt-1 w-full px-3 py-2 bg-slate-600/50 border border-slate-500 rounded-md text-white placeholder:text-slate-400 focus:border-purple-500 focus:outline-none"
                         />
                         <p className="text-xs text-slate-400 mt-1">
-                          If specified, the message will be sent to a new thread
+                          {/* 27. Translate threadHint */}
+                          {t('threadHint')}
                         </p>
                       </div>
 
                       <div>
                         <Label htmlFor="message-url" className="text-slate-200">
-                          Discord Message URL (Optional)
+                          {/* 28. Translate messageUrl label */}
+                          {t('messageUrl')}
                         </Label>
                         <input
                           id="message-url"
@@ -483,8 +514,8 @@ export default function SendMessagePage() {
                           className="mt-1 w-full px-3 py-2 bg-slate-600/50 border border-slate-500 rounded-md text-white placeholder:text-slate-400 focus:border-purple-500 focus:outline-none"
                         />
                         <p className="text-xs text-slate-400 mt-1">
-                          If provided, the message will replace the existing
-                          Discord message at this URL.
+                          {/* 29. Translate urlHint */}
+                          {t('urlHint')}
                         </p>
                       </div>
                     </div>
@@ -503,8 +534,11 @@ export default function SendMessagePage() {
                     <CardHeader className="px-0 pt-0">
                       <CardTitle className="flex items-center gap-2">
                         <Webhook className="w-5 h-5 text-cyan-400" />
-                        Select Webhooks ({selectedWebhooks.length}/
-                        {webhooks.length})
+                        {/* 30. Use translation with values for selected/total */}
+                        {t('selectWebhooks', {
+                          selected: selectedWebhooks.length,
+                          total: webhooks.length,
+                        })}
                       </CardTitle>
                       <Button
                         variant="outline"
@@ -512,6 +546,7 @@ export default function SendMessagePage() {
                         onClick={handleSelectAll}
                         className="w-fit border-slate-600 text-slate-300 hover:bg-slate-700 bg-transparent"
                       >
+                        {/* Note: These buttons 'Deselect All' and 'Select All' are not in the JSON, so they remain hardcoded or require new keys */}
                         {selectedWebhooks.length === webhooks.length
                           ? 'Deselect All'
                           : 'Select All'}
@@ -520,11 +555,13 @@ export default function SendMessagePage() {
                     <CardContent className="space-y-3 px-0 pb-0">
                       {isLoadingWebhooks ? (
                         <p className="text-slate-400 text-center py-4">
-                          Loading webhooks...
+                          {/* 31. Translate loadingWebhooks */}
+                          {t('loadingWebhooks')}
                         </p>
                       ) : webhooks.length === 0 ? (
                         <p className="text-slate-400 text-center py-4">
-                          No webhooks available. Add some webhooks first.
+                          {/* 32. Translate noWebhooks */}
+                          {t('noWebhooks')}
                         </p>
                       ) : (
                         webhooks.map(webhook => (
@@ -550,6 +587,7 @@ export default function SendMessagePage() {
                                   }
                                   className="text-xs"
                                 >
+                                  {/* Note: These status texts 'Active' and 'Inactive' are not in the JSON, so they remain hardcoded or require new keys */}
                                   {webhook.is_active ? 'Active' : 'Inactive'}
                                 </Badge>
                               </div>

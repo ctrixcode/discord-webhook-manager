@@ -1,11 +1,9 @@
 'use client';
 
 import React, { useRef } from 'react';
-
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Button } from '@/components/ui/button';
-
 import { templateQueries } from '@/lib/api/queries/message-template';
 import type {
   MessageTemplate,
@@ -16,15 +14,19 @@ import { TemplateForm } from '@/components/template-form';
 import { ArrowLeft, Save } from 'lucide-react';
 import { Spinner } from '@/components/ui/spinner';
 import { toast } from '@/hooks/use-toast';
+import { useTranslations } from 'next-intl';
 
 export default function CreateTemplatePage() {
+  const t = useTranslations('dashboard.createTemplate');
   const router = useRouter();
   const queryClient = useQueryClient();
   const searchParams = useSearchParams();
   const templateId = searchParams.get('edit');
+
   interface TemplateFormRef {
     submit: () => void;
   }
+
   const templateFormRef = useRef<TemplateFormRef>(null);
 
   const { data: existingTemplate, isLoading } = useQuery<MessageTemplate>({
@@ -51,13 +53,13 @@ export default function CreateTemplatePage() {
       queryClient.invalidateQueries({ queryKey: ['templates'] });
       router.push('/dashboard/templates');
       toast({
-        title: 'Template saved',
-        description: 'Template saved successfully!',
+        title: t('toast.savedTitle'),
+        description: t('toast.savedDesc'),
       });
     },
     onError: error => {
       toast({
-        title: 'Error saving template',
+        title: t('toast.errorTitle'),
         description: error.message,
         variant: 'destructive',
       });
@@ -82,15 +84,13 @@ export default function CreateTemplatePage() {
             className="text-white hover:bg-slate-700"
           >
             <ArrowLeft className="w-4 h-4 mr-2" />
-            Back
+            {t('back')}
           </Button>
           <div>
             <h1 className="text-xl font-semibold text-white">
-              {templateId ? 'Edit Template' : 'Create Template'}
+              {templateId ? t('editTitle') : t('createTitle')}
             </h1>
-            <p className="text-sm text-slate-300">
-              Design your Discord message with live preview
-            </p>
+            <p className="text-sm text-slate-300">{t('subtitle')}</p>
           </div>
         </div>
         <Button
@@ -99,7 +99,7 @@ export default function CreateTemplatePage() {
           className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700"
         >
           <Save className="w-4 h-4 mr-2" />
-          {isPending ? 'Saving...' : templateId ? 'Update' : 'Save'}
+          {isPending ? t('saving') : templateId ? t('update') : t('save')}
         </Button>
       </div>
 

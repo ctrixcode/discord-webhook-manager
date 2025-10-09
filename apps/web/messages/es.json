@@ -1,0 +1,252 @@
+{
+  "meta": {
+    "title": "Discord Webhook Manager - Potencia tu comunicación en Discord",
+    "description": "Administra, automatiza y envía mensajes enriquecidos a tus canales de Discord sin esfuerzo. Optimiza los anuncios, actualizaciones e interacciones con nuestro intuitivo Administrador de Webhooks."
+  },
+  "home": {
+    "hero": {
+      "heading": "Potencia tu comunicación en Discord",
+      "subtext": "Elimina el trabajo manual, los bots costosos y las soluciones personalizadas complejas. Administra, automatiza y envía mensajes enriquecidos a tus canales de Discord, optimizando los anuncios e interacciones con nuestro intuitivo Administrador de Webhooks.",
+      "button_logged_in": "Ir al Panel",
+      "button_logged_out": "Comienza gratis"
+    },
+    "whatWeDo": {
+      "title": "Lo que hacemos",
+      "features": {
+        "centralized": {
+          "title": "Gestión centralizada de Webhooks",
+          "desc": "Mantén todos tus webhooks de Discord organizados en un solo lugar. Agrega, edita y elimina webhooks fácilmente, eliminando la molestia de manejar múltiples servidores o configuraciones manuales."
+        },
+        "richMessages": {
+          "title": "Composición de mensajes enriquecidos",
+          "desc": "Crea impresionantes mensajes de Discord con soporte completo para embeds, avatares personalizados y nombres de usuario. Haz que tus anuncios destaquen sin necesidad de bots personalizados o trabajo tedioso."
+        },
+        "customAvatars": {
+          "title": "Avatares e identidades personalizadas",
+          "desc": "Define y reutiliza avatares y nombres de usuario personalizados para tus mensajes de webhook, permitiendo anuncios dinámicos y atractivos adaptados a diferentes necesidades."
+        },
+        "ui": {
+          "title": "Interfaz de usuario intuitiva",
+          "desc": "Nuestro panel limpio y fácil de usar hace que la gestión de tus webhooks de Discord sea muy sencilla, incluso para principiantes."
+        },
+        "secure": {
+          "title": "Seguro y confiable",
+          "desc": "Construido con la seguridad en mente, garantizando que tus datos de webhook y las interacciones con Discord sean seguras y confiables."
+        }
+      }
+    },
+    "contact": {
+      "title": "Ponte en contacto",
+      "desc": "¿Tienes preguntas, comentarios o simplemente quieres saludar? ¡No dudes en comunicarte!",
+      "email": "coderck@proton.me",
+      "github": "ctrixcode",
+      "portfolio": "Mi Portafolio"
+    },
+    "footer": {
+      "copyright": "Discord Webhook Manager. Todos los derechos reservados."
+    }
+  },
+  "login": {
+    "checking": "Comprobando tu sesión...",
+    "welcome": "¡Bienvenido!",
+    "loginMessage": "Inicia sesión con tu cuenta de Discord para administrar tus webhooks.",
+    "loginButton": "Iniciar sesión con Discord"
+  },
+  "dashboard": {
+    "welcome": "¡Bienvenido de nuevo!",
+    "manage": "Administra tus webhooks y mensajes de Discord",
+    "quickActions": "Acciones rápidas",
+    "webhook": "Webhook",
+    "sendMessage": "Enviar mensaje",
+    "template": "Plantilla",
+    "gettingStarted": "Empezando",
+    "gettingStartedDesc": "¿Nuevo en la gestión de webhooks? Aquí te mostramos cómo empezar rápidamente.",
+    "steps": {
+      "oneTitle": "Conecta tu primer webhook",
+      "oneDesc": "Agrega una URL de webhook de Discord para comenzar a enviar mensajes.",
+      "twoTitle": "Envía tu primer mensaje",
+      "twoDesc": "Prueba tu webhook enviando un mensaje a tu canal de Discord.",
+      "threeTitle": "Crea plantillas y programa mensajes",
+      "threeDesc": "Crea plantillas reutilizables y programa mensajes para más tarde."
+    },
+    "title": "Webhooks",
+    "subtitle": "Administra tus webhooks de Discord",
+    "stats": {
+      "total": "Webhooks Totales",
+      "active": "Webhooks Activos",
+      "activeTitle": "Listos para enviar mensajes",
+      "ready": "activos"
+    },
+    "filters": {
+      "all": "Todos",
+      "active": "Activos",
+      "inactive": "Inactivos",
+      "searchPlaceholder": "Buscar webhooks..."
+    },
+    "empty": {
+      "noResultsTitle": "No se encontraron webhooks",
+      "noResultsSubtitle": "Prueba ajustando tu búsqueda o filtros",
+      "noWebhooks": {
+        "title": "Aún no hay webhooks",
+        "desc": "Comienza agregando tu primer webhook de Discord"
+      },
+      "noWebhooksSubtitle": "Comienza agregando tu primer webhook de Discord"
+    },
+    "search": {
+      "placeholder": "Search webhooks..."
+    },
+    "templates": {
+      "title": "Plantillas de Mensajes",
+      "subtitle": "Crea y administra plantillas de mensajes reutilizables",
+      "createButton": "Crear Plantilla",
+      "searchPlaceholder": "Buscar plantillas...",
+      "badgeUses": "TODO usos",
+      "edit": "Editar",
+      "delete": "Eliminar",
+      "contentPreview": "Vista previa del contenido:",
+      "noContent": "Sin contenido",
+      "embedCount": "{count} incrustación{plural}",
+      "noTemplatesTitle": "Aún no hay plantillas",
+      "noTemplatesSubtitle": "Crea tu primera plantilla de mensaje para comenzar",
+      "noResultsTitle": "No se encontraron plantillas",
+      "noResultsSubtitle": "Prueba ajustando tu búsqueda",
+      "deleteDialogTitle": "¿Eliminar plantilla?",
+      "deleteDialogDescription": "Esta acción no se puede deshacer. Esto eliminará permanentemente la plantilla \"{name}\" de tu cuenta.",
+      "cancel": "Cancelar",
+      "confirmDelete": "Eliminar",
+      "toast": {
+        "deletedTitle": "Plantilla eliminada",
+        "deletedDescription": "La plantilla ha sido eliminada"
+      }
+    },
+    "createTemplate": {
+      "back": "Atrás",
+      "createTitle": "Crear plantilla",
+      "editTitle": "Editar plantilla",
+      "subtitle": "Diseña tu mensaje de Discord con vista previa en vivo",
+      "save": "Guardar",
+      "update": "Actualizar",
+      "saving": "Guardando...",
+      "toast": {
+        "savedTitle": "Plantilla guardada",
+        "savedDesc": "¡Plantilla guardada con éxito!",
+        "errorTitle": "Error al guardar la plantilla"
+      }
+    },
+    "settingsPage": {
+      "title": "Configuración",
+      "subtitle": "Administra tu cuenta y preferencias de la aplicación",
+      "accountType": {
+        "title": "Tipo de cuenta",
+        "desc": "Tu nivel actual de suscripción",
+        "error": "No se pudo cargar el tipo de cuenta."
+      },
+      "accountQuotes": {
+        "free": "Explora lo básico, desbloquea tu potencial.",
+        "paid": "Eleva tu experiencia, logra más.",
+        "premium": "Libera el máximo poder, sin límites."
+      },
+      "usage": {
+        "title": "Uso",
+        "desc": "Supervisa tu uso actual y tus límites",
+        "webhookMessages": "Mensajes de Webhook diarios",
+        "mediaStorage": "Almacenamiento multimedia",
+        "error": "No se pudieron cargar los datos de uso."
+      },
+      "plans": {
+        "title": "Planes de suscripción",
+        "desc": "Consulta los diferentes niveles de suscripción y sus beneficios",
+        "button": "Ver planes"
+      },
+      "support": {
+        "title": "Apóyanos",
+        "desc": "Ayúdanos a crecer compartiendo Discord Webhook Manager",
+        "message": "Si disfrutas usar Discord Webhook Manager, ¡considera compartirlo en X (anteriormente Twitter)!",
+        "button": "Compartir en X (Twitter)",
+        "dm": "Envíame un DM en X si quieres obtener suscripciones de pago."
+      },
+      "clearData": {
+        "title": "¿Borrar todos los datos?",
+        "desc": "¿Estás seguro de que quieres borrar todos los datos? Esta acción no se puede deshacer.",
+        "confirm": "Borrar datos"
+      }
+    },
+    "sendMessagePage": {
+      "title": "Enviar Mensaje",
+      "subtitle": "Envía mensajes inmediatamente a uno o varios webhooks",
+      "sendTo": "Enviar a {count, plural, one {# webhook} other {# webhooks}}",
+      "sending": "Enviando...",
+      "tabs": {
+        "content": "Contenido",
+        "settings": "Configuración",
+        "embeds": "Embeds",
+        "webhooks": "Webhooks"
+      },
+      "composeMessage": "Componer Mensaje",
+      "characters": "caracteres",
+      "clear": "Limpiar",
+      "loadTemplate": "Cargar Plantilla",
+      "messageText": "Texto del Mensaje",
+      "messagePlaceholder": "Introduce el contenido de tu mensaje...",
+      "appearance": "Apariencia del Mensaje",
+      "chooseAvatar": "Elige entre tus perfiles de avatar guardados",
+      "tts": "Texto a Voz",
+      "enableTts": "Habilitar TTS para este mensaje",
+      "threadName": "Nombre del Hilo (Opcional)",
+      "threadHint": "Si se especifica, el mensaje se enviará a un nuevo hilo",
+      "messageUrl": "URL del Mensaje de Discord (Opcional)",
+      "urlHint": "Si se proporciona, el mensaje reemplazará al mensaje de Discord existente en esta URL.",
+      "selectWebhooks": "Seleccionar Webhooks ({selected}/{total})",
+      "noWebhooks": "No hay webhooks disponibles. Añade algunos webhooks primero.",
+      "loadingWebhooks": "Cargando webhooks...",
+      "success": "Mensaje enviado con éxito a {count, plural, one {# webhook} other {# webhooks}}",
+      "errorSelect": "Selecciona al menos un webhook",
+      "errorContent": "Introduce un mensaje o añade un embed",
+      "errorGeneral": "Ocurrió un error inesperado"
+    },
+    "plansPage": {
+      "title": "Planes de Suscripción",
+      "subtitle": "Elige el plan que mejor se adapte a tus necesidades.",
+      "plans": {
+        "free": {
+          "name": "Gratis",
+          "description": "Perfecto para empezar",
+          "features": {
+            "messages_day": "{count} Mensajes de Webhook/Día",
+            "media_storage": "{count} MB de Almacenamiento Multimedia",
+            "unlimited_messages": "Mensajes de Webhook Ilimitados/Día",
+            "large_storage": "{count} GB de Almacenamiento Multimedia",
+            "custom_avatars": "Avatares Personalizados",
+            "priority_support": "Soporte Prioritario",
+            "dedicated_support": "Soporte Dedicado 24/7"
+          },
+          "cta_current": "Plan Actual"
+        },
+        "paid": {
+          "name": "Pago",
+          "description": "Para comunidades en crecimiento",
+          "cta_upgrade": "Actualizar"
+        },
+        "premium": {
+          "name": "Premium",
+          "description": "Libera todo el poder",
+          "cta_upgrade": "Actualizar"
+        }
+      }
+    },
+    "avatarsPage": {
+      "title": "Avatares Predefinidos",
+      "subtitle": "Crea y gestiona perfiles de avatar reutilizables para tus webhooks",
+      "createButton": "Crear Avatar",
+      "searchPlaceholder": "Buscar avatares...",
+      "loading": "Cargando avatares...",
+      "emptyState": {
+        "noAvatarsTitle": "Aún no hay avatares",
+        "noAvatarsMessage": "Crea tu primer avatar predefinido para empezar",
+        "noResultsTitle": "No se encontraron avatares",
+        "noResultsMessage": "Intenta ajustar tus términos de búsqueda"
+      }
+    }
+  }
+}
+
