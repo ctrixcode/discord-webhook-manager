@@ -105,7 +105,7 @@
       "delete": "Eliminar",
       "contentPreview": "Vista previa del contenido:",
       "noContent": "Sin contenido",
-      "embedCount": "{count} incrustación{plural}",
+      "embedCount": "{count, plural, one {# incrustación} other {# incrustaciones}}",
       "noTemplatesTitle": "Aún no hay plantillas",
       "noTemplatesSubtitle": "Crea tu primera plantilla de mensaje para comenzar",
       "noResultsTitle": "No se encontraron plantillas",

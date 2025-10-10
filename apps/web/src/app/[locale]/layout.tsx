@@ -51,9 +51,8 @@ export default async function RootLayout({
     notFound();
   }
 
-  const messages = await getMessages();
-
   setRequestLocale(locale);
+  const messages = await getMessages();
 
   return (
     <html lang={locale} suppressHydrationWarning>
