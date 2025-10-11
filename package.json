@@ -29,5 +29,9 @@
   },
   "resolutions": {
     "@types/react": "19.2.0"
-  }
+  },
+  "dependencies": {
+    "@fastify/swagger": "^9.5.2",
+    "@fastify/swagger-ui": "^5.2.3"
+   }
 }

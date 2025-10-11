@@ -212,4 +212,10 @@ The API will return appropriate HTTP status codes for errors (e.g., 400 Bad Requ
 }
 ```
 
+
+### Generation of documents
+
+using `npx typedoc --out docs/ --entryPointStrategy expand --exclude "**/*.test.ts" --exclude "**/*.test.tsx" --exclude ".next/**/*" src/`
+based on the comments provided by the developer documents will be generated in web/docs folder
+
 Your frontend application should handle these error responses gracefully, displaying user-friendly messages as needed.

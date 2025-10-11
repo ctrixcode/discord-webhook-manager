@@ -1,2 +1,3 @@
 # Project-specific ignores for web app
 next-env.d.ts
+docs/
