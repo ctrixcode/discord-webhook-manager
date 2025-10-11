@@ -64,13 +64,16 @@ const webhookRoutes = async (server: FastifyInstance) => {
             description: 'A list of user webhooks.',
             type: 'object',
             properties: {
-              webhooks: {
-                type: 'array',
-                items: webhookResponseSchema,
+              data: {
+                webhooks: {
+                  type: 'array',
+                  items: webhookResponseSchema,
+                },
               },
               total: { type: 'number' },
               page: { type: 'number' },
               limit: { type: 'number' },
+              success: { type: 'boolean', default: true },
             },
           },
           401: responseSchemas[401],

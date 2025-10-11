@@ -15,6 +15,15 @@ export const responseSchemas = {
   500: (example: string) => errorSchema('Internal Server Error.', example),
 };
 
+export const successSchema = (dataSchema: object) => ({
+  type: 'object',
+  properties: {
+    success: { type: 'boolean', default: true },
+    data: dataSchema,
+  },
+  required: ['success', 'data'],
+});
+
 const baseEntitySchema = {
   id: { type: 'string' },
   createdAt: {
@@ -30,7 +39,6 @@ const baseEntitySchema = {
 export const avatarResponseSchema = {
   type: 'object',
   properties: {
-    ...baseEntitySchema,
     username: { type: 'string' },
     avatar_url: {
       type: 'string',
@@ -66,23 +74,30 @@ export const webhookResponseSchema = {
   },
 };
 
-export const userProfileResponseSchema = {
+export const userProfileResponseSchema = successSchema({
   type: 'object',
   properties: {
-    id: { type: 'string' },
-    discordId: { type: 'string' },
+    ...baseEntitySchema,
     username: { type: 'string' },
-    avatar: {
+    email: { type: 'string', format: 'email' },
+    discord_id: { type: 'string' },
+    discord_avatar: {
       type: 'string',
       nullable: true,
     },
+    accountType: {
+      type: 'string',
+      enum: ['free', 'paid', 'premium'],
+    },
   },
-};
+});
 
-export const userUsageResponseSchema = {
+export const userUsageResponseSchema = successSchema({
   type: 'object',
   properties: {
-    webhooks: { type: 'number' },
-    avatars: { type: 'number' },
+    webhookMessagesSentToday: { type: 'number' },
+    totalMediaStorageUsed: { type: 'number' },
+    dailyWebhookMessageLimit: { type: 'number' },
+    overallMediaStorageLimit: { type: 'number' },
   },
-};
+});
