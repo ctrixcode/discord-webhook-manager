@@ -4,6 +4,7 @@ import React from 'react';
 import { useState, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { useTranslations } from 'next-intl'; // 1. Import useTranslations
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Plus, Search, Users } from 'lucide-react';
@@ -16,6 +17,7 @@ import { CreateAvatarDialog } from '@/components/avatars/create-avatar-dialog';
 import { Spinner } from '@/components/ui/spinner';
 
 export default function AvatarsPage() {
+  const t = useTranslations('dashboard.avatarsPage'); // 2. Initialize translations
   const { user } = useAuth();
   const router = useRouter();
   const queryClient = useQueryClient();
@@ -67,10 +69,12 @@ export default function AvatarsPage() {
         <div className="flex items-center justify-between mb-8">
           <div>
             <h1 className="text-3xl font-bold text-white mb-2">
-              Predefined Avatars
+              {/* 3. Translate Title */}
+              {t('title')}
             </h1>
             <p className="text-slate-400">
-              Create and manage reusable avatar profiles for your webhooks
+              {/* 4. Translate Subtitle */}
+              {t('subtitle')}
             </p>
           </div>
           <Button
@@ -78,7 +82,8 @@ export default function AvatarsPage() {
             className="bg-purple-600 hover:bg-purple-700 text-white"
           >
             <Plus className="w-4 h-4 mr-2" />
-            Create Avatar
+            {/* 5. Translate Create Button */}
+            {t('createButton')}
           </Button>
         </div>
 
@@ -86,7 +91,8 @@ export default function AvatarsPage() {
         <div className="relative mb-6">
           <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400 w-4 h-4" />
           <Input
-            placeholder="Search avatars..."
+            // 6. Translate Search Placeholder
+            placeholder={t('searchPlaceholder')}
             value={searchQuery}
             onChange={e => setSearchQuery(e.target.value)}
             className="pl-10 bg-slate-800/50 border-slate-700 text-white placeholder:text-slate-400 focus:border-purple-500"
@@ -96,6 +102,8 @@ export default function AvatarsPage() {
         {/* Content */}
         {isLoading ? (
           <div className="flex min-h-[50vh] items-center justify-center">
+            {/* 7. Loading state is purely visual, but if you wanted a message:
+            <p className="text-slate-400">{t('loading')}</p> */}
             <Spinner size={48} className="text-primary" />
           </div>
         ) : filteredAvatars.length === 0 ? (
@@ -103,12 +111,16 @@ export default function AvatarsPage() {
             <div className="bg-slate-800/50 backdrop-blur-sm border border-slate-700/50 rounded-lg p-8 max-w-md mx-auto">
               <Users className="w-12 h-12 text-slate-400 mx-auto mb-4" />
               <h3 className="text-lg font-semibold text-white mb-2">
-                {searchQuery ? 'No avatars found' : 'No avatars yet'}
+                {/* 8. Translate No Avatars/No Results Title */}
+                {searchQuery
+                  ? t('emptyState.noResultsTitle')
+                  : t('emptyState.noAvatarsTitle')}
               </h3>
               <p className="text-slate-400 mb-4">
+                {/* 9. Translate No Avatars/No Results Message */}
                 {searchQuery
-                  ? 'Try adjusting your search terms'
-                  : 'Create your first predefined avatar to get started'}
+                  ? t('emptyState.noResultsMessage')
+                  : t('emptyState.noAvatarsMessage')}
               </p>
               {!searchQuery && (
                 <Button
@@ -116,7 +128,8 @@ export default function AvatarsPage() {
                   className="bg-purple-600 hover:bg-purple-700 text-white"
                 >
                   <Plus className="w-4 h-4 mr-2" />
-                  Create Avatar
+                  {/* 10. Translate Create Button in empty state */}
+                  {t('createButton')}
                 </Button>
               )}
             </div>
@@ -135,7 +148,7 @@ export default function AvatarsPage() {
           </div>
         )}
 
-        {/* Create/Edit Dialog */}
+        {/* Create/Edit Dialog is assumed to be translated internally by nextintl */}
         <CreateAvatarDialog
           open={showCreateDialog}
           onOpenChange={handleCloseDialog}

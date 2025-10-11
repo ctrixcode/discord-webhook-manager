@@ -13,16 +13,17 @@ import { type Webhook } from '@repo/shared-types';
 import { Search, WebhookIcon } from 'lucide-react';
 import { Spinner } from '@/components/ui/spinner';
 import { Button } from '@/components/ui/button';
+import { useTranslations } from 'next-intl';
 
 export default function WebhooksPage() {
   const { user } = useAuth();
   const router = useRouter();
+  const t = useTranslations('dashboard');
 
   const [searchQuery, setSearchQuery] = useState('');
   const [filterStatus, setFilterStatus] = useState<
     'all' | 'active' | 'inactive'
   >('all');
-
   const queryClient = useQueryClient();
 
   const { data: webhooks = [], isLoading } = useQuery<Webhook[]>({
@@ -62,9 +63,9 @@ export default function WebhooksPage() {
       <div className="flex items-center justify-between">
         <div>
           <h2 className="text-3xl font-bold tracking-tight text-white">
-            Webhooks
+            {t('title')}
           </h2>
-          <p className="text-slate-300">Manage your Discord webhooks</p>
+          <p className="text-slate-300">{t('subtitle')}</p>
         </div>
         <AddWebhookDialog />
       </div>
@@ -74,7 +75,7 @@ export default function WebhooksPage() {
         <Card className="bg-slate-900/50 backdrop-blur-xl border-slate-700/50 hover:bg-slate-800/50 transition-all duration-300">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium text-slate-200">
-              Total Webhooks
+              {t('stats.total')}
             </CardTitle>
             <WebhookIcon className="h-4 w-4 text-purple-400" />
           </CardHeader>
@@ -86,14 +87,16 @@ export default function WebhooksPage() {
                 {webhooks.length}
               </div>
             )}
-            <p className="text-xs text-slate-400">{activeWebhooks} active</p>
+            <p className="text-xs text-slate-400">
+              {t('stats.active', { count: activeWebhooks })}
+            </p>
           </CardContent>
         </Card>
 
         <Card className="bg-slate-900/50 backdrop-blur-xl border-slate-700/50 hover:bg-slate-800/50 transition-all duration-300">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium text-slate-200">
-              Active Webhooks
+              {t('stats.activeTitle')}
             </CardTitle>
             <WebhookIcon className="h-4 w-4 text-green-400" />
           </CardHeader>
@@ -105,7 +108,7 @@ export default function WebhooksPage() {
                 {activeWebhooks}
               </div>
             )}
-            <p className="text-xs text-slate-400">Ready to send messages</p>
+            <p className="text-xs text-slate-400">{t('stats.ready')}</p>
           </CardContent>
         </Card>
       </div>
@@ -115,7 +118,7 @@ export default function WebhooksPage() {
         <div className="relative flex-1 w-full md:max-w-sm">
           <Search className="absolute left-2 top-2.5 h-4 w-4 text-slate-400" />
           <Input
-            placeholder="Search webhooks..."
+            placeholder={t('search.placeholder')}
             value={searchQuery}
             onChange={e => setSearchQuery(e.target.value)}
             className="pl-8 bg-slate-900/50 backdrop-blur-xl border-slate-700/50 text-white placeholder:text-slate-400 focus:border-purple-500/50"
@@ -131,7 +134,7 @@ export default function WebhooksPage() {
                 : 'border-slate-600 text-slate-300 hover:bg-slate-700 bg-transparent'
             }
           >
-            All
+            {t('filters.all')}
           </Button>
           <Button
             variant={filterStatus === 'active' ? 'default' : 'outline'}
@@ -142,7 +145,7 @@ export default function WebhooksPage() {
                 : 'border-slate-600 text-slate-300 hover:bg-slate-700 bg-transparent'
             }
           >
-            Active
+            {t('filters.active')}
           </Button>
           <Button
             variant={filterStatus === 'inactive' ? 'default' : 'outline'}
@@ -153,7 +156,7 @@ export default function WebhooksPage() {
                 : 'border-slate-600 text-slate-300 hover:bg-slate-700 bg-transparent'
             }
           >
-            Inactive
+            {t('filters.inactive')}
           </Button>
         </div>
       </div>
@@ -195,20 +198,20 @@ export default function WebhooksPage() {
               <>
                 <Search className="h-12 w-12 text-slate-400 mb-4" />
                 <h3 className="text-lg font-semibold mb-2 text-white">
-                  No webhooks found
+                  {t('empty.noResultsTitle')}
                 </h3>
                 <p className="text-slate-300 text-center">
-                  Try adjusting your search query or filters
+                  {t('empty.noResultsSubtitle')}
                 </p>
               </>
             ) : (
               <>
                 <WebhookIcon className="h-12 w-12 text-slate-400 mb-4" />
                 <h3 className="text-lg font-semibold mb-2 text-white">
-                  No webhooks yet
+                  {t('empty.noWebhooks.title')}
                 </h3>
                 <p className="text-slate-300 text-center mb-4">
-                  Get started by adding your first Discord webhook
+                  {t('empty.noWebhooks.desc')}
                 </p>
                 <AddWebhookDialog />
               </>

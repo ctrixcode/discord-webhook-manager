@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import { useTranslations } from 'next-intl'; // Import useTranslations
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -38,6 +39,8 @@ export const TemplateForm = React.forwardRef(function TemplateForm(
   { initialData, onSave, isSaving }: TemplateFormProps,
   ref: React.Ref<TemplateFormRef>
 ) {
+  const t = useTranslations('templateForm'); // Initialize translations
+
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
   const [content, setContent] = useState('');
@@ -76,16 +79,18 @@ export const TemplateForm = React.forwardRef(function TemplateForm(
       setName(initialData.name);
       setDescription(initialData.description || '');
       setContent(initialData.content);
+      // Logic to set the selected avatar based on initialData.avatar_ref
       if (avatars && avatars.length > 0) {
-        setSelectedAvatar(
-          avatars.find(a => a.id === initialData.avatar_ref) as Avatar
+        const matchedAvatar = avatars.find(
+          a => a.id === initialData.avatar_ref
         );
+        if (matchedAvatar) {
+          setSelectedAvatar(matchedAvatar);
+        } else {
+          // Handle case where avatar_ref exists but doesn't match an fetched avatar
+          // For now, reset to default or keep current state
+        }
       }
-      // For display, if initialData has avatar_ref, we might need to fetch the actual URL
-      // For now, assuming initialData.avatar_ref can be directly used as a URL for preview if it's a full URL
-      // or we need a mechanism to resolve ID to URL.
-      // Given the backend schema, avatar_ref is an ID. So, we need to fetch the URL for display.
-      // For now, I'll leave avatar_display_url as empty and it will be handled by AvatarSelector or a separate fetch.
       setEmbeds(initialData.embeds || []);
     } else {
       setName('');
@@ -93,7 +98,7 @@ export const TemplateForm = React.forwardRef(function TemplateForm(
       setContent('');
       setEmbeds([]);
     }
-  }, [initialData]);
+  }, [initialData, avatars]); // Added 'avatars' to dependency array
 
   return (
     <div className="flex-1 flex">
@@ -107,21 +112,24 @@ export const TemplateForm = React.forwardRef(function TemplateForm(
                 className="text-slate-300 data-[state=active]:bg-purple-600 data-[state=active]:text-white"
               >
                 <FileText className="w-4 h-4 mr-2" />
-                Template Info
+                {/* Translate Template Info Tab */}
+                {t('tabs.info')}
               </TabsTrigger>
               <TabsTrigger
                 value="message"
                 className="text-slate-300 data-[state=active]:bg-purple-600 data-[state=active]:text-white"
               >
                 <MessageSquare className="w-4 h-4 mr-2" />
-                Message
+                {/* Translate Message Tab */}
+                {t('tabs.message')}
               </TabsTrigger>
               <TabsTrigger
                 value="embeds"
                 className="text-slate-300 data-[state=active]:bg-purple-600 data-[state=active]:text-white"
               >
                 <Layers className="w-4 h-4 mr-2" />
-                Embeds
+                {/* Translate Embeds Tab */}
+                {t('tabs.embeds')}
               </TabsTrigger>
             </TabsList>
           </div>
@@ -130,18 +138,21 @@ export const TemplateForm = React.forwardRef(function TemplateForm(
             <div className="space-y-6">
               <div className="space-y-4">
                 <h3 className="text-lg font-semibold text-white">
-                  Template Information
+                  {/* Translate Template Info Header */}
+                  {t('infoTab.header')}
                 </h3>
 
                 <div className="space-y-2">
                   <Label htmlFor="name" className="text-slate-200">
-                    Template Name
+                    {/* Translate Template Name Label */}
+                    {t('infoTab.nameLabel')}
                   </Label>
                   <Input
                     id="name"
                     value={name}
                     onChange={e => setName(e.target.value)}
-                    placeholder="My Awesome Template"
+                    // Translate Template Name Placeholder
+                    placeholder={t('infoTab.namePlaceholder')}
                     required
                     className="bg-slate-800/50 border-slate-600 text-white placeholder:text-slate-400 focus:border-purple-500"
                   />
@@ -149,13 +160,15 @@ export const TemplateForm = React.forwardRef(function TemplateForm(
 
                 <div className="space-y-2">
                   <Label htmlFor="description" className="text-slate-200">
-                    Description (Optional)
+                    {/* Translate Description Label */}
+                    {t('infoTab.descriptionLabel')}
                   </Label>
                   <Textarea
                     id="description"
                     value={description}
                     onChange={e => setDescription(e.target.value)}
-                    placeholder="What is this template for? Describe its purpose..."
+                    // Translate Description Placeholder
+                    placeholder={t('infoTab.descriptionPlaceholder')}
                     rows={4}
                     className="resize-none bg-slate-800/50 border-slate-600 text-white placeholder:text-slate-400 focus:border-purple-500"
                   />
@@ -169,23 +182,29 @@ export const TemplateForm = React.forwardRef(function TemplateForm(
               <div className="space-y-6">
                 <div className="space-y-4">
                   <h3 className="text-lg font-semibold text-white">
-                    Message Content
+                    {/* Translate Message Content Header */}
+                    {t('messageTab.contentHeader')}
                   </h3>
                   <div className="space-y-2">
                     <Label htmlFor="content" className="text-slate-200">
-                      Message Text
+                      {/* Translate Message Text Label */}
+                      {t('messageTab.contentLabel')}
                     </Label>
                     <Textarea
                       id="content"
                       value={content}
                       onChange={e => setContent(e.target.value)}
-                      placeholder="Enter your message content here... (Max 2000 characters)"
+                      // Translate Message Content Placeholder
+                      placeholder={t('messageTab.contentPlaceholder')}
                       rows={8}
                       maxLength={2000}
                       className="bg-slate-800/50 border-slate-600 text-white placeholder:text-slate-400 focus:border-purple-500"
                     />
                     <div className="text-xs text-slate-400">
-                      {content.length}/2000 characters
+                      {/* Translate Character Count */}
+                      {t('messageTab.characterCount', {
+                        current: content.length,
+                      })}
                     </div>
                   </div>
                 </div>
@@ -193,7 +212,8 @@ export const TemplateForm = React.forwardRef(function TemplateForm(
                 <div className="space-y-4">
                   <div className="flex items-center justify-between">
                     <h3 className="text-lg font-semibold text-white">
-                      Message Avatar
+                      {/* Translate Message Avatar Header */}
+                      {t('messageTab.avatarHeader')}
                     </h3>
                     <AvatarSelector
                       onSelect={avatar => {
@@ -206,7 +226,8 @@ export const TemplateForm = React.forwardRef(function TemplateForm(
                         className="bg-slate-700 border-slate-600 text-white hover:bg-slate-600"
                       >
                         <Users className="w-4 h-4 mr-2" />
-                        Select Avatar
+                        {/* Translate Select Avatar Button */}
+                        {t('messageTab.avatarSelectButton')}
                       </Button>
                     </AvatarSelector>
                   </div>

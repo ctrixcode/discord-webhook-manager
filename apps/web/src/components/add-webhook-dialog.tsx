@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { useTranslations } from 'next-intl'; // Import useTranslations
 import { Button } from '@/components/ui/button';
 import {
   Dialog,
@@ -21,6 +22,7 @@ import { Plus, AlertCircle } from 'lucide-react';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 
 export function AddWebhookDialog() {
+  const t = useTranslations('addWebhookDialog'); // Initialize translations
   const queryClient = useQueryClient();
   const [open, setOpen] = useState(false);
   const [name, setName] = useState('');
@@ -68,26 +70,30 @@ export function AddWebhookDialog() {
       <DialogTrigger asChild>
         <Button>
           <Plus className="w-4 h-4 mr-2" />
-          Add Webhook
+          {/* Translate trigger button text */}
+          {t('triggerButton')}
         </Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[425px] bg-slate-900/95 backdrop-blur-xl border-slate-700/50 text-white">
         <DialogHeader>
-          <DialogTitle className="text-white">Add New Webhook</DialogTitle>
+          {/* Translate Dialog Title */}
+          <DialogTitle className="text-white">{t('title')}</DialogTitle>
+          {/* Translate Dialog Description */}
           <DialogDescription className="text-slate-300">
-            Add a Discord webhook to start sending messages. You can find
-            webhook URLs in your Discord server settings.
+            {t('description')}
           </DialogDescription>
         </DialogHeader>
         <form onSubmit={handleSubmit}>
           <div className="grid gap-4 py-4">
             <div className="space-y-2">
+              {/* Translate Name Label */}
               <Label htmlFor="name" className="text-slate-200">
-                Webhook Name
+                {t('form.nameLabel')}
               </Label>
               <Input
                 id="name"
-                placeholder="My Discord Webhook"
+                // Translate Name Placeholder
+                placeholder={t('form.namePlaceholder')}
                 value={name}
                 onChange={e => setName(e.target.value)}
                 required
@@ -95,12 +101,14 @@ export function AddWebhookDialog() {
               />
             </div>
             <div className="space-y-2">
+              {/* Translate URL Label */}
               <Label htmlFor="url" className="text-slate-200">
-                Webhook URL
+                {t('form.urlLabel')}
               </Label>
               <Input
                 id="url"
-                placeholder="https://discord.com/api/webhooks/..."
+                // Translate URL Placeholder
+                placeholder={t('form.urlPlaceholder')}
                 value={url}
                 onChange={e => setUrl(e.target.value)}
                 required
@@ -108,12 +116,14 @@ export function AddWebhookDialog() {
               />
             </div>
             <div className="space-y-2">
+              {/* Translate Description Label */}
               <Label htmlFor="description" className="text-slate-200">
-                Description (Optional)
+                {t('form.descriptionLabel')}
               </Label>
               <Textarea
                 id="description"
-                placeholder="What is this webhook used for?"
+                // Translate Description Placeholder
+                placeholder={t('form.descriptionPlaceholder')}
                 value={description}
                 onChange={e => setDescription(e.target.value)}
                 rows={3}
@@ -127,6 +137,7 @@ export function AddWebhookDialog() {
               >
                 <AlertCircle className="h-4 w-4 text-red-400" />
                 <AlertDescription className="text-red-200">
+                  {/* API error messages usually come from the server and are not translated here, but the surrounding structure is */}
                   {apiError.message}
                 </AlertDescription>
               </Alert>
@@ -139,14 +150,16 @@ export function AddWebhookDialog() {
               onClick={() => setOpen(false)}
               className="bg-slate-800/50 border-slate-600/50 text-slate-200 hover:bg-slate-700/50 hover:text-white"
             >
-              Cancel
+              {/* Translate Cancel Button */}
+              {t('actions.cancel')}
             </Button>
             <Button
               type="submit"
               disabled={isLoading}
               className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white border-0"
             >
-              {isLoading ? 'Adding...' : 'Add Webhook'}
+              {/* Translate Dynamic Submit Button Text */}
+              {isLoading ? t('actions.adding') : t('actions.add')}
             </Button>
           </DialogFooter>
         </form>
