@@ -65,9 +65,11 @@ const messageTemplateRoutes = async (server: FastifyInstance) => {
             description: 'A paginated list of user message templates.',
             type: 'object',
             properties: {
-              messageTemplates: {
-                type: 'array',
-                items: messageTemplateResponseSchema,
+              data: {
+                messageTemplates: {
+                  type: 'array',
+                  items: messageTemplateResponseSchema,
+                },
               },
               total: { type: 'number' },
               page: { type: 'number' },

@@ -27,6 +27,7 @@ async function avatarRoutes(fastify: FastifyInstance) {
       schema: {
         ...createAvatarSchema,
         summary: 'Create a new avatar from URL',
+        security: [{ bearerAuth: [] }],
         description:
           'Creates a new avatar for the authenticated user using a provided image URL.',
         tags: ['avatar'],
@@ -53,13 +54,13 @@ async function avatarRoutes(fastify: FastifyInstance) {
       schema: {
         ...uploadAvatarSchema,
         summary: 'Upload a new avatar file',
+        security: [{ bearerAuth: [] }],
         description:
           'Uploads an avatar file for the authenticated user. The request must be multipart/form-data.',
         tags: ['avatar'],
         response: {
           201: {
             description: 'Avatar uploaded successfully.',
-            ...avatarResponseSchema,
           },
           400: responseSchemas[400]('No file uploaded or file is too large.'),
           401: responseSchemas[401],
@@ -81,16 +82,33 @@ async function avatarRoutes(fastify: FastifyInstance) {
         description:
           'Retrieves a list of all avatars belonging to the authenticated user.',
         tags: ['avatar'],
+        security: [{ bearerAuth: [] }],
         response: {
           200: {
             description: 'A list of user avatars.',
-            type: 'array',
-            items: avatarResponseSchema,
+            data: {
+              type: 'array',
+              items: avatarResponseSchema,
+            },
           },
           401: responseSchemas[401],
           500: responseSchemas[500](
             'An unexpected error occurred while fetching avatars.'
           ),
+          example: {
+            success: true,
+            message: 'Avatars fetched',
+            data: [
+              {
+                id: '68eab174e142f8399b831de8',
+                user_id: '68ea52307fcd6c887f459aa2',
+                username: 'bot1',
+                avatar_url: 'https://i.pravatar.cc/150?u=john',
+                createdAt: '2025-10-11T19:35:17.007Z',
+                updatedAt: '2025-10-11T19:35:17.007Z',
+              },
+            ],
+          },
         },
       },
     },
@@ -106,6 +124,7 @@ async function avatarRoutes(fastify: FastifyInstance) {
         summary: 'Get a specific avatar',
         description: 'Retrieves a single avatar by its ID.',
         tags: ['avatar'],
+        security: [{ bearerAuth: [] }],
         response: {
           200: { description: 'Avatar details.', ...avatarResponseSchema },
           401: responseSchemas[401],
@@ -128,6 +147,7 @@ async function avatarRoutes(fastify: FastifyInstance) {
         summary: 'Update an avatar',
         description: 'Updates the details of a specific avatar by its ID.',
         tags: ['avatar'],
+        security: [{ bearerAuth: [] }],
         response: {
           200: {
             description: 'Avatar updated successfully.',
@@ -154,6 +174,7 @@ async function avatarRoutes(fastify: FastifyInstance) {
         summary: 'Delete an avatar',
         description: 'Deletes a specific avatar by its ID.',
         tags: ['avatar'],
+        security: [{ bearerAuth: [] }],
         response: {
           204: { type: 'null', description: 'Avatar deleted successfully.' },
           401: responseSchemas[401],
