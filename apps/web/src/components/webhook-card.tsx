@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useRef } from 'react';
+import { useTranslations } from 'next-intl'; // Import useTranslations
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -36,6 +37,9 @@ export function WebhookCard({
   onWebhookUpdated,
   onCardClick,
 }: WebhookCardProps) {
+  const t = useTranslations('webhookCard'); // Initialize translations
+  const tCommon = useTranslations('common'); // Initialize common translations
+
   const { toast } = useToast();
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [isTestingWebhook, setIsTestingWebhook] = useState(false);
@@ -48,13 +52,15 @@ export function WebhookCard({
     onSuccess: () => {
       onWebhookUpdated();
       toast({
-        title: 'Webhook updated',
-        description: 'Webhook updated successfully',
+        // Internationalize Toast
+        title: t('toasts.updateSuccessTitle'),
+        description: t('toasts.updateSuccessDesc'),
       });
     },
     onError: error => {
       toast({
-        title: 'Error updating webhook',
+        // Internationalize Toast
+        title: t('toasts.updateErrorTitle'),
         description: error.message,
         variant: 'destructive',
       });
@@ -67,8 +73,9 @@ export function WebhookCard({
       queryClient.invalidateQueries({ queryKey: ['webhooks'] });
       onWebhookUpdated();
       toast({
-        title: 'Webhook deleted',
-        description: 'The webhook has been removed from your account',
+        // Internationalize Toast
+        title: t('toasts.deleteSuccessTitle'),
+        description: t('toasts.deleteSuccessDesc'),
       });
     },
   });
@@ -80,20 +87,23 @@ export function WebhookCard({
 
       if (resp.success) {
         toast({
-          title: 'Test successful!',
-          description: 'Test message sent to Discord',
+          // Internationalize Toast
+          title: t('toasts.testSuccessTitle'),
+          description: t('toasts.testSuccessDesc'),
         });
       } else {
         toast({
-          title: 'Test failed',
+          // Internationalize Toast
+          title: t('toasts.testFailTitle'),
           description: resp.message,
           variant: 'destructive',
         });
       }
     } catch {
       toast({
-        title: 'Test failed',
-        description: 'An error occurred while testing the webhook',
+        // Internationalize Toast
+        title: t('toasts.testFailTitle'),
+        description: t('toasts.testFailGenericDesc'),
         variant: 'destructive',
       });
     } finally {
@@ -140,12 +150,14 @@ export function WebhookCard({
               {webhook.is_active ? (
                 <>
                   <CheckCircle className="w-3 h-3 mr-1" />
-                  Active
+                  {/* Internationalize Active Status */}
+                  {t('status.active')}
                 </>
               ) : (
                 <>
                   <XCircle className="w-3 h-3 mr-1" />
-                  Inactive
+                  {/* Internationalize Inactive Status */}
+                  {t('status.inactive')}
                 </>
               )}
             </Badge>
@@ -175,7 +187,10 @@ export function WebhookCard({
                     className="hover:bg-slate-700/50 focus:bg-slate-700/50"
                   >
                     <Send className="mr-2 h-4 w-4" />
-                    {isTestingWebhook ? 'Testing...' : 'Test Webhook'}
+                    {/* Internationalize Test Button Text */}
+                    {isTestingWebhook
+                      ? t('actions.testing')
+                      : t('actions.testWebhook')}
                   </DropdownMenuItem>
                   <DropdownMenuItem
                     onClick={e => {
@@ -189,7 +204,10 @@ export function WebhookCard({
                     ) : (
                       <CheckCircle className="mr-2 h-4 w-4" />
                     )}
-                    {webhook.is_active ? 'Deactivate' : 'Activate'}
+                    {/* Internationalize Activate/Deactivate */}
+                    {webhook.is_active
+                      ? t('actions.deactivate')
+                      : t('actions.activate')}
                   </DropdownMenuItem>
                   <DropdownMenuItem
                     onClick={e => {
@@ -199,7 +217,8 @@ export function WebhookCard({
                     className="text-red-400 hover:bg-red-500/20 focus:bg-red-500/20"
                   >
                     <Trash2 className="mr-2 h-4 w-4" />
-                    Delete
+                    {/* Internationalize Delete */}
+                    {t('actions.delete')}
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
@@ -209,20 +228,30 @@ export function WebhookCard({
         <CardContent>
           <div className="space-y-2">
             <div className="text-sm text-slate-300">
-              <span className="font-medium">Description:</span>
+              <span className="font-medium">
+                {/* Internationalize Description Label */}
+                {t('details.description')}
+              </span>
               <div className="mt-1 p-2 bg-slate-800/50 rounded border border-slate-700/50 font-mono text-xs break-all">
                 {webhook.description}
               </div>
             </div>
             <div className="flex items-center justify-between text-sm text-slate-400">
-              <span>Messages sent: TODO</span>
+              {/* Internationalize Messages Sent Label (with placeholder) */}
               <span>
-                Created: {new Date(webhook.createdAt).toLocaleDateString()}
+                {t('details.messagesSent')} {t('details.todoPlaceholder')}
+              </span>
+              <span>
+                {/* Internationalize Created Label */}
+                {t('details.created')}{' '}
+                {new Date(webhook.createdAt).toLocaleDateString()}
               </span>
             </div>
             {webhook.last_used && (
               <div className="text-sm text-slate-400">
-                Last used: {new Date(webhook.last_used).toLocaleString()}
+                {/* Internationalize Last Used Label */}
+                {t('details.lastUsed')}{' '}
+                {new Date(webhook.last_used).toLocaleString()}
               </div>
             )}
           </div>
@@ -232,10 +261,13 @@ export function WebhookCard({
       <ConfirmationDialog
         open={showDeleteDialog}
         onOpenChange={setShowDeleteDialog}
-        title="Are you sure?"
-        description={`This action cannot be undone. This will permanently delete the webhook "${webhook.name}" from your account.`}
+        // Internationalize Dialog Title
+        title={t('dialog.title')}
+        // Internationalize Dialog Description, passing webhook name as a variable
+        description={t('dialog.description', { webhookName: webhook.name })}
         onConfirm={handleDelete}
-        confirmButtonText="Delete"
+        // Internationalize Confirm Button Text
+        confirmButtonText={tCommon('delete')}
       />
     </>
   );

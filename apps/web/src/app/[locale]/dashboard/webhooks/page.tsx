@@ -198,10 +198,10 @@ export default function WebhooksPage() {
               <>
                 <Search className="h-12 w-12 text-slate-400 mb-4" />
                 <h3 className="text-lg font-semibold mb-2 text-white">
-                  {t('empty.noResults.title')}
+                  {t('empty.noResultsTitle')}
                 </h3>
                 <p className="text-slate-300 text-center">
-                  {t('empty.noResults.desc')}
+                  {t('empty.noResultsSubtitle')}
                 </p>
               </>
             ) : (

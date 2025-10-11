@@ -247,6 +247,235 @@
         "noResultsMessage": "Intenta ajustar tus términos de búsqueda"
       }
     }
+  },
+  "avatarCard": {
+    "actions": {
+      "edit": "Editar",
+      "copyUrl": "Copiar URL del Avatar",
+      "delete": "Eliminar",
+      "select": "Seleccionar Avatar"
+    },
+    "info": {
+      "created": "Creado: {date}"
+    },
+    "toast": {
+      "deleteSuccessTitle": "Avatar eliminado",
+      "deleteSuccessDescription": "Avatar eliminado con éxito",
+      "deleteErrorTitle": "Error al eliminar el avatar",
+      "copySuccessTitle": "URL del Avatar copiada",
+      "copySuccessDescription": "URL del Avatar copiada al portapapeles"
+    },
+    "deleteDialog": {
+      "title": "Eliminar Avatar",
+      "description": "¿Estás seguro de que quieres eliminar \"{username}\"? Esta acción no se puede deshacer.",
+      "cancel": "Cancelar",
+      "confirm": "Eliminar"
+    }
+  },
+  "avatarSelector": {
+    "title": "Seleccionar Avatar Predefinido",
+    "searchPlaceholder": "Buscar avatares...",
+    "addButton": "Añadir",
+    "emptyState": {
+      "noAvatars": "Aún no hay avatares predefinidos",
+      "noResults": "No se encontraron avatares"
+    }
+  },
+  "createAvatarDialog": {
+    "title": {
+      "create": "Crear Nuevo Avatar",
+      "edit": "Editar Avatar"
+    },
+    "form": {
+      "usernameLabel": "Nombre de Usuario",
+      "usernamePlaceholder": "Ejemplo: BotHelper, Anunciador",
+      "avatarIconLabel": "Icono de Avatar",
+      "urlPlaceholder": "https://ejemplo.com/avatar.png",
+      "browse": "Examinar"
+    },
+    "actions": {
+      "cancel": "Cancelar",
+      "create": "Crear Avatar",
+      "update": "Actualizar Avatar",
+      "creating": "Creando...",
+      "updating": "Actualizando..."
+    },
+    "toast": {
+      "createSuccessTitle": "Avatar creado",
+      "createSuccessDescription": "El avatar se creó con éxito",
+      "updateSuccessTitle": "Avatar actualizado",
+      "updateSuccessDescription": "El avatar se actualizó con éxito",
+      "errorTitle": "Error",
+      "unexpectedError": "Ocurrió un error inesperado",
+      "limitReachedTitle": "Límite Alcanzado",
+      "mediaLimitLink": "Verifica tu uso en la configuración."
+    }
+  },
+  "themeSelector": {
+    "title": "Tema",
+    "description": "Elige tu tema preferido o deja que el sistema decida",
+    "themes": {
+      "light": "Claro",
+      "dark": "Oscuro",
+      "system": "Sistema"
+    }
+  },
+  "addWebhookDialog": {
+    "triggerButton": "Añadir Webhook",
+    "title": "Añadir Nuevo Webhook",
+    "description": "Añade un webhook de Discord para empezar a enviar mensajes. Puedes encontrar las URL de los webhooks en la configuración de tu servidor de Discord.",
+    "form": {
+      "nameLabel": "Nombre del Webhook",
+      "namePlaceholder": "Mi Webhook de Discord",
+      "urlLabel": "URL del Webhook",
+      "urlPlaceholder": "https://discord.com/api/webhooks/...",
+      "descriptionLabel": "Descripción (Opcional)",
+      "descriptionPlaceholder": "¿Para qué se utiliza este webhook?"
+    },
+    "actions": {
+      "cancel": "Cancelar",
+      "add": "Añadir Webhook",
+      "adding": "Añadiendo..."
+    }
+  },
+  "dashboardHeader": {
+    "title": "Gestor de Webhooks",
+    "subtitle": "Integración con Discord",
+    "languageSelector": "Idioma",
+    "accountType": {
+      "free": "Gratuito",
+      "paid": "Pago",
+      "premium": "Premium"
+    },
+    "accountTypeTooltip": {
+      "free": "Explora lo básico, desbloquea tu potencial.",
+      "paid": "Mejora tu experiencia, logra más.",
+      "premium": "Desata el poder definitivo, sin límites."
+    },
+    "menu": {
+      "settings": "Configuración",
+      "logout": "Cerrar sesión"
+    }
+  },
+  "embedBuilder": {
+    "header": {
+      "title": "Embeds de Discord",
+      "subtitle": "Añade embeds enriquecidos a tu mensaje (máx. {max})",
+      "addButton": "Añadir Embed"
+    },
+    "emptyState": {
+      "noEmbeds": "Aún no se han añadido embeds",
+      "callToAction": "Haz clic en \"Añadir Embed\" para crear contenido de mensaje enriquecido"
+    },
+    "embedItem": {
+      "titleLabel": "Embed {index}",
+      "removeButton": "Eliminar",
+      "fields": {
+        "title": "Título",
+        "titlePlaceholder": "Título del embed",
+        "url": "URL",
+        "urlPlaceholder": "URL del embed",
+        "description": "Descripción",
+        "descriptionPlaceholder": "Descripción del embed",
+        "color": "Color",
+        "image": "Imagen",
+        "imagePlaceholder": "URL de la imagen",
+        "thumbnail": "Miniatura",
+        "thumbnailPlaceholder": "URL de la miniatura",
+        "timestamp": "Marca de tiempo"
+      },
+      "author": {
+        "title": "Autor",
+        "selectButton": "Seleccionar Avatar",
+        "clearButton": "Borrar Autor",
+        "manualName": "Nombre",
+        "manualNamePlaceholder": "Nombre del autor",
+        "manualIconUrl": "URL del Icono",
+        "manualIconUrlPlaceholder": "URL del icono del autor",
+        "manualUrl": "URL",
+        "manualUrlPlaceholder": "URL del autor"
+      },
+      "fieldBuilder": {
+        "title": "Campos",
+        "addButton": "Añadir Campo",
+        "fieldLabel": "Campo {index}",
+        "removeButton": "Eliminar",
+        "name": "Nombre",
+        "namePlaceholder": "Nombre del campo",
+        "value": "Valor",
+        "valuePlaceholder": "Valor del campo",
+        "inline": "En línea"
+      },
+      "footer": {
+        "title": "Pie de página",
+        "text": "Texto",
+        "textPlaceholder": "Texto del pie de página",
+        "iconUrl": "URL del Icono",
+        "iconUrlPlaceholder": "URL del icono del pie de página"
+      }
+    }
+  },
+  "templateForm": {
+    "tabs": {
+      "info": "Información de la Plantilla",
+      "message": "Mensaje",
+      "embeds": "Embeds"
+    },
+    "infoTab": {
+      "header": "Información de la Plantilla",
+      "nameLabel": "Nombre de la Plantilla",
+      "namePlaceholder": "Mi Plantilla Genial",
+      "descriptionLabel": "Descripción (Opcional)",
+      "descriptionPlaceholder": "¿Para qué sirve esta plantilla? Describe su propósito...",
+      "livePreviewHeader": "Vista Previa en Vivo"
+    },
+    "messageTab": {
+      "contentHeader": "Contenido del Mensaje",
+      "contentLabel": "Texto del Mensaje",
+      "contentPlaceholder": "Introduce el contenido de tu mensaje aquí... (Máx. 2000 caracteres)",
+      "characterCount": "{current}/2000 caracteres",
+      "avatarHeader": "Avatar del Mensaje",
+      "avatarSelectButton": "Seleccionar Avatar"
+    }
+  },
+  "common": {
+    "delete": "Eliminar",
+    "areYouSure": "¿Estás seguro?"
+  },
+  "webhookCard": {
+    "status": {
+      "active": "Activo",
+      "inactive": "Inactivo"
+    },
+    "details": {
+      "description": "Descripción:",
+      "messagesSent": "Mensajes enviados:",
+      "created": "Creado:",
+      "lastUsed": "Último uso:",
+      "todoPlaceholder": "PENDIENTE"
+    },
+    "actions": {
+      "testWebhook": "Probar Webhook",
+      "testing": "Probando...",
+      "deactivate": "Desactivar",
+      "activate": "Activar",
+      "delete": "Eliminar"
+    },
+    "dialog": {
+      "title": "¿Estás seguro?",
+      "description": "Esta acción no se puede deshacer. Esto eliminará permanentemente el webhook \"{webhookName}\" de tu cuenta."
+    },
+    "toasts": {
+      "updateSuccessTitle": "Webhook actualizado",
+      "updateSuccessDesc": "Webhook actualizado correctamente",
+      "updateErrorTitle": "Error al actualizar el webhook",
+      "deleteSuccessTitle": "Webhook eliminado",
+      "deleteSuccessDesc": "El webhook ha sido eliminado de tu cuenta",
+      "testSuccessTitle": "¡Prueba exitosa!",
+      "testSuccessDesc": "Mensaje de prueba enviado a Discord",
+      "testFailTitle": "Prueba fallida",
+      "testFailGenericDesc": "Ocurrió un error al probar el webhook"
+    }
   }
 }
 
