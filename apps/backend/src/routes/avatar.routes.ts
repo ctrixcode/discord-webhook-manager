@@ -118,10 +118,8 @@ async function avatarRoutes(fastify: FastifyInstance) {
         response: {
           200: {
             description: 'A list of user avatars.',
-            data: {
-              type: 'array',
-              items: avatarResponseSchema,
-            },
+            ...successSchema({ avatarResponseSchema }),
+
             example: {
               success: true,
               message: 'Avatars fetched',
@@ -160,7 +158,7 @@ async function avatarRoutes(fastify: FastifyInstance) {
         response: {
           200: {
             description: 'Avatar details.',
-            ...avatarResponseSchema,
+            ...successSchema(avatarResponseSchema),
             example: {
               success: true,
               message: 'Avatar fetched successfully',
@@ -198,7 +196,7 @@ async function avatarRoutes(fastify: FastifyInstance) {
         response: {
           200: {
             description: 'Avatar updated successfully.',
-            ...avatarResponseSchema,
+            ...successSchema(avatarResponseSchema),
             example: {
               success: true,
               message: 'Avatar updated successfully',

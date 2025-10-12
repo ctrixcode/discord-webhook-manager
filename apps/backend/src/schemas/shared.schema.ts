@@ -63,12 +63,51 @@ export const messageTemplateResponseSchema = {
     },
     embeds: {
       type: 'array',
-      items: { type: 'object' },
-      nullable: true,
+      items: {
+        type: 'object',
+        properties: {
+          title: { type: 'string' },
+          description: { type: 'string' },
+          url: { type: 'string' },
+          color: { type: 'number' },
+          timestamp: { type: 'string', format: 'date-time' },
+          image: { type: 'object', properties: { url: { type: 'string' } } },
+          thumbnail: {
+            type: 'object',
+            properties: { url: { type: 'string' } },
+          },
+          author: {
+            type: 'object',
+            properties: {
+              name: { type: 'string' },
+              url: { type: 'string' },
+              icon_url: { type: 'string' },
+            },
+          },
+          fields: {
+            type: 'array',
+            items: {
+              type: 'object',
+              properties: {
+                name: { type: 'string' },
+                value: { type: 'string' },
+                inline: { type: 'boolean' },
+              },
+            },
+          },
+          footer: {
+            type: 'object',
+            properties: {
+              text: { type: 'string' },
+              icon_url: { type: 'string' },
+            },
+          },
+        },
+      },
     },
     attachments: {
       type: 'array',
-      items: { type: 'object' },
+      items: { type: 'string' },
       nullable: true,
     },
   },
@@ -80,7 +119,7 @@ export const webhookResponseSchema = {
     ...baseEntitySchema,
     user_id: { type: 'string' },
     name: { type: 'string' },
-    descriptions: { type: 'string', nullable: true },
+    description: { type: 'string', nullable: true },
     url: { type: 'string', format: 'uri' },
     is_active: { type: 'boolean' },
     avatar_url: {
