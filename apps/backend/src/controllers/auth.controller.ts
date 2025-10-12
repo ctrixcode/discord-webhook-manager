@@ -19,8 +19,7 @@ const DISCORD_REDIRECT_URI = process.env.DISCORD_REDIRECT_URI as string;
 const FRONTEND_URL = process.env.FRONTEND_URL || 'http://localhost:3000';
 const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID as string;
 const GOOGLE_CLIENT_SECRET = process.env.GOOGLE_CLIENT_SECRET as string;
-const GOOGLE_OAUTH_REDIRECT_URI = process.env
-  .GOOGLE_OAUTH_REDIRECT_URI as string;
+const GOOGLE_OAUTH_REDIRECT_URI = process.env.GOOGLE_OAUTH_REDIRECT_URI as string;
 
 /**
  * Refresh access token
