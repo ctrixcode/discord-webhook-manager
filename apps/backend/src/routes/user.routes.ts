@@ -63,9 +63,10 @@ const userRoutes = async (fastify: FastifyInstance) => {
               success: true,
               message: 'User usage fetched successfully',
               data: {
-                webhooks: 5,
-                avatars: 2,
-                messageTemplates: 10,
+                webhookMessagesSentToday: 2,
+                totalMediaStorageUsed: 0,
+                dailyWebhookMessageLimit: 15,
+                overallMediaStorageLimit: 15728640,
               },
             },
           },

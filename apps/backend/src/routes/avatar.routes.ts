@@ -30,13 +30,6 @@ async function avatarRoutes(fastify: FastifyInstance) {
         security: [{ bearerAuth: [] }],
         description:
           'Creates a new avatar for the authenticated user using a provided image URL.',
-        body: {
-          ...createAvatarSchema.body,
-          example: {
-            username: 'My New Bot',
-            avatar_url: 'https://example.com/image.png',
-          },
-        },
         tags: ['avatar'],
         response: {
           201: {
