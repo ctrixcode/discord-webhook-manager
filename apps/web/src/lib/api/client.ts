@@ -182,10 +182,69 @@ class ApiClient {
     return this.client.delete<T>(url, config);
   }
 
+  async redirectToEmailSignup(
+    email: string,
+    password: string,
+    displayName: string,
+    username: string
+  ) {
+    const response = await this.post<{
+      success: boolean;
+      message: string;
+    }>('/auth/email/send-verification', {
+      email,
+      password,
+      displayName,
+      username,
+    });
+
+    return response.data;
+  }
+
   redirectToDiscordLogin() {
     if (typeof window !== 'undefined') {
       window.location.href = `${BASE_URL}/auth/discord`;
     }
+  }
+
+  redirectToGoogleLogin() {
+    if (typeof window !== 'undefined') {
+      window.location.href = `${BASE_URL}/auth/google`;
+    }
+  }
+
+  async redirectToEmailLogin(email: string, password: string) {
+    const response = await this.post<{
+      success: boolean;
+      message: string;
+      data: {
+        user: any;
+        accessToken: string;
+        refreshToken: string;
+      };
+    }>('/auth/email/login', { email, password });
+
+    // Store the access token
+    this.setAccessToken(response.data.data.accessToken);
+
+    return response.data;
+  }
+
+  async verifyEmail(token: string) {
+    const response = await this.post<{
+      success: boolean;
+      message: string;
+      data: {
+        user: any;
+        accessToken: string;
+        refreshToken: string;
+      };
+    }>('/auth/email/verify', { token });
+
+    // Store the access token
+    this.setAccessToken(response.data.data.accessToken);
+
+    return response.data;
   }
 }
 
