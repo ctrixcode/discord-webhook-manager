@@ -40,10 +40,11 @@ const baseEntitySchema = {
 export const avatarResponseSchema = {
   type: 'object',
   properties: {
+    ...baseEntitySchema,
+    user_id: { type: 'string' },
     username: { type: 'string' },
     avatar_url: {
       type: 'string',
-      format: 'uri',
     },
   },
 };
@@ -77,15 +78,19 @@ export const webhookResponseSchema = {
   type: 'object',
   properties: {
     ...baseEntitySchema,
+    user_id: { type: 'string' },
     name: { type: 'string' },
+    descriptions: { type: 'string', nullable: true },
     url: { type: 'string', format: 'uri' },
-    status: {
-      type: 'string',
-      enum: ['active', 'inactive'],
-    },
+    is_active: { type: 'boolean' },
     avatar_url: {
       type: 'string',
       format: 'uri',
+      nullable: true,
+    },
+    last_used: {
+      type: 'string',
+      format: 'date-time',
       nullable: true,
     },
   },
