@@ -12,7 +12,8 @@ export const responseSchemas = {
   401: errorSchema('No token provided.', 'No token provided'),
   404: (example = 'Resource not found.') =>
     errorSchema('Resource not found.', example),
-  500: (example: string) => errorSchema('Internal Server Error.', example),
+  500: (example = 'Internal Server Error.') =>
+    errorSchema('Internal Server Error.', example),
 };
 
 export const successSchema = (dataSchema: object) => ({
@@ -52,7 +53,9 @@ export const avatarResponseSchema = {
 export const messageTemplateResponseSchema = {
   type: 'object',
   properties: {
-    ...baseEntitySchema,
+    _id: { type: 'string' }, // ...baseEntity is not used because _id v/s id generates error
+    createdAt: { type: 'string', format: 'date-time' },
+    updatedAt: { type: 'string', format: 'date-time' },
     user_id: { type: 'string' },
     name: { type: 'string' },
     description: { type: 'string', nullable: true },

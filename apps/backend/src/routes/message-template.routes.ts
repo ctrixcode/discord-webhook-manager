@@ -183,7 +183,7 @@ const messageTemplateRoutes = async (server: FastifyInstance) => {
                 id: '68ebc174e142f8399b831df2',
                 user_id: '68ea52307fcd6c887f459aa2',
                 name: 'Updated Welcome Message',
-                content: 'Hi {{user}}! Welcome!',
+                message: 'Hi {{user}}! Welcome!',
                 embeds: [],
                 createdAt: '2025-10-13T10:00:00.000Z',
                 updatedAt: '2025-10-13T12:00:00.000Z',
