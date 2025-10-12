@@ -20,8 +20,9 @@ export const successSchema = (dataSchema: object) => ({
   properties: {
     success: { type: 'boolean', default: true },
     data: dataSchema,
+    message: { type: 'string' },
   },
-  required: ['success', 'data'],
+  required: ['success', 'data', 'message'],
 });
 
 const baseEntitySchema = {
