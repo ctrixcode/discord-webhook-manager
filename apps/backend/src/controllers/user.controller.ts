@@ -32,9 +32,10 @@ export const getCurrentUser = async (
   }
 
   // Attach discord avatar url
-  user.discord_avatar = user.discord_id
-    ? getDiscordAvatarURL(user.discord_id, user.discord_avatar)
-    : user.discord_avatar;
+  user.discord_avatar =
+    user.discord_id && user.discord_avatar
+      ? getDiscordAvatarURL(user.discord_id, user.discord_avatar)
+      : user.discord_avatar;
 
   // attach discord guilds icon urls
   if (user.guilds) {

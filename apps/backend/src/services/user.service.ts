@@ -12,10 +12,17 @@ import {
 /**
  * Create a new user
  */
-export const createUser = async (userData: CreateUserData): Promise<IUser> => {
+export const createUser = async (
+  userData: CreateUserData,
+  skipPasswordHash: boolean = false
+): Promise<IUser> => {
   try {
     logger.info('Creating new user', { email: userData.email });
     const user = new UserModel(userData);
+    if (skipPasswordHash) {
+      // Set flag to skip password hashing in pre-save hook
+      user.skipPasswordHash = true;
+    }
     await user.save();
     return user;
   } catch (error) {
@@ -30,6 +37,35 @@ export const createUser = async (userData: CreateUserData): Promise<IUser> => {
     throw new InternalServerError(
       ErrorMessages.User.CREATION_ERROR.message,
       ErrorMessages.User.CREATION_ERROR.code
+    );
+  }
+};
+
+/**
+ * Verify user password
+ */
+export const verifyUserPassword = async (
+  user: IUser,
+  password: string
+): Promise<IUser | null> => {
+  try {
+    if (!user.checkPassword) {
+      logger.error('checkPassword method not defined on user instance');
+      throw new InternalServerError(
+        ErrorMessages.User.FETCH_ERROR.message,
+        ErrorMessages.User.FETCH_ERROR.code
+      );
+    }
+    const isMatch = await user.checkPassword(password);
+    if (!isMatch) {
+      return null;
+    }
+    return user;
+  } catch (error) {
+    logger.error('Error verifying user password:', error);
+    throw new InternalServerError(
+      ErrorMessages.User.FETCH_ERROR.message,
+      ErrorMessages.User.FETCH_ERROR.code
     );
   }
 };
@@ -74,6 +110,29 @@ export const getUserById = async (userId: string): Promise<IUser | null> => {
       return null;
     }
     logger.info('User retrieved successfully', { userId });
+    return user;
+  } catch (error) {
+    logger.error('Error retrieving user:', error);
+    throw new InternalServerError(
+      ErrorMessages.User.FETCH_ERROR.message,
+      ErrorMessages.User.FETCH_ERROR.code
+    );
+  }
+};
+
+/**
+ * Get user by Username
+ */
+export const getUserByUsername = async (
+  username: string
+): Promise<IUser | null> => {
+  try {
+    const user = await UserModel.findOne({ username: username });
+    if (!user) {
+      logger.warn('User not found', { username });
+      return null;
+    }
+    logger.info('User retrieved successfully', { username });
     return user;
   } catch (error) {
     logger.error('Error retrieving user:', error);

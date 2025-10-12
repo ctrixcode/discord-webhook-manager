@@ -4,9 +4,12 @@ export const updateUserSchema = {
     properties: {
       email: { type: 'string', format: 'email' },
       password: { type: 'string' },
+      google_id: { type: 'string' },
       discord_id: { type: 'string' },
+      display_name: { type: 'string' },
       username: { type: 'string' },
       discord_avatar: { type: 'string' },
+      google_avatar: { type: 'string' },
       guilds: {
         type: 'array',
         items: {
