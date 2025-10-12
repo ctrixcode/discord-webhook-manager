@@ -30,6 +30,13 @@ async function avatarRoutes(fastify: FastifyInstance) {
         security: [{ bearerAuth: [] }],
         description:
           'Creates a new avatar for the authenticated user using a provided image URL.',
+        body: {
+          ...createAvatarSchema.body,
+          example: {
+            username: 'My New Bot',
+            avatar_url: 'https://example.com/image.png',
+          },
+        },
         tags: ['avatar'],
         response: {
           201: {
@@ -76,6 +83,21 @@ async function avatarRoutes(fastify: FastifyInstance) {
         response: {
           201: {
             description: 'Avatar uploaded successfully.',
+            ...avatarResponseSchema,
+            example: {
+              success: true,
+              message: 'Avatars fetched',
+              data: [
+                {
+                  id: '68eab174e142f8399b831de8',
+                  user_id: '68ea52307fcd6c887f459aa2',
+                  username: 'bot1',
+                  avatar_url: 'https://i.pravatar.cc/',
+                  createdAt: '2025-10-11T19:35:17.007Z',
+                  updatedAt: '2025-10-11T19:35:17.007Z',
+                },
+              ],
+            },
           },
           400: responseSchemas[400]('No file uploaded or file is too large.'),
           401: responseSchemas[401],
@@ -180,6 +202,13 @@ async function avatarRoutes(fastify: FastifyInstance) {
         security: [{ bearerAuth: [] }],
         response: {
           200: {
+            body: {
+              ...updateAvatarSchema.body,
+              example: {
+                username: 'My Updated Bot',
+                avatar_url: 'https://example.com/new-image.png',
+              },
+            },
             description: 'Avatar updated successfully.',
             ...avatarResponseSchema,
             example: {
