@@ -118,8 +118,10 @@ async function avatarRoutes(fastify: FastifyInstance) {
         response: {
           200: {
             description: 'A list of user avatars.',
-            ...successSchema({ avatarResponseSchema }),
-
+            ...successSchema({
+              type: 'array',
+              items: avatarResponseSchema,
+            }),
             example: {
               success: true,
               message: 'Avatars fetched',
