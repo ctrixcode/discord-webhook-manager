@@ -34,10 +34,30 @@ const webhookRoutes = async (server: FastifyInstance) => {
         description: 'Creates a new webhook for the authenticated user.',
         tags: ['webhook'],
         security: [{ bearerAuth: [] }],
+        body: {
+          ...createWebhookSchema.body,
+          example: {
+            name: 'My New Webhook',
+            url: 'https://discord.com/api/webhooks/123456789/abcdef-ghijkl',
+          },
+        },
         response: {
           201: {
             description: 'Webhook created successfully.',
             ...webhookResponseSchema,
+            example: {
+              success: true,
+              message: 'Webhook created successfully.',
+              data: {
+                id: '68ecb174e142f8399b831df5',
+                user_id: '68ea52307fcd6c887f459aa2',
+                name: 'My New Webhook',
+                url: 'https://discord.com/api/webhooks/123456789/abcdef-ghijkl',
+                status: 'active',
+                createdAt: '2025-10-14T12:00:00.000Z',
+                updatedAt: '2025-10-14T12:00:00.000Z',
+              },
+            },
           },
           400: responseSchemas[400](),
           401: responseSchemas[401],
@@ -77,6 +97,26 @@ const webhookRoutes = async (server: FastifyInstance) => {
               limit: { type: 'number' },
               success: { type: 'boolean', default: true },
             },
+            example: {
+              success: true,
+              message: 'Webhooks fetched successfully',
+              data: {
+                webhooks: [
+                  {
+                    id: '68ecb174e142f8399b831df5',
+                    user_id: '68ea52307fcd6c887f459aa2',
+                    name: 'My New Webhook',
+                    url: 'https://discord.com/api/webhooks/123456789/abcdef-ghijkl',
+                    status: 'active',
+                    createdAt: '2025-10-14T12:00:00.000Z',
+                    updatedAt: '2025-10-14T12:00:00.000Z',
+                  },
+                ],
+                total: 1,
+                page: 1,
+                limit: 10,
+              },
+            },
           },
           401: responseSchemas[401],
           500: responseSchemas[500]('Error fetching webhooks'),
@@ -98,7 +138,23 @@ const webhookRoutes = async (server: FastifyInstance) => {
         description: 'Retrieves a single webhook by its ID.',
         tags: ['webhook'],
         response: {
-          200: { description: 'Webhook details.', ...webhookResponseSchema },
+          200: {
+            description: 'Webhook details.',
+            ...webhookResponseSchema,
+            example: {
+              success: true,
+              message: 'Webhook fetched successfully',
+              data: {
+                id: '68ecb174e142f8399b831df5',
+                user_id: '68ea52307fcd6c887f459aa2',
+                name: 'My New Webhook',
+                url: 'https://discord.com/api/webhooks/123456789/abcdef-ghijkl',
+                status: 'active',
+                createdAt: '2025-10-14T12:00:00.000Z',
+                updatedAt: '2025-10-14T12:30:00.000Z',
+              },
+            },
+          },
           401: responseSchemas[401],
           404: responseSchemas[404]('Webhook not found'),
           500: responseSchemas[500]('Error fetching webhook'),
@@ -118,10 +174,30 @@ const webhookRoutes = async (server: FastifyInstance) => {
         security: [{ bearerAuth: [] }],
         description: 'Updates the details of a specific webhook by its ID.',
         tags: ['webhook'],
+        body: {
+          ...updateWebhookSchema.body,
+          example: {
+            name: 'My Updated Webhook',
+            status: 'inactive',
+          },
+        },
         response: {
           200: {
             description: 'Webhook updated successfully.',
             ...webhookResponseSchema,
+            example: {
+              success: true,
+              message: 'Webhook updated successfully',
+              data: {
+                id: '68ecb174e142f8399b831df5',
+                user_id: '68ea52307fcd6c887f459aa2',
+                name: 'My Updated Webhook',
+                url: 'https://discord.com/api/webhooks/123456789/abcdef-ghijkl',
+                status: 'inactive',
+                createdAt: '2025-10-14T12:00:00.000Z',
+                updatedAt: '2025-10-14T13:00:00.000Z',
+              },
+            },
           },
           400: responseSchemas[400](),
           401: responseSchemas[401],
@@ -172,8 +248,11 @@ const webhookRoutes = async (server: FastifyInstance) => {
             properties: {
               message: {
                 type: 'string',
-                example: 'Test message sent successfully',
               },
+            },
+            example: {
+              success: true,
+              message: 'Test message sent successfully',
             },
           },
           401: responseSchemas[401],
@@ -196,11 +275,34 @@ const webhookRoutes = async (server: FastifyInstance) => {
         description:
           'Sends a message to one or more specified webhooks using provided message data.',
         tags: ['webhook'],
+        body: {
+          ...webhookSendMessageSchema.body,
+          example: {
+            webhookIds: ['68ecb174e142f8399b831df5'],
+            messageData: {
+              content: 'Hello from the API!',
+              embeds: [
+                {
+                  title: 'API Notification',
+                  description: 'This is a test message.',
+                  color: 5814783,
+                },
+              ],
+            },
+          },
+        },
         response: {
           200: {
             description: 'Message sent successfully.',
             type: 'object',
-            properties: { message: { type: 'string' } },
+            properties: {
+              message: { type: 'string' },
+              success: { type: 'boolean' },
+            },
+            example: {
+              success: true,
+              message: 'Messages sent successfully to 1 webhook(s).',
+            },
           },
           400: responseSchemas[400](),
           401: responseSchemas[401],

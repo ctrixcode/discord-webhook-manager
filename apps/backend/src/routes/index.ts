@@ -20,13 +20,19 @@ const routes = async (fastify: FastifyInstance) => {
             description: 'Successful health check response.',
             type: 'object',
             properties: {
-              status: { type: 'string', example: 'ok' },
+              status: { type: 'string' },
               timestamp: { type: 'string', format: 'date-time' },
               uptime: {
                 type: 'number',
                 description: 'Server uptime in seconds.',
               },
-              environment: { type: 'string', example: 'development' },
+              environment: { type: 'string' },
+            },
+            example: {
+              status: 'ok',
+              timestamp: '2025-10-26T10:00:00.000Z',
+              uptime: 120.5,
+              environment: 'development',
             },
           },
         },

@@ -24,6 +24,18 @@ const userRoutes = async (fastify: FastifyInstance) => {
           200: {
             description: 'Current user profile details.',
             ...userProfileResponseSchema,
+            example: {
+              success: true,
+              message: 'User profile fetched successfully',
+              data: {
+                id: '68ea52307fcd6c887f459aa2',
+                username: 'TestUser',
+                email: 'test@example.com',
+                discordId: '123456789012345678',
+                createdAt: '2025-10-10T12:00:00.000Z',
+                updatedAt: '2025-10-10T12:00:00.000Z',
+              },
+            },
           },
           401: responseSchemas[401],
           500: responseSchemas[500]('Error fetching user profile'),
@@ -47,6 +59,15 @@ const userRoutes = async (fastify: FastifyInstance) => {
           200: {
             description: 'User API usage statistics.',
             ...userUsageResponseSchema,
+            example: {
+              success: true,
+              message: 'User usage fetched successfully',
+              data: {
+                webhooks: 5,
+                avatars: 2,
+                messageTemplates: 10,
+              },
+            },
           },
           401: responseSchemas[401],
           500: responseSchemas[500]('Error fetching user usage'),

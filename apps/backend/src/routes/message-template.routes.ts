@@ -36,10 +36,37 @@ const messageTemplateRoutes = async (server: FastifyInstance) => {
           'Creates a new message template for the authenticated user.',
         tags: ['message-template'],
         security: [{ bearerAuth: [] }],
+        body: {
+          ...createMessageTemplateSchema.body,
+          example: {
+            name: 'Welcome Message',
+            message: 'Hello {{user}}! Welcome to the server!',
+            embeds: [
+              {
+                title: 'Server Rules',
+                description: '1. Be respectful.\n2. No spamming.',
+                color: 3447003,
+              },
+            ],
+          },
+        },
         response: {
           201: {
             description: 'Message template created successfully.',
             ...messageTemplateResponseSchema,
+            example: {
+              success: true,
+              message: 'Message template created successfully.',
+              data: {
+                id: '68ebc174e142f8399b831df2',
+                user_id: '68ea52307fcd6c887f459aa2',
+                name: 'Welcome Message',
+                message: 'Hello {{user}}! Welcome to the server!',
+                embeds: [],
+                createdAt: '2025-10-13T10:00:00.000Z',
+                updatedAt: '2025-10-13T10:00:00.000Z',
+              },
+            },
           },
           400: responseSchemas[400](),
           401: responseSchemas[401],
@@ -77,6 +104,26 @@ const messageTemplateRoutes = async (server: FastifyInstance) => {
               page: { type: 'number' },
               limit: { type: 'number' },
             },
+            example: {
+              success: true,
+              message: 'Message templates fetched successfully',
+              data: {
+                messageTemplates: [
+                  {
+                    id: '68ebc174e142f8399b831df2',
+                    user_id: '68ea52307fcd6c887f459aa2',
+                    name: 'Welcome Message',
+                    message: 'Hello {{user}}! Welcome to the server!',
+                    embeds: [],
+                    createdAt: '2025-10-13T10:00:00.000Z',
+                    updatedAt: '2025-10-13T10:00:00.000Z',
+                  },
+                ],
+                total: 1,
+                page: 1,
+                limit: 10,
+              },
+            },
           },
           401: responseSchemas[401],
           500: responseSchemas[500]('Error fetching message templates'),
@@ -100,6 +147,19 @@ const messageTemplateRoutes = async (server: FastifyInstance) => {
           200: {
             description: 'Message template details.',
             ...messageTemplateResponseSchema,
+            example: {
+              success: true,
+              message: 'Message template fetched successfully.',
+              data: {
+                id: '68ebc174e142f8399b831df2',
+                user_id: '68ea52307fcd6c887f459aa2',
+                name: 'Welcome Message',
+                message: 'Hello {{user}}! Welcome to the server!',
+                embeds: [],
+                createdAt: '2025-10-13T10:00:00.000Z',
+                updatedAt: '2025-10-13T11:00:00.000Z',
+              },
+            },
           },
           401: responseSchemas[401],
           404: responseSchemas[404]('Message template not found'),
@@ -124,10 +184,30 @@ const messageTemplateRoutes = async (server: FastifyInstance) => {
         description:
           'Updates the details of a specific message template by its ID.',
         tags: ['message-template'],
+        body: {
+          ...updateMessageTemplateSchema.body,
+          example: {
+            name: 'Updated Welcome Message',
+            message: 'Hi {{user}}! Welcome!',
+          },
+        },
         response: {
           200: {
             description: 'Message template updated successfully.',
             ...messageTemplateResponseSchema,
+            example: {
+              success: true,
+              message: 'Message template updated successfully.',
+              data: {
+                id: '68ebc174e142f8399b831df2',
+                user_id: '68ea52307fcd6c887f459aa2',
+                name: 'Updated Welcome Message',
+                message: 'Hi {{user}}! Welcome!',
+                embeds: [],
+                createdAt: '2025-10-13T10:00:00.000Z',
+                updatedAt: '2025-10-13T12:00:00.000Z',
+              },
+            },
           },
           400: responseSchemas[400](),
           401: responseSchemas[401],
