@@ -235,6 +235,15 @@ async function avatarRoutes(fastify: FastifyInstance) {
         security: [{ bearerAuth: [] }],
         response: {
           //!coderabbiai recommendation 204: { type: 'null', description: 'Avatar deleted successfully.' },
+          200: {
+            description: 'Avatar deleted successfully.',
+            ...successSchema({ type: 'null' }),
+            example: {
+              success: true,
+              message: 'Avatar deleted successfully',
+              data: null,
+            },
+          },
           401: responseSchemas[401],
           404: responseSchemas[404]('Avatar not found'),
           500: responseSchemas[500](
