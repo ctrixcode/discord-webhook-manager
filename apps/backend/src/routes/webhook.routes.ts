@@ -175,7 +175,7 @@ const webhookRoutes = async (server: FastifyInstance) => {
         response: {
           200: {
             description: 'Webhook updated successfully.',
-            ...webhookResponseSchema,
+            ...successSchema(webhookResponseSchema),
             example: {
               success: true,
               message: 'Webhook updated successfully',

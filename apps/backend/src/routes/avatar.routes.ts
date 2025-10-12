@@ -35,7 +35,7 @@ async function avatarRoutes(fastify: FastifyInstance) {
         response: {
           201: {
             description: 'Avatar created successfully.',
-            ...avatarResponseSchema,
+            ...successSchema(avatarResponseSchema),
             example: {
               success: true,
               message: 'Avatars fetched',
