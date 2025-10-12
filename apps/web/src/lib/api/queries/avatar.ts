@@ -41,6 +41,7 @@ export const avatarQueries = {
 
   // Upload avatar
   uploadAvatar: async (data: FormData): Promise<Avatar> => {
+    debugger;
     const response = await apiClient.post<ApiResponse<Avatar>>(
       '/avatar/upload',
       data,

@@ -21,6 +21,7 @@ import { CreateWebhookData, UpdateWebhookData } from '@repo/shared-types';
 import {
   responseSchemas,
   webhookResponseSchema,
+  successSchema,
 } from '../schemas/shared.schema';
 
 const webhookRoutes = async (server: FastifyInstance) => {
@@ -37,7 +38,7 @@ const webhookRoutes = async (server: FastifyInstance) => {
         response: {
           201: {
             description: 'Webhook created successfully.',
-            ...webhookResponseSchema,
+            ...successSchema(webhookResponseSchema),
             example: {
               success: true,
               message: 'Webhook created successfully.',
@@ -79,17 +80,20 @@ const webhookRoutes = async (server: FastifyInstance) => {
             description: 'A list of user webhooks.',
             type: 'object',
             properties: {
+              success: { type: 'boolean' },
+              message: { type: 'string' },
               data: {
-                webhooks: {
-                  type: 'array',
-                  items: webhookResponseSchema,
+                type: 'object',
+                properties: {
+                  webhooks: {
+                    type: 'array',
+                    items: webhookResponseSchema,
+                  },
+                  total: { type: 'number' },
+                  page: { type: 'number' },
+                  limit: { type: 'number' },
                 },
-
-                total: { type: 'number' },
-                page: { type: 'number' },
-                limit: { type: 'number' },
               },
-              success: { type: 'boolean', default: true },
             },
             example: {
               success: true,
@@ -134,7 +138,7 @@ const webhookRoutes = async (server: FastifyInstance) => {
         response: {
           200: {
             description: 'Webhook details.',
-            ...webhookResponseSchema,
+            ...successSchema(webhookResponseSchema),
             example: {
               success: true,
               message: 'Webhook fetched successfully',
@@ -233,13 +237,14 @@ const webhookRoutes = async (server: FastifyInstance) => {
             description: 'Test message sent successfully.',
             type: 'object',
             properties: {
-              message: {
-                type: 'string',
-              },
+              success: { type: 'boolean' },
+              message: { type: 'string' },
+              data: { type: 'object', properties: {} },
             },
             example: {
               success: true,
               message: 'Test message sent successfully',
+              data: {},
             },
           },
           401: responseSchemas[401],
@@ -267,12 +272,14 @@ const webhookRoutes = async (server: FastifyInstance) => {
             description: 'Message sent successfully.',
             type: 'object',
             properties: {
-              message: { type: 'string' },
               success: { type: 'boolean' },
+              message: { type: 'string' },
+              data: { type: 'object', properties: {} },
             },
             example: {
               success: true,
               message: 'Messages sent successfully to 1 webhook(s).',
+              data: {},
             },
           },
           400: responseSchemas[400](),

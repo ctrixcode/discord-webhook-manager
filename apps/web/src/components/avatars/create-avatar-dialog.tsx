@@ -107,6 +107,7 @@ export function CreateAvatarDialog({
       });
     }
   };
+  debugger;
   const createAvatarMutation = useMutation({
     mutationFn: async (data: {
       username: string;
@@ -173,6 +174,7 @@ export function CreateAvatarDialog({
       });
     } else {
       if (selectedFile) {
+        debugger;
         createAvatarMutation.mutate({
           username: username.trim(),
           file: selectedFile,
