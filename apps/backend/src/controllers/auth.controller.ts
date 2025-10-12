@@ -16,6 +16,11 @@ import {
 const DISCORD_CLIENT_ID = process.env.DISCORD_CLIENT_ID as string;
 const DISCORD_CLIENT_SECRET = process.env.DISCORD_CLIENT_SECRET as string;
 const DISCORD_REDIRECT_URI = process.env.DISCORD_REDIRECT_URI as string;
+const FRONTEND_URL = process.env.FRONTEND_URL || 'http://localhost:3000';
+const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID as string;
+const GOOGLE_CLIENT_SECRET = process.env.GOOGLE_CLIENT_SECRET as string;
+const GOOGLE_OAUTH_REDIRECT_URI = process.env
+  .GOOGLE_OAUTH_REDIRECT_URI as string;
 
 /**
  * Refresh access token
@@ -77,6 +82,100 @@ export const logoutUser = async (
   }
 
   sendSuccessResponse(reply, HttpStatusCode.OK, 'Logged out successfully');
+};
+
+/**
+ * Send email verification
+ * POST /api/auth/email/send-verification
+ */
+export const sendEmailVerification = async (
+  request: FastifyRequest<{
+    Body: {
+      email: string;
+      password: string;
+      displayName: string;
+      username: string;
+    };
+  }>,
+  reply: FastifyReply
+): Promise<void> => {
+  const { email, password, displayName, username } = request.body;
+
+  if (!email || !password || !displayName || !username) {
+    throw new BadRequestError(
+      ErrorMessages.Auth.MISSING_SIGNUP_FIELDS_ERROR.message,
+      ErrorMessages.Auth.MISSING_SIGNUP_FIELDS_ERROR.code
+    );
+  }
+
+  await authService.sendEmailVerification(
+    email,
+    password,
+    displayName,
+    username
+  );
+
+  sendSuccessResponse(
+    reply,
+    HttpStatusCode.OK,
+    'Verification email sent. Please check your inbox.'
+  );
+};
+
+/**
+ * Verify email
+ * POST /api/auth/email/verify
+ */
+export const verifyEmail = async (
+  request: FastifyRequest<{ Body: { token: string } }>,
+  reply: FastifyReply
+): Promise<void> => {
+  const { token } = request.body;
+
+  if (!token) {
+    throw new BadRequestError(
+      ErrorMessages.Auth.MISSING_VERIFICATION_TOKEN_ERROR.message,
+      ErrorMessages.Auth.MISSING_VERIFICATION_TOKEN_ERROR.code
+    );
+  }
+
+  const { user, accessToken, refreshToken } = await authService.verifyEmail(
+    token,
+    request.headers['user-agent'] || 'unknown'
+  );
+
+  sendSuccessResponse(reply, HttpStatusCode.OK, 'Email verified successfully', {
+    accessToken,
+    refreshToken,
+  });
+};
+
+/** Email login
+ * POST /api/auth/email/login
+ */
+export const emailLogin = async (
+  request: FastifyRequest<{ Body: { email: string; password: string } }>,
+  reply: FastifyReply
+): Promise<void> => {
+  const { email, password } = request.body;
+
+  if (!email || !password) {
+    throw new BadRequestError(
+      ErrorMessages.Auth.MISSING_CREDENTIALS_ERROR.message,
+      ErrorMessages.Auth.MISSING_CREDENTIALS_ERROR.code
+    );
+  }
+
+  const { user, accessToken, refreshToken } = await authService.loginWithEmail(
+    email,
+    password,
+    request.headers['user-agent'] || 'unknown'
+  );
+
+  sendSuccessResponse(reply, HttpStatusCode.OK, 'Login successful', {
+    accessToken,
+    refreshToken,
+  });
 };
 
 /**
@@ -183,6 +282,7 @@ export const discordCallback = async (
   const { user, accessToken, refreshToken } =
     await authService.loginWithDiscord(
       discordUser.id,
+      discordUser.global_name || discordUser.username,
       discordUser.username,
       discordUser.email,
       discordUser.avatar,
@@ -211,5 +311,156 @@ export const discordCallback = async (
   const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:3000';
   reply.redirect(
     `${frontendUrl}/auth/callback?access_token=${accessToken}&refresh_token=${refreshToken}`
+  );
+};
+
+/**
+ * Redirects to Googles's OAuth2 authorization page.
+ * GET /api/auth/google
+ */
+export const googleLogin = async (
+  request: FastifyRequest,
+  reply: FastifyReply
+): Promise<void> => {
+  const googleAuthUrl = `https://accounts.google.com/o/oauth2/v2/auth?client_id=${GOOGLE_CLIENT_ID}&redirect_uri=${encodeURIComponent(GOOGLE_OAUTH_REDIRECT_URI)}&response_type=code&scope=openid%20email%20profile`;
+  reply.redirect(googleAuthUrl);
+};
+
+/** Handles the Google OAuth2 callback.
+ * GET /api/auth/google/callback
+ */
+export const googleCallback = async (
+  request: FastifyRequest<{ Querystring: { code: string } }>,
+  reply: FastifyReply
+): Promise<void> => {
+  const { code } = request.query;
+
+  if (!code) {
+    throw new BadRequestError(
+      ErrorMessages.Auth.MISSING_CODE_ERROR.message,
+      ErrorMessages.Auth.MISSING_CODE_ERROR.code
+    );
+  }
+
+  // Exchange authorization code for Google access token
+  const tokenResponse = await fetch('https://oauth2.googleapis.com/token', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/x-www-form-urlencoded',
+    },
+    body: new URLSearchParams({
+      client_id: GOOGLE_CLIENT_ID,
+      client_secret: GOOGLE_CLIENT_SECRET,
+      grant_type: 'authorization_code',
+      code,
+      redirect_uri: GOOGLE_OAUTH_REDIRECT_URI,
+    }).toString(),
+  });
+
+  if (!tokenResponse.ok) {
+    const errorData = await tokenResponse.json();
+    logger.error('Error exchanging Google code for token:', errorData);
+    throw new ExternalApiError(
+      ErrorMessages.Google.FAILED_TOKEN_EXCHANGE_ERROR.message,
+      ErrorMessages.Google.FAILED_TOKEN_EXCHANGE_ERROR.code,
+      'google'
+    );
+  }
+
+  const { access_token, id_token } = await tokenResponse.json();
+
+  // Verify the ID token for additional security
+  if (id_token) {
+    try {
+      // Decode and verify the ID token
+      const idTokenParts = id_token.split('.');
+      if (idTokenParts.length === 3) {
+        const payload = JSON.parse(
+          Buffer.from(idTokenParts[1], 'base64').toString()
+        );
+
+        // Verify basic claims
+        if (payload.aud !== GOOGLE_CLIENT_ID) {
+          logger.warn('ID token audience mismatch');
+          throw new ExternalApiError(
+            'Invalid Google ID token audience',
+            'INVALID_ID_TOKEN',
+            'google'
+          );
+        }
+
+        // Check if token is expired
+        if (payload.exp && payload.exp < Date.now() / 1000) {
+          logger.warn('ID token has expired');
+          throw new ExternalApiError(
+            'Google ID token has expired',
+            'EXPIRED_ID_TOKEN',
+            'google'
+          );
+        }
+
+        logger.info('ID token verified successfully');
+      }
+    } catch (error) {
+      if (error instanceof ExternalApiError) {
+        throw error;
+      }
+      logger.error('ID token verification failed:', error);
+      throw new ExternalApiError(
+        'Failed to verify Google ID token',
+        'ID_TOKEN_VERIFICATION_FAILED',
+        'google'
+      );
+    }
+  }
+
+  // Get Google user info
+  const userResponse = await fetch(
+    'https://www.googleapis.com/oauth2/v3/userinfo',
+    {
+      headers: {
+        Authorization: `Bearer ${access_token}`,
+      },
+    }
+  );
+
+  if (!userResponse.ok) {
+    const errorData = await userResponse.json();
+    logger.error('Error fetching Google user info:', errorData);
+    throw new ExternalApiError(
+      ErrorMessages.Google.TOKEN_FETCH_ERROR.message,
+      ErrorMessages.Google.TOKEN_FETCH_ERROR.code,
+      'google'
+    );
+  }
+
+  const googleUser = await userResponse.json();
+
+  // Optionally verify email matches between ID token and userinfo
+  if (id_token) {
+    const idTokenParts = id_token.split('.');
+    if (idTokenParts.length === 3) {
+      const payload = JSON.parse(
+        Buffer.from(idTokenParts[1], 'base64').toString()
+      );
+      if (payload.email && payload.email !== googleUser.email) {
+        logger.warn('Email mismatch between ID token and userinfo', {
+          idTokenEmail: payload.email,
+          userinfoEmail: googleUser.email,
+        });
+      }
+    }
+  }
+
+  const { user, accessToken, refreshToken } = await authService.loginWithGoogle(
+    googleUser.sub,
+    googleUser.email,
+    googleUser.name,
+    googleUser.picture,
+    request.headers['user-agent'] || 'unknown'
+  );
+
+  reply.redirect(
+    `${FRONTEND_URL}/auth/callback?access_token=${accessToken}&refresh_token=${refreshToken}`
   );
 };
