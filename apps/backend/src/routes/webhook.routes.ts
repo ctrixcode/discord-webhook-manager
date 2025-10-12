@@ -33,6 +33,7 @@ const webhookRoutes = async (server: FastifyInstance) => {
         summary: 'Create a new webhook',
         description: 'Creates a new webhook for the authenticated user.',
         tags: ['webhook'],
+        security: [{ bearerAuth: [] }],
         response: {
           201: {
             description: 'Webhook created successfully.',
@@ -56,6 +57,7 @@ const webhookRoutes = async (server: FastifyInstance) => {
       schema: {
         ...getWebhooksQuerySchema,
         summary: 'Get all user webhooks',
+        security: [{ bearerAuth: [] }],
         description:
           'Retrieves a list of all webhooks belonging to the authenticated user, with pagination and status filtering.',
         tags: ['webhook'],
@@ -90,7 +92,9 @@ const webhookRoutes = async (server: FastifyInstance) => {
       preHandler: [authenticate],
       schema: {
         ...webhookParamsSchema,
+
         summary: 'Get a specific webhook',
+        security: [{ bearerAuth: [] }],
         description: 'Retrieves a single webhook by its ID.',
         tags: ['webhook'],
         response: {
@@ -111,6 +115,7 @@ const webhookRoutes = async (server: FastifyInstance) => {
       schema: {
         ...updateWebhookSchema,
         summary: 'Update a webhook',
+        security: [{ bearerAuth: [] }],
         description: 'Updates the details of a specific webhook by its ID.',
         tags: ['webhook'],
         response: {
@@ -135,6 +140,7 @@ const webhookRoutes = async (server: FastifyInstance) => {
       schema: {
         ...webhookParamsSchema,
         summary: 'Delete a webhook',
+        security: [{ bearerAuth: [] }],
         description: 'Deletes a specific webhook by its ID.',
         tags: ['webhook'],
         response: {
@@ -155,6 +161,7 @@ const webhookRoutes = async (server: FastifyInstance) => {
       schema: {
         ...webhookParamsSchema,
         summary: 'Test a webhook',
+        security: [{ bearerAuth: [] }],
         description:
           'Sends a test message to the specified webhook to verify its functionality.',
         tags: ['webhook'],
@@ -185,6 +192,7 @@ const webhookRoutes = async (server: FastifyInstance) => {
       schema: {
         ...webhookSendMessageSchema,
         summary: 'Send a message via webhooks',
+        security: [{ bearerAuth: [] }],
         description:
           'Sends a message to one or more specified webhooks using provided message data.',
         tags: ['webhook'],

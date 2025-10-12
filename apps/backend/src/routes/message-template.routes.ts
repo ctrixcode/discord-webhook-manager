@@ -35,6 +35,7 @@ const messageTemplateRoutes = async (server: FastifyInstance) => {
         description:
           'Creates a new message template for the authenticated user.',
         tags: ['message-template'],
+        security: [{ bearerAuth: [] }],
         response: {
           201: {
             description: 'Message template created successfully.',
@@ -60,6 +61,7 @@ const messageTemplateRoutes = async (server: FastifyInstance) => {
         description:
           'Retrieves a list of all message templates belonging to the authenticated user, with pagination.',
         tags: ['message-template'],
+        security: [{ bearerAuth: [] }],
         response: {
           200: {
             description: 'A paginated list of user message templates.',
@@ -91,6 +93,7 @@ const messageTemplateRoutes = async (server: FastifyInstance) => {
       schema: {
         ...messageTemplateParamsSchema,
         summary: 'Get a specific message template',
+        security: [{ bearerAuth: [] }],
         description: 'Retrieves a single message template by its ID.',
         tags: ['message-template'],
         response: {
@@ -117,6 +120,7 @@ const messageTemplateRoutes = async (server: FastifyInstance) => {
       schema: {
         ...updateMessageTemplateSchema,
         summary: 'Update a message template',
+        security: [{ bearerAuth: [] }],
         description:
           'Updates the details of a specific message template by its ID.',
         tags: ['message-template'],
@@ -142,6 +146,7 @@ const messageTemplateRoutes = async (server: FastifyInstance) => {
       schema: {
         ...messageTemplateParamsSchema,
         summary: 'Delete a message template',
+        security: [{ bearerAuth: [] }],
         description: 'Deletes a specific message template by its ID.',
         tags: ['message-template'],
         response: {
