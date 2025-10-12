@@ -17,6 +17,7 @@ import {
 import {
   responseSchemas,
   avatarResponseSchema,
+  successSchema,
 } from '../schemas/shared.schema';
 
 async function avatarRoutes(fastify: FastifyInstance) {
@@ -79,7 +80,19 @@ async function avatarRoutes(fastify: FastifyInstance) {
         response: {
           201: {
             description: 'Avatar uploaded successfully.',
-            ...avatarResponseSchema,
+            ...successSchema(avatarResponseSchema),
+            example: {
+              success: true,
+              data: {
+                id: 'fsdfsdfsdfsd',
+                createdAt: '2025-10-12T10:57:18.661Z',
+                updatedAt: '2025-10-12T10:57:18.661Z',
+                user_id: 'fdsffsdfsdfsdfsdf',
+                username: 'dsads',
+                avatar_url: '/uploads/avatars/68eb898baf62d378adc5d702-2.png',
+              },
+              message: 'Avatar created successfully',
+            },
           },
           400: responseSchemas[400]('No file uploaded or file is too large.'),
           401: responseSchemas[401],
