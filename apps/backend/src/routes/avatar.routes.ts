@@ -35,7 +35,22 @@ async function avatarRoutes(fastify: FastifyInstance) {
           201: {
             description: 'Avatar created successfully.',
             ...avatarResponseSchema,
+            example: {
+              success: true,
+              message: 'Avatars fetched',
+              data: [
+                {
+                  id: '68eab174e142f8399b831de8',
+                  user_id: '68ea52307fcd6c887f459aa2',
+                  username: 'bot1',
+                  avatar_url: 'https://i.pravatar.cc/',
+                  createdAt: '2025-10-11T19:35:17.007Z',
+                  updatedAt: '2025-10-11T19:35:17.007Z',
+                },
+              ],
+            },
           },
+
           400: responseSchemas[400]('Invalid username or avatar_url.'),
           401: responseSchemas[401],
           500: responseSchemas[500](
@@ -90,25 +105,25 @@ async function avatarRoutes(fastify: FastifyInstance) {
               type: 'array',
               items: avatarResponseSchema,
             },
+            example: {
+              success: true,
+              message: 'Avatars fetched',
+              data: [
+                {
+                  id: '68eab174e142f8399b831de8',
+                  user_id: '68ea52307fcd6c887f459aa2',
+                  username: 'bot1',
+                  avatar_url: 'https://i.pravatar.cc/',
+                  createdAt: '2025-10-11T19:35:17.007Z',
+                  updatedAt: '2025-10-11T19:35:17.007Z',
+                },
+              ],
+            },
           },
           401: responseSchemas[401],
           500: responseSchemas[500](
             'An unexpected error occurred while fetching avatars.'
           ),
-          example: {
-            success: true,
-            message: 'Avatars fetched',
-            data: [
-              {
-                id: '68eab174e142f8399b831de8',
-                user_id: '68ea52307fcd6c887f459aa2',
-                username: 'bot1',
-                avatar_url: 'https://i.pravatar.cc/150?u=john',
-                createdAt: '2025-10-11T19:35:17.007Z',
-                updatedAt: '2025-10-11T19:35:17.007Z',
-              },
-            ],
-          },
         },
       },
     },
@@ -120,13 +135,28 @@ async function avatarRoutes(fastify: FastifyInstance) {
     {
       preHandler: [authenticate],
       schema: {
-        ...avatarParamsSchema,
+        ...avatarResponseSchema,
         summary: 'Get a specific avatar',
         description: 'Retrieves a single avatar by its ID.',
         tags: ['avatar'],
         security: [{ bearerAuth: [] }],
         response: {
-          200: { description: 'Avatar details.', ...avatarResponseSchema },
+          200: {
+            description: 'Avatar details.',
+            ...avatarResponseSchema,
+            example: {
+              success: true,
+              message: 'Avatar fetched successfully',
+              data: {
+                id: '68eab174e142f8399b831de8',
+                user_id: '68ea52307fcd6c887f459aa2',
+                username: 'Avatar 1',
+                avatar_url: 'https://i.pravatar.cc/',
+                createdAt: '2025-10-11T19:35:17.007Z',
+                updatedAt: '2025-10-12T04:57:56.825Z',
+              },
+            },
+          },
           401: responseSchemas[401],
           404: responseSchemas[404]('Avatar not found'),
           500: responseSchemas[500](
@@ -152,6 +182,18 @@ async function avatarRoutes(fastify: FastifyInstance) {
           200: {
             description: 'Avatar updated successfully.',
             ...avatarResponseSchema,
+            example: {
+              success: true,
+              message: 'Avatar updated successfully',
+              data: {
+                id: '68eab174e142f8399b831de8',
+                user_id: '68ea52307fcd6c887f459aa2',
+                username: 'bot2',
+                avatar_url: 'https://i.pravatar.cc/',
+                createdAt: '2025-10-11T19:35:17.007Z',
+                updatedAt: '2025-10-12T04:57:56.825Z',
+              },
+            },
           },
           400: responseSchemas[400]('Invalid username or avatar_url.'),
           401: responseSchemas[401],

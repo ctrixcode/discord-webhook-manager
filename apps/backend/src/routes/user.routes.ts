@@ -16,6 +16,7 @@ const userRoutes = async (fastify: FastifyInstance) => {
       schema: {
         ...getUsersQuerySchema,
         summary: 'Get current user profile',
+        security: [{ bearerAuth: [] }],
         description:
           'Retrieves the profile information for the currently authenticated user.',
         tags: ['user'],
@@ -41,6 +42,7 @@ const userRoutes = async (fastify: FastifyInstance) => {
         description:
           'Retrieves the API usage statistics for the currently authenticated user (e.g., number of webhooks, avatars).',
         tags: ['user'],
+        security: [{ bearerAuth: [] }],
         response: {
           200: {
             description: 'User API usage statistics.',
