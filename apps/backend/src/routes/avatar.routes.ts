@@ -38,7 +38,7 @@ async function avatarRoutes(fastify: FastifyInstance) {
             ...successSchema(avatarResponseSchema),
             example: {
               success: true,
-              message: 'Avatars fetched',
+              message: 'Avatar created successfully',
               data: [
                 {
                   id: '68eab174e142f8399b831de8',
@@ -152,7 +152,7 @@ async function avatarRoutes(fastify: FastifyInstance) {
     {
       preHandler: [authenticate],
       schema: {
-        ...avatarResponseSchema,
+        ...avatarParamsSchema,
         summary: 'Get a specific avatar',
         description: 'Retrieves a single avatar by its ID.',
         tags: ['avatar'],
