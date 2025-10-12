@@ -8,6 +8,38 @@ export const ErrorMessages = {
       message: 'Missing authorization code',
       code: 'MISSING_CODE_ERROR',
     },
+    MISSING_CREDENTIALS_ERROR: {
+      message: 'Email and password are required',
+      code: 'MISSING_CREDENTIALS_ERROR',
+    },
+    MISSING_SIGNUP_FIELDS_ERROR: {
+      message: 'Email, password, full name, and username are required',
+      code: 'MISSING_SIGNUP_FIELDS_ERROR',
+    },
+    MISSING_VERIFICATION_TOKEN_ERROR: {
+      message: 'Verification token is required',
+      code: 'MISSING_VERIFICATION_TOKEN_ERROR',
+    },
+    INVALID_CREDENTIALS_ERROR: {
+      message: 'Invalid email or password',
+      code: 'INVALID_CREDENTIALS_ERROR',
+    },
+    INVALID_VERIFICATION_TOKEN_ERROR: {
+      message: 'Invalid or expired verification token',
+      code: 'INVALID_VERIFICATION_TOKEN_ERROR',
+    },
+    VERIFICATION_TOKEN_ALREADY_USED_ERROR: {
+      message: 'This verification link has already been used',
+      code: 'VERIFICATION_TOKEN_ALREADY_USED_ERROR',
+    },
+    EMAIL_ALREADY_IN_USE_ERROR: {
+      message: 'Email is already in use',
+      code: 'EMAIL_ALREADY_IN_USE_ERROR',
+    },
+    USERNAME_ALREADY_IN_USE_ERROR: {
+      message: 'Username is already in use',
+      code: 'USERNAME_ALREADY_IN_USE_ERROR',
+    },
     FAILED_CREATE_UPDATE_USER_ERROR: {
       message: 'Failed to create or update user with Discord info',
       code: 'FAILED_CREATE_UPDATE_USER_ERROR',
@@ -23,6 +55,44 @@ export const ErrorMessages = {
     USER_AGENT_MISMATCH_ERROR: {
       message: 'Authentication failed. Please log in again.',
       code: 'USER_AGENT_MISMATCH_ERROR',
+    },
+    USER_NOT_FOUND_ERROR: {
+      message: 'User not found',
+      code: 'USER_NOT_FOUND_ERROR',
+    },
+    GOOGLE_ACCOUNT_LOGIN_ERROR: {
+      message: 'Please log in using your Google account',
+      code: 'GOOGLE_ACCOUNT_LOGIN_ERROR',
+    },
+    DISCORD_ACCOUNT_LOGIN_ERROR: {
+      message: 'Please log in using your Discord account',
+      code: 'DISCORD_ACCOUNT_LOGIN_ERROR',
+    },
+  },
+  Google: {
+    INVALID_EMAIL_FORMAT_ERROR: {
+      message: 'Invalid email format',
+      code: 'INVALID_EMAIL_FORMAT_ERROR',
+    },
+    MISSING_GOOGLE_ID_OR_EMAIL_ERROR: {
+      message: 'Google ID and email are required',
+      code: 'MISSING_GOOGLE_ID_OR_EMAIL_ERROR',
+    },
+    MISSING_CODE_ERROR: {
+      message: 'Missing authorization code',
+      code: 'MISSING_CODE_ERROR',
+    },
+    FAILED_TOKEN_EXCHANGE_ERROR: {
+      message: 'Failed to exchange Google code for token',
+      code: 'FAILED_TOKEN_EXCHANGE_ERROR',
+    },
+    FAILED_FETCH_USER_INFO_ERROR: {
+      message: 'Failed to fetch Google user info',
+      code: 'FAILED_FETCH_USER_INFO_ERROR',
+    },
+    TOKEN_FETCH_ERROR: {
+      message: 'Error retrieving Google token',
+      code: 'TOKEN_FETCH_ERROR',
     },
   },
   Discord: {
