@@ -1,6 +1,6 @@
 import { FastifyInstance } from 'fastify';
 import * as authController from '../controllers/auth.controller';
-import { responseSchemas } from '../schemas/shared.schema';
+import { responseSchemas, successSchema } from '../schemas/shared.schema';
 
 const authRoutes = async (fastify: FastifyInstance) => {
   fastify.post(
@@ -21,15 +21,19 @@ const authRoutes = async (fastify: FastifyInstance) => {
         response: {
           200: {
             description: 'Successfully refreshed token.',
-            type: 'object',
-            properties: {
-              accessToken: {
-                type: 'string',
-                example: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...',
+            ...successSchema({
+              type: 'object',
+              properties: {
+                accessToken: { type: 'string' },
+                refreshToken: { type: 'string' },
               },
-              refreshToken: {
-                type: 'string',
-                example: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...',
+            }),
+            example: {
+              success: true,
+              message: 'Access token refreshed successfully',
+              data: {
+                accessToken: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...',
+                refreshToken: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...',
               },
             },
           },
@@ -59,9 +63,14 @@ const authRoutes = async (fastify: FastifyInstance) => {
         response: {
           200: {
             description: 'Successfully logged out.',
-            type: 'object',
-            properties: {
-              message: { type: 'string', example: 'Logged out' },
+            ...successSchema({
+              type: 'object',
+              properties: {},
+            }),
+            example: {
+              success: true,
+              message: 'Logged out successfully',
+              data: {},
             },
           },
           401: responseSchemas[401],
