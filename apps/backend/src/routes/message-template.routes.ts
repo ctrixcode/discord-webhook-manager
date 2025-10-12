@@ -22,6 +22,7 @@ import {
 import {
   responseSchemas,
   messageTemplateResponseSchema,
+  successSchema,
 } from '../schemas/shared.schema';
 
 const messageTemplateRoutes = async (server: FastifyInstance) => {
@@ -39,7 +40,7 @@ const messageTemplateRoutes = async (server: FastifyInstance) => {
         response: {
           201: {
             description: 'Message template created successfully.',
-            ...messageTemplateResponseSchema,
+            ...successSchema(messageTemplateResponseSchema),
             example: {
               success: true,
               message: 'Message template created successfully.',
@@ -85,6 +86,9 @@ const messageTemplateRoutes = async (server: FastifyInstance) => {
                   type: 'array',
                   items: messageTemplateResponseSchema,
                 },
+                total: { type: 'number' },
+                page: { type: 'number' },
+                limit: { type: 'number' },
               },
               total: { type: 'number' },
               page: { type: 'number' },
@@ -132,7 +136,7 @@ const messageTemplateRoutes = async (server: FastifyInstance) => {
         response: {
           200: {
             description: 'Message template details.',
-            ...messageTemplateResponseSchema,
+            ...successSchema(messageTemplateResponseSchema),
             example: {
               success: true,
               message: 'Message template fetched successfully.',
@@ -173,7 +177,7 @@ const messageTemplateRoutes = async (server: FastifyInstance) => {
         response: {
           200: {
             description: 'Message template updated successfully.',
-            ...messageTemplateResponseSchema,
+            ...successSchema(messageTemplateResponseSchema),
             example: {
               success: true,
               message: 'Message template updated successfully.',

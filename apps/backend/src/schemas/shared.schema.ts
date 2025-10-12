@@ -52,8 +52,24 @@ export const messageTemplateResponseSchema = {
   type: 'object',
   properties: {
     ...baseEntitySchema,
+    user_id: { type: 'string' },
     name: { type: 'string' },
+    description: { type: 'string', nullable: true },
     content: { type: 'string' },
+    avatar_ref: {
+      type: 'string',
+      nullable: true,
+    },
+    embeds: {
+      type: 'array',
+      items: { type: 'object' },
+      nullable: true,
+    },
+    attachments: {
+      type: 'array',
+      items: { type: 'object' },
+      nullable: true,
+    },
   },
 };
 
