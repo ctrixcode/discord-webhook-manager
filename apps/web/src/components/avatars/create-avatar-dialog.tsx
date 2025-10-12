@@ -107,7 +107,6 @@ export function CreateAvatarDialog({
       });
     }
   };
-  debugger;
   const createAvatarMutation = useMutation({
     mutationFn: async (data: {
       username: string;
@@ -127,7 +126,6 @@ export function CreateAvatarDialog({
       }
     },
     onSuccess: () => {
-      debugger;
       onSaveSuccess();
       toast({
         title: 'Avatar created',
@@ -163,7 +161,6 @@ export function CreateAvatarDialog({
   });
 
   const handleSave = () => {
-    debugger;
     if (!username.trim()) return;
 
     if (editingAvatar) {
@@ -174,7 +171,6 @@ export function CreateAvatarDialog({
       });
     } else {
       if (selectedFile) {
-        debugger;
         createAvatarMutation.mutate({
           username: username.trim(),
           file: selectedFile,
