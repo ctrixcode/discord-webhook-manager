@@ -39,16 +39,14 @@ async function avatarRoutes(fastify: FastifyInstance) {
             example: {
               success: true,
               message: 'Avatar created successfully',
-              data: [
-                {
-                  id: '68eab174e142f8399b831de8',
-                  user_id: '68ea52307fcd6c887f459aa2',
-                  username: 'bot1',
-                  avatar_url: 'https://i.pravatar.cc/',
-                  createdAt: '2025-10-11T19:35:17.007Z',
-                  updatedAt: '2025-10-11T19:35:17.007Z',
-                },
-              ],
+              data: {
+                id: '68eab174e142f8399b831de8',
+                user_id: '68ea52307fcd6c887f459aa2',
+                username: 'bot1',
+                avatar_url: 'https://i.pravatar.cc/',
+                createdAt: '2025-10-11T19:35:17.007Z',
+                updatedAt: '2025-10-11T19:35:17.007Z',
+              },
             },
           },
 
@@ -68,10 +66,11 @@ async function avatarRoutes(fastify: FastifyInstance) {
     {
       preHandler: [authenticate],
       schema: {
-        ...(() => {
-          const { body, ...rest } = uploadAvatarSchema;
-          return rest;
-        })(),
+        // ...(() => {
+        //   const { body, ...rest } = uploadAvatarSchema;
+        //   return rest;
+        // })(), //!:Coderabbitai recommendation
+        ...uploadAvatarSchema,
         summary: 'Upload a new avatar file',
         security: [{ bearerAuth: [] }],
         description:
@@ -235,7 +234,7 @@ async function avatarRoutes(fastify: FastifyInstance) {
         tags: ['avatar'],
         security: [{ bearerAuth: [] }],
         response: {
-          204: { type: 'null', description: 'Avatar deleted successfully.' },
+          //!coderabbiai recommendation 204: { type: 'null', description: 'Avatar deleted successfully.' },
           401: responseSchemas[401],
           404: responseSchemas[404]('Avatar not found'),
           500: responseSchemas[500](
