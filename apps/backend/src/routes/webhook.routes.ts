@@ -34,13 +34,6 @@ const webhookRoutes = async (server: FastifyInstance) => {
         description: 'Creates a new webhook for the authenticated user.',
         tags: ['webhook'],
         security: [{ bearerAuth: [] }],
-        body: {
-          ...createWebhookSchema.body,
-          example: {
-            name: 'My New Webhook',
-            url: 'https://discord.com/api/webhooks/123456789/abcdef-ghijkl',
-          },
-        },
         response: {
           201: {
             description: 'Webhook created successfully.',
@@ -91,10 +84,11 @@ const webhookRoutes = async (server: FastifyInstance) => {
                   type: 'array',
                   items: webhookResponseSchema,
                 },
+
+                total: { type: 'number' },
+                page: { type: 'number' },
+                limit: { type: 'number' },
               },
-              total: { type: 'number' },
-              page: { type: 'number' },
-              limit: { type: 'number' },
               success: { type: 'boolean', default: true },
             },
             example: {
@@ -174,13 +168,6 @@ const webhookRoutes = async (server: FastifyInstance) => {
         security: [{ bearerAuth: [] }],
         description: 'Updates the details of a specific webhook by its ID.',
         tags: ['webhook'],
-        body: {
-          ...updateWebhookSchema.body,
-          example: {
-            name: 'My Updated Webhook',
-            status: 'inactive',
-          },
-        },
         response: {
           200: {
             description: 'Webhook updated successfully.',
@@ -275,22 +262,6 @@ const webhookRoutes = async (server: FastifyInstance) => {
         description:
           'Sends a message to one or more specified webhooks using provided message data.',
         tags: ['webhook'],
-        body: {
-          ...webhookSendMessageSchema.body,
-          example: {
-            webhookIds: ['68ecb174e142f8399b831df5'],
-            messageData: {
-              content: 'Hello from the API!',
-              embeds: [
-                {
-                  title: 'API Notification',
-                  description: 'This is a test message.',
-                  color: 5814783,
-                },
-              ],
-            },
-          },
-        },
         response: {
           200: {
             description: 'Message sent successfully.',

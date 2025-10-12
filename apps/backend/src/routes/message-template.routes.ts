@@ -36,20 +36,6 @@ const messageTemplateRoutes = async (server: FastifyInstance) => {
           'Creates a new message template for the authenticated user.',
         tags: ['message-template'],
         security: [{ bearerAuth: [] }],
-        body: {
-          ...createMessageTemplateSchema.body,
-          example: {
-            name: 'Welcome Message',
-            message: 'Hello {{user}}! Welcome to the server!',
-            embeds: [
-              {
-                title: 'Server Rules',
-                description: '1. Be respectful.\n2. No spamming.',
-                color: 3447003,
-              },
-            ],
-          },
-        },
         response: {
           201: {
             description: 'Message template created successfully.',
@@ -184,13 +170,6 @@ const messageTemplateRoutes = async (server: FastifyInstance) => {
         description:
           'Updates the details of a specific message template by its ID.',
         tags: ['message-template'],
-        body: {
-          ...updateMessageTemplateSchema.body,
-          example: {
-            name: 'Updated Welcome Message',
-            message: 'Hi {{user}}! Welcome!',
-          },
-        },
         response: {
           200: {
             description: 'Message template updated successfully.',

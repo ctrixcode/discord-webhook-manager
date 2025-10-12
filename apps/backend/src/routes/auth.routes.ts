@@ -17,10 +17,6 @@ const authRoutes = async (fastify: FastifyInstance) => {
           properties: {
             refreshToken: { type: 'string' },
           },
-          example: {
-            refreshToken:
-              'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2Njg5N2M5YjYyNjM5OTc3M2U3NjQyOWMiLCJpYXQiOjE3MjA0MTg5MDgsImV4cCI6MTcyMTAyMzcwOH0.somerandomrefreshtoken',
-          },
         },
         response: {
           200: {
@@ -62,10 +58,6 @@ const authRoutes = async (fastify: FastifyInstance) => {
           required: ['refreshToken'],
           properties: {
             refreshToken: { type: 'string' },
-          },
-          example: {
-            refreshToken:
-              'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2Njg5N2M5YjYyNjM5OTc3M2U3NjQyOWMiLCJpYXQiOjE3MjA0MTg5MDgsImV4cCI6MTcyMTAyMzcwOH0.somerandomrefreshtoken',
           },
         },
         response: {
