@@ -140,7 +140,7 @@ export const verifyEmail = async (token: string, userAgent: string) => {
 
   // Check if token exists
   if (!tokenRecord) {
-    throw new InternalServerError(
+    throw new BadRequestError(
       ErrorMessages.Auth.INVALID_VERIFICATION_TOKEN_ERROR.message,
       ErrorMessages.Auth.INVALID_VERIFICATION_TOKEN_ERROR.code
     );
@@ -156,7 +156,7 @@ export const verifyEmail = async (token: string, userAgent: string) => {
 
   // Check if token has expired
   if (tokenRecord.expiresAt <= new Date()) {
-    throw new InternalServerError(
+    throw new BadRequestError(
       ErrorMessages.Auth.INVALID_VERIFICATION_TOKEN_ERROR.message,
       ErrorMessages.Auth.INVALID_VERIFICATION_TOKEN_ERROR.code
     );
@@ -216,7 +216,7 @@ export const verifyEmail = async (token: string, userAgent: string) => {
   );
 
   logger.info(`Email verified and user created: ${user.email}`);
-  return { user, accessToken, refreshToken };
+  return { accessToken, refreshToken };
 };
 
 export const loginWithEmail = async (
@@ -274,7 +274,7 @@ export const loginWithEmail = async (
     userAgent
   );
 
-  return { user, accessToken, refreshToken };
+  return { accessToken, refreshToken };
 };
 
 export const loginWithDiscord = async (

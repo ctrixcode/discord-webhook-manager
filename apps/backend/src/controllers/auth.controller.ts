@@ -139,7 +139,7 @@ export const verifyEmail = async (
     );
   }
 
-  const { user, accessToken, refreshToken } = await authService.verifyEmail(
+  const { accessToken, refreshToken } = await authService.verifyEmail(
     token,
     request.headers['user-agent'] || 'unknown'
   );
@@ -166,7 +166,7 @@ export const emailLogin = async (
     );
   }
 
-  const { user, accessToken, refreshToken } = await authService.loginWithEmail(
+  const { accessToken, refreshToken } = await authService.loginWithEmail(
     email,
     password,
     request.headers['user-agent'] || 'unknown'
@@ -367,52 +367,7 @@ export const googleCallback = async (
     );
   }
 
-  const { access_token, id_token } = await tokenResponse.json();
-
-  // Verify the ID token for additional security
-  if (id_token) {
-    try {
-      // Decode and verify the ID token
-      const idTokenParts = id_token.split('.');
-      if (idTokenParts.length === 3) {
-        const payload = JSON.parse(
-          Buffer.from(idTokenParts[1], 'base64').toString()
-        );
-
-        // Verify basic claims
-        if (payload.aud !== GOOGLE_CLIENT_ID) {
-          logger.warn('ID token audience mismatch');
-          throw new ExternalApiError(
-            'Invalid Google ID token audience',
-            'INVALID_ID_TOKEN',
-            'google'
-          );
-        }
-
-        // Check if token is expired
-        if (payload.exp && payload.exp < Date.now() / 1000) {
-          logger.warn('ID token has expired');
-          throw new ExternalApiError(
-            'Google ID token has expired',
-            'EXPIRED_ID_TOKEN',
-            'google'
-          );
-        }
-
-        logger.info('ID token verified successfully');
-      }
-    } catch (error) {
-      if (error instanceof ExternalApiError) {
-        throw error;
-      }
-      logger.error('ID token verification failed:', error);
-      throw new ExternalApiError(
-        'Failed to verify Google ID token',
-        'ID_TOKEN_VERIFICATION_FAILED',
-        'google'
-      );
-    }
-  }
+  const { access_token } = await tokenResponse.json();
 
   // Get Google user info
   const userResponse = await fetch(
@@ -435,22 +390,6 @@ export const googleCallback = async (
   }
 
   const googleUser = await userResponse.json();
-
-  // Optionally verify email matches between ID token and userinfo
-  if (id_token) {
-    const idTokenParts = id_token.split('.');
-    if (idTokenParts.length === 3) {
-      const payload = JSON.parse(
-        Buffer.from(idTokenParts[1], 'base64').toString()
-      );
-      if (payload.email && payload.email !== googleUser.email) {
-        logger.warn('Email mismatch between ID token and userinfo', {
-          idTokenEmail: payload.email,
-          userinfoEmail: googleUser.email,
-        });
-      }
-    }
-  }
 
   const { user, accessToken, refreshToken } = await authService.loginWithGoogle(
     googleUser.sub,
