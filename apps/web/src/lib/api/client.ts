@@ -227,6 +227,13 @@ class ApiClient {
     // Store the access token
     this.setAccessToken(response.data.data.accessToken);
 
+    // Send refresh token to API to set http-only cookie
+    await fetch('/api/auth/set-refresh-token', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ refreshToken: response.data.data.refreshToken }),
+    });
+
     return response.data;
   }
 
@@ -243,6 +250,13 @@ class ApiClient {
 
     // Store the access token
     this.setAccessToken(response.data.data.accessToken);
+
+    // Send refresh token to API to set http-only cookie
+    await fetch('/api/auth/set-refresh-token', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ refreshToken: response.data.data.refreshToken }),
+    });
 
     return response.data;
   }
