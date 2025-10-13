@@ -25,11 +25,13 @@ function parseEnvExample(): string[] {
     const trimmed = line.trim();
 
     // Skip empty lines and pure comment lines
-    if (!trimmed || trimmed.startsWith('#')) {
-      // Check if this is an optional section
-      if (trimmed.toLowerCase().includes('optional')) {
-        isOptionalSection = true;
-      }
+    if (!trimmed) {
+      isOptionalSection = false;
+      continue;
+    }
+
+    if (trimmed.startsWith('#')) {
+      isOptionalSection = trimmed.toLowerCase().includes('optional');
       continue;
     }
 
