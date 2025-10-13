@@ -12,7 +12,3 @@
 # 2. SPECIFIC OWNERS (Tagged for specific code paths)
 
 # Web (Frontend) application
-/apps/web/ @Anmol-TheDev
-
-# UI components package
-/packages/ui/ @Anmol-TheDev
