@@ -170,6 +170,25 @@ pnpm dev
 pnpm build
 ```
 
+#### DOCUMENTATIONS
+
+
+### Backend Documentation
+ run
+ ```bash
+ pnpm dev
+ ```
+ The swaggerUI will be available on `http://localhost:{PORT}/docs`
+
+### Frontend Documentation
+
+```bash
+npx typedoc --out docs/ --entryPointStrategy expand --exclude "**/*.test.ts" --exclude "**/*.test.tsx" --exclude ".next/**/*" src/
+```
+Static HTML Files will be available in `web/docs` directory
+
+
+
 ## Code Contributions
 
 1.  **Fork the repository:** Start by forking the `discord-webhook-manager` repository to your GitHub account.

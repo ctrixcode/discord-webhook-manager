@@ -107,7 +107,6 @@ export function CreateAvatarDialog({
       });
     }
   };
-
   const createAvatarMutation = useMutation({
     mutationFn: async (data: {
       username: string;
