@@ -53,14 +53,14 @@ This guide covers setting up Google OAuth for **both** Gmail API (sending emails
 3. Choose **Application type**: **Web application**
 4. Name it: "Discord Webhook Manager OAuth Client"
 5. Under **Authorized JavaScript origins**, add:
-   ```
+   ```text
    http://localhost:4000
    http://localhost:3000
    ```
    (Add your production URLs later)
 
 6. Under **Authorized redirect URIs**, add:
-   ```
+   ```text
    http://localhost:4000/api/auth/google/callback
    https://developers.google.com/oauthplayground
    ```
