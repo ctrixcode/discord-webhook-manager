@@ -142,9 +142,12 @@ export const userProfileResponseSchema = successSchema({
   type: 'object',
   properties: {
     ...baseEntitySchema,
+    display_name: { type: 'string' },
     username: { type: 'string' },
     email: { type: 'string', format: 'email' },
-    discord_id: { type: 'string' },
+    google_id: { type: 'string', nullable: true },
+    google_avatar: { type: 'string', nullable: true },
+    discord_id: { type: 'string', nullable: true },
     discord_avatar: {
       type: 'string',
       nullable: true,

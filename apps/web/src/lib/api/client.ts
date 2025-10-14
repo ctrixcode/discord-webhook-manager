@@ -130,7 +130,7 @@ class ApiClient {
           console.error('Refresh token invalid or expired.');
         }
 
-        if (error.response.data) {
+        if (error.response?.data) {
           const backendError = error.response.data;
           if (backendError && backendError.message && backendError.code) {
             throw new ApiError(
@@ -182,10 +182,83 @@ class ApiClient {
     return this.client.delete<T>(url, config);
   }
 
+  async redirectToEmailSignup(
+    email: string,
+    password: string,
+    displayName: string,
+    username: string
+  ) {
+    const response = await this.post<{
+      success: boolean;
+      message: string;
+    }>('/auth/email/send-verification', {
+      email,
+      password,
+      displayName,
+      username,
+    });
+
+    return response.data;
+  }
+
   redirectToDiscordLogin() {
     if (typeof window !== 'undefined') {
       window.location.href = `${BASE_URL}/auth/discord`;
     }
+  }
+
+  redirectToGoogleLogin() {
+    if (typeof window !== 'undefined') {
+      window.location.href = `${BASE_URL}/auth/google`;
+    }
+  }
+
+  async redirectToEmailLogin(email: string, password: string) {
+    const response = await this.post<{
+      success: boolean;
+      message: string;
+      data: {
+        user: any;
+        accessToken: string;
+        refreshToken: string;
+      };
+    }>('/auth/email/login', { email, password });
+
+    // Store the access token
+    this.setAccessToken(response.data.data.accessToken);
+
+    // Send refresh token to API to set http-only cookie
+    await fetch('/api/auth/set-refresh-token', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ refreshToken: response.data.data.refreshToken }),
+    });
+
+    return response.data;
+  }
+
+  async verifyEmail(token: string) {
+    const response = await this.post<{
+      success: boolean;
+      message: string;
+      data: {
+        user: any;
+        accessToken: string;
+        refreshToken: string;
+      };
+    }>('/auth/email/verify', { token });
+
+    // Store the access token
+    this.setAccessToken(response.data.data.accessToken);
+
+    // Send refresh token to API to set http-only cookie
+    await fetch('/api/auth/set-refresh-token', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ refreshToken: response.data.data.refreshToken }),
+    });
+
+    return response.data;
   }
 }
 
