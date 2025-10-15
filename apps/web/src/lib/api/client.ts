@@ -218,7 +218,6 @@ class ApiClient {
       success: boolean;
       message: string;
       data: {
-        user: any;
         accessToken: string;
         refreshToken: string;
       };
@@ -242,7 +241,6 @@ class ApiClient {
       success: boolean;
       message: string;
       data: {
-        user: any;
         accessToken: string;
         refreshToken: string;
       };

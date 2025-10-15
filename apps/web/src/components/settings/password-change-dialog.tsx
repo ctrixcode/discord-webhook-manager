@@ -55,7 +55,8 @@ export function PasswordChangeDialog({
         queryClient.invalidateQueries({ queryKey: ['currentUser'] });
       }, 2000);
     },
-    onError: (error: any) => {
+    onError: (err: unknown) => {
+      const error = err as Error;
       setError(error.message || 'Failed to change password');
       setSuccess('');
     },

@@ -132,7 +132,7 @@ export const sendEmailVerification = async (
     existingToken &&
     existingToken.display_name === displayName &&
     existingToken.username === username &&
-    (await comparePassword(password, existingToken.password)) && // ✅ FIXED: Compare plain password with stored hash
+    (await comparePassword(password, existingToken.password)) &&
     existingToken.expiresAt > new Date()
   ) {
     // Resend the same token
@@ -141,7 +141,6 @@ export const sendEmailVerification = async (
     return { success: true, message: 'Verification email resent' };
   }
 
-  // Hash the password only when creating new token (moved here for efficiency)
   const hashedPassword = await hashPassword(password);
 
   // Create verification token with user data
@@ -161,7 +160,6 @@ export const sendEmailVerification = async (
 };
 
 export const verifyEmail = async (token: string, userAgent: string) => {
-  // Find the verification token (check if it exists first, regardless of isUsed status)
   const tokenRecord = await EmailVerificationTokenModel.findOne({ token });
 
   // Check if token exists
@@ -190,7 +188,6 @@ export const verifyEmail = async (token: string, userAgent: string) => {
 
   const verificationToken = tokenRecord;
 
-  // Check if user already exists (in case they verified elsewhere)
   let user = await userService.getUserByEmail(verificationToken.email);
   if (user) {
     // Mark token as used and return existing user
@@ -559,7 +556,7 @@ export const loginWithGoogle = async (
       userAgent
     );
 
-    return { user, accessToken, refreshToken };
+    return { accessToken, refreshToken };
   } catch (error) {
     if (error instanceof ApiError) {
       logger.warn('Warning in loginWithGoogle:', error.message);

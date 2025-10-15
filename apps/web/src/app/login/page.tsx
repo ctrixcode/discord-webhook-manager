@@ -6,6 +6,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { api } from '@/lib/api';
 import { DiscordLogo, GoogleLogo } from '@/components/logo';
+import { ErrorResponse } from '@repo/shared-types';
 
 export default function LoginPage() {
   const router = useRouter();
@@ -94,8 +95,9 @@ export default function LoginPage() {
       setSubmitting(true);
       await api.auth.loginWithEmail(email, password);
       router.push('/dashboard');
-    } catch (err: any) {
-      setError(err?.message || 'Failed to sign in. Please try again.');
+    } catch (err: unknown) {
+      const error = err as ErrorResponse;
+      setError(error?.message || 'Failed to sign in. Please try again.');
     } finally {
       setSubmitting(false);
     }
