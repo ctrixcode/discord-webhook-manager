@@ -1,18 +1,22 @@
 'use client';
-import { BarChart2, Gem } from 'lucide-react';
+import { BarChart2, Gem, Lock, Link as LinkIcon } from 'lucide-react';
 import React from 'react';
 import { useState } from 'react';
 import { ConfirmationDialog } from '@/components/ui/confirmation-dialog';
 import { SettingsCard } from '@/components/settings/settings-card';
+import { PasswordChangeDialog } from '@/components/settings/password-change-dialog';
 import { useQuery } from '@tanstack/react-query';
 import { userQueries } from '@/lib/api/queries/user';
+import { authQueries } from '@/lib/api/queries/auth';
 import { Progress } from '@/components/ui/progress';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import Link from 'next/link';
 
 export default function SettingsPage() {
   const [showClearDataDialog, setShowClearDataDialog] = useState(false);
+  const [showPasswordDialog, setShowPasswordDialog] = useState(false);
 
   const { data: usage, isLoading: isLoadingUsage } = useQuery({
     queryKey: ['userUsage'],
@@ -24,9 +28,24 @@ export default function SettingsPage() {
     queryFn: userQueries.getCurrentUser,
   });
 
+  const { data: passwordStatus, isLoading: isLoadingPasswordStatus } = useQuery(
+    {
+      queryKey: ['passwordStatus'],
+      queryFn: authQueries.checkPassword,
+      enabled: !!user,
+    }
+  );
+
   const handleConfirmClearData = () => {
     localStorage.clear();
     window.location.reload();
+  };
+
+  const getAvatar = () => {
+    if (user?.discord_avatar) {
+      return user.discord_avatar;
+    }
+    return undefined;
   };
 
   const formatBytes = (bytes: number, decimals = 2) => {
@@ -98,6 +117,71 @@ export default function SettingsPage() {
           </div>
         ) : (
           <p className="text-slate-400">Could not load account type.</p>
+        )}
+      </SettingsCard>
+
+      <SettingsCard
+        title="Password"
+        description={
+          !passwordStatus?.hasPassword
+            ? 'Create a password to enable email login'
+            : 'Change your account password'
+        }
+        icon={<Lock className="h-5 w-5" />}
+      >
+        {isLoadingUser || isLoadingPasswordStatus ? (
+          <div className="h-10 bg-slate-700/50 rounded-md animate-pulse w-40" />
+        ) : (
+          <Button
+            onClick={() => setShowPasswordDialog(true)}
+            className="bg-slate-700 hover:bg-slate-600 text-white"
+          >
+            {!passwordStatus?.hasPassword
+              ? 'Create Password'
+              : 'Change Password'}
+          </Button>
+        )}
+      </SettingsCard>
+
+      <SettingsCard
+        title="Discord Account"
+        description={
+          user?.discord_id
+            ? 'Your Discord account is linked'
+            : 'Link your Discord account for OAuth login'
+        }
+        icon={<LinkIcon className="h-5 w-5" />}
+      >
+        {isLoadingUser ? (
+          <div className="h-10 bg-slate-700/50 rounded-md animate-pulse w-40" />
+        ) : user?.discord_id ? (
+          <div className="flex items-center gap-3">
+            <Avatar className="h-12 w-12 ring-2 ring-purple-500/30">
+              <AvatarImage src={getAvatar()} />
+              <AvatarFallback className="bg-purple-600 text-white">
+                {user?.display_name?.charAt(0).toUpperCase()}
+              </AvatarFallback>
+            </Avatar>
+            <div className="flex flex-col">
+              <span className="text-slate-300 font-medium">Connected</span>
+              <span className="text-slate-500 text-sm">
+                Discord ID: {user.discord_id}
+              </span>
+              <span className="text-slate-500 text-sm">
+                Discord Username: {user.username}
+              </span>
+            </div>
+          </div>
+        ) : (
+          <Button
+            onClick={() => {
+              const accessToken = localStorage.getItem('accessToken');
+              window.location.href = `${process.env.NEXT_PUBLIC_API_URL}/auth/discord?state=link&access_token=${accessToken}`;
+            }}
+            className="bg-[#5865F2] hover:bg-[#4752C4] text-white"
+          >
+            Link Discord Account
+          </Button>
         )}
       </SettingsCard>
 
@@ -267,6 +351,12 @@ export default function SettingsPage() {
         description="Are you sure you want to clear all data? This action cannot be undone."
         onConfirm={handleConfirmClearData}
         confirmButtonText="Clear Data"
+      />
+
+      <PasswordChangeDialog
+        open={showPasswordDialog}
+        onOpenChange={setShowPasswordDialog}
+        hasPassword={passwordStatus?.hasPassword || false}
       />
     </div>
   );

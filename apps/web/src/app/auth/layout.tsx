@@ -2,7 +2,7 @@ import { AuthProvider } from '@/contexts/auth-context';
 import type React from 'react';
 
 interface LayoutProps {
-  children: any; // Changed to any
+  children: React.ReactNode;
 }
 
 export default function AuthLayout({ children }: LayoutProps) {

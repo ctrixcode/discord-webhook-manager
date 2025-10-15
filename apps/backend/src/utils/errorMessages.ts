@@ -8,6 +8,48 @@ export const ErrorMessages = {
       message: 'Missing authorization code',
       code: 'MISSING_CODE_ERROR',
     },
+    MISSING_CREDENTIALS_ERROR: {
+      message: 'Email and password are required',
+      code: 'MISSING_CREDENTIALS_ERROR',
+    },
+    MISSING_SIGNUP_FIELDS_ERROR: {
+      message: 'Email, password, full name, and username are required',
+      code: 'MISSING_SIGNUP_FIELDS_ERROR',
+    },
+    MISSING_VERIFICATION_TOKEN_ERROR: {
+      message: 'Verification token is required',
+      code: 'MISSING_VERIFICATION_TOKEN_ERROR',
+    },
+    INVALID_CREDENTIALS_ERROR: {
+      message: 'Invalid email or password',
+      code: 'INVALID_CREDENTIALS_ERROR',
+    },
+    INVALID_VERIFICATION_TOKEN_ERROR: {
+      message: 'Invalid or expired verification token',
+      code: 'INVALID_VERIFICATION_TOKEN_ERROR',
+    },
+    VERIFICATION_TOKEN_ALREADY_USED_ERROR: {
+      message: 'This verification link has already been used',
+      code: 'VERIFICATION_TOKEN_ALREADY_USED_ERROR',
+    },
+    EMAIL_ALREADY_IN_USE_ERROR: {
+      message: 'Email is already in use',
+      code: 'EMAIL_ALREADY_IN_USE_ERROR',
+    },
+    EMAIL_ALREADY_LINKED_DISCORD_ERROR: {
+      message:
+        'Email is already linked with a Discord account, to set password go to account settings',
+      code: 'EMAIL_ALREADY_LINKED_DISCORD_ERROR',
+    },
+    EMAIL_ALREADY_LINKED_GOOGLE_ERROR: {
+      message:
+        'Email is already linked with a Google account, to set password go to account settings',
+      code: 'EMAIL_ALREADY_LINKED_GOOGLE_ERROR',
+    },
+    USERNAME_ALREADY_IN_USE_ERROR: {
+      message: 'Username is already in use',
+      code: 'USERNAME_ALREADY_IN_USE_ERROR',
+    },
     FAILED_CREATE_UPDATE_USER_ERROR: {
       message: 'Failed to create or update user with Discord info',
       code: 'FAILED_CREATE_UPDATE_USER_ERROR',
@@ -24,8 +66,75 @@ export const ErrorMessages = {
       message: 'Authentication failed. Please log in again.',
       code: 'USER_AGENT_MISMATCH_ERROR',
     },
+    USER_NOT_FOUND_ERROR: {
+      message: 'User not found',
+      code: 'USER_NOT_FOUND_ERROR',
+    },
+    CURRENT_PASSWORD_REQUIRED: {
+      message: 'Current password is required to change password',
+      code: 'CURRENT_PASSWORD_REQUIRED',
+    },
+    INVALID_CURRENT_PASSWORD: {
+      message: 'Current password is incorrect',
+      code: 'INVALID_CURRENT_PASSWORD',
+    },
+    NEW_PASSWORD_REQUIRED: {
+      message: 'New password is required',
+      code: 'NEW_PASSWORD_REQUIRED',
+    },
+  },
+  Google: {
+    EMAIL_ALREADY_LINKED_ERROR: {
+      message:
+        'Email is registered, Please login using your email and password.',
+      code: 'EMAIL_ALREADY_LINKED_ERROR',
+    },
+    EMAIL_ALREADY_LINKED_DISCORD_ERROR: {
+      message:
+        'Email is already linked with a Discord account, Please login using your discord account.',
+      code: 'EMAIL_ALREADY_LINKED_DISCORD_ERROR',
+    },
+    INVALID_EMAIL_FORMAT_ERROR: {
+      message: 'Invalid email format',
+      code: 'INVALID_EMAIL_FORMAT_ERROR',
+    },
+    MISSING_GOOGLE_ID_OR_EMAIL_ERROR: {
+      message: 'Google ID and email are required',
+      code: 'MISSING_GOOGLE_ID_OR_EMAIL_ERROR',
+    },
+    MISSING_CODE_ERROR: {
+      message: 'Missing authorization code',
+      code: 'MISSING_CODE_ERROR',
+    },
+    FAILED_TOKEN_EXCHANGE_ERROR: {
+      message: 'Failed to exchange Google code for token',
+      code: 'FAILED_TOKEN_EXCHANGE_ERROR',
+    },
+    FAILED_FETCH_USER_INFO_ERROR: {
+      message: 'Failed to fetch Google user info',
+      code: 'FAILED_FETCH_USER_INFO_ERROR',
+    },
+    TOKEN_FETCH_ERROR: {
+      message: 'Error retrieving Google token',
+      code: 'TOKEN_FETCH_ERROR',
+    },
   },
   Discord: {
+    EMAIL_ALREADY_LINKED_ERROR: {
+      message:
+        'Email is registered, to interact with Discord please link your account from settings',
+      code: 'EMAIL_ALREADY_LINKED_ERROR',
+    },
+    EMAIL_ALREADY_LINKED_GOOGLE_ERROR: {
+      message:
+        'Email is already linked with a Google account, to interact with Discord please link your account from settings',
+      code: 'EMAIL_ALREADY_LINKED_GOOGLE_ERROR',
+    },
+    EMAIL_MISMATCH_ERROR: {
+      message:
+        'Discord account email does not match your account email. Please use a Discord account with the same email address.',
+      code: 'DISCORD_EMAIL_MISMATCH_ERROR',
+    },
     FAILED_TOKEN_EXCHANGE_ERROR: {
       message: 'Failed to exchange Discord code for token',
       code: 'FAILED_TOKEN_EXCHANGE_ERROR',
@@ -53,6 +162,18 @@ export const ErrorMessages = {
     TOKEN_DELETE_ERROR: {
       message: 'Error deleting discord token',
       code: 'TOKEN_DELETE_ERROR',
+    },
+    ACCOUNT_NOT_FOUND_ERROR: {
+      message: 'Account not found. Please login first.',
+      code: 'ACCOUNT_NOT_FOUND_ERROR',
+    },
+    ALREADY_LINKED_ERROR: {
+      message: 'Discord account is already linked to this account',
+      code: 'DISCORD_ALREADY_LINKED',
+    },
+    LINKED_TO_ANOTHER_ACCOUNT_ERROR: {
+      message: 'This Discord account is already linked to another account',
+      code: 'DISCORD_LINKED_TO_ANOTHER_ACCOUNT',
     },
   },
   Avatar: {

@@ -18,8 +18,11 @@ export interface WebhookDto {
 export const toUserPayload = (user: IUser): User => {
   return {
     id: (user._id as mongoose.Types.ObjectId).toString(),
+    display_name: user.display_name,
     username: user.username,
     email: user.email,
+    google_id: user.google_id,
+    google_avatar: user.google_avatar,
     discord_id: user.discord_id,
     discord_avatar: user.discord_avatar,
     accountType: user.accountType,
