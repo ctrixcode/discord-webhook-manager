@@ -154,12 +154,12 @@ export default function TemplatesPage() {
                   {template.name}
                 </CardTitle>
                 <div className="flex items-center gap-2">
-                  <Badge
+                  {/* <Badge
                     variant="secondary"
                     className="bg-purple-500/20 text-purple-200 border-purple-500/30"
                   >
                     TODO uses
-                  </Badge>
+                  </Badge> */}
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
                       <Button
