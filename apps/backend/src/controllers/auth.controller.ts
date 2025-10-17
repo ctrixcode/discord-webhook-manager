@@ -1,10 +1,8 @@
-import { ErrorMessages } from './../utils/errorMessages';
 import { FastifyRequest, FastifyReply } from 'fastify';
 import * as authService from '../services/auth.service';
 import * as userService from '../services/user.service';
 import * as discordTokenService from '../services/discord-token.service';
-import { logger } from '../utils';
-import { verifyToken, TokenPayload } from '../utils/jwt';
+import { logger, verifyToken, TokenPayload, ErrorMessages } from '../utils';
 import { sendSuccessResponse } from '../utils/responseHandler';
 import { HttpStatusCode } from '../utils/httpcode';
 import {
@@ -13,15 +11,7 @@ import {
   ExternalApiError,
   InternalServerError,
 } from '../utils/errors';
-
-const DISCORD_CLIENT_ID = process.env.DISCORD_CLIENT_ID as string;
-const DISCORD_CLIENT_SECRET = process.env.DISCORD_CLIENT_SECRET as string;
-const DISCORD_REDIRECT_URI = process.env.DISCORD_REDIRECT_URI as string;
-const FRONTEND_URL = process.env.FRONTEND_URL || 'http://localhost:3000';
-const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID as string;
-const GOOGLE_CLIENT_SECRET = process.env.GOOGLE_CLIENT_SECRET as string;
-const GOOGLE_OAUTH_REDIRECT_URI = process.env
-  .GOOGLE_OAUTH_REDIRECT_URI as string;
+import { env } from '../config/env';
 
 /**
  * Refresh access token
@@ -222,7 +212,7 @@ export const discordLogin = async (
   const state = Buffer.from(JSON.stringify(stateObj)).toString('base64');
 
   // Build Discord OAuth URL with state parameter
-  const discordAuthUrl = `https://discord.com/oauth2/authorize?client_id=${DISCORD_CLIENT_ID}&redirect_uri=${encodeURIComponent(DISCORD_REDIRECT_URI)}&response_type=code&scope=identify%20email%20guilds&state=${encodeURIComponent(state)}`;
+  const discordAuthUrl = `https://discord.com/oauth2/authorize?client_id=${env.DISCORD_CLIENT_ID}&redirect_uri=${encodeURIComponent(env.DISCORD_REDIRECT_URI)}&response_type=code&scope=identify%20email%20guilds&state=${encodeURIComponent(state)}`;
   reply.redirect(discordAuthUrl);
 };
 
@@ -266,11 +256,11 @@ export const discordCallback = async (
       'Content-Type': 'application/x-www-form-urlencoded',
     },
     body: new URLSearchParams({
-      client_id: DISCORD_CLIENT_ID,
-      client_secret: DISCORD_CLIENT_SECRET,
+      client_id: env.DISCORD_CLIENT_ID,
+      client_secret: env.DISCORD_CLIENT_SECRET,
       grant_type: 'authorization_code',
       code,
-      redirect_uri: DISCORD_REDIRECT_URI,
+      redirect_uri: env.DISCORD_REDIRECT_URI,
       scope: 'identify email guilds',
     }).toString(),
   });
@@ -394,15 +384,15 @@ export const discordCallback = async (
     });
   }
 
-  const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:3000';
-
   if (isLinking) {
     // Redirect to settings page after linking
-    reply.redirect(`${frontendUrl}/dashboard/settings?discord_linked=true`);
+    reply.redirect(
+      `${env.FRONTEND_URL}/dashboard/settings?discord_linked=true`
+    );
   } else {
     // Redirect to auth callback for login
     reply.redirect(
-      `${frontendUrl}/auth/callback?access_token=${accessToken}&refresh_token=${refreshToken}`
+      `${env.FRONTEND_URL}/auth/callback?access_token=${accessToken}&refresh_token=${refreshToken}`
     );
   }
 };
@@ -415,7 +405,7 @@ export const googleLogin = async (
   request: FastifyRequest,
   reply: FastifyReply
 ): Promise<void> => {
-  const googleAuthUrl = `https://accounts.google.com/o/oauth2/v2/auth?client_id=${GOOGLE_CLIENT_ID}&redirect_uri=${encodeURIComponent(GOOGLE_OAUTH_REDIRECT_URI)}&response_type=code&scope=openid%20email%20profile`;
+  const googleAuthUrl = `https://accounts.google.com/o/oauth2/v2/auth?client_id=${env.GOOGLE_CLIENT_ID}&redirect_uri=${encodeURIComponent(env.GOOGLE_OAUTH_REDIRECT_URI)}&response_type=code&scope=openid%20email%20profile`;
   reply.redirect(googleAuthUrl);
 };
 
@@ -442,11 +432,11 @@ export const googleCallback = async (
       'Content-Type': 'application/x-www-form-urlencoded',
     },
     body: new URLSearchParams({
-      client_id: GOOGLE_CLIENT_ID,
-      client_secret: GOOGLE_CLIENT_SECRET,
+      client_id: env.GOOGLE_CLIENT_ID,
+      client_secret: env.GOOGLE_CLIENT_SECRET,
       grant_type: 'authorization_code',
       code,
-      redirect_uri: GOOGLE_OAUTH_REDIRECT_URI,
+      redirect_uri: env.GOOGLE_OAUTH_REDIRECT_URI,
     }).toString(),
   });
 
@@ -493,7 +483,7 @@ export const googleCallback = async (
   );
 
   reply.redirect(
-    `${FRONTEND_URL}/auth/callback?access_token=${accessToken}&refresh_token=${refreshToken}`
+    `${env.FRONTEND_URL}/auth/callback?access_token=${accessToken}&refresh_token=${refreshToken}`
   );
 };
 
