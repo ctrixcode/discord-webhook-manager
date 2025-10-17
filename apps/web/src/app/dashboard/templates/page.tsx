@@ -144,7 +144,10 @@ export default function TemplatesPage() {
           {filteredTemplates.map(template => (
             <Card
               key={template._id}
-              className="bg-white/10 backdrop-blur-md border-white/20 hover:bg-white/15 transition-all duration-200 hover:shadow-lg hover:shadow-purple-500/10"
+              className="bg-white/10 backdrop-blur-md border-white/20 hover:bg-white/15 transition-all duration-200 hover:shadow-lg hover:shadow-purple-500/10 cursor-pointer"
+              onClick={() =>
+                router.push(`/dashboard/send?template=${template._id}`)
+              }
             >
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                 <CardTitle className="text-base font-medium text-white">
@@ -162,6 +165,7 @@ export default function TemplatesPage() {
                       <Button
                         variant="ghost"
                         className="h-8 w-8 p-0 text-gray-300 hover:text-white hover:bg-white/10"
+                        onClick={e => e.stopPropagation()}
                       >
                         <MoreHorizontal className="h-4 w-4" />
                       </Button>
@@ -171,14 +175,20 @@ export default function TemplatesPage() {
                       className="bg-slate-800/95 backdrop-blur-md border-white/20 text-white"
                     >
                       <DropdownMenuItem
-                        onClick={() => handleEditTemplate(template._id)}
+                        onClick={e => {
+                          e.stopPropagation();
+                          handleEditTemplate(template._id);
+                        }}
                         className="hover:bg-white/10 focus:bg-white/10"
                       >
                         <Edit className="mr-2 h-4 w-4" />
                         Edit
                       </DropdownMenuItem>
                       <DropdownMenuItem
-                        onClick={() => setDeleteDialogTemplate(template)}
+                        onClick={e => {
+                          e.stopPropagation();
+                          setDeleteDialogTemplate(template);
+                        }}
                         className="text-red-400 hover:bg-red-500/10 focus:bg-red-500/10"
                       >
                         <Trash2 className="mr-2 h-4 w-4" />

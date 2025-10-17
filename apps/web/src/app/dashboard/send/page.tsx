@@ -42,6 +42,7 @@ export default function SendMessagePage() {
   const pathname = usePathname();
   const initialAvatarId = searchParams.get('avatarId');
   const initialWebhookId = searchParams.get('webhookId');
+  const initialTemplateId = searchParams.get('template');
 
   const [selectedWebhooks, setSelectedWebhooks] = useState<string[]>(
     initialWebhookId ? [initialWebhookId] : []
@@ -83,23 +84,38 @@ export default function SendMessagePage() {
     setHideSelectTemplate(false);
   };
 
-  const handleTemplateSelect = (templateId: string) => {
+  const handleTemplateSelect = (
+    templateId: string,
+    skipAvatarOverride = false
+  ) => {
     setSelectedTemplateId(templateId);
     const selectedTemplate = templates.find(t => t._id === templateId);
     if (selectedTemplate) {
+      // Use avatar from query param if available, otherwise use template's avatar
+      const avatarRefToUse =
+        skipAvatarOverride && initialAvatarId
+          ? initialAvatarId
+          : selectedTemplate.avatar_ref || '';
+
       setMessage({
         content: selectedTemplate.content || '',
-        avatarRefID: selectedTemplate.avatar_ref || '',
+        avatarRefID: avatarRefToUse,
         tts: false,
         threadName: '',
         embeds: selectedTemplate.embeds || [],
         message_replace_url: '',
       });
-      if (selectedTemplate.avatar_ref) {
-        const avatar = avatars.find(a => a.id === selectedTemplate.avatar_ref);
-        setSelectedAvatar(avatar);
-      } else {
-        setSelectedAvatar(undefined);
+
+      // Only set avatar from template if no query param avatar exists
+      if (!skipAvatarOverride || !initialAvatarId) {
+        if (selectedTemplate.avatar_ref) {
+          const avatar = avatars.find(
+            a => a.id === selectedTemplate.avatar_ref
+          );
+          setSelectedAvatar(avatar);
+        } else {
+          setSelectedAvatar(undefined);
+        }
       }
     }
     setHideSelectTemplate(true);
@@ -139,6 +155,30 @@ export default function SendMessagePage() {
       setSelectedWebhooks([initialWebhookId]);
     }
   }, [initialWebhookId]);
+
+  useEffect(() => {
+    if (initialTemplateId && templates.length > 0 && !selectedTemplateId) {
+      // Pass true to skip avatar override if avatarId is in query
+      handleTemplateSelect(initialTemplateId, !!initialAvatarId);
+    }
+  }, [
+    handleTemplateSelect,
+    initialAvatarId,
+    initialTemplateId,
+    selectedTemplateId,
+    templates,
+  ]);
+
+  // Apply avatar from query param after template is loaded
+  useEffect(() => {
+    if (initialAvatarId && avatars.length > 0 && selectedTemplateId) {
+      const avatar = avatars.find(a => a.id === initialAvatarId);
+      if (avatar) {
+        setSelectedAvatar(avatar);
+        setMessage(prev => ({ ...prev, avatarRefID: avatar.id }));
+      }
+    }
+  }, [initialAvatarId, avatars, selectedTemplateId]);
 
   useEffect(() => {
     const newSearchParams = new URLSearchParams(searchParams.toString());
