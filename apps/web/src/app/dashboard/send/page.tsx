@@ -31,6 +31,8 @@ import { DISCORD_MAX_MESSAGE_LENGTH } from '@/constants/discord';
 import Link from 'next/link';
 import { EmbedBuilder } from '../../../components/embed-builder';
 import { ApiError } from '@/lib/error';
+import { MarkdownToolbar } from '@/components/message-composer/markdown-toolbar';
+import { insertMarkdown, markdownFormats } from '@/lib/utils/markdown';
 
 export default function SendMessagePage() {
   const { toast } = useToast();
@@ -58,6 +60,7 @@ export default function SendMessagePage() {
   >(undefined);
   const [selectedAvatar, setSelectedAvatar] = useState<Avatar | undefined>();
   const [hideSelectTemplate, setHideSelectTemplate] = useState(false);
+  const textareaRef = React.useRef<HTMLTextAreaElement>(null);
 
   const handleClearMessage = () => {
     setMessage({
@@ -169,6 +172,40 @@ export default function SendMessagePage() {
     router.replace(`${pathname}?${newSearchParams.toString()}`);
   };
 
+  const applyMarkdown = (formatKey: keyof typeof markdownFormats) => {
+    const textarea = textareaRef.current;
+    if (!textarea) return;
+
+    const format = markdownFormats[formatKey];
+    const result = insertMarkdown({
+      content: message.content,
+      selectionStart: textarea.selectionStart,
+      selectionEnd: textarea.selectionEnd,
+      before: format.before,
+      after: format.after,
+      placeholder: format.placeholder,
+    });
+
+    setMessage(prev => ({ ...prev, content: result.newContent }));
+
+    // Set cursor position after insertion
+    setTimeout(() => {
+      textarea.focus();
+      textarea.setSelectionRange(
+        result.newCursorPosition,
+        result.newCursorPosition
+      );
+    }, 0);
+  };
+
+  const handleBold = () => applyMarkdown('bold');
+  const handleItalic = () => applyMarkdown('italic');
+  const handleCode = () => applyMarkdown('code');
+  const handleCodeBlock = () => applyMarkdown('codeBlock');
+  const handleStrikethrough = () => applyMarkdown('strikethrough');
+  const handleUnderline = () => applyMarkdown('underline');
+  const handleSpoiler = () => applyMarkdown('spoiler');
+
   const handleSendMessage = async () => {
     if (selectedWebhooks.length === 0) {
       toast({
@@ -259,119 +296,122 @@ export default function SendMessagePage() {
   };
 
   return (
-    <div className="min-h-screen p-6">
-      <div className="max-w-7xl mx-auto space-y-6">
-        {/* Header */}
-        <div className="flex items-center justify-between">
+    <div className="h-screen flex flex-col p-4 overflow-hidden">
+      <div className="max-w-7xl mx-auto w-full flex flex-col h-full gap-4">
+        {/* Compact Header */}
+        <div className="flex items-center justify-between flex-shrink-0">
           <div>
-            <h1 className="text-3xl font-bold text-white">Send Message</h1>
-            <p className="text-slate-300 mt-1">
-              Send messages immediately to one or multiple webhooks
+            <h1 className="text-2xl font-bold text-white">Send Message</h1>
+            <p className="text-slate-400 text-sm">
+              Send to {selectedWebhooks.length} webhook
+              {selectedWebhooks.length !== 1 ? 's' : ''}
             </p>
           </div>
-          <Button
-            onClick={handleSendMessage}
-            disabled={isSending || selectedWebhooks.length === 0}
-            className="bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-600 hover:to-blue-700 text-white px-6"
-          >
-            <Send className="w-4 h-4 mr-2" />
-            {isSending
-              ? 'Sending...'
-              : `Send to ${selectedWebhooks.length} webhook${selectedWebhooks.length !== 1 ? 's' : ''}`}
-          </Button>
+          <div className="flex items-center gap-2">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={handleClearMessage}
+              className="border-red-600 text-red-400 hover:bg-red-600 hover:text-white bg-transparent"
+            >
+              <XCircle className="w-4 h-4 mr-1" />
+              Clear
+            </Button>
+            <Button
+              onClick={handleSendMessage}
+              disabled={isSending || selectedWebhooks.length === 0}
+              className="bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-600 hover:to-blue-700 text-white"
+            >
+              <Send className="w-4 h-4 mr-2" />
+              {isSending ? 'Sending...' : 'Send Message'}
+            </Button>
+          </div>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {/* Main Content - Two Column Layout */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 flex-1 overflow-hidden">
           {/* Left Side - Message Composer */}
-          <div className="space-y-6">
-            {/* Message Composer */}
-            <Card className="bg-slate-800/50 backdrop-blur-sm border-slate-700/50 text-white">
-              <CardHeader>
-                <CardTitle>Compose Message</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="flex items-center justify-between mb-4">
-                  <div className="flex-1 mr-4">
-                    {!hideSelectTemplate && (
-                      <>
-                        <Label
-                          htmlFor="template-select"
-                          className="text-slate-200"
-                        >
-                          Load Template
-                        </Label>
-                        <Select
-                          onValueChange={handleTemplateSelect}
-                          value={selectedTemplateId}
-                          disabled={
-                            isLoadingTemplates || templates.length === 0
-                          }
-                        >
-                          <SelectTrigger
-                            id="template-select"
-                            className="mt-1 bg-slate-700/50 border-slate-600 text-white placeholder:text-slate-400"
-                          >
-                            <SelectValue placeholder="Select a template" />
-                          </SelectTrigger>
-                          <SelectContent className="bg-slate-800 border-slate-700 text-white">
-                            {templates.map(template => (
-                              <SelectItem
-                                key={template._id}
-                                value={template._id}
-                                className="flex items-center gap-2"
-                              >
-                                {template.name}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                      </>
-                    )}
-                  </div>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={handleClearMessage}
-                    className="mt-auto border-red-600 text-red-400 hover:bg-red-600 hover:text-white bg-transparent"
-                  >
-                    <XCircle className="w-4 h-4 mr-2" />
-                    Clear
-                  </Button>
+          <div className="flex flex-col overflow-hidden">
+            <Card className="bg-slate-800/50 backdrop-blur-sm border-slate-700/50 text-white flex flex-col h-full overflow-hidden">
+              <CardHeader className="pb-3 flex-shrink-0">
+                <div className="flex items-center justify-between">
+                  <CardTitle className="text-lg">Compose Message</CardTitle>
+                  {!hideSelectTemplate && templates.length > 0 && (
+                    <Select
+                      onValueChange={handleTemplateSelect}
+                      value={selectedTemplateId}
+                      disabled={isLoadingTemplates}
+                    >
+                      <SelectTrigger className="w-[180px] h-8 bg-slate-700/50 border-slate-600 text-white text-xs">
+                        <SelectValue placeholder="Load template" />
+                      </SelectTrigger>
+                      <SelectContent className="bg-slate-800 border-slate-700 text-white">
+                        {templates.map(template => (
+                          <SelectItem key={template._id} value={template._id}>
+                            {template.name}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  )}
                 </div>
-                <Tabs defaultValue="content" className="w-full">
-                  <TabsList className="grid w-full grid-cols-4 bg-slate-700/50">
+              </CardHeader>
+              <CardContent className="flex-1 overflow-hidden flex flex-col">
+                <Tabs
+                  defaultValue="content"
+                  className="w-full flex flex-col h-full overflow-hidden"
+                >
+                  <TabsList className="grid w-full grid-cols-4 bg-slate-700/50 flex-shrink-0">
                     <TabsTrigger
                       value="content"
-                      className="data-[state=active]:bg-purple-600"
+                      className="data-[state=active]:bg-purple-600 text-xs"
                     >
                       Content
                     </TabsTrigger>
                     <TabsTrigger
                       value="settings"
-                      className="data-[state=active]:bg-purple-600"
+                      className="data-[state=active]:bg-purple-600 text-xs"
                     >
                       Settings
                     </TabsTrigger>
                     <TabsTrigger
                       value="embeds"
-                      className="data-[state=active]:bg-purple-600"
+                      className="data-[state=active]:bg-purple-600 text-xs"
                     >
                       Embeds
                     </TabsTrigger>
                     <TabsTrigger
                       value="webhooks"
-                      className="data-[state=active]:bg-purple-600"
+                      className="data-[state=active]:bg-purple-600 text-xs"
                     >
                       Webhooks
                     </TabsTrigger>
                   </TabsList>
 
-                  <TabsContent value="content" className="space-y-4 mt-4">
+                  <TabsContent
+                    value="content"
+                    className="flex-1 overflow-y-auto mt-3 space-y-3"
+                  >
                     <div>
-                      <Label htmlFor="content" className="text-slate-200">
-                        Message Text
-                      </Label>
+                      <div className="flex items-center justify-between mb-2">
+                        <Label
+                          htmlFor="content"
+                          className="text-slate-200 text-sm"
+                        >
+                          Message Text
+                        </Label>
+                        <MarkdownToolbar
+                          onBold={handleBold}
+                          onItalic={handleItalic}
+                          onCode={handleCode}
+                          onCodeBlock={handleCodeBlock}
+                          onStrikethrough={handleStrikethrough}
+                          onUnderline={handleUnderline}
+                          onSpoiler={handleSpoiler}
+                        />
+                      </div>
                       <Textarea
+                        ref={textareaRef}
                         id="content"
                         placeholder="Enter your message content..."
                         value={message.content}
@@ -381,7 +421,7 @@ export default function SendMessagePage() {
                             content: e.target.value,
                           }))
                         }
-                        className="mt-1 bg-slate-700/50 border-slate-600 text-white placeholder:text-slate-400 focus:border-purple-500 min-h-[120px]"
+                        className="mt-1 bg-slate-700/50 border-slate-600 text-white placeholder:text-slate-400 focus:border-purple-500 min-h-[200px] resize-none"
                       />
                       <p className="text-xs text-slate-400 mt-1">
                         {message.content.length}/{DISCORD_MAX_MESSAGE_LENGTH}{' '}
@@ -390,107 +430,98 @@ export default function SendMessagePage() {
                     </div>
                   </TabsContent>
 
-                  <TabsContent value="settings" className="space-y-4 mt-4">
-                    <div className="space-y-4">
-                      <div>
-                        <Label className="text-slate-200">
-                          Message Appearance
-                        </Label>
-                        <p className="text-sm text-slate-400">
-                          Choose how the webhook message will appear in Discord
+                  <TabsContent
+                    value="settings"
+                    className="flex-1 overflow-y-auto mt-3 space-y-3"
+                  >
+                    <div className="flex items-center justify-between p-3 rounded-lg bg-slate-700/30 border border-slate-600/50">
+                      <div className="flex-1">
+                        <p className="text-slate-200 font-medium text-sm">
+                          Avatar
+                        </p>
+                        <p className="text-xs text-slate-400">
+                          Choose from saved profiles
                         </p>
                       </div>
-
-                      {/* Predefined Avatar Selection */}
-                      <div className="flex items-center justify-between p-4 rounded-lg bg-slate-700/30 border border-slate-600/50">
-                        <div>
-                          <p className="text-slate-200 font-medium">
-                            Select Predefined Avatar
-                          </p>
-                          <p className="text-sm text-slate-400">
-                            Choose from your saved avatar profiles
-                          </p>
-                        </div>
-                        <AvatarSelector onSelect={handleAvatarSelect}>
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            className="bg-slate-700 border-slate-600 text-white hover:bg-slate-600"
-                          >
-                            Select Avatar
-                          </Button>
-                        </AvatarSelector>
-                      </div>
+                      <AvatarSelector onSelect={handleAvatarSelect}>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          className="bg-slate-700 border-slate-600 text-white hover:bg-slate-600 text-xs h-8"
+                        >
+                          Select
+                        </Button>
+                      </AvatarSelector>
                     </div>
 
-                    <div className="space-y-4">
-                      <div className="flex items-center justify-between p-4 rounded-lg bg-slate-700/30 border border-slate-600/50">
-                        <div>
-                          <Label className="text-slate-200 font-medium">
-                            Text-to-Speech
-                          </Label>
-                          <p className="text-sm text-slate-400">
-                            Enable TTS for this message
-                          </p>
-                        </div>
-                        <Checkbox
-                          checked={message.tts}
-                          onCheckedChange={checked =>
-                            setMessage(prev => ({ ...prev, tts: !!checked }))
-                          }
-                          className="border-slate-500"
-                        />
-                      </div>
-
+                    <div className="flex items-center justify-between p-3 rounded-lg bg-slate-700/30 border border-slate-600/50">
                       <div>
-                        <Label htmlFor="thread-name" className="text-slate-200">
-                          Thread Name (Optional)
+                        <Label className="text-slate-200 font-medium text-sm">
+                          Text-to-Speech
                         </Label>
-                        <input
-                          id="thread-name"
-                          type="text"
-                          placeholder="Create a new thread with this name"
-                          value={message.threadName || ''}
-                          onChange={e =>
-                            setMessage(prev => ({
-                              ...prev,
-                              threadName: e.target.value,
-                            }))
-                          }
-                          className="mt-1 w-full px-3 py-2 bg-slate-600/50 border border-slate-500 rounded-md text-white placeholder:text-slate-400 focus:border-purple-500 focus:outline-none"
-                        />
-                        <p className="text-xs text-slate-400 mt-1">
-                          If specified, the message will be sent to a new thread
-                        </p>
+                        <p className="text-xs text-slate-400">Enable TTS</p>
                       </div>
+                      <Checkbox
+                        checked={message.tts}
+                        onCheckedChange={checked =>
+                          setMessage(prev => ({ ...prev, tts: !!checked }))
+                        }
+                        className="border-slate-500"
+                      />
+                    </div>
 
-                      <div>
-                        <Label htmlFor="message-url" className="text-slate-200">
-                          Discord Message URL (Optional)
-                        </Label>
-                        <input
-                          id="message-url"
-                          type="url"
-                          placeholder="e.g., https://discord.com/channels/guild_id/channel_id/message_id"
-                          value={message.message_replace_url || ''}
-                          onChange={e => {
-                            const url = e.target.value;
-                            setMessage(prev => ({
-                              ...prev,
-                              message_replace_url: url,
-                            }));
-                          }}
-                          className="mt-1 w-full px-3 py-2 bg-slate-600/50 border border-slate-500 rounded-md text-white placeholder:text-slate-400 focus:border-purple-500 focus:outline-none"
-                        />
-                        <p className="text-xs text-slate-400 mt-1">
-                          If provided, the message will replace the existing
-                          Discord message at this URL.
-                        </p>
-                      </div>
+                    <div>
+                      <Label
+                        htmlFor="thread-name"
+                        className="text-slate-200 text-sm"
+                      >
+                        Thread Name (Optional)
+                      </Label>
+                      <input
+                        id="thread-name"
+                        type="text"
+                        placeholder="Create a new thread"
+                        value={message.threadName || ''}
+                        onChange={e =>
+                          setMessage(prev => ({
+                            ...prev,
+                            threadName: e.target.value,
+                          }))
+                        }
+                        className="mt-1 w-full px-3 py-2 text-sm bg-slate-600/50 border border-slate-500 rounded-md text-white placeholder:text-slate-400 focus:border-purple-500 focus:outline-none"
+                      />
+                    </div>
+
+                    <div>
+                      <Label
+                        htmlFor="message-url"
+                        className="text-slate-200 text-sm"
+                      >
+                        Discord Message URL (Optional)
+                      </Label>
+                      <input
+                        id="message-url"
+                        type="url"
+                        placeholder="https://discord.com/channels/..."
+                        value={message.message_replace_url || ''}
+                        onChange={e => {
+                          setMessage(prev => ({
+                            ...prev,
+                            message_replace_url: e.target.value,
+                          }));
+                        }}
+                        className="mt-1 w-full px-3 py-2 text-sm bg-slate-600/50 border border-slate-500 rounded-md text-white placeholder:text-slate-400 focus:border-purple-500 focus:outline-none"
+                      />
+                      <p className="text-xs text-slate-400 mt-1">
+                        Replace an existing message
+                      </p>
                     </div>
                   </TabsContent>
 
-                  <TabsContent value="embeds" className="space-y-4 mt-4">
+                  <TabsContent
+                    value="embeds"
+                    className="flex-1 overflow-y-auto mt-3"
+                  >
                     <EmbedBuilder
                       embeds={message.embeds}
                       onEmbedsChange={newEmbeds =>
@@ -499,38 +530,43 @@ export default function SendMessagePage() {
                     />
                   </TabsContent>
 
-                  <TabsContent value="webhooks" className="space-y-4 mt-4">
-                    <CardHeader className="px-0 pt-0">
-                      <CardTitle className="flex items-center gap-2">
-                        <Webhook className="w-5 h-5 text-cyan-400" />
-                        Select Webhooks ({selectedWebhooks.length}/
-                        {webhooks.length})
-                      </CardTitle>
+                  <TabsContent
+                    value="webhooks"
+                    className="flex-1 overflow-y-auto mt-3"
+                  >
+                    <div className="flex items-center justify-between mb-3">
+                      <div className="flex items-center gap-2">
+                        <Webhook className="w-4 h-4 text-cyan-400" />
+                        <span className="text-sm font-medium text-white">
+                          {selectedWebhooks.length}/{webhooks.length} Selected
+                        </span>
+                      </div>
                       <Button
                         variant="outline"
                         size="sm"
                         onClick={handleSelectAll}
-                        className="w-fit border-slate-600 text-slate-300 hover:bg-slate-700 bg-transparent"
+                        className="border-slate-600 text-slate-300 hover:bg-slate-700 bg-transparent text-xs h-7"
                       >
                         {selectedWebhooks.length === webhooks.length
                           ? 'Deselect All'
                           : 'Select All'}
                       </Button>
-                    </CardHeader>
-                    <CardContent className="space-y-3 px-0 pb-0">
+                    </div>
+                    <div className="space-y-2">
                       {isLoadingWebhooks ? (
-                        <p className="text-slate-400 text-center py-4">
-                          Loading webhooks...
+                        <p className="text-slate-400 text-center py-4 text-sm">
+                          Loading...
                         </p>
                       ) : webhooks.length === 0 ? (
-                        <p className="text-slate-400 text-center py-4">
-                          No webhooks available. Add some webhooks first.
+                        <p className="text-slate-400 text-center py-4 text-sm">
+                          No webhooks available
                         </p>
                       ) : (
                         webhooks.map(webhook => (
                           <div
                             key={webhook.id}
-                            className="flex items-center space-x-3 p-3 rounded-lg bg-slate-700/30 hover:bg-slate-700/50 transition-colors"
+                            className="flex items-center space-x-3 p-2.5 rounded-lg bg-slate-700/30 hover:bg-slate-700/50 transition-colors cursor-pointer"
+                            onClick={() => handleWebhookToggle(webhook.id)}
                           >
                             <Checkbox
                               checked={selectedWebhooks.includes(webhook.id)}
@@ -541,26 +577,28 @@ export default function SendMessagePage() {
                             />
                             <div className="flex-1 min-w-0">
                               <div className="flex items-center gap-2">
-                                <span className="font-medium text-white">
+                                <span className="font-medium text-white text-sm">
                                   {webhook.name}
                                 </span>
                                 <Badge
                                   variant={
                                     webhook.is_active ? 'default' : 'secondary'
                                   }
-                                  className="text-xs"
+                                  className="text-xs h-4"
                                 >
                                   {webhook.is_active ? 'Active' : 'Inactive'}
                                 </Badge>
                               </div>
-                              <p className="text-sm text-slate-400 truncate">
-                                {webhook.description}
-                              </p>
+                              {webhook.description && (
+                                <p className="text-xs text-slate-400 truncate">
+                                  {webhook.description}
+                                </p>
+                              )}
                             </div>
                           </div>
                         ))
                       )}
-                    </CardContent>
+                    </div>
                   </TabsContent>
                 </Tabs>
               </CardContent>
@@ -568,12 +606,14 @@ export default function SendMessagePage() {
           </div>
 
           {/* Right Side - Message Preview */}
-          <div className="space-y-6">
-            <DiscordMessagePreview
-              content={message.content}
-              embeds={message.embeds}
-              avatar={selectedAvatar}
-            />
+          <div className="flex flex-col overflow-hidden">
+            <div className="flex-1 overflow-y-auto">
+              <DiscordMessagePreview
+                content={message.content}
+                embeds={message.embeds}
+                avatar={selectedAvatar}
+              />
+            </div>
           </div>
         </div>
       </div>
