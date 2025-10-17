@@ -70,10 +70,38 @@ export default function SendMessagePage() {
   const [mentionSearchQuery, setMentionSearchQuery] = useState('');
 
   const handleClearMessage = () => {
-    // Hard refresh to clear everything
-    // TODO: improve thiss function
-    window.location.href = pathname;
+    // Clear all message state
+    setMessage({
+      content: '',
+      avatarRefID: '',
+      tts: false,
+      threadName: '',
+      embeds: [],
+      message_replace_url: '',
+    });
+    setSelectedAvatar(undefined);
+    setSelectedTemplateId(undefined);
+    setHideSelectTemplate(false);
+
+    // Clear all query params
+    router.push(pathname);
   };
+
+  const { data: webhooks = [], isLoading: isLoadingWebhooks } = useQuery({
+    queryKey: ['webhooks', { isActive: true }],
+    queryFn: ({ queryKey }) =>
+      api.webhook.getAllWebhooks({
+        queryKey: queryKey as [string, { isActive?: boolean }],
+      }),
+  });
+  const { data: avatars = [] } = useQuery({
+    queryKey: ['avatars'],
+    queryFn: () => api.avatar.getAllAvatars(),
+  });
+  const { data: templates = [], isLoading: isLoadingTemplates } = useQuery({
+    queryKey: ['messageTemplates'],
+    queryFn: () => api.template.getAllTemplates(),
+  });
 
   const handleTemplateSelect = useCallback(
     (templateId: string, skipAvatarOverride = false) => {
@@ -114,24 +142,9 @@ export default function SendMessagePage() {
       newSearchParams.set('template', templateId);
       newSearchParams.delete('avatarId');
       router.replace(`${pathname}?${newSearchParams.toString()}`);
-    }
+    },
+    [templates, initialAvatarId, avatars, searchParams, router, pathname]
   );
-
-  const { data: webhooks = [], isLoading: isLoadingWebhooks } = useQuery({
-    queryKey: ['webhooks', { isActive: true }],
-    queryFn: ({ queryKey }) =>
-      api.webhook.getAllWebhooks({
-        queryKey: queryKey as [string, { isActive?: boolean }],
-      }),
-  });
-  const { data: avatars = [] } = useQuery({
-    queryKey: ['avatars'],
-    queryFn: () => api.avatar.getAllAvatars(),
-  });
-  const { data: templates = [], isLoading: isLoadingTemplates } = useQuery({
-    queryKey: ['messageTemplates'],
-    queryFn: () => api.template.getAllTemplates(),
-  });
 
   useEffect(() => {
     if (initialAvatarId && avatars.length > 0) {
@@ -153,12 +166,20 @@ export default function SendMessagePage() {
   }, [initialWebhookId]);
 
   useEffect(() => {
-    if (initialTemplateId && templates.length > 0 && !selectedTemplateId) {
+    if (
+      initialTemplateId &&
+      templates.length > 0 &&
+      selectedTemplateId === undefined
+    ) {
       // Pass true to skip avatar override if avatarId is in query
       handleTemplateSelect(initialTemplateId, !!initialAvatarId);
-    } else if (!initialTemplateId && selectedTemplateId) {
+    } else if (
+      !initialTemplateId &&
+      selectedTemplateId &&
+      selectedTemplateId !== undefined
+    ) {
       // Clear template if query param is removed
-      setSelectedTemplateId('');
+      setSelectedTemplateId(undefined);
       setHideSelectTemplate(false);
     }
   }, [
@@ -478,7 +499,9 @@ export default function SendMessagePage() {
             </p>
           </div>
           <div className="flex items-center gap-2">
-            {(message.content.trim() || message.embeds.length > 0) && (
+            {(message.content.trim() ||
+              message.embeds.length > 0 ||
+              selectedAvatar) && (
               <Button
                 variant="outline"
                 size="sm"
