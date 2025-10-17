@@ -7,7 +7,7 @@ import {
 import { Avatar } from '@repo/shared-types';
 import { type DiscordEmbed } from '@repo/shared-types';
 import { discordColorToHex } from '@/lib/discord-utils';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useMemo } from 'react';
 import Image from 'next/image';
 import { useQueries } from '@tanstack/react-query';
 import { userQueries } from '@/lib/api/queries/user';
@@ -31,7 +31,10 @@ export function DiscordMessagePreview({
     user_id: 'predefined-user-id',
   },
 }: DiscordMessagePreviewProps) {
-  const clonedEmbeds = embeds ? JSON.parse(JSON.stringify(embeds)) : [];
+  const clonedEmbeds = useMemo(
+    () => (embeds ? JSON.parse(JSON.stringify(embeds)) : []),
+    [embeds]
+  );
   const [userIds, setUserIds] = useState<string[]>([]);
   const [userMap, setUserMap] = useState<Map<string, string>>(new Map());
 
@@ -77,6 +80,7 @@ export function DiscordMessagePreview({
     ) {
       setUserIds(uniqueUserIds);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [content, embeds]);
 
   const userQueriesResults = useQueries({
@@ -110,7 +114,42 @@ export function DiscordMessagePreview({
     if (!mapsEqual) {
       setUserMap(newUserMap);
     }
-  }, [userQueriesResults, userIds, userMap]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [userQueriesResults, userIds]);
+
+  // Memoize parsed content to avoid re-parsing on every render
+  const parsedContent = useMemo(
+    () => (content ? parseDiscordMarkdown(content, userMap) : null),
+    [content, userMap]
+  );
+
+  // Memoize parsed embeds
+  const parsedEmbeds = useMemo(() => {
+    if (!clonedEmbeds || clonedEmbeds.length === 0) return [];
+
+    return clonedEmbeds.map((embed: DiscordEmbed) => {
+      const parsedDescription = embed.description
+        ? parseDiscordMarkdown(embed.description, userMap)
+        : null;
+      const parsedFields = embed.fields?.map(
+        (field: { name: string; value: string; inline?: boolean }) => ({
+          ...field,
+          parsedName: parseDiscordMarkdown(field.name, userMap),
+          parsedValue: parseDiscordMarkdown(field.value, userMap),
+        })
+      );
+      const parsedFooter = embed.footer?.text
+        ? parseDiscordMarkdown(embed.footer.text, userMap)
+        : null;
+
+      return {
+        ...embed,
+        parsedDescription,
+        parsedFields,
+        parsedFooter,
+      };
+    });
+  }, [clonedEmbeds, userMap]);
 
   return (
     <div className="bg-[#313338] text-white p-4 rounded-lg font-sans text-[15px] leading-[1.375]">
@@ -136,14 +175,27 @@ export function DiscordMessagePreview({
             </span>
           </div>
 
-          {content && (
+          {parsedContent && (
             <div className="text-[#dbdee1] mb-2 whitespace-pre-wrap break-words leading-[1.375]">
-              {parseDiscordMarkdown(content, userMap)}
+              {parsedContent}
             </div>
           )}
 
-          {clonedEmbeds &&
-            clonedEmbeds.map((embed: DiscordEmbed, index: number) => (
+          {parsedEmbeds.map(
+            (
+              embed: DiscordEmbed & {
+                parsedDescription: React.ReactNode[] | null;
+                parsedFields?: Array<{
+                  name: string;
+                  value: string;
+                  inline?: boolean;
+                  parsedName: React.ReactNode[];
+                  parsedValue: React.ReactNode[];
+                }>;
+                parsedFooter: React.ReactNode[] | null;
+              },
+              index: number
+            ) => (
               <div key={index} className="max-w-lg mt-2">
                 <div className="flex">
                   <div
@@ -194,38 +246,52 @@ export function DiscordMessagePreview({
 
                     <div className="flex">
                       <div className="flex-1 mr-4">
-                        {embed.description && (
+                        {embed.parsedDescription && (
                           <div className="text-[#dbdee1] mb-3 whitespace-pre-wrap text-sm leading-[1.375]">
-                            {parseDiscordMarkdown(embed.description, userMap)}
+                            {embed.parsedDescription}
                           </div>
                         )}
 
-                        {embed.fields && embed.fields.length > 0 && (
-                          <div
-                            className="grid gap-2 mb-3"
-                            style={{
-                              gridTemplateColumns: embed.fields.some(
-                                f => f.inline
-                              )
-                                ? 'repeat(3, 1fr)'
-                                : '1fr',
-                            }}
-                          >
-                            {embed.fields.map((field, fieldIndex) => (
-                              <div
-                                key={fieldIndex}
-                                className={field.inline ? '' : 'col-span-full'}
-                              >
-                                <div className="text-white font-semibold text-sm mb-1">
-                                  {parseDiscordMarkdown(field.name, userMap)}
-                                </div>
-                                <div className="text-[#dbdee1] text-sm whitespace-pre-wrap">
-                                  {parseDiscordMarkdown(field.value, userMap)}
-                                </div>
-                              </div>
-                            ))}
-                          </div>
-                        )}
+                        {embed.parsedFields &&
+                          embed.parsedFields.length > 0 && (
+                            <div
+                              className="grid gap-2 mb-3"
+                              style={{
+                                gridTemplateColumns: embed.parsedFields.some(
+                                  (f: { inline?: boolean }) => f.inline
+                                )
+                                  ? 'repeat(3, 1fr)'
+                                  : '1fr',
+                              }}
+                            >
+                              {embed.parsedFields.map(
+                                (
+                                  field: {
+                                    name: string;
+                                    value: string;
+                                    inline?: boolean;
+                                    parsedName: React.ReactNode[];
+                                    parsedValue: React.ReactNode[];
+                                  },
+                                  fieldIndex: number
+                                ) => (
+                                  <div
+                                    key={fieldIndex}
+                                    className={
+                                      field.inline ? '' : 'col-span-full'
+                                    }
+                                  >
+                                    <div className="text-white font-semibold text-sm mb-1">
+                                      {field.parsedName}
+                                    </div>
+                                    <div className="text-[#dbdee1] text-sm whitespace-pre-wrap">
+                                      {field.parsedValue}
+                                    </div>
+                                  </div>
+                                )
+                              )}
+                            </div>
+                          )}
                       </div>
 
                       {embed.thumbnail && (
@@ -264,7 +330,7 @@ export function DiscordMessagePreview({
                           />
                         )}
                         <span className="text-xs text-[#949ba4] font-medium">
-                          {parseDiscordMarkdown(embed.footer.text, userMap)}
+                          {embed.parsedFooter}
                           {embed.timestamp && (
                             <>
                               {' '}
@@ -277,7 +343,8 @@ export function DiscordMessagePreview({
                   </div>
                 </div>
               </div>
-            ))}
+            )
+          )}
         </div>
       </div>
     </div>
