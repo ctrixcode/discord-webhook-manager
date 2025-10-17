@@ -15,6 +15,7 @@ interface MentionAutocompleteProps {
   position: { top: number; left: number };
   onSelect: (value: string) => void;
   onClose: () => void;
+  searchQuery?: string;
 }
 
 const MENTION_OPTIONS: MentionOption[] = [
@@ -49,16 +50,29 @@ export function MentionAutocomplete({
   position,
   onSelect,
   onClose,
+  searchQuery = '',
 }: MentionAutocompleteProps) {
   const dropdownRef = useRef<HTMLDivElement>(null);
   const [selectedIndex, setSelectedIndex] = React.useState(0);
 
-  // Reset selected index when dropdown opens
+  // Filter options based on search query
+  const filteredOptions = React.useMemo(() => {
+    if (!searchQuery) return MENTION_OPTIONS;
+
+    const query = searchQuery.toLowerCase();
+    return MENTION_OPTIONS.filter(
+      option =>
+        option.label.toLowerCase().includes(query) ||
+        option.description.toLowerCase().includes(query)
+    );
+  }, [searchQuery]);
+
+  // Reset selected index when dropdown opens or search query changes
   useEffect(() => {
     if (isOpen) {
       setSelectedIndex(0);
     }
-  }, [isOpen]);
+  }, [isOpen, searchQuery]);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -88,7 +102,7 @@ export function MentionAutocomplete({
         case 'ArrowDown':
           event.preventDefault();
           setSelectedIndex(prev =>
-            prev < MENTION_OPTIONS.length - 1 ? prev + 1 : prev
+            prev < filteredOptions.length - 1 ? prev + 1 : prev
           );
           break;
         case 'ArrowUp':
@@ -97,8 +111,8 @@ export function MentionAutocomplete({
           break;
         case 'Enter':
           event.preventDefault();
-          if (MENTION_OPTIONS[selectedIndex]) {
-            onSelect(MENTION_OPTIONS[selectedIndex].value);
+          if (filteredOptions[selectedIndex]) {
+            onSelect(filteredOptions[selectedIndex].value);
           }
           break;
         case 'Escape':
@@ -115,9 +129,9 @@ export function MentionAutocomplete({
     return () => {
       document.removeEventListener('keydown', handleKeyDown);
     };
-  }, [isOpen, selectedIndex, onSelect, onClose]);
+  }, [isOpen, selectedIndex, onSelect, onClose, filteredOptions]);
 
-  if (!isOpen) return null;
+  if (!isOpen || filteredOptions.length === 0) return null;
 
   return (
     <div
@@ -129,7 +143,7 @@ export function MentionAutocomplete({
       }}
     >
       <div className="max-h-[300px] overflow-y-auto">
-        {MENTION_OPTIONS.map((option, index) => (
+        {filteredOptions.map((option, index) => (
           <button
             key={option.value}
             onClick={() => onSelect(option.value)}

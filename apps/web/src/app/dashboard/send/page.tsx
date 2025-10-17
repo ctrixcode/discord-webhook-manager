@@ -67,6 +67,7 @@ export default function SendMessagePage() {
   const [showMentionDropdown, setShowMentionDropdown] = useState(false);
   const [mentionPosition, setMentionPosition] = useState({ top: 0, left: 0 });
   const [mentionStartIndex, setMentionStartIndex] = useState(-1);
+  const [mentionSearchQuery, setMentionSearchQuery] = useState('');
 
   const handleClearMessage = () => {
     setMessage({
@@ -284,37 +285,41 @@ export default function SendMessagePage() {
         left: rect.left + 20,
       });
       setMentionStartIndex(cursorPos - 1);
+      setMentionSearchQuery('');
       setShowMentionDropdown(true);
     } else if (showMentionDropdown) {
-      // Check if we should close the dropdown
+      // Check if we should close the dropdown or update search query
       if (mentionStartIndex !== -1) {
         // Check if @ was deleted
         const charAtMentionStart = newContent[mentionStartIndex];
         if (charAtMentionStart !== '@') {
           setShowMentionDropdown(false);
           setMentionStartIndex(-1);
+          setMentionSearchQuery('');
           return;
         }
 
-        // Check if cursor moved away from @ or user typed something after @
+        // Get text after @ for search query
         const textAfterMention = newContent.substring(
-          mentionStartIndex,
+          mentionStartIndex + 1,
           cursorPos
         );
 
         // Close dropdown if:
         // - User typed space after @
-        // - User typed any character after @ (length > 1 means @ + something)
         // - Cursor moved before the @
-        // - Cursor moved too far away
+        // - Cursor moved too far away (more than 20 chars after @)
         if (
           textAfterMention.includes(' ') ||
-          textAfterMention.length > 1 ||
           cursorPos < mentionStartIndex ||
-          cursorPos > mentionStartIndex + 1
+          textAfterMention.length > 20
         ) {
           setShowMentionDropdown(false);
           setMentionStartIndex(-1);
+          setMentionSearchQuery('');
+        } else {
+          // Update search query with text after @
+          setMentionSearchQuery(textAfterMention);
         }
       }
     }
@@ -418,7 +423,9 @@ export default function SendMessagePage() {
         onClose={() => {
           setShowMentionDropdown(false);
           setMentionStartIndex(-1);
+          setMentionSearchQuery('');
         }}
+        searchQuery={mentionSearchQuery}
       />
       <div className="max-w-7xl mx-auto w-full flex flex-col h-full gap-4">
         {/* Compact Header */}
