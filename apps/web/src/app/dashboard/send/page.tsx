@@ -83,8 +83,8 @@ export default function SendMessagePage() {
     setSelectedTemplateId(undefined);
     setHideSelectTemplate(false);
 
-    // Clear all query params
-    router.push(pathname);
+    // Clear all query params - use replace to avoid adding to history
+    router.replace('/dashboard/send');
   };
 
   const { data: webhooks = [], isLoading: isLoadingWebhooks } = useQuery({
