@@ -25,6 +25,7 @@ import { discordColorToHex } from '@/lib/discord-utils';
 import React, { useMemo } from 'react';
 import Image from 'next/image';
 import { parseDiscordMarkdown } from '@/lib/discord-markdown-parser';
+import { sanitizeUrl } from '@/lib/utils';
 
 interface DiscordMessagePreviewProps {
   content: string;
@@ -170,7 +171,7 @@ export function DiscordMessagePreview({
                         <span className="text-sm font-medium text-[#f2f3f5]">
                           {embed.author.url ? (
                             <a
-                              href={embed.author.url}
+                              href={sanitizeUrl(embed.author.url)}
                               className="text-[#00aff4] hover:underline"
                             >
                               {embed.author.name}
@@ -186,7 +187,10 @@ export function DiscordMessagePreview({
                     {embed.title && (
                       <div className="text-[#00aff4] font-semibold mb-2 text-base leading-[1.375]">
                         {embed.url ? (
-                          <a href={embed.url} className="hover:underline">
+                          <a
+                            href={sanitizeUrl(embed.url)}
+                            className="hover:underline"
+                          >
                             {embed.title}
                           </a>
                         ) : (

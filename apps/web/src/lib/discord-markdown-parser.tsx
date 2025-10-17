@@ -7,6 +7,7 @@
  */
 
 import React, { type ReactNode } from 'react';
+import { sanitizeUrl } from '@/lib/utils';
 
 /**
  * Pattern interface for markdown regex patterns
@@ -78,12 +79,14 @@ const patterns: Pattern[] = [
   {
     // Markdown links: [text](url) -> clickable link
     // Matches: [any text](any text)
+    // URL is sanitized to prevent XSS attacks (javascript:, data:, etc.)
     regex: /\[(.*?)\]\((.*?)\)/g,
     render: (args: string[]) => {
       const [linkText, url] = args;
+      const safeUrl = sanitizeUrl(url || '');
       return (
         <a
-          href={url}
+          href={safeUrl}
           target="_blank"
           rel="noopener noreferrer"
           className="text-[#00aff4] hover:underline"
