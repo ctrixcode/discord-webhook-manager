@@ -138,6 +138,71 @@ export function parseDiscordMarkdown(
 ): ReactNode[] {
   if (!text) return [];
 
+  // Handle multi-line code blocks first (```code```)
+  const codeBlockRegex = /```(\w+)?\n?([\s\S]*?)```/g;
+  const codeBlocks: { start: number; end: number; element: ReactNode }[] = [];
+  let match;
+
+  while ((match = codeBlockRegex.exec(text)) !== null) {
+    const code = match[2] || '';
+    codeBlocks.push({
+      start: match.index,
+      end: match.index + match[0].length,
+      element: (
+        <pre className="bg-[#2b2d31] border border-[#1e1f22] rounded p-2 my-1 overflow-x-auto">
+          <code className="text-[#f8f8ff] text-sm font-mono block whitespace-pre">
+            {code}
+          </code>
+        </pre>
+      ),
+    });
+  }
+
+  // If there are code blocks, split text around them
+  if (codeBlocks.length > 0) {
+    const result: ReactNode[] = [];
+    let lastIndex = 0;
+
+    codeBlocks.forEach((block, index) => {
+      // Process text before code block
+      if (block.start > lastIndex) {
+        const textBefore = text.slice(lastIndex, block.start);
+        result.push(
+          <React.Fragment key={`text-${index}`}>
+            {parseTextWithoutCodeBlocks(textBefore, userMap)}
+          </React.Fragment>
+        );
+      }
+      // Add code block
+      result.push(
+        <React.Fragment key={`code-${index}`}>{block.element}</React.Fragment>
+      );
+      lastIndex = block.end;
+    });
+
+    // Process remaining text
+    if (lastIndex < text.length) {
+      const textAfter = text.slice(lastIndex);
+      result.push(
+        <React.Fragment key="text-end">
+          {parseTextWithoutCodeBlocks(textAfter, userMap)}
+        </React.Fragment>
+      );
+    }
+
+    return result;
+  }
+
+  // No code blocks, process normally
+  return parseTextWithoutCodeBlocks(text, userMap);
+}
+
+function parseTextWithoutCodeBlocks(
+  text: string,
+  userMap: Map<string, string>
+): ReactNode[] {
+  if (!text) return [];
+
   // Split text into lines to handle lists
   const lines = text.split('\n');
   const result: ReactNode[] = [];
