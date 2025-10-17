@@ -1,5 +1,8 @@
+'use client';
+
 import React, { useState, useEffect, useRef, ChangeEventHandler } from 'react';
 import { useMutation } from '@tanstack/react-query';
+import { useTranslations } from 'next-intl'; // Import useTranslations
 import {
   Dialog,
   DialogContent,
@@ -38,6 +41,7 @@ export function CreateAvatarDialog({
   onSaveSuccess,
   editingAvatar,
 }: CreateAvatarDialogProps) {
+  const t = useTranslations('createAvatarDialog'); // Initialize translations
   const [username, setUsername] = useState('');
   const [avatar_url, setAvatar_url] = useState('');
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
@@ -77,7 +81,8 @@ export function CreateAvatarDialog({
       };
       if (errorData.code === 'media_limit') {
         const toastResponse = toast({
-          title: 'Limit Reached',
+          // Translate Limit Reached toast
+          title: t('toast.limitReachedTitle'),
           description: (
             <div>
               <p>{errorData.message}</p>
@@ -86,7 +91,8 @@ export function CreateAvatarDialog({
                 onClick={() => toastResponse.dismiss()}
                 className="text-blue-400 hover:underline"
               >
-                Check your usage in settings.
+                {/* Translate link text */}
+                {t('toast.mediaLimitLink')}
               </Link>
             </div>
           ),
@@ -94,15 +100,17 @@ export function CreateAvatarDialog({
         });
       } else {
         toast({
-          title: 'Error',
-          description: errorData.message || 'An unexpected error occurred',
+          // Translate general error title
+          title: t('toast.errorTitle'),
+          description: errorData.message || t('toast.unexpectedError'),
           variant: 'destructive',
         });
       }
     } else {
       toast({
-        title: 'Error',
-        description: 'An unexpected error occurred',
+        // Translate fallback error title and message
+        title: t('toast.errorTitle'),
+        description: t('toast.unexpectedError'),
         variant: 'destructive',
       });
     }
@@ -128,8 +136,9 @@ export function CreateAvatarDialog({
     onSuccess: () => {
       onSaveSuccess();
       toast({
-        title: 'Avatar created',
-        description: 'Avatar created successfully',
+        // Translate create success toast
+        title: t('toast.createSuccessTitle'),
+        description: t('toast.createSuccessDescription'),
       });
       handleClear();
       handleClose();
@@ -151,8 +160,9 @@ export function CreateAvatarDialog({
     onSuccess: () => {
       onSaveSuccess();
       toast({
-        title: 'Avatar updated',
-        description: 'Avatar updated successfully',
+        // Translate update success toast
+        title: t('toast.updateSuccessTitle'),
+        description: t('toast.updateSuccessDescription'),
       });
       handleClear();
       handleClose();
@@ -207,12 +217,13 @@ export function CreateAvatarDialog({
       <DialogContent className="bg-slate-800 border-slate-700 text-white">
         <DialogHeader>
           <DialogTitle className="text-xl font-semibold">
-            {editingAvatar ? 'Edit Avatar' : 'Create New Avatar'}
+            {/* Translate Dialog Title (dynamic) */}
+            {editingAvatar ? t('title.edit') : t('title.create')}
           </DialogTitle>
         </DialogHeader>
 
         <div className="space-y-6">
-          {/* Preview */}
+          {/* Preview is purely visual */}
           <div className="flex items-center justify-center">
             <UIAvatar
               className="w-20 h-20 ring-2 ring-purple-500/20 cursor-pointer"
@@ -228,21 +239,24 @@ export function CreateAvatarDialog({
           {/* Form */}
           <div className="space-y-4">
             <div>
+              {/* Translate Username Label */}
               <Label htmlFor="username" className="text-slate-300">
-                Username
+                {t('form.usernameLabel')}
               </Label>
               <Input
                 id="username"
                 value={username}
                 onChange={e => setUsername(e.target.value)}
-                placeholder="e.g., BotHelper, Announcer"
+                // Translate Username Placeholder
+                placeholder={t('form.usernamePlaceholder')}
                 className="bg-slate-700/50 border-slate-600 text-white placeholder:text-slate-400 focus:border-purple-500"
               />
             </div>
 
             <div>
+              {/* Translate Avatar Icon Label */}
               <Label htmlFor="avatar_url" className="text-slate-300">
-                Avatar Icon
+                {t('form.avatarIconLabel')}
               </Label>
               <div className="flex items-center space-x-2">
                 <Input
@@ -252,10 +266,9 @@ export function CreateAvatarDialog({
                     setAvatar_url(e.target.value);
                     setSelectedFile(null); // Clear file when URL is typed
                   }}
+                  // Translate URL/File Placeholder
                   placeholder={
-                    selectedFile
-                      ? selectedFile.name
-                      : 'https://example.com/avatar.png'
+                    selectedFile ? selectedFile.name : t('form.urlPlaceholder')
                   }
                   className="bg-slate-700/50 border-slate-600 text-white placeholder:text-slate-400 focus:border-purple-500"
                 />
@@ -265,7 +278,9 @@ export function CreateAvatarDialog({
                   onClick={handleBrowseClick}
                   className="shrink-0 border-slate-600 text-slate-300 hover:bg-slate-700 bg-transparent"
                 >
-                  <ImageIcon className="h-4 w-4 mr-2" /> Browse
+                  <ImageIcon className="h-4 w-4 mr-2" />
+                  {/* Translate Browse Button */}
+                  {t('form.browse')}
                 </Button>
               </div>
               <input
@@ -285,7 +300,8 @@ export function CreateAvatarDialog({
               onClick={handleClose}
               className="flex-1 border-slate-600 text-slate-300 hover:bg-slate-700 bg-transparent"
             >
-              Cancel
+              {/* Translate Cancel Button */}
+              {t('actions.cancel')}
             </Button>
             <Button
               onClick={handleSave}
@@ -296,13 +312,14 @@ export function CreateAvatarDialog({
               }
               className="flex-1 bg-purple-600 hover:bg-purple-700 text-white"
             >
+              {/* Translate Dynamic Save Button Text */}
               {isPending
                 ? editingAvatar
-                  ? 'Updating...'
-                  : 'Creating...'
+                  ? t('actions.updating')
+                  : t('actions.creating')
                 : editingAvatar
-                  ? 'Update Avatar'
-                  : 'Create Avatar'}
+                  ? t('actions.update')
+                  : t('actions.create')}
             </Button>
           </div>
         </div>

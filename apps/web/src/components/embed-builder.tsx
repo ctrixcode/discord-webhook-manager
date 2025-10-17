@@ -1,6 +1,7 @@
 'use client';
 
 import React from 'react';
+import { useTranslations } from 'next-intl'; // Import useTranslations
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
@@ -19,6 +20,8 @@ interface EmbedBuilderProps {
 }
 
 export function EmbedBuilder({ embeds, onEmbedsChange }: EmbedBuilderProps) {
+  const t = useTranslations('embedBuilder'); // Initialize translations
+
   const addEmbed = () => {
     const newEmbed: DiscordEmbed = {
       title: '',
@@ -90,9 +93,13 @@ export function EmbedBuilder({ embeds, onEmbedsChange }: EmbedBuilderProps) {
     <ScrollArea className="flex flex-col overflow-hidden max-h-[400px]">
       <div className="flex items-center justify-between mb-4">
         <div>
-          <Label className="text-slate-200 font-medium">Discord Embeds</Label>
+          {/* Translate Header Title */}
+          <Label className="text-slate-200 font-medium">
+            {t('header.title')}
+          </Label>
+          {/* Translate Header Subtitle, passing max value */}
           <p className="text-sm text-slate-400">
-            Add rich embeds to your message (max 10)
+            {t('header.subtitle', { max: DISCORD_MAX_EMBEDS })}
           </p>
         </div>
         <Button
@@ -101,16 +108,17 @@ export function EmbedBuilder({ embeds, onEmbedsChange }: EmbedBuilderProps) {
           size="sm"
           className="bg-purple-600 hover:bg-purple-700 text-white"
         >
-          Add Embed
+          {/* Translate Add Embed Button */}
+          {t('header.addButton')}
         </Button>
       </div>
 
       {embeds.length === 0 ? (
         <div className="text-center py-8 text-slate-400">
-          <p>No embeds added yet</p>
-          <p className="text-sm">
-            Click &quot;Add Embed&quot; to create rich message content
-          </p>
+          {/* Translate Empty State Text 1 */}
+          <p>{t('emptyState.noEmbeds')}</p>
+          {/* Translate Empty State Text 2 */}
+          <p className="text-sm">{t('emptyState.callToAction')}</p>
         </div>
       ) : (
         <div>
@@ -120,8 +128,9 @@ export function EmbedBuilder({ embeds, onEmbedsChange }: EmbedBuilderProps) {
               className="p-4 rounded-lg bg-slate-700/30 border border-slate-600/50"
             >
               <div className="flex items-center justify-between mb-4">
+                {/* Translate Embed Label (e.g., "Embed 1") */}
                 <Label className="text-slate-200 font-medium">
-                  Embed {index + 1}
+                  {t('embedItem.titleLabel', { index: index + 1 })}
                 </Label>
                 <Button
                   onClick={() => removeEmbed(index)}
@@ -129,17 +138,22 @@ export function EmbedBuilder({ embeds, onEmbedsChange }: EmbedBuilderProps) {
                   size="sm"
                   className="border-red-600 text-red-400 hover:bg-red-600 hover:text-white bg-transparent"
                 >
-                  Remove
+                  {/* Translate Remove Button */}
+                  {t('embedItem.removeButton')}
                 </Button>
               </div>
 
               <div className="space-y-3">
                 <div className="flex gap-2">
                   <div className="flex-1">
-                    <Label className="text-slate-300 text-sm">Title</Label>
+                    {/* Translate Title Label */}
+                    <Label className="text-slate-300 text-sm">
+                      {t('embedItem.fields.title')}
+                    </Label>
                     <input
                       type="text"
-                      placeholder="Embed title"
+                      // Translate Title Placeholder
+                      placeholder={t('embedItem.fields.titlePlaceholder')}
                       value={embed.title || ''}
                       onChange={e =>
                         updateEmbed(index, {
@@ -151,10 +165,14 @@ export function EmbedBuilder({ embeds, onEmbedsChange }: EmbedBuilderProps) {
                     />
                   </div>
                   <div className="flex-1">
-                    <Label className="text-slate-300 text-sm">URL</Label>
+                    {/* Translate URL Label */}
+                    <Label className="text-slate-300 text-sm">
+                      {t('embedItem.fields.url')}
+                    </Label>
                     <input
                       type="url"
-                      placeholder="Embed URL"
+                      // Translate URL Placeholder
+                      placeholder={t('embedItem.fields.urlPlaceholder')}
                       value={embed.url || ''}
                       onChange={e =>
                         updateEmbed(index, {
@@ -168,9 +186,13 @@ export function EmbedBuilder({ embeds, onEmbedsChange }: EmbedBuilderProps) {
                 </div>
 
                 <div>
-                  <Label className="text-slate-300 text-sm">Description</Label>
+                  {/* Translate Description Label */}
+                  <Label className="text-slate-300 text-sm">
+                    {t('embedItem.fields.description')}
+                  </Label>
                   <Textarea
-                    placeholder="Embed description"
+                    // Translate Description Placeholder
+                    placeholder={t('embedItem.fields.descriptionPlaceholder')}
                     value={embed.description || ''}
                     onChange={e =>
                       updateEmbed(index, {
@@ -184,7 +206,10 @@ export function EmbedBuilder({ embeds, onEmbedsChange }: EmbedBuilderProps) {
                 </div>
 
                 <div>
-                  <Label className="text-slate-300 text-sm">Color</Label>
+                  {/* Translate Color Label */}
+                  <Label className="text-slate-300 text-sm">
+                    {t('embedItem.fields.color')}
+                  </Label>
                   <input
                     type="color"
                     value={discordColorToHex(
@@ -201,7 +226,10 @@ export function EmbedBuilder({ embeds, onEmbedsChange }: EmbedBuilderProps) {
                 </div>
 
                 <div className="space-y-2">
-                  <Label className="text-slate-200 font-medium">Author</Label>
+                  {/* Translate Author Title */}
+                  <Label className="text-slate-200 font-medium">
+                    {t('embedItem.author.title')}
+                  </Label>
                   <div className="flex items-center justify-between gap-2">
                     {embed.author?.name ? (
                       <div className="flex items-center gap-2 p-2 rounded-md bg-slate-700/50 border border-slate-600">
@@ -235,7 +263,8 @@ export function EmbedBuilder({ embeds, onEmbedsChange }: EmbedBuilderProps) {
                           className="bg-slate-700 border-slate-600 text-white hover:bg-slate-600"
                         >
                           <Users className="w-4 h-4 mr-2" />
-                          Select Avatar
+                          {/* Translate Select Avatar Button */}
+                          {t('embedItem.author.selectButton')}
                         </Button>
                       </AvatarSelector>
                     )}
@@ -251,7 +280,8 @@ export function EmbedBuilder({ embeds, onEmbedsChange }: EmbedBuilderProps) {
                         }}
                         className="bg-red-700 border-red-600 text-white hover:bg-red-600"
                       >
-                        Clear Author
+                        {/* Translate Clear Author Button */}
+                        {t('embedItem.author.clearButton')}
                       </Button>
                     )}
                   </div>
@@ -260,10 +290,16 @@ export function EmbedBuilder({ embeds, onEmbedsChange }: EmbedBuilderProps) {
                     <div className="space-y-2">
                       <div className="flex justify-between gap-2">
                         <div className="w-full">
-                          <Label className="text-slate-300 text-sm">Name</Label>
+                          {/* Translate Manual Name Label */}
+                          <Label className="text-slate-300 text-sm">
+                            {t('embedItem.author.manualName')}
+                          </Label>
                           <input
                             type="text"
-                            placeholder="Author name"
+                            // Translate Manual Name Placeholder
+                            placeholder={t(
+                              'embedItem.author.manualNamePlaceholder'
+                            )}
                             value={embed.author?.name || ''}
                             onChange={e =>
                               updateEmbed(index, {
@@ -278,12 +314,16 @@ export function EmbedBuilder({ embeds, onEmbedsChange }: EmbedBuilderProps) {
                           />
                         </div>
                         <div className="w-full">
+                          {/* Translate Manual Icon URL Label */}
                           <Label className="text-slate-300 text-sm">
-                            Icon URL
+                            {t('embedItem.author.manualIconUrl')}
                           </Label>
                           <input
                             type="url"
-                            placeholder="Author icon URL"
+                            // Translate Manual Icon URL Placeholder
+                            placeholder={t(
+                              'embedItem.author.manualIconUrlPlaceholder'
+                            )}
                             value={embed.author?.icon_url || ''}
                             onChange={e =>
                               updateEmbed(index, {
@@ -298,10 +338,14 @@ export function EmbedBuilder({ embeds, onEmbedsChange }: EmbedBuilderProps) {
                           />
                         </div>
                       </div>
-                      <Label className="text-slate-300 text-sm">URL</Label>
+                      {/* Translate Manual URL Label */}
+                      <Label className="text-slate-300 text-sm">
+                        {t('embedItem.author.manualUrl')}
+                      </Label>
                       <input
                         type="url"
-                        placeholder="Author URL"
+                        // Translate Manual URL Placeholder
+                        placeholder={t('embedItem.author.manualUrlPlaceholder')}
                         value={embed.author?.url || ''}
                         onChange={e =>
                           updateEmbed(index, {
@@ -319,13 +363,17 @@ export function EmbedBuilder({ embeds, onEmbedsChange }: EmbedBuilderProps) {
                 </div>
 
                 <div className="space-y-2">
-                  <Label className="text-slate-200 font-medium">Fields</Label>
+                  {/* Translate Fields Title */}
+                  <Label className="text-slate-200 font-medium">
+                    {t('embedItem.fieldBuilder.title')}
+                  </Label>
                   <Button
                     onClick={() => addField(index)}
                     size="sm"
                     className="bg-purple-600 hover:bg-purple-700 text-white"
                   >
-                    Add Field
+                    {/* Translate Add Field Button */}
+                    {t('embedItem.fieldBuilder.addButton')}
                   </Button>
                   {embed.fields && embed.fields.length > 0 && (
                     <div className="space-y-3 mt-2">
@@ -335,8 +383,11 @@ export function EmbedBuilder({ embeds, onEmbedsChange }: EmbedBuilderProps) {
                           className="p-3 rounded-md bg-slate-600/50 border border-slate-500"
                         >
                           <div className="flex items-center justify-between mb-2">
+                            {/* Translate Field Label (e.g., "Field 1") */}
                             <Label className="text-slate-200 text-sm">
-                              Field {fieldIndex + 1}
+                              {t('embedItem.fieldBuilder.fieldLabel', {
+                                index: fieldIndex + 1,
+                              })}
                             </Label>
                             <Button
                               onClick={() => removeField(index, fieldIndex)}
@@ -344,16 +395,21 @@ export function EmbedBuilder({ embeds, onEmbedsChange }: EmbedBuilderProps) {
                               size="sm"
                               className="border-red-600 text-red-400 hover:bg-red-600 hover:text-white bg-transparent"
                             >
-                              Remove
+                              {/* Translate Remove Button */}
+                              {t('embedItem.fieldBuilder.removeButton')}
                             </Button>
                           </div>
                           <div>
+                            {/* Translate Field Name Label */}
                             <Label className="text-slate-300 text-sm">
-                              Name
+                              {t('embedItem.fieldBuilder.name')}
                             </Label>
                             <input
                               type="text"
-                              placeholder="Field name"
+                              // Translate Field Name Placeholder
+                              placeholder={t(
+                                'embedItem.fieldBuilder.namePlaceholder'
+                              )}
                               value={field.name}
                               onChange={e =>
                                 updateField(index, fieldIndex, {
@@ -365,11 +421,15 @@ export function EmbedBuilder({ embeds, onEmbedsChange }: EmbedBuilderProps) {
                             />
                           </div>
                           <div className="mt-2">
+                            {/* Translate Field Value Label */}
                             <Label className="text-slate-300 text-sm">
-                              Value
+                              {t('embedItem.fieldBuilder.value')}
                             </Label>
                             <Textarea
-                              placeholder="Field value"
+                              // Translate Field Value Placeholder
+                              placeholder={t(
+                                'embedItem.fieldBuilder.valuePlaceholder'
+                              )}
                               value={field.value}
                               onChange={e =>
                                 updateField(index, fieldIndex, {
@@ -392,8 +452,9 @@ export function EmbedBuilder({ embeds, onEmbedsChange }: EmbedBuilderProps) {
                               }
                               className="border-slate-500"
                             />
+                            {/* Translate Inline Checkbox Label */}
                             <Label className="text-slate-300 text-sm">
-                              Inline
+                              {t('embedItem.fieldBuilder.inline')}
                             </Label>
                           </div>
                         </div>
@@ -404,10 +465,14 @@ export function EmbedBuilder({ embeds, onEmbedsChange }: EmbedBuilderProps) {
 
                 <div className="flex gap-2">
                   <div className="flex-1 space-y-2">
-                    <Label className="text-slate-200 font-medium">Image</Label>
+                    {/* Translate Image Label */}
+                    <Label className="text-slate-200 font-medium">
+                      {t('embedItem.fields.image')}
+                    </Label>
                     <input
                       type="url"
-                      placeholder="Image URL"
+                      // Translate Image Placeholder
+                      placeholder={t('embedItem.fields.imagePlaceholder')}
                       value={embed.image?.url || ''}
                       onChange={e =>
                         updateEmbed(index, {
@@ -420,12 +485,14 @@ export function EmbedBuilder({ embeds, onEmbedsChange }: EmbedBuilderProps) {
                   </div>
 
                   <div className="flex-1 space-y-2">
+                    {/* Translate Thumbnail Label */}
                     <Label className="text-slate-200 font-medium">
-                      Thumbnail
+                      {t('embedItem.fields.thumbnail')}
                     </Label>
                     <input
                       type="url"
-                      placeholder="Thumbnail URL"
+                      // Translate Thumbnail Placeholder
+                      placeholder={t('embedItem.fields.thumbnailPlaceholder')}
                       value={embed.thumbnail?.url || ''}
                       onChange={e =>
                         updateEmbed(index, {
@@ -439,13 +506,20 @@ export function EmbedBuilder({ embeds, onEmbedsChange }: EmbedBuilderProps) {
                 </div>
 
                 <div className="space-y-2">
-                  <Label className="text-slate-200 font-medium">Footer</Label>
+                  {/* Translate Footer Title */}
+                  <Label className="text-slate-200 font-medium">
+                    {t('embedItem.footer.title')}
+                  </Label>
                   <div className="flex gap-2">
                     <div className="flex-1">
-                      <Label className="text-slate-300 text-sm">Text</Label>
+                      {/* Translate Footer Text Label */}
+                      <Label className="text-slate-300 text-sm">
+                        {t('embedItem.footer.text')}
+                      </Label>
                       <input
                         type="text"
-                        placeholder="Footer text"
+                        // Translate Footer Text Placeholder
+                        placeholder={t('embedItem.footer.textPlaceholder')}
                         value={embed.footer?.text || ''}
                         onChange={e =>
                           updateEmbed(index, {
@@ -460,10 +534,14 @@ export function EmbedBuilder({ embeds, onEmbedsChange }: EmbedBuilderProps) {
                       />
                     </div>
                     <div className="flex-1">
-                      <Label className="text-slate-300 text-sm">Icon URL</Label>
+                      {/* Translate Footer Icon URL Label */}
+                      <Label className="text-slate-300 text-sm">
+                        {t('embedItem.footer.iconUrl')}
+                      </Label>
                       <input
                         type="url"
-                        placeholder="Footer icon URL"
+                        // Translate Footer Icon URL Placeholder
+                        placeholder={t('embedItem.footer.iconUrlPlaceholder')}
                         value={embed.footer?.icon_url || ''}
                         onChange={e =>
                           updateEmbed(index, {
@@ -481,8 +559,9 @@ export function EmbedBuilder({ embeds, onEmbedsChange }: EmbedBuilderProps) {
                 </div>
 
                 <div className="space-y-2">
+                  {/* Translate Timestamp Label */}
                   <Label className="text-slate-200 font-medium">
-                    Timestamp
+                    {t('embedItem.fields.timestamp')}
                   </Label>
                   <input
                     type="datetime-local"

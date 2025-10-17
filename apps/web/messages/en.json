@@ -1,0 +1,530 @@
+{
+  "meta": {
+    "title": "Discord Webhook Manager - Supercharge Your Discord Communication",
+    "description": "Effortlessly manage, automate, and send rich messages to your Discord channels. Streamline announcements, updates, and interactions with our intuitive Webhook Manager."
+  },
+  "home": {
+    "hero": {
+      "heading": "Supercharge Your Discord Communication",
+      "subtext": "Eliminate manual work, costly bots, and complex custom solutions. Effortlessly manage, automate, and send rich messages to your Discord channels, streamlining announcements and interactions with our intuitive Webhook Manager.",
+      "button_logged_in": "Go to Dashboard",
+      "button_logged_out": "Get Started for Free"
+    },
+    "whatWeDo": {
+      "title": "What We Do",
+      "features": {
+        "centralized": {
+          "title": "Centralized Webhook Management",
+          "desc": "Keep all your Discord webhooks organized in one place. Easily add, edit, and delete webhooks, eliminating the hassle of juggling multiple Discord servers or manual configurations."
+        },
+        "richMessages": {
+          "title": "Rich Message Composition",
+          "desc": "Craft stunning Discord messages with full support for embeds, custom avatars, and usernames. Make your announcements stand out without the need for custom bots or tedious manual work."
+        },
+        "customAvatars": {
+          "title": "Custom Avatars & Identities",
+          "desc": "Define and reuse custom avatars and usernames for your webhook messages, allowing for dynamic and engaging announcements tailored to different requirements."
+        },
+        "ui": {
+          "title": "Intuitive User Interface",
+          "desc": "Our clean and user-friendly dashboard makes managing your Discord webhooks a breeze, even for beginners."
+        },
+        "secure": {
+          "title": "Secure & Reliable",
+          "desc": "Built with security in mind, ensuring your webhook data and Discord interactions are safe and dependable."
+        }
+      }
+    },
+    "contact": {
+      "title": "Get in Touch",
+      "desc": "Have questions, feedback, or just want to say hello? Feel free to reach out!",
+      "email": "coderck@proton.me",
+      "github": "ctrixcode",
+      "portfolio": "My Portfolio"
+    },
+    "footer": {
+      "copyright": "Discord Webhook Manager. All rights reserved."
+    }
+  },
+  "login": {
+      "loading": {
+        "sessionCheck": "Checking your session..."
+      },
+      "header": {
+        "title": "Welcome Back",
+        "subtitle": "Sign in to your account using email, Google, or Discord."
+      },
+      "oauth": {
+        "discord": "Continue with Discord",
+        "google": "Continue with Google",
+        "loading": "Signing in...",
+        "discordAlt": "Sign in with Discord",
+        "googleAlt": "Sign in with Google",
+        "loadingAlt": "Signing in..."
+      },
+      "divider": {
+        "or": "OR"
+      },
+      "form": {
+        "emailLabel": "Email Address",
+        "emailPlaceholder": "Enter your email",
+        "passwordLabel": "Password",
+        "passwordPlaceholder": "Enter your password",
+        "passwordShow": "Show password",
+        "passwordHide": "Hide password",
+        "buttonContinue": "Continue",
+        "buttonSignIn": "Sign In",
+        "buttonSigningIn": "Signing In...",
+        "errorInvalidEmail": "Please enter a valid email address.",
+        "errorShortPassword": "Password must be at least 8 characters long.",
+        "errorSignInFailed": "Sign-in failed. Please check your credentials and try again."
+      },
+      "footer": {
+        "noAccount": "Don't have an account?",
+        "signUp": "Sign up"
+      }
+  },
+  "dashboard": {
+    "welcome": "Welcome back!",
+    "manage": "Manage your Discord webhooks and messages",
+    "quickActions": "Quick Actions",
+    "webhook": "Webhook",
+    "sendMessage": "Send Message",
+    "template": "Template",
+    "gettingStarted": "Getting Started",
+    "gettingStartedDesc": "New to webhook management? Here's how to get started quickly.",
+    "steps": {
+      "oneTitle": "Connect your first webhook",
+      "oneDesc": "Add a Discord webhook URL to start sending messages.",
+      "twoTitle": "Send your first message",
+      "twoDesc": "Test your webhook by sending a message to your Discord channel.",
+      "threeTitle": "Create templates and schedule",
+      "threeDesc": "Build reusable templates and schedule messages for later."
+    },
+    "title": "Webhooks",
+    "subtitle": "Manage your Discord webhooks",
+    "stats": {
+      "total": "Total Webhooks",
+      "active": "active",
+      "activeTitle": "Active Webhooks",
+      "ready": "Ready to send messages"
+    },
+    "search": {
+      "placeholder": "Search webhooks..."
+    },
+    "filters": {
+      "all": "All",
+      "active": "Active",
+      "inactive": "Inactive"
+    },
+    "empty": {
+      "noResults": {
+        "title": "No webhooks found",
+        "desc": "Try adjusting your search query or filters"
+      },
+      "noWebhooks": {
+        "title": "No webhooks yet",
+        "desc": "Get started by adding your first Discord webhook"
+      }
+    },
+    "templates": {
+      "title": "Message Templates",
+      "subtitle": "Create and manage reusable message templates",
+      "createButton": "Create Template",
+      "searchPlaceholder": "Search templates...",
+      "badgeUses": "TODO uses",
+      "edit": "Edit",
+      "delete": "Delete",
+      "contentPreview": "Content Preview:",
+      "noContent": "No content",
+      "embedCount": "{count, plural, one {# embed} other {# embeds}}",
+      "noTemplatesTitle": "No templates yet",
+      "noTemplatesSubtitle": "Create your first message template to get started",
+      "noResultsTitle": "No templates found",
+      "noResultsSubtitle": "Try adjusting your search query",
+      "deleteDialogTitle": "Delete template?",
+      "deleteDialogDescription": "This action cannot be undone. This will permanently delete the template \"{name}\" from your account.",
+      "cancel": "Cancel",
+      "confirmDelete": "Delete",
+      "toast": {
+        "deletedTitle": "Template deleted",
+        "deletedDescription": "Template has been removed"
+      }
+    },
+    "createTemplate": {
+      "back": "Back",
+      "createTitle": "Create Template",
+      "editTitle": "Edit Template",
+      "subtitle": "Design your Discord message with live preview",
+      "save": "Save",
+      "update": "Update",
+      "saving": "Saving...",
+      "toast": {
+        "savedTitle": "Template saved",
+        "savedDesc": "Template saved successfully!",
+        "errorTitle": "Error saving template"
+      }
+    },
+    "settingsPage": {
+      "title": "Account Settings",
+      "subtitle": "Manage your profile, authentication, and usage limits.",
+      "accountType": {
+        "title": "Account Type",
+        "desc": "Check your current plan and features.",
+        "error": "Could not load account type."
+      },
+      "accountQuotes": {
+        "free": "The perfect starting point for managing your webhooks.",
+        "paid": "More power and higher limits for growing needs.",
+        "premium": "Maximum power for the most demanding users and projects."
+      },
+      "usage": {
+        "title": "Usage",
+        "desc": "Track your current usage and limits",
+        "webhookMessages": "Webhook Messages Sent (Daily)",
+        "mediaStorage": "Media Storage Used",
+        "error": "Could not load usage data."
+      },
+      "plans": {
+        "title": "Manage Plans",
+        "desc": "Upgrade, downgrade, or cancel your current subscription.",
+        "button": "View Plans"
+      },
+      "support": {
+        "title": "Support",
+        "desc": "Share your love for the app or get in touch for support.",
+        "message": "We love hearing feedback! If you find the app helpful, consider sharing your positive experience on Twitter.",
+        "dm": "For support or bug reports, please DM @ctrix on Twitter.",
+        "button": "Share on X (Twitter)"
+      },
+      "clearData": {
+        "title": "Clear Local Data",
+        "desc": "This will clear all local storage data, including your preferences and cached data. This is useful for troubleshooting. You will be logged out.",
+        "confirm": "Clear Data and Reload"
+      },
+      "auth": {
+        "password": {
+          "title": "Password",
+          "descCreate": "Create a password to enable email login",
+          "descChange": "Change your account password",
+          "buttonCreate": "Create Password",
+          "buttonChange": "Change Password"
+        },
+        "discord": {
+          "title": "Discord Account",
+          "descLinked": "Your Discord account is linked",
+          "descLink": "Link your Discord account for OAuth login",
+          "statusConnected": "Connected",
+          "idLabel": "Discord ID",
+          "usernameLabel": "Discord Username",
+          "buttonLink": "Link Discord Account"
+        }
+      }
+    },
+    "sendMessagePage": {
+      "title": "Send Message",
+      "subtitle": "Send messages immediately to one or multiple webhooks",
+      "sendTo": "Send to {count, plural, one {# webhook} other {# webhooks}}",
+      "sending": "Sending...",
+      "tabs": {
+        "content": "Content",
+        "settings": "Settings",
+        "embeds": "Embeds",
+        "webhooks": "Webhooks"
+      },
+      "composeMessage": "Compose Message",
+      "characters": "characters",
+      "clear": "Clear",
+      "loadTemplate": "Load Template",
+      "messageText": "Message Text",
+      "messagePlaceholder": "Enter your message content...",
+      "appearance": "Message Appearance",
+      "chooseAvatar": "Choose from your saved avatar profiles",
+      "tts": "Text-to-Speech",
+      "enableTts": "Enable TTS for this message",
+      "threadName": "Thread Name (Optional)",
+      "threadHint": "If specified, the message will be sent to a new thread",
+      "messageUrl": "Discord Message URL (Optional)",
+      "urlHint": "If provided, the message will replace the existing Discord message at this URL.",
+      "selectWebhooks": "Select Webhooks ({selected}/{total})",
+      "noWebhooks": "No webhooks available. Add some webhooks first.",
+      "loadingWebhooks": "Loading webhooks...",
+      "success": "Message sent successfully to {count, plural, one {# webhook} other {# webhooks}}",
+      "errorSelect": "Please select at least one webhook",
+      "errorContent": "Please enter a message or add an embed",
+      "errorGeneral": "An unexpected error occurred"
+    },
+    "plansPage": {
+      "title": "Subscription Plans",
+      "subtitle": "Choose the plan that best fits your needs.",
+      "plans": {
+        "free": {
+          "name": "Free",
+          "description": "Perfect for getting started",
+          "features": {
+            "messages_day": "{count} Webhook Messages/Day",
+            "media_storage": "{count} MB Media Storage",
+            "unlimited_messages": "Unlimited Webhook Messages/Day",
+            "large_storage": "{count} GB Media Storage",
+            "custom_avatars": "Custom Avatars",
+            "priority_support": "Priority Support",
+            "dedicated_support": "24/7 Dedicated Support"
+          },
+          "cta_current": "Current Plan"
+        },
+        "paid": {
+          "name": "Paid",
+          "description": "For growing communities",
+          "cta_upgrade": "Upgrade"
+        },
+        "premium": {
+          "name": "Premium",
+          "description": "Unleash full power",
+          "cta_upgrade": "Upgrade"
+        }
+      }
+    },
+    "avatarsPage": {
+      "title": "Predefined Avatars",
+      "subtitle": "Create and manage reusable avatar profiles for your webhooks",
+      "createButton": "Create Avatar",
+      "searchPlaceholder": "Search avatars...",
+      "loading": "Loading avatars...",
+      "emptyState": {
+        "noAvatarsTitle": "No avatars yet",
+        "noAvatarsMessage": "Create your first predefined avatar to get started",
+        "noResultsTitle": "No avatars found",
+        "noResultsMessage": "Try adjusting your search terms"
+      }
+    }
+  },
+  "avatarCard": {
+    "actions": {
+      "edit": "Edit",
+      "copyUrl": "Copy Avatar URL",
+      "delete": "Delete",
+      "select": "Select Avatar"
+    },
+    "info": {
+      "created": "Created: {date}"
+    },
+    "toast": {
+      "deleteSuccessTitle": "Avatar deleted",
+      "deleteSuccessDescription": "Avatar deleted successfully",
+      "deleteErrorTitle": "Error deleting avatar",
+      "copySuccessTitle": "Avatar URL copied",
+      "copySuccessDescription": "Avatar URL copied to clipboard"
+    },
+    "deleteDialog": {
+      "title": "Delete Avatar",
+      "description": "Are you sure you want to delete \"{username}\"? This action cannot be undone.",
+      "cancel": "Cancel",
+      "confirm": "Delete"
+    }
+  },
+  "avatarSelector": {
+    "title": "Select Predefined Avatar",
+    "searchPlaceholder": "Search avatars...",
+    "addButton": "Add",
+    "emptyState": {
+      "noAvatars": "No predefined avatars yet",
+      "noResults": "No avatars found"
+    }
+  },
+  "createAvatarDialog": {
+    "title": {
+      "create": "Create New Avatar",
+      "edit": "Edit Avatar"
+    },
+    "form": {
+      "usernameLabel": "Username",
+      "usernamePlaceholder": "e.g., BotHelper, Announcer",
+      "avatarIconLabel": "Avatar Icon",
+      "urlPlaceholder": "https://example.com/avatar.png",
+      "browse": "Browse"
+    },
+    "actions": {
+      "cancel": "Cancel",
+      "create": "Create Avatar",
+      "update": "Update Avatar",
+      "creating": "Creating...",
+      "updating": "Updating..."
+    },
+    "toast": {
+      "createSuccessTitle": "Avatar created",
+      "createSuccessDescription": "Avatar created successfully",
+      "updateSuccessTitle": "Avatar updated",
+      "updateSuccessDescription": "Avatar updated successfully",
+      "errorTitle": "Error",
+      "unexpectedError": "An unexpected error occurred",
+      "limitReachedTitle": "Limit Reached",
+      "mediaLimitLink": "Check your usage in settings."
+    }
+  },
+  "themeSelector": {
+    "title": "Theme",
+    "description": "Choose your preferred theme or let the system decide",
+    "themes": {
+      "light": "Light",
+      "dark": "Dark",
+      "system": "System"
+    }
+  },
+  "addWebhookDialog": {
+    "triggerButton": "Add Webhook",
+    "title": "Add New Webhook",
+    "description": "Add a Discord webhook to start sending messages. You can find webhook URLs in your Discord server settings.",
+    "form": {
+      "nameLabel": "Webhook Name",
+      "namePlaceholder": "My Discord Webhook",
+      "urlLabel": "Webhook URL",
+      "urlPlaceholder": "https://discord.com/api/webhooks/...",
+      "descriptionLabel": "Description (Optional)",
+      "descriptionPlaceholder": "What is this webhook used for?"
+    },
+    "actions": {
+      "cancel": "Cancel",
+      "add": "Add Webhook",
+      "adding": "Adding..."
+    }
+  },
+  "dashboardHeader": {
+    "title": "Webhook Manager",
+    "subtitle": "Discord Integration",
+    "languageSelector": "Lang",
+    "accountType": {
+      "free": "Free",
+      "paid": "Paid",
+      "premium": "Premium"
+    },
+    "accountTypeTooltip": {
+      "free": "Explore the basics, unlock your potential.",
+      "paid": "Elevate your experience, achieve more.",
+      "premium": "Unleash the ultimate power, no limits."
+    },
+    "menu": {
+      "settings": "Settings",
+      "logout": "Log out"
+    }
+  },
+  "embedBuilder": {
+    "header": {
+      "title": "Discord Embeds",
+      "subtitle": "Add rich embeds to your message (max {max})",
+      "addButton": "Add Embed"
+    },
+    "emptyState": {
+      "noEmbeds": "No embeds added yet",
+      "callToAction": "Click \"Add Embed\" to create rich message content"
+    },
+    "embedItem": {
+      "titleLabel": "Embed {index}",
+      "removeButton": "Remove",
+      "fields": {
+        "title": "Title",
+        "titlePlaceholder": "Embed title",
+        "url": "URL",
+        "urlPlaceholder": "Embed URL",
+        "description": "Description",
+        "descriptionPlaceholder": "Embed description",
+        "color": "Color",
+        "image": "Image",
+        "imagePlaceholder": "Image URL",
+        "thumbnail": "Thumbnail",
+        "thumbnailPlaceholder": "Thumbnail URL",
+        "timestamp": "Timestamp"
+      },
+      "author": {
+        "title": "Author",
+        "selectButton": "Select Avatar",
+        "clearButton": "Clear Author",
+        "manualName": "Name",
+        "manualNamePlaceholder": "Author name",
+        "manualIconUrl": "Icon URL",
+        "manualIconUrlPlaceholder": "Author icon URL",
+        "manualUrl": "URL",
+        "manualUrlPlaceholder": "Author URL"
+      },
+      "fieldBuilder": {
+        "title": "Fields",
+        "addButton": "Add Field",
+        "fieldLabel": "Field {index}",
+        "removeButton": "Remove",
+        "name": "Name",
+        "namePlaceholder": "Field name",
+        "value": "Value",
+        "valuePlaceholder": "Field value",
+        "inline": "Inline"
+      },
+      "footer": {
+        "title": "Footer",
+        "text": "Text",
+        "textPlaceholder": "Footer text",
+        "iconUrl": "Icon URL",
+        "iconUrlPlaceholder": "Footer icon URL"
+      }
+    }
+  },
+  "templateForm": {
+    "tabs": {
+      "info": "Template Info",
+      "message": "Message",
+      "embeds": "Embeds"
+    },
+    "infoTab": {
+      "header": "Template Information",
+      "nameLabel": "Template Name",
+      "namePlaceholder": "My Awesome Template",
+      "descriptionLabel": "Description (Optional)",
+      "descriptionPlaceholder": "What is this template for? Describe its purpose..."
+    },
+    "messageTab": {
+      "contentHeader": "Message Content",
+      "contentLabel": "Message Text",
+      "contentPlaceholder": "Enter your message content here... (Max 2000 characters)",
+      "characterCount": "{current}/2000 characters",
+      "avatarHeader": "Message Avatar",
+      "avatarSelectButton": "Select Avatar"
+    }
+  },
+  "common": {
+    "delete": "Eliminar",
+    "areYouSure": "¿Estás seguro?"
+  },
+  "webhookCard": {
+    "status": {
+      "active": "Activo",
+      "inactive": "Inactivo"
+    },
+    "details": {
+      "description": "Descripción:",
+      "messagesSent": "Mensajes enviados:",
+      "created": "Creado:",
+      "lastUsed": "Último uso:",
+      "todoPlaceholder": "PENDIENTE"
+    },
+    "actions": {
+      "testWebhook": "Probar Webhook",
+      "testing": "Probando...",
+      "deactivate": "Desactivar",
+      "activate": "Activar",
+      "delete": "Eliminar"
+    },
+    "dialog": {
+      "title": "¿Estás seguro?",
+      "description": "Esta acción no se puede deshacer. Esto eliminará permanentemente el webhook \"{webhookName}\" de tu cuenta."
+    },
+    "toasts": {
+      "updateSuccessTitle": "Webhook actualizado",
+      "updateSuccessDesc": "Webhook actualizado correctamente",
+      "updateErrorTitle": "Error al actualizar el webhook",
+      "deleteSuccessTitle": "Webhook eliminado",
+      "deleteSuccessDesc": "El webhook ha sido eliminado de tu cuenta",
+      "testSuccessTitle": "¡Prueba exitosa!",
+      "testSuccessDesc": "Mensaje de prueba enviado a Discord",
+      "testFailTitle": "Prueba fallida",
+      "testFailGenericDesc": "Ocurrió un error al probar el webhook"
+    }
+  }
+}
+

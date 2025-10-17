@@ -2,6 +2,7 @@
 
 import React, { useState, useRef } from 'react';
 import { useMutation } from '@tanstack/react-query';
+import { useTranslations } from 'next-intl'; // Import useTranslations
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import {
@@ -47,6 +48,7 @@ export function AvatarCard({
   selectable = false,
   onCardClick,
 }: AvatarCardProps) {
+  const t = useTranslations('avatarCard'); // Initialize translations
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
@@ -56,13 +58,15 @@ export function AvatarCard({
       setShowDeleteDialog(false);
       onDeleteSuccess();
       toast({
-        title: 'Avatar deleted',
-        description: 'Avatar deleted successfully',
+        // Translate success toast
+        title: t('toast.deleteSuccessTitle'),
+        description: t('toast.deleteSuccessDescription'),
       });
     },
     onError: error => {
       toast({
-        title: 'Error deleting avatar',
+        // Translate error toast title (description uses dynamic error.message)
+        title: t('toast.deleteErrorTitle'),
         description: error.message,
         variant: 'destructive',
       });
@@ -77,8 +81,9 @@ export function AvatarCard({
     if (avatar.avatar_url) {
       navigator.clipboard.writeText(avatar.avatar_url);
       toast({
-        title: 'Avatar URL copied',
-        description: 'Avatar URL copied to clipboard',
+        // Translate copy success toast
+        title: t('toast.copySuccessTitle'),
+        description: t('toast.copySuccessDescription'),
       });
     }
   };
@@ -139,7 +144,8 @@ export function AvatarCard({
                     className="text-slate-300 hover:text-white hover:bg-slate-700"
                   >
                     <Edit className="w-4 h-4 mr-2" />
-                    Edit
+                    {/* Translate Edit action */}
+                    {t('actions.edit')}
                   </DropdownMenuItem>
                   <DropdownMenuItem
                     onClick={e => {
@@ -149,7 +155,8 @@ export function AvatarCard({
                     className="text-slate-300 hover:text-white hover:bg-slate-700"
                   >
                     <Copy className="w-4 h-4 mr-2" />
-                    Copy Avatar URL
+                    {/* Translate Copy URL action */}
+                    {t('actions.copyUrl')}
                   </DropdownMenuItem>
                   <DropdownMenuItem
                     onClick={e => {
@@ -159,7 +166,8 @@ export function AvatarCard({
                     className="text-red-400 hover:text-red-300 hover:bg-red-900/20"
                   >
                     <Trash2 className="w-4 h-4 mr-2" />
-                    Delete
+                    {/* Translate Delete action */}
+                    {t('actions.delete')}
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
@@ -167,7 +175,10 @@ export function AvatarCard({
           </div>
 
           <div className="text-xs text-slate-500 mb-3">
-            Created: {new Date(avatar.createdAt).toLocaleDateString()}
+            {/* Translate Created date label and format the date */}
+            {t('info.created', {
+              date: new Date(avatar.createdAt).toLocaleDateString(),
+            })}
           </div>
 
           {selectable && (
@@ -175,7 +186,8 @@ export function AvatarCard({
               onClick={() => onSelect?.(avatar)}
               className="w-full bg-purple-600 hover:bg-purple-700 text-white"
             >
-              Select Avatar
+              {/* Translate Select Avatar button */}
+              {t('actions.select')}
             </Button>
           )}
         </CardContent>
@@ -185,22 +197,25 @@ export function AvatarCard({
         <AlertDialogContent className="bg-slate-800 border-slate-700">
           <AlertDialogHeader>
             <AlertDialogTitle className="text-white">
-              Delete Avatar
+              {/* Translate Delete Dialog Title */}
+              {t('deleteDialog.title')}
             </AlertDialogTitle>
             <AlertDialogDescription className="text-slate-400">
-              Are you sure you want to delete &quot;{avatar.username}&quot;?
-              This action cannot be undone.
+              {/* Translate Delete Dialog Description, passing the username as a dynamic value */}
+              {t('deleteDialog.description', { username: avatar.username })}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel className="bg-slate-700 text-slate-300 hover:bg-slate-600">
-              Cancel
+              {/* Translate Cancel button */}
+              {t('deleteDialog.cancel')}
             </AlertDialogCancel>
             <AlertDialogAction
               onClick={handleDelete}
               className="bg-red-600 hover:bg-red-700 text-white"
             >
-              Delete
+              {/* Translate Confirm Delete button */}
+              {t('deleteDialog.confirm')}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

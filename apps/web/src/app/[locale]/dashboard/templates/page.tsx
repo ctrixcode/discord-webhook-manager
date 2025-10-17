@@ -1,8 +1,9 @@
 'use client';
 
 import React, { useState, useMemo } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter } from '@/i18n/navigation';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useTranslations } from 'next-intl';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -38,6 +39,7 @@ import { useToast } from '@/hooks/use-toast';
 import { Spinner } from '@/components/ui/spinner';
 
 export default function TemplatesPage() {
+  const t = useTranslations('dashboard.templates');
   const router = useRouter();
   const { user } = useAuth();
   const { toast } = useToast();
@@ -56,8 +58,8 @@ export default function TemplatesPage() {
     mutationFn: templateQueries.deleteTemplate,
     onSuccess: () => {
       toast({
-        title: 'Template deleted',
-        description: 'Template has been removed',
+        title: t('toast.deletedTitle'),
+        description: t('toast.deletedDescription'),
       });
       setDeleteDialogTemplate(null);
       queryClient.invalidateQueries({ queryKey: ['messageTemplates'] });
@@ -76,31 +78,25 @@ export default function TemplatesPage() {
     );
   }, [templates, searchQuery]);
 
-  const handleCreateTemplate = () => {
-    router.push('/dashboard/templates/create');
-  };
-
-  const handleEditTemplate = (templateId: string) => {
+  const handleCreateTemplate = () => router.push('/dashboard/templates/create');
+  const handleEditTemplate = (templateId: string) =>
     router.push(`/dashboard/templates/create?edit=${templateId}`);
-  };
 
   return (
     <div className="min-h-screen p-6 space-y-8">
       <div className="flex items-center justify-between">
         <div>
           <h2 className="text-3xl font-bold tracking-tight text-white">
-            Message Templates
+            {t('title')}
           </h2>
-          <p className="text-gray-300">
-            Create and manage reusable message templates
-          </p>
+          <p className="text-gray-300">{t('subtitle')}</p>
         </div>
         <Button
           onClick={handleCreateTemplate}
           className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white border-0"
         >
           <Plus className="w-4 h-4 mr-2" />
-          Create Template
+          {t('createButton')}
         </Button>
       </div>
 
@@ -109,7 +105,7 @@ export default function TemplatesPage() {
         <div className="relative flex-1 max-w-sm">
           <Search className="absolute left-2 top-2.5 h-4 w-4 text-gray-400" />
           <Input
-            placeholder="Search templates..."
+            placeholder={t('searchPlaceholder')}
             value={searchQuery}
             onChange={e => setSearchQuery(e.target.value)}
             className="pl-8 bg-white/10 backdrop-blur-md border-white/20 text-white placeholder:text-gray-400 focus:border-purple-500/50 focus:ring-purple-500/20"
@@ -138,7 +134,7 @@ export default function TemplatesPage() {
                     variant="secondary"
                     className="bg-purple-500/20 text-purple-200 border-purple-500/30"
                   >
-                    TODO uses
+                    {t('badgeUses')}
                   </Badge>
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
@@ -158,14 +154,14 @@ export default function TemplatesPage() {
                         className="hover:bg-white/10 focus:bg-white/10"
                       >
                         <Edit className="mr-2 h-4 w-4" />
-                        Edit
+                        {t('edit')}
                       </DropdownMenuItem>
                       <DropdownMenuItem
                         onClick={() => setDeleteDialogTemplate(template)}
                         className="text-red-400 hover:bg-red-500/10 focus:bg-red-500/10"
                       >
                         <Trash2 className="mr-2 h-4 w-4" />
-                        Delete
+                        {t('delete')}
                       </DropdownMenuItem>
                     </DropdownMenuContent>
                   </DropdownMenu>
@@ -178,26 +174,25 @@ export default function TemplatesPage() {
                       {template.description}
                     </p>
                   )}
-
                   <div className="text-sm">
                     <div className="font-medium mb-2 text-white">
-                      Content Preview:
+                      {t('contentPreview')}
                     </div>
                     <div className="text-gray-300 bg-black/20 border border-white/10 p-3 rounded text-xs font-mono">
                       {template.content.length > 120
                         ? `${template.content.substring(0, 120)}...`
-                        : template.content || 'No content'}
+                        : template.content || t('noContent')}
                     </div>
                   </div>
-
                   <div className="flex items-center justify-between">
                     {template.embeds && template.embeds.length > 0 && (
                       <Badge
                         variant="outline"
                         className="text-xs bg-blue-500/20 text-blue-200 border-blue-500/30"
                       >
-                        {template.embeds.length} embed
-                        {template.embeds.length > 1 ? 's' : ''}
+                        {t('embedCount', {
+                          count: template.embeds.length,
+                        })}
                       </Badge>
                     )}
                     <div className="text-xs text-gray-400">
@@ -214,17 +209,17 @@ export default function TemplatesPage() {
           <CardContent className="flex flex-col items-center justify-center py-16">
             <FileText className="h-12 w-12 text-purple-400 mb-4" />
             <h3 className="text-lg font-semibold mb-2 text-white">
-              No templates yet
+              {t('noTemplatesTitle')}
             </h3>
             <p className="text-gray-300 text-center mb-4">
-              Create your first message template to get started
+              {t('noTemplatesSubtitle')}
             </p>
             <Button
               onClick={handleCreateTemplate}
               className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white border-0"
             >
               <Plus className="w-4 h-4 mr-2" />
-              Create Template
+              {t('createButton')}
             </Button>
           </CardContent>
         </Card>
@@ -233,10 +228,10 @@ export default function TemplatesPage() {
           <CardContent className="flex flex-col items-center justify-center py-16">
             <Search className="h-12 w-12 text-purple-400 mb-4" />
             <h3 className="text-lg font-semibold mb-2 text-white">
-              No templates found
+              {t('noResultsTitle')}
             </h3>
             <p className="text-gray-300 text-center">
-              Try adjusting your search query
+              {t('noResultsSubtitle')}
             </p>
           </CardContent>
         </Card>
@@ -249,17 +244,17 @@ export default function TemplatesPage() {
         <AlertDialogContent className="bg-slate-800/95 backdrop-blur-md border-white/20 text-white">
           <AlertDialogHeader>
             <AlertDialogTitle className="text-white">
-              Delete template?
+              {t('deleteDialogTitle')}
             </AlertDialogTitle>
             <AlertDialogDescription className="text-gray-300">
-              This action cannot be undone. This will permanently delete the
-              template &quot;{deleteDialogTemplate?.name}&quot; from your
-              account.
+              {t('deleteDialogDescription', {
+                name: deleteDialogTemplate?.name || '',
+              })}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel className="bg-white/10 text-white border-white/20 hover:bg-white/20">
-              Cancel
+              {t('cancel')}
             </AlertDialogCancel>
             <AlertDialogAction
               onClick={() =>
@@ -268,7 +263,7 @@ export default function TemplatesPage() {
               }
               className="bg-red-600 text-white hover:bg-red-700"
             >
-              Delete
+              {t('confirmDelete')}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

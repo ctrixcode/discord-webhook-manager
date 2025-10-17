@@ -12,7 +12,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { useRouter } from 'next/navigation';
+import { useRouter, usePathname } from '@/i18n/navigation';
 import { LogOut, Settings, Crown } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import {
@@ -22,10 +22,15 @@ import {
   TooltipTrigger,
 } from '@/components/ui/tooltip';
 import Image from 'next/image';
+import { useLocale, useTranslations } from 'next-intl'; // Import useTranslations
+import { localeMap } from '@/i18n/routing';
 
 export function DashboardHeader() {
+  const t = useTranslations('dashboardHeader'); // Initialize translations
   const { user, logout } = useAuth();
   const router = useRouter();
+  const locale = useLocale();
+  const pathname = usePathname();
 
   const handleLogout = () => {
     logout();
@@ -34,65 +39,63 @@ export function DashboardHeader() {
 
   const getAccountTypeBadge = (accountType: string) => {
     const commonBadgeClasses = 'ml-2';
-    let quote = '';
+    let labelKey: 'free' | 'paid' | 'premium';
+    let quoteKey: 'free' | 'paid' | 'premium';
+    let badgeContent;
+    let badgeClasses;
 
     switch (accountType) {
       case 'free':
-        quote = 'Explore the basics, unlock your potential.';
-        return (
-          <TooltipProvider>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Badge
-                  className={`${commonBadgeClasses} bg-blue-500/80 text-white text-xs px-1 py-0.5 rounded-full`}
-                >
-                  Free
-                </Badge>
-              </TooltipTrigger>
-              <TooltipContent className="bg-slate-800 border-slate-700 text-white">
-                <p>{quote}</p>
-              </TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
-        );
+        labelKey = 'free';
+        quoteKey = 'free';
+        badgeClasses =
+          'bg-blue-500/80 text-white text-xs px-1 py-0.5 rounded-full';
+        badgeContent = t(`accountType.${labelKey}`);
+        break;
       case 'paid':
-        quote = 'Elevate your experience, achieve more.';
-        return (
-          <TooltipProvider>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Badge
-                  className={`${commonBadgeClasses} bg-purple-500/80 text-white text-xs px-1 py-0.5 rounded-full`}
-                >
-                  Paid
-                </Badge>
-              </TooltipTrigger>
-              <TooltipContent className="bg-slate-800 border-slate-700 text-white">
-                <p>{quote}</p>
-              </TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
-        );
+        labelKey = 'paid';
+        quoteKey = 'paid';
+        badgeClasses =
+          'bg-purple-500/80 text-white text-xs px-1 py-0.5 rounded-full';
+        badgeContent = t(`accountType.${labelKey}`);
+        break;
       case 'premium':
-        quote = 'Unleash the ultimate power, no limits.';
-        return (
-          <TooltipProvider>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Crown
-                  className={`${commonBadgeClasses} h-4 w-4 text-yellow-400 drop-shadow-md`}
-                  fill="currentColor"
-                />
-              </TooltipTrigger>
-              <TooltipContent className="bg-slate-800 border-slate-700 text-white">
-                <p>{quote}</p>
-              </TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
+        labelKey = 'premium';
+        quoteKey = 'premium';
+        badgeClasses = 'h-4 w-4 text-yellow-400 drop-shadow-md';
+        badgeContent = (
+          <Crown
+            className={`${commonBadgeClasses} ${badgeClasses}`}
+            fill="currentColor"
+          />
         );
+        break;
       default:
         return null;
     }
+
+    const tooltipQuote = t(`accountTypeTooltip.${quoteKey}`);
+
+    return (
+      <TooltipProvider>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            {accountType === 'premium' ? (
+              // Crown is rendered directly for premium
+              badgeContent
+            ) : (
+              // Badge is rendered for free/paid
+              <Badge className={`${commonBadgeClasses} ${badgeClasses}`}>
+                {badgeContent}
+              </Badge>
+            )}
+          </TooltipTrigger>
+          <TooltipContent className="bg-slate-800 border-slate-700 text-white">
+            <p>{tooltipQuote}</p>
+          </TooltipContent>
+        </Tooltip>
+      </TooltipProvider>
+    );
   };
 
   const getAvatar = () => {
@@ -118,15 +121,44 @@ export function DashboardHeader() {
             alt="Webhook Manager Logo"
           />
           <div>
-            <h1 className="text-lg font-semibold text-white">
-              Webhook Manager
-            </h1>
-            <p className="text-xs text-slate-400">Discord Integration</p>
+            {/* Translate Title */}
+            <h1 className="text-lg font-semibold text-white">{t('title')}</h1>
+            {/* Translate Subtitle */}
+            <p className="text-xs text-slate-400">{t('subtitle')}</p>
           </div>
         </div>
 
         <div className="flex items-center gap-4">
-          {user?.display_name && (
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button
+                variant="ghost"
+                className="relative h-10 w-fit rounded hover:bg-purple-500/20 text-white"
+              >
+                {/* Translate "Lang" and display current locale */}
+                {t('languageSelector')} ({locale})
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent
+              className="w-56 bg-slate-900/95 border-slate-700 backdrop-blur-xl"
+              align="end"
+              forceMount
+            >
+              {Object.keys(localeMap).map(loc => (
+                <DropdownMenuItem
+                  key={loc}
+                  onClick={() => {
+                    router.replace(pathname, { locale: loc });
+                  }}
+                  className="text-slate-300 hover:bg-purple-500/20 hover:text-white"
+                >
+                  {/* Assuming localeMap contains the translated language name (e.g., 'en' -> 'English') */}
+                  {localeMap[loc as keyof typeof localeMap]}
+                </DropdownMenuItem>
+              ))}
+            </DropdownMenuContent>
+          </DropdownMenu>
+          {user?.username && (
             <span className="text-white text-lg font-semibold mr-2 flex items-center">
               {user.display_name}
               {user?.accountType && getAccountTypeBadge(user.accountType)}
@@ -156,7 +188,8 @@ export function DashboardHeader() {
                 className="text-slate-300 hover:bg-purple-500/20 hover:text-white"
               >
                 <Settings className="mr-2 h-4 w-4" />
-                <span>Settings</span>
+                {/* Translate Settings menu item */}
+                <span>{t('menu.settings')}</span>
               </DropdownMenuItem>
               <DropdownMenuSeparator className="bg-slate-700" />
               <DropdownMenuItem
@@ -164,7 +197,8 @@ export function DashboardHeader() {
                 className="text-slate-300 hover:bg-red-500/20 hover:text-white"
               >
                 <LogOut className="mr-2 h-4 w-4" />
-                <span>Log out</span>
+                {/* Translate Log out menu item */}
+                <span>{t('menu.logout')}</span>
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>

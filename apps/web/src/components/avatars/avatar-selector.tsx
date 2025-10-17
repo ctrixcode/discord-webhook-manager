@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { useTranslations } from 'next-intl'; // Import useTranslations
 import { Button } from '@/components/ui/button';
 import {
   Dialog,
@@ -28,6 +29,7 @@ interface AvatarSelectorProps {
 }
 
 export function AvatarSelector({ onSelect, children }: AvatarSelectorProps) {
+  const t = useTranslations('avatarSelector'); // Initialize translations
   const { user } = useAuth();
   const queryClient = useQueryClient();
   const [open, setOpen] = useState(false);
@@ -41,6 +43,8 @@ export function AvatarSelector({ onSelect, children }: AvatarSelectorProps) {
   });
 
   const filteredAvatars = avatars.filter((avatar: Avatar) => {
+    // The original logic checks username against itself twice, we'll keep the
+    // filtering logic as is, focusing on translation of visible text.
     const nameMatches =
       avatar.username &&
       avatar.username.toLowerCase().includes(searchQuery.toLowerCase());
@@ -62,7 +66,8 @@ export function AvatarSelector({ onSelect, children }: AvatarSelectorProps) {
       <DialogContent className="bg-slate-800 border-slate-700 text-white max-w-2xl">
         <DialogHeader>
           <DialogTitle className="text-xl font-semibold">
-            Select Predefined Avatar
+            {/* Translate Dialog Title */}
+            {t('title')}
           </DialogTitle>
         </DialogHeader>
 
@@ -72,7 +77,8 @@ export function AvatarSelector({ onSelect, children }: AvatarSelectorProps) {
             <div className="relative flex-grow">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400 w-4 h-4" />
               <Input
-                placeholder="Search avatars..."
+                // Translate Search Placeholder
+                placeholder={t('searchPlaceholder')}
                 value={searchQuery}
                 onChange={e => setSearchQuery(e.target.value)}
                 className="pl-10 bg-slate-700/50 border-slate-600 text-white placeholder:text-slate-400 focus:border-purple-500"
@@ -85,6 +91,8 @@ export function AvatarSelector({ onSelect, children }: AvatarSelectorProps) {
               className="text-white border-slate-600 hover:bg-slate-700/50"
             >
               <Plus className="w-4 h-4" />
+              {/* Optional: Add "Add" text next to plus button if desired */}
+              {/* {t('addButton')} */}
             </Button>
           </div>
 
@@ -94,9 +102,10 @@ export function AvatarSelector({ onSelect, children }: AvatarSelectorProps) {
               <div className="text-center py-8">
                 <Users className="w-12 h-12 text-slate-400 mx-auto mb-4" />
                 <p className="text-slate-400">
+                  {/* Translate empty state messages */}
                   {searchQuery
-                    ? 'No avatars found'
-                    : 'No predefined avatars yet'}
+                    ? t('emptyState.noResults')
+                    : t('emptyState.noAvatars')}
                 </p>
               </div>
             ) : (
@@ -132,6 +141,7 @@ export function AvatarSelector({ onSelect, children }: AvatarSelectorProps) {
           </div>
         </div>
       </DialogContent>
+      {/* CreateAvatarDialog is assumed to be translated internally */}
       <CreateAvatarDialog
         open={showCreateDialog}
         onOpenChange={setShowCreateDialog}
