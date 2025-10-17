@@ -44,9 +44,9 @@ This platform is specifically geared towards:
     Edit the `.env` file with your configuration. Essential variables include:
     ```env
     NODE_ENV=development
-    NEXT_PUBLIC_API_URL=http://localhost:4000 # Or your deployed backend URL
+    NEXT_PUBLIC_API_URL=http://localhost:4000/api # Or your deployed backend URL
     ```
-    `NEXT_PUBLIC_API_URL` should point to your backend API. During local development, this will typically be `http://localhost:4000`.
+    `NEXT_PUBLIC_API_URL` should point to your backend API. During local development, this will typically be `http://localhost:4000/api`.
 
 *(Further instructions on how to set up and run the project will go here.)*
 

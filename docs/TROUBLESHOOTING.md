@@ -58,6 +58,8 @@ This guide helps you resolve common setup and usage problems with the Discord We
    NODE_ENV=development
    NEXT_PUBLIC_API_URL=http://localhost:4000/api
    ```
+   
+   **Note**: The backend runs on port 4000 by default. Ensure `NEXT_PUBLIC_API_URL` includes the `/api` path.
 
 3. **Restart your development servers** after adding environment variables.
 

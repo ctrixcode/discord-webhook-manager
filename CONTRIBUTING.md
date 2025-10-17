@@ -5,10 +5,12 @@ We welcome contributions to the Discord Webhook Manager project! By contributing
 Please take a moment to review this document to make the contribution process as smooth as possible.
 
 ## Why Contribute?
+
 Your contributions are invaluable to the Discord Webhook Manager project! By contributing, you help us:
-*   **Improve and Expand:** Add new features, fix bugs, and enhance existing functionality.
-*   **Learn and Grow:** Collaborate with other developers and learn new skills.
-*   **Make an Impact:** Help create a better tool for Discord server administrators and users.
+
+- **Improve and Expand:** Add new features, fix bugs, and enhance existing functionality.
+- **Learn and Grow:** Collaborate with other developers and learn new skills.
+- **Make an Impact:** Help create a better tool for Discord server administrators and users.
 
 We appreciate your time and effort, and we're excited to have you as part of our community!
 
@@ -22,11 +24,11 @@ Please note that this project is released with a Contributor Code of Conduct. By
 
 If you find a bug, please open an issue on GitHub. When reporting a bug, please include:
 
-*   A clear and concise description of the bug.
-*   Steps to reproduce the behavior.
-*   Expected behavior.
-*   Screenshots or error messages if applicable.
-*   Your environment details (OS, Node.js version, browser, etc.).
+- A clear and concise description of the bug.
+- Steps to reproduce the behavior.
+- Expected behavior.
+- Screenshots or error messages if applicable.
+- Your environment details (OS, Node.js version, browser, etc.).
 
 ### Suggesting Enhancements
 
@@ -39,26 +41,28 @@ If you're looking for a good place to start contributing, check out our [Good Fi
 ## Technical Stack
 
 ### Frontend Technologies
-*   Next.js
-*   React
-*   TypeScript
-*   TanStack Query
-*   Radix UI
-*   Tailwind CSS
+
+- Next.js
+- React
+- TypeScript
+- TanStack Query
+- Radix UI
+- Tailwind CSS
 
 ### Backend Technologies
+
 The backend is built with a modern and scalable technology stack:
 
--   **Framework**: Fastify
--   **Language**: TypeScript
--   **Database**: MongoDB
--   **ODM**: Mongoose
--   **Authentication**: JWT (JSON Web Tokens)
--   **File Storage**: Cloudinary
--   **Logging**: Winston
--   **Environment Variables**: Dotenv
--   **Discord Webhook Library**: We maintain our own in-house library for handling Discord webhook interactions. If you need to add a feature that requires changes to the webhook functionality, you may need to contribute to this library as well. You can find the repository here: [discord-webhook-library](https://github.com/ctrixcode/discord-webhook-library).
-    *   **Workflow for Library Changes:** If your contribution requires changes to the `discord-webhook-library`, please open a Pull Request in that repository first. Once those changes are merged and a new version is released, you can then update the dependency in this project and proceed with your contribution here.
+- **Framework**: Fastify
+- **Language**: TypeScript
+- **Database**: MongoDB
+- **ODM**: Mongoose
+- **Authentication**: JWT (JSON Web Tokens)
+- **File Storage**: Cloudinary
+- **Logging**: Winston
+- **Environment Variables**: Dotenv
+- **Discord Webhook Library**: We maintain our own in-house library for handling Discord webhook interactions. If you need to add a feature that requires changes to the webhook functionality, you may need to contribute to this library as well. You can find the repository here: [discord-webhook-library](https://github.com/ctrixcode/discord-webhook-library).
+  - **Workflow for Library Changes:** If your contribution requires changes to the `discord-webhook-library`, please open a Pull Request in that repository first. Once those changes are merged and a new version is released, you can then update the dependency in this project and proceed with your contribution here.
 
 ## Development Environment Setup
 
