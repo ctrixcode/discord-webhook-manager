@@ -206,6 +206,28 @@ export default function SendMessagePage() {
   const handleUnderline = () => applyMarkdown('underline');
   const handleSpoiler = () => applyMarkdown('spoiler');
 
+  const handleEmojiSelect = (emoji: string) => {
+    const textarea = textareaRef.current;
+    if (!textarea) return;
+
+    const start = textarea.selectionStart;
+    const end = textarea.selectionEnd;
+
+    const newContent =
+      message.content.substring(0, start) +
+      emoji +
+      message.content.substring(end);
+
+    setMessage(prev => ({ ...prev, content: newContent }));
+
+    // Set cursor position after emoji
+    setTimeout(() => {
+      textarea.focus();
+      const newCursorPos = start + emoji.length;
+      textarea.setSelectionRange(newCursorPos, newCursorPos);
+    }, 0);
+  };
+
   const handleSendMessage = async () => {
     if (selectedWebhooks.length === 0) {
       toast({
@@ -408,6 +430,7 @@ export default function SendMessagePage() {
                           onStrikethrough={handleStrikethrough}
                           onUnderline={handleUnderline}
                           onSpoiler={handleSpoiler}
+                          onEmojiSelect={handleEmojiSelect}
                         />
                       </div>
                       <Textarea

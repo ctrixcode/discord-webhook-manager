@@ -11,6 +11,7 @@ import {
   EyeOff,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { EmojiPicker } from './emoji-picker';
 
 interface MarkdownToolbarProps {
   onBold: () => void;
@@ -20,6 +21,7 @@ interface MarkdownToolbarProps {
   onStrikethrough: () => void;
   onUnderline: () => void;
   onSpoiler: () => void;
+  onEmojiSelect: (emoji: string) => void;
 }
 
 export function MarkdownToolbar({
@@ -30,9 +32,12 @@ export function MarkdownToolbar({
   onStrikethrough,
   onUnderline,
   onSpoiler,
+  onEmojiSelect,
 }: MarkdownToolbarProps) {
   return (
     <div className="flex items-center gap-1">
+      <EmojiPicker onEmojiSelect={onEmojiSelect} />
+      <div className="w-px h-4 bg-slate-600 mx-0.5" />
       <Button
         type="button"
         variant="ghost"
