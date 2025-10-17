@@ -51,6 +51,14 @@ export function MentionAutocomplete({
   onClose,
 }: MentionAutocompleteProps) {
   const dropdownRef = useRef<HTMLDivElement>(null);
+  const [selectedIndex, setSelectedIndex] = React.useState(0);
+
+  // Reset selected index when dropdown opens
+  useEffect(() => {
+    if (isOpen) {
+      setSelectedIndex(0);
+    }
+  }, [isOpen]);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -71,6 +79,44 @@ export function MentionAutocomplete({
     };
   }, [isOpen, onClose]);
 
+  // Keyboard navigation
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (!isOpen) return;
+
+      switch (event.key) {
+        case 'ArrowDown':
+          event.preventDefault();
+          setSelectedIndex(prev =>
+            prev < MENTION_OPTIONS.length - 1 ? prev + 1 : prev
+          );
+          break;
+        case 'ArrowUp':
+          event.preventDefault();
+          setSelectedIndex(prev => (prev > 0 ? prev - 1 : prev));
+          break;
+        case 'Enter':
+          event.preventDefault();
+          if (MENTION_OPTIONS[selectedIndex]) {
+            onSelect(MENTION_OPTIONS[selectedIndex].value);
+          }
+          break;
+        case 'Escape':
+          event.preventDefault();
+          onClose();
+          break;
+      }
+    };
+
+    if (isOpen) {
+      document.addEventListener('keydown', handleKeyDown);
+    }
+
+    return () => {
+      document.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [isOpen, selectedIndex, onSelect, onClose]);
+
   if (!isOpen) return null;
 
   return (
@@ -83,11 +129,16 @@ export function MentionAutocomplete({
       }}
     >
       <div className="max-h-[300px] overflow-y-auto">
-        {MENTION_OPTIONS.map(option => (
+        {MENTION_OPTIONS.map((option, index) => (
           <button
             key={option.value}
             onClick={() => onSelect(option.value)}
-            className="w-full flex items-center gap-3 p-3 hover:bg-slate-700/50 transition-colors text-left"
+            onMouseEnter={() => setSelectedIndex(index)}
+            className={`w-full flex items-center gap-3 p-3 transition-colors text-left ${
+              index === selectedIndex
+                ? 'bg-slate-700/70'
+                : 'hover:bg-slate-700/50'
+            }`}
           >
             <div className="text-cyan-400 flex-shrink-0">{option.icon}</div>
             <div className="flex-1 min-w-0">

@@ -527,6 +527,19 @@ export default function SendMessagePage() {
                         placeholder="Enter your message content..."
                         value={message.content}
                         onChange={handleTextareaChange}
+                        onKeyDown={e => {
+                          // Prevent default behavior for arrow keys and Enter when dropdown is open
+                          if (showMentionDropdown) {
+                            if (
+                              e.key === 'ArrowDown' ||
+                              e.key === 'ArrowUp' ||
+                              e.key === 'Enter' ||
+                              e.key === 'Escape'
+                            ) {
+                              e.preventDefault();
+                            }
+                          }
+                        }}
                         className="mt-1 bg-slate-700/50 border-slate-600 text-white placeholder:text-slate-400 focus:border-purple-500 min-h-[200px] resize-none"
                       />
                       <p className="text-xs text-slate-400 mt-1">
