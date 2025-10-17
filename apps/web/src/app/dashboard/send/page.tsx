@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { useSearchParams, useRouter, usePathname } from 'next/navigation';
 import {
   Select,
@@ -62,6 +62,7 @@ export default function SendMessagePage() {
   const [selectedAvatar, setSelectedAvatar] = useState<Avatar | undefined>();
   const [hideSelectTemplate, setHideSelectTemplate] = useState(false);
   const textareaRef = React.useRef<HTMLTextAreaElement>(null);
+  const isClearingRef = useRef(false);
 
   // Mention autocomplete state
   const [showMentionDropdown, setShowMentionDropdown] = useState(false);
@@ -70,6 +71,7 @@ export default function SendMessagePage() {
   const [mentionSearchQuery, setMentionSearchQuery] = useState('');
 
   const handleClearMessage = () => {
+    isClearingRef.current = true;
     // Clear all message state
     setMessage({
       content: '',
@@ -166,6 +168,12 @@ export default function SendMessagePage() {
   }, [initialWebhookId]);
 
   useEffect(() => {
+    // Don't load template if we're in the process of clearing
+    if (isClearingRef.current) {
+      isClearingRef.current = false;
+      return;
+    }
+
     if (
       initialTemplateId &&
       templates.length > 0 &&
