@@ -71,6 +71,7 @@ export default function SendMessagePage() {
 
   const handleClearMessage = () => {
     // Hard refresh to clear everything
+    // TODO: improve thiss function
     window.location.href = pathname;
   };
 
