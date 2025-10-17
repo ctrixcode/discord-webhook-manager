@@ -97,6 +97,26 @@ const patterns: Pattern[] = [
     },
   },
   {
+    // Plain URLs: https://example.com or http://example.com -> clickable link
+    // Matches: http:// or https:// followed by domain and path
+    // Must come after markdown links to avoid conflicts
+    regex: /(https?:\/\/[^\s<]+[^<.,:;"')\]\s])/g,
+    render: (args: string[]) => {
+      const url = args[0] || '';
+      const safeUrl = sanitizeUrl(url);
+      return (
+        <a
+          href={safeUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="text-[#00aff4] hover:underline cursor-pointer"
+        >
+          {url}
+        </a>
+      );
+    },
+  },
+  {
     // Bold + Italic: ***text*** -> bold and italic
     // Matches: *** followed by any text followed by ***
     // Must be checked before ** and * patterns to avoid conflicts
