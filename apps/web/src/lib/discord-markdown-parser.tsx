@@ -378,7 +378,13 @@ function parseLineMarkdown(
   }
 
   // Sort replacements by their position in the text
-  replacements.sort((a, b) => a.start - b.start);
+  // If two patterns start at the same position, prefer the longer match
+  replacements.sort((a, b) => {
+    if (a.start !== b.start) return a.start - b.start;
+    const lenA = a.end - a.start;
+    const lenB = b.end - b.start;
+    return lenB - lenA; // longer first if same start
+  });
 
   // Remove overlapping matches - if two patterns match the same text,
   // keep the first one (by position) and discard overlapping ones
