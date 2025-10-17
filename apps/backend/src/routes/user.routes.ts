@@ -26,7 +26,7 @@ const userRoutes = async (fastify: FastifyInstance) => {
             ...userProfileResponseSchema,
             example: {
               success: true,
-              message: 'User profile fetched successfully',
+              message: 'User fetched successfully',
               data: {
                 id: '68ea52307fcd6c887f459aa2',
                 createdAt: '2025-10-11T12:48:48.101Z',
