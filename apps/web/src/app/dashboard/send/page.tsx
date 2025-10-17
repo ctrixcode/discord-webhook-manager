@@ -330,15 +330,17 @@ export default function SendMessagePage() {
             </p>
           </div>
           <div className="flex items-center gap-2">
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={handleClearMessage}
-              className="border-red-600 text-red-400 hover:bg-red-600 hover:text-white bg-transparent"
-            >
-              <XCircle className="w-4 h-4 mr-1" />
-              Clear
-            </Button>
+            {(message.content.trim() || message.embeds.length > 0) && (
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={handleClearMessage}
+                className="border-red-600 text-red-400 hover:bg-red-600 hover:text-white bg-transparent"
+              >
+                <XCircle className="w-4 h-4 mr-1" />
+                Clear
+              </Button>
+            )}
             <Button
               onClick={handleSendMessage}
               disabled={isSending || selectedWebhooks.length === 0}
