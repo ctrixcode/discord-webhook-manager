@@ -5,11 +5,10 @@ interface EnvConfig {
   FRONTEND_URL: string;
 
   // Database
-  DATABASE_URL: string;
+  MONGO_URL: string;
 
   // JWT
   JWT_SECRET: string;
-  JWT_REFRESH_SECRET: string;
 
   // Discord OAuth
   DISCORD_CLIENT_ID: string;
@@ -34,9 +33,8 @@ export const env: EnvConfig = {
   NODE_ENV: process.env.NODE_ENV || 'development',
   PORT: process.env.PORT || '8000',
   FRONTEND_URL: process.env.FRONTEND_URL || 'http://localhost:3000',
-  DATABASE_URL: getEnvVar('DATABASE_URL'),
+  MONGO_URL: getEnvVar('MONGO_URL'),
   JWT_SECRET: getEnvVar('JWT_SECRET'),
-  JWT_REFRESH_SECRET: getEnvVar('JWT_REFRESH_SECRET'),
   DISCORD_CLIENT_ID: getEnvVar('DISCORD_CLIENT_ID'),
   DISCORD_CLIENT_SECRET: getEnvVar('DISCORD_CLIENT_SECRET'),
   DISCORD_REDIRECT_URI: getEnvVar('DISCORD_REDIRECT_URI'),
