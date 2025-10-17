@@ -140,9 +140,10 @@ const patterns: Pattern[] = [
     },
   },
   {
-    // Italic: *text* or _text_ -> italic
-    // Matches: * followed by any text followed by *
-    regex: /\*(.*?)\*/g,
+    // Italic (asterisk): *text* -> italic
+    // Matches: * followed by at least one character followed by *
+    // Requires at least one character to avoid empty matches
+    regex: /\*(.+?)\*/g,
     render: (args: string[]) => {
       const match = args[0];
       return <em>{match}</em>;
@@ -151,10 +152,22 @@ const patterns: Pattern[] = [
   {
     // Underline: __text__ -> underlined
     // Matches: __ followed by any text followed by __
+    // Must be checked before _ italic pattern to avoid conflicts
     regex: /__(.*?)__/g,
     render: (args: string[]) => {
       const match = args[0];
       return <u>{match}</u>;
+    },
+  },
+  {
+    // Italic (underscore): _text_ -> italic
+    // Matches: _ followed by at least one character followed by _
+    // Placed after underline to avoid conflicting with __text__
+    // Requires at least one character to avoid empty matches
+    regex: /_(.+?)_/g,
+    render: (args: string[]) => {
+      const match = args[0];
+      return <em>{match}</em>;
     },
   },
   {
