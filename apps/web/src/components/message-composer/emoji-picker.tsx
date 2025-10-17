@@ -499,37 +499,37 @@ export function EmojiPicker({ onEmojiSelect }: EmojiPickerProps) {
         </Button>
       </PopoverTrigger>
       <PopoverContent
-        className="w-80 p-0 bg-slate-800 border-slate-700"
+        className="w-[420px] p-0 bg-slate-800 border-slate-700"
         align="end"
       >
-        <div className="flex flex-col h-96">
+        <div className="flex flex-col h-[400px]">
           {/* Category Tabs */}
-          <div className="flex gap-1 p-2 border-b border-slate-700 overflow-x-auto">
+          <div className="flex gap-1 p-2 border-b border-slate-700 overflow-x-auto scrollbar-thin">
             {Object.keys(EMOJI_CATEGORIES).map(category => (
               <button
                 key={category}
                 onClick={() => setSelectedCategory(category)}
-                className={`px-3 py-1 text-xs rounded whitespace-nowrap transition-colors ${
+                className={`px-2 py-1 text-[10px] rounded whitespace-nowrap transition-colors flex-shrink-0 ${
                   selectedCategory === category
                     ? 'bg-purple-600 text-white'
                     : 'bg-slate-700/50 text-slate-300 hover:bg-slate-700'
                 }`}
               >
-                {category}
+                {category.split(' ')[0]}
               </button>
             ))}
           </div>
 
           {/* Emoji Grid */}
-          <div className="flex-1 overflow-y-auto p-2">
-            <div className="grid grid-cols-8 gap-1">
+          <div className="flex-1 overflow-y-auto p-2 scrollbar-thin">
+            <div className="grid grid-cols-8 gap-0.5">
               {EMOJI_CATEGORIES[
                 selectedCategory as keyof typeof EMOJI_CATEGORIES
               ].map((emoji, index) => (
                 <button
                   key={index}
                   onClick={() => onEmojiSelect(emoji)}
-                  className="text-2xl p-2 hover:bg-slate-700 rounded transition-colors"
+                  className="text-xl p-1.5 hover:bg-slate-700/70 rounded transition-colors aspect-square flex items-center justify-center"
                   title={emoji}
                 >
                   {emoji}
