@@ -92,7 +92,7 @@ export class ExternalApiError extends ApiError {
   constructor(
     message: string,
     errorCode: string,
-    source?: 'discord' | 'cloudinary',
+    source?: 'google' | 'discord' | 'cloudinary',
     statusCode: number = HttpStatusCode.BAD_GATEWAY // 502 is often more appropriate for external failures
   ) {
     super(message, errorCode, statusCode);

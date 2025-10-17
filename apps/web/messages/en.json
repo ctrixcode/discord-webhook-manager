@@ -47,10 +47,42 @@
     }
   },
   "login": {
-    "checking": "Checking your session...",
-    "welcome": "Welcome!",
-    "loginMessage": "Please log in with your Discord account to manage your webhooks.",
-    "loginButton": "Login with Discord"
+      "loading": {
+        "sessionCheck": "Checking your session..."
+      },
+      "header": {
+        "title": "Welcome Back",
+        "subtitle": "Sign in to your account using email, Google, or Discord."
+      },
+      "oauth": {
+        "discord": "Continue with Discord",
+        "google": "Continue with Google",
+        "loading": "Signing in...",
+        "discordAlt": "Sign in with Discord",
+        "googleAlt": "Sign in with Google",
+        "loadingAlt": "Signing in..."
+      },
+      "divider": {
+        "or": "OR"
+      },
+      "form": {
+        "emailLabel": "Email Address",
+        "emailPlaceholder": "Enter your email",
+        "passwordLabel": "Password",
+        "passwordPlaceholder": "Enter your password",
+        "passwordShow": "Show password",
+        "passwordHide": "Hide password",
+        "buttonContinue": "Continue",
+        "buttonSignIn": "Sign In",
+        "buttonSigningIn": "Signing In...",
+        "errorInvalidEmail": "Please enter a valid email address.",
+        "errorShortPassword": "Password must be at least 8 characters long.",
+        "errorSignInFailed": "Sign-in failed. Please check your credentials and try again."
+      },
+      "footer": {
+        "noAccount": "Don't have an account?",
+        "signUp": "Sign up"
+      }
   },
   "dashboard": {
     "welcome": "Welcome back!",
@@ -134,41 +166,59 @@
       }
     },
     "settingsPage": {
-      "title": "Settings",
-      "subtitle": "Manage your account and application preferences",
+      "title": "Account Settings",
+      "subtitle": "Manage your profile, authentication, and usage limits.",
       "accountType": {
         "title": "Account Type",
-        "desc": "Your current subscription level",
+        "desc": "Check your current plan and features.",
         "error": "Could not load account type."
       },
       "accountQuotes": {
-        "free": "Explore the basics, unlock your potential.",
-        "paid": "Elevate your experience, achieve more.",
-        "premium": "Unleash the ultimate power, no limits."
+        "free": "The perfect starting point for managing your webhooks.",
+        "paid": "More power and higher limits for growing needs.",
+        "premium": "Maximum power for the most demanding users and projects."
       },
       "usage": {
         "title": "Usage",
         "desc": "Track your current usage and limits",
-        "webhookMessages": "Daily Webhook Messages",
-        "mediaStorage": "Media Storage",
+        "webhookMessages": "Webhook Messages Sent (Daily)",
+        "mediaStorage": "Media Storage Used",
         "error": "Could not load usage data."
       },
       "plans": {
-        "title": "Subscription Plans",
-        "desc": "View details about different subscription tiers and their benefits",
+        "title": "Manage Plans",
+        "desc": "Upgrade, downgrade, or cancel your current subscription.",
         "button": "View Plans"
       },
       "support": {
-        "title": "Support Us",
-        "desc": "Help us grow by sharing Discord Webhook Manager",
-        "message": "If you enjoy using Discord Webhook Manager, consider sharing it on X (formerly Twitter)!",
-        "button": "Share on X (Twitter)",
-        "dm": "DM me on X if you want to get paid subscriptions."
+        "title": "Support",
+        "desc": "Share your love for the app or get in touch for support.",
+        "message": "We love hearing feedback! If you find the app helpful, consider sharing your positive experience on Twitter.",
+        "dm": "For support or bug reports, please DM @ctrix on Twitter.",
+        "button": "Share on X (Twitter)"
       },
       "clearData": {
-        "title": "Clear All Data?",
-        "desc": "Are you sure you want to clear all data? This action cannot be undone.",
-        "confirm": "Clear Data"
+        "title": "Clear Local Data",
+        "desc": "This will clear all local storage data, including your preferences and cached data. This is useful for troubleshooting. You will be logged out.",
+        "confirm": "Clear Data and Reload"
+      },
+      "auth": {
+        "password": {
+          "title": "Password",
+          "descCreate": "Create a password to enable email login",
+          "descChange": "Change your account password",
+          "buttonCreate": "Create Password",
+          "buttonChange": "Change Password"
+        },
+        "discord": {
+          "title": "Discord Account",
+          "descLinked": "Your Discord account is linked",
+          "descLink": "Link your Discord account for OAuth login",
+          "statusConnected": "Connected",
+          "idLabel": "Discord ID",
+          "usernameLabel": "Discord Username",
+          "buttonLink": "Link Discord Account"
+        }
       }
     },
     "sendMessagePage": {

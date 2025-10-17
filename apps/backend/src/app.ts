@@ -1,8 +1,9 @@
 import Fastify from 'fastify';
 import helmet from '@fastify/helmet';
 import multipart from '@fastify/multipart';
-import dotenv from 'dotenv';
 import cookie from '@fastify/cookie';
+import swagger from '@fastify/swagger';
+import swaggerUi from '@fastify/swagger-ui';
 import {
   corsPlugin,
   rateLimiterPlugin,
@@ -13,9 +14,42 @@ import {
 import routes from './routes/index';
 import { FILE_SIZE_UPLOAD_LIMIT } from './config/usage';
 
-dotenv.config();
-
 const app = Fastify({ logger: false, requestTimeout: 30000 });
+
+app.register(swagger, {
+  openapi: {
+    info: {
+      title: 'Discord Webhook Manager API',
+      description:
+        'Auto-generated API documentation for Discord Webhook Manager API',
+      version: '1.0.0',
+    },
+    servers: [
+      {
+        url: `http://localhost:${process.env.PORT || 3001}`,
+        description: 'Development Server',
+      },
+    ],
+    components: {
+      securitySchemes: {
+        bearerAuth: {
+          type: 'http',
+          scheme: 'bearer',
+          bearerFormat: 'JWT',
+          description: 'Enter your JWT token in the format: Bearer <token>',
+        },
+      },
+    },
+  },
+});
+
+app.register(swaggerUi, {
+  routePrefix: '/docs',
+  uiConfig: {
+    docExpansion: 'list',
+    deepLinking: true,
+  },
+});
 
 // Register plugins
 app.register(helmet);

@@ -100,15 +100,22 @@ The backend is built with a modern and scalable technology stack:
 
     ```env
     PORT=4000
-    MONGODB_URL=mongodb://localhost:27017/discord-webhook-manager
+    FRONTEND_URL=http://localhost:3000
+    SALT_ROUNDS=10
     NODE_ENV=development
+    MONGO_URL=mongodb://localhost:27017/discord-webhook-manager
     JWT_SECRET=your-super-secret-jwt-key
     DISCORD_CLIENT_ID=your_discord_client_id
-    DISCORD_CLIENT_SECRET=your_discord_client_SECRET
-    DISCORD_REDIRECT_URI=http://localhost:3000/auth/callback # Frontend callback URL
+    DISCORD_CLIENT_SECRET=your_discord_client_secret
+    DISCORD_REDIRECT_URI=http://localhost:4000/api/auth/discord/callback # Frontend callback URL
     CLOUDINARY_CLOUD_NAME=your_cloudinary_cloud_name
     CLOUDINARY_API_KEY=your_cloudinary_api_key
     CLOUDINARY_API_SECRET=your_cloudinary_api_secret
+    GOOGLE_CLIENT_ID=your_google_client_id
+    GOOGLE_CLIENT_SECRET=your_google_client_secret
+    GOOGLE_OAUTH_REDIRECT_URI=http://localhost:4000/api/auth/google/callback
+    GMAIL_REFRESH_TOKEN=your_gmail_refresh_token
+    FROM_EMAIL=your_email@gmail.com
     ```
 
 4.  **Set up environment variables for the frontend**
@@ -120,9 +127,9 @@ The backend is built with a modern and scalable technology stack:
     Edit the `.env` file with your configuration. Essential variables include:
     ```env
     NODE_ENV=development
-    NEXT_PUBLIC_API_URL=http://localhost:4000 # Or your deployed backend URL
+    NEXT_PUBLIC_API_URL=http://localhost:4000/api # Or your deployed backend URL
     ```
-    `NEXT_PUBLIC_API_URL` should point to your backend API. During local development, this will typically be `http://localhost:4000`.
+    `NEXT_PUBLIC_API_URL` should point to your backend API. During local development, this will typically be `http://localhost:4000/api`.
 
 4.  **Start MongoDB** (if using local installation)
     *   **Recommendation for Windows Users:** For a simpler setup, especially on Windows, consider using **MongoDB Atlas** (MongoDB's cloud service). You can create a free-tier cluster and obtain a connection string. Update your `MONGODB_URL` in `apps/backend/.env` with this connection string.
@@ -169,6 +176,25 @@ pnpm dev
 ```bash
 pnpm build
 ```
+
+#### DOCUMENTATIONS
+
+
+### Backend Documentation
+ run
+ ```bash
+ pnpm dev
+ ```
+ The swaggerUI will be available on `http://localhost:{PORT}/docs`
+
+### Frontend Documentation
+
+```bash
+npx typedoc --out docs/ --entryPointStrategy expand --exclude "**/*.test.ts" --exclude "**/*.test.tsx" --exclude ".next/**/*" src/
+```
+Static HTML Files will be available in `web/docs` directory
+
+
 
 ## Code Contributions
 

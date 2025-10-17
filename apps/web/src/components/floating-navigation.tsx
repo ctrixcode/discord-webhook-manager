@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
-import { DiscordLogo } from '@/components/discord-logo';
+import { DiscordLogo } from '@/components/logo';
 import { Webhook, FileText, Settings, X, Users, Send } from 'lucide-react';
 import Link from 'next/link';
 

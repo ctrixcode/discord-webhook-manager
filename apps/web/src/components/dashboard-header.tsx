@@ -98,6 +98,15 @@ export function DashboardHeader() {
     );
   };
 
+  const getAvatar = () => {
+    if (user?.discord_avatar) {
+      return user.discord_avatar;
+    } else if (user?.google_avatar) {
+      return user.google_avatar;
+    }
+    return undefined;
+  };
+
   return (
     <header className="border-b border-t border-slate-800/50 bg-slate-900/20 backdrop-blur-xl sticky top-0 z-30">
       <div className="flex h-16 items-center justify-between px-6">
@@ -151,7 +160,7 @@ export function DashboardHeader() {
           </DropdownMenu>
           {user?.username && (
             <span className="text-white text-lg font-semibold mr-2 flex items-center">
-              {user.username}
+              {user.display_name}
               {user?.accountType && getAccountTypeBadge(user.accountType)}
             </span>
           )}
@@ -162,9 +171,9 @@ export function DashboardHeader() {
                 className="relative h-10 w-10 rounded-full hover:bg-purple-500/20"
               >
                 <Avatar className="h-10 w-10 ring-2 ring-purple-500/30">
-                  <AvatarImage src={user?.discord_avatar} />
+                  <AvatarImage src={getAvatar()} />
                   <AvatarFallback className="bg-purple-600 text-white">
-                    {user?.username?.charAt(0).toUpperCase()}
+                    {user?.display_name?.charAt(0).toUpperCase()}
                   </AvatarFallback>
                 </Avatar>
               </Button>

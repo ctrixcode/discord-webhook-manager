@@ -47,10 +47,42 @@
     }
   },
   "login": {
-    "checking": "Comprobando tu sesión...",
-    "welcome": "¡Bienvenido!",
-    "loginMessage": "Inicia sesión con tu cuenta de Discord para administrar tus webhooks.",
-    "loginButton": "Iniciar sesión con Discord"
+    "loading": {
+      "sessionCheck": "Verificando tu sesión..."
+    },
+    "header": {
+      "title": "Bienvenido de nuevo",
+      "subtitle": "Inicia sesión en tu cuenta usando correo electrónico, Google o Discord."
+    },
+    "oauth": {
+      "discord": "Continuar con Discord",
+      "google": "Continuar con Google",
+      "loading": "Iniciando sesión...",
+      "discordAlt": "Iniciar sesión con Discord",
+      "googleAlt": "Iniciar sesión con Google",
+      "loadingAlt": "Iniciando sesión..."
+    },
+    "divider": {
+      "or": "O"
+    },
+    "form": {
+      "emailLabel": "Correo electrónico",
+      "emailPlaceholder": "Introduce tu correo electrónico",
+      "passwordLabel": "Contraseña",
+      "passwordPlaceholder": "Introduce tu contraseña",
+      "passwordShow": "Mostrar contraseña",
+      "passwordHide": "Ocultar contraseña",
+      "buttonContinue": "Continuar",
+      "buttonSignIn": "Iniciar sesión",
+      "buttonSigningIn": "Iniciando sesión...",
+      "errorInvalidEmail": "Por favor, introduce un correo electrónico válido.",
+      "errorShortPassword": "La contraseña debe tener al menos 8 caracteres.",
+      "errorSignInFailed": "Error al iniciar sesión. Verifica tus credenciales e inténtalo de nuevo."
+    },
+    "footer": {
+      "noAccount": "¿No tienes una cuenta?",
+      "signUp": "Regístrate"
+    }
   },
   "dashboard": {
     "welcome": "¡Bienvenido de nuevo!",
@@ -134,41 +166,59 @@
       }
     },
     "settingsPage": {
-      "title": "Configuración",
-      "subtitle": "Administra tu cuenta y preferencias de la aplicación",
+      "title": "Configuración de la Cuenta",
+      "subtitle": "Administra tu perfil, autenticación y límites de uso.",
       "accountType": {
-        "title": "Tipo de cuenta",
-        "desc": "Tu nivel actual de suscripción",
+        "title": "Tipo de Cuenta",
+        "desc": "Consulta tu plan actual y las funciones disponibles.",
         "error": "No se pudo cargar el tipo de cuenta."
       },
       "accountQuotes": {
-        "free": "Explora lo básico, desbloquea tu potencial.",
-        "paid": "Eleva tu experiencia, logra más.",
-        "premium": "Libera el máximo poder, sin límites."
+        "free": "El punto de partida perfecto para gestionar tus webhooks.",
+        "paid": "Más potencia y límites superiores para necesidades crecientes.",
+        "premium": "Máxima potencia para los usuarios y proyectos más exigentes."
       },
       "usage": {
         "title": "Uso",
-        "desc": "Supervisa tu uso actual y tus límites",
-        "webhookMessages": "Mensajes de Webhook diarios",
-        "mediaStorage": "Almacenamiento multimedia",
+        "desc": "Realiza un seguimiento de tu uso actual y límites",
+        "webhookMessages": "Mensajes de Webhook Enviados (Diarios)",
+        "mediaStorage": "Almacenamiento de Medios Utilizado",
         "error": "No se pudieron cargar los datos de uso."
       },
       "plans": {
-        "title": "Planes de suscripción",
-        "desc": "Consulta los diferentes niveles de suscripción y sus beneficios",
-        "button": "Ver planes"
+        "title": "Gestionar Planes",
+        "desc": "Actualiza, degrada o cancela tu suscripción actual.",
+        "button": "Ver Planes"
       },
       "support": {
-        "title": "Apóyanos",
-        "desc": "Ayúdanos a crecer compartiendo Discord Webhook Manager",
-        "message": "Si disfrutas usar Discord Webhook Manager, ¡considera compartirlo en X (anteriormente Twitter)!",
-        "button": "Compartir en X (Twitter)",
-        "dm": "Envíame un DM en X si quieres obtener suscripciones de pago."
+        "title": "Soporte",
+        "desc": "Comparte tu aprecio por la aplicación o ponte en contacto para recibir soporte.",
+        "message": "¡Nos encanta recibir comentarios! Si la aplicación te resulta útil, considera compartir tu experiencia positiva en Twitter.",
+        "dm": "Para soporte o informes de errores, por favor envía un MD a @ctrix en Twitter.",
+        "button": "Compartir en X (Twitter)"
       },
       "clearData": {
-        "title": "¿Borrar todos los datos?",
-        "desc": "¿Estás seguro de que quieres borrar todos los datos? Esta acción no se puede deshacer.",
-        "confirm": "Borrar datos"
+        "title": "Borrar Datos Locales",
+        "desc": "Esto eliminará todos los datos de almacenamiento local, incluyendo tus preferencias y datos en caché. Es útil para la resolución de problemas. Se cerrará tu sesión.",
+        "confirm": "Borrar Datos y Recargar"
+      },
+      "auth": {
+        "password": {
+          "title": "Contraseña",
+          "descCreate": "Crea una contraseña para habilitar el inicio de sesión por correo electrónico",
+          "descChange": "Cambia la contraseña de tu cuenta",
+          "buttonCreate": "Crear Contraseña",
+          "buttonChange": "Cambiar Contraseña"
+        },
+        "discord": {
+          "title": "Cuenta de Discord",
+          "descLinked": "Tu cuenta de Discord está vinculada",
+          "descLink": "Vincula tu cuenta de Discord para iniciar sesión con OAuth",
+          "statusConnected": "Conectada",
+          "idLabel": "ID de Discord",
+          "usernameLabel": "Nombre de Usuario de Discord",
+          "buttonLink": "Vincular Cuenta de Discord"
+        }
       }
     },
     "sendMessagePage": {
