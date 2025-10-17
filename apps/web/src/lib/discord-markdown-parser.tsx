@@ -23,9 +23,9 @@ interface Pattern {
  */
 const patterns: Pattern[] = [
   {
-    // User mentions: <@123456789> -> @username
-    // Matches: <@ followed by one or more digits followed by >
-    regex: /<@(\d+)>/g,
+    // User mentions: <@123456789> or <@!123456789> (nickname format) -> @username
+    // Matches: <@ followed by optional ! followed by one or more digits followed by >
+    regex: /<@!?(\d+)>/g,
     render: (args: string[], userMap: Map<string, string>) => {
       const userId = args[0] as string;
       return (
