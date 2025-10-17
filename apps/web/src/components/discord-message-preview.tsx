@@ -5,12 +5,12 @@
  * - Message content with markdown formatting
  * - User avatar and username
  * - Rich embeds with fields, images, and footers
- * - User mentions with resolved usernames
+ * - User mentions (displayed as @user)
  *
  * Performance optimizations:
  * - Memoizes parsed content to avoid re-parsing on every render
  * - Pre-parses all embed content once and caches it
- * - Only re-parses when content or user data actually changes
+ * - Only re-parses when content actually changes
  */
 
 'use client';
@@ -22,10 +22,8 @@ import {
 import { Avatar } from '@repo/shared-types';
 import { type DiscordEmbed } from '@repo/shared-types';
 import { discordColorToHex } from '@/lib/discord-utils';
-import React, { useEffect, useState, useMemo } from 'react';
+import React, { useMemo } from 'react';
 import Image from 'next/image';
-import { useQueries } from '@tanstack/react-query';
-import { userQueries } from '@/lib/api/queries/user';
 import { parseDiscordMarkdown } from '@/lib/discord-markdown-parser';
 
 interface DiscordMessagePreviewProps {
@@ -46,122 +44,12 @@ export function DiscordMessagePreview({
     user_id: 'predefined-user-id',
   },
 }: DiscordMessagePreviewProps) {
-  // Memoize embed cloning to prevent unnecessary deep copies on every render
-  const clonedEmbeds = useMemo(
-    () => (embeds ? JSON.parse(JSON.stringify(embeds)) : []),
-    [embeds]
-  );
-
-  // State for tracking user IDs found in mentions
-  const [userIds, setUserIds] = useState<string[]>([]);
-
-  // State for mapping user IDs to usernames (fetched from API)
-  const [userMap, setUserMap] = useState<Map<string, string>>(new Map());
-
-  /**
-   * Effect: Extract all user IDs from mentions in content and embeds
-   * Runs when content or embeds change
-   */
-  useEffect(() => {
-    /**
-     * Extracts user IDs from text containing <@123456789> mentions
-     */
-    const extractUserIds = (text: string) => {
-      const ids: string[] = [];
-      const userMentionRegex = /<@(\d+)>/g;
-      let match;
-      while ((match = userMentionRegex.exec(text)) !== null) {
-        ids.push(match[1] as string);
-      }
-      return ids;
-    };
-
-    // Collect all user IDs from message content
-    let allUserIds: string[] = [];
-    if (content) {
-      allUserIds = allUserIds.concat(extractUserIds(content));
-    }
-
-    // Collect user IDs from all embed fields
-    if (embeds) {
-      embeds.forEach(embed => {
-        if (embed.description) {
-          allUserIds = allUserIds.concat(extractUserIds(embed.description));
-        }
-        if (embed.fields) {
-          embed.fields.forEach(field => {
-            allUserIds = allUserIds.concat(extractUserIds(field.name));
-            allUserIds = allUserIds.concat(extractUserIds(field.value));
-          });
-        }
-        if (embed.footer?.text) {
-          allUserIds = allUserIds.concat(extractUserIds(embed.footer.text));
-        }
-      });
-    }
-
-    // Remove duplicates
-    const uniqueUserIds = Array.from(new Set(allUserIds));
-
-    // Only update state if the user IDs have actually changed
-    // This prevents infinite re-render loops
-    if (
-      uniqueUserIds.length !== userIds.length ||
-      uniqueUserIds.some((id, index) => id !== userIds[index])
-    ) {
-      setUserIds(uniqueUserIds);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [content, embeds]);
-
-  /**
-   * Fetch user data for all mentioned user IDs
-   * Uses React Query's useQueries to fetch multiple users in parallel
-   */
-  const userQueriesResults = useQueries({
-    queries: userIds.map(id => ({
-      queryKey: ['user', id],
-      queryFn: () => userQueries.getCurrentUser(),
-      staleTime: Infinity, // Cache user data indefinitely
-      enabled: !!id, // Only fetch if ID exists
-    })),
-  });
-
-  /**
-   * Effect: Build a map of user IDs to usernames from query results
-   * Updates when user queries complete or user IDs change
-   */
-  useEffect(() => {
-    const newUserMap = new Map<string, string>();
-
-    // Populate map with fetched usernames
-    userQueriesResults.forEach((result, index) => {
-      if (result.isSuccess && result.data) {
-        newUserMap.set(userIds[index] as string, result.data.username);
-      }
-    });
-
-    // Deep compare maps before setting state to prevent infinite loops
-    // Only update if the map contents have actually changed
-    let mapsEqual = userMap.size === newUserMap.size;
-    if (mapsEqual) {
-      for (const [key, value] of userMap.entries()) {
-        if (newUserMap.get(key) !== value) {
-          mapsEqual = false;
-          break;
-        }
-      }
-    }
-
-    if (!mapsEqual) {
-      setUserMap(newUserMap);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [userQueriesResults, userIds]);
+  // Empty user map - all mentions will display as @user
+  const userMap = useMemo(() => new Map<string, string>(), []);
 
   /**
    * Memoize parsed message content
-   * Only re-parse when content or userMap changes
+   * Only re-parse when content changes
    * This prevents expensive markdown parsing on every render
    */
   const parsedContent = useMemo(
@@ -172,13 +60,13 @@ export function DiscordMessagePreview({
   /**
    * Memoize parsed embeds
    * Pre-parse all embed content (description, fields, footer) once
-   * Only re-parse when embeds or userMap changes
+   * Only re-parse when embeds change
    * This is a major performance optimization for messages with multiple embeds
    */
   const parsedEmbeds = useMemo(() => {
-    if (!clonedEmbeds || clonedEmbeds.length === 0) return [];
+    if (!embeds || embeds.length === 0) return [];
 
-    return clonedEmbeds.map((embed: DiscordEmbed) => {
+    return embeds.map((embed: DiscordEmbed) => {
       // Parse embed description
       const parsedDescription = embed.description
         ? parseDiscordMarkdown(embed.description, userMap)
@@ -205,7 +93,7 @@ export function DiscordMessagePreview({
         parsedFooter,
       };
     });
-  }, [clonedEmbeds, userMap]);
+  }, [embeds, userMap]);
 
   return (
     <div className="bg-[#313338] text-white p-4 rounded-lg font-sans text-[15px] leading-[1.375]">
