@@ -33,6 +33,7 @@ import { EmbedBuilder } from '../../../components/embed-builder';
 import { ApiError } from '@/lib/error';
 import { MarkdownToolbar } from '@/components/message-composer/markdown-toolbar';
 import { insertMarkdown, markdownFormats } from '@/lib/utils/markdown';
+import { MentionAutocomplete } from '@/components/message-composer/mention-autocomplete';
 
 export default function SendMessagePage() {
   const { toast } = useToast();
@@ -61,6 +62,11 @@ export default function SendMessagePage() {
   const [selectedAvatar, setSelectedAvatar] = useState<Avatar | undefined>();
   const [hideSelectTemplate, setHideSelectTemplate] = useState(false);
   const textareaRef = React.useRef<HTMLTextAreaElement>(null);
+
+  // Mention autocomplete state
+  const [showMentionDropdown, setShowMentionDropdown] = useState(false);
+  const [mentionPosition, setMentionPosition] = useState({ top: 0, left: 0 });
+  const [mentionStartIndex, setMentionStartIndex] = useState(-1);
 
   const handleClearMessage = () => {
     setMessage({
@@ -228,6 +234,77 @@ export default function SendMessagePage() {
     }, 0);
   };
 
+  const handleMentionSelect = (value: string) => {
+    const textarea = textareaRef.current;
+    if (!textarea || mentionStartIndex === -1) return;
+
+    const cursorPos = textarea.selectionStart;
+    const newContent =
+      message.content.substring(0, mentionStartIndex) +
+      value +
+      message.content.substring(cursorPos);
+
+    setMessage(prev => ({ ...prev, content: newContent }));
+    setShowMentionDropdown(false);
+    setMentionStartIndex(-1);
+
+    // Set cursor position before the closing > so user can type ID
+    // For @everyone, position after the text
+    setTimeout(() => {
+      textarea.focus();
+      let newCursorPos;
+      if (value === '@everyone') {
+        newCursorPos = mentionStartIndex + value.length;
+      } else {
+        // Position before the closing >
+        newCursorPos = mentionStartIndex + value.length - 1;
+      }
+      textarea.setSelectionRange(newCursorPos, newCursorPos);
+    }, 0);
+  };
+
+  const handleTextareaChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    const newContent = e.target.value;
+    const cursorPos = e.target.selectionStart;
+
+    setMessage(prev => ({ ...prev, content: newContent }));
+
+    // Check if @ was just typed
+    if (cursorPos > 0 && newContent[cursorPos - 1] === '@') {
+      const textarea = textareaRef.current;
+      if (!textarea) return;
+
+      // Calculate dropdown position
+      const rect = textarea.getBoundingClientRect();
+      const lineHeight = 24; // Approximate line height
+      const lines = newContent.substring(0, cursorPos).split('\n').length;
+
+      setMentionPosition({
+        top: rect.top + lines * lineHeight + 30,
+        left: rect.left + 20,
+      });
+      setMentionStartIndex(cursorPos - 1);
+      setShowMentionDropdown(true);
+    } else if (showMentionDropdown) {
+      // Check if cursor moved away from @
+      if (mentionStartIndex !== -1) {
+        const textAfterMention = newContent.substring(
+          mentionStartIndex,
+          cursorPos
+        );
+        // Close dropdown if user typed space or moved cursor away
+        if (
+          textAfterMention.includes(' ') ||
+          cursorPos < mentionStartIndex ||
+          cursorPos > mentionStartIndex + 20
+        ) {
+          setShowMentionDropdown(false);
+          setMentionStartIndex(-1);
+        }
+      }
+    }
+  };
+
   const handleSendMessage = async () => {
     if (selectedWebhooks.length === 0) {
       toast({
@@ -319,6 +396,15 @@ export default function SendMessagePage() {
 
   return (
     <div className="h-screen flex flex-col p-4 overflow-hidden">
+      <MentionAutocomplete
+        isOpen={showMentionDropdown}
+        position={mentionPosition}
+        onSelect={handleMentionSelect}
+        onClose={() => {
+          setShowMentionDropdown(false);
+          setMentionStartIndex(-1);
+        }}
+      />
       <div className="max-w-7xl mx-auto w-full flex flex-col h-full gap-4">
         {/* Compact Header */}
         <div className="flex items-center justify-between flex-shrink-0">
@@ -440,12 +526,7 @@ export default function SendMessagePage() {
                         id="content"
                         placeholder="Enter your message content..."
                         value={message.content}
-                        onChange={e =>
-                          setMessage(prev => ({
-                            ...prev,
-                            content: e.target.value,
-                          }))
-                        }
+                        onChange={handleTextareaChange}
                         className="mt-1 bg-slate-700/50 border-slate-600 text-white placeholder:text-slate-400 focus:border-purple-500 min-h-[200px] resize-none"
                       />
                       <p className="text-xs text-slate-400 mt-1">
