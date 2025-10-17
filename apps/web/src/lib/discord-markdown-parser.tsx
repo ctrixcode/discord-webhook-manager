@@ -1,13 +1,30 @@
+/**
+ * Discord Markdown Parser
+ *
+ * This module parses Discord-flavored markdown and converts it to React elements.
+ * It supports all standard Discord formatting including mentions, text styling,
+ * code blocks, lists, and more.
+ */
+
 import React, { type ReactNode } from 'react';
 
+/**
+ * Pattern interface for markdown regex patterns
+ * Each pattern has a regex to match and a render function to convert matches to React elements
+ */
 interface Pattern {
   regex: RegExp;
   render: (args: string[], userMap: Map<string, string>) => ReactNode;
 }
 
-// Discord markdown patterns defined once outside the function for better performance
+/**
+ * Discord markdown patterns defined once outside the function for better performance.
+ * These patterns are processed in order, and overlapping matches are resolved by position.
+ */
 const patterns: Pattern[] = [
   {
+    // User mentions: <@123456789> -> @username
+    // Matches: <@ followed by one or more digits followed by >
     regex: /<@(\d+)>/g,
     render: (args: string[], userMap: Map<string, string>) => {
       const userId = args[0] as string;
@@ -19,6 +36,8 @@ const patterns: Pattern[] = [
     },
   },
   {
+    // Channel mentions: <#123456789> -> #channel
+    // Matches: <# followed by one or more digits followed by >
     regex: /<#(\d+)>/g,
     render: () => (
       <span className="text-[#00aff4] bg-[#5865f2]/20 rounded px-1 py-0.5 font-medium">
@@ -27,6 +46,8 @@ const patterns: Pattern[] = [
     ),
   },
   {
+    // Role mentions: <@&123456789> -> @role
+    // Matches: <@& followed by one or more digits followed by >
     regex: /<@&(\d+)>/g,
     render: () => (
       <span className="text-[#00aff4] bg-[#5865f2]/20 rounded px-1 py-0.5 font-medium">
@@ -35,6 +56,8 @@ const patterns: Pattern[] = [
     ),
   },
   {
+    // Everyone mention: @everyone
+    // Matches: literal @everyone text
     regex: /@everyone/g,
     render: () => (
       <span className="text-[#00aff4] bg-[#5865f2]/20 rounded px-1 py-0.5 font-medium">
@@ -43,6 +66,8 @@ const patterns: Pattern[] = [
     ),
   },
   {
+    // Here mention: @here
+    // Matches: literal @here text
     regex: /@here/g,
     render: () => (
       <span className="text-[#00aff4] bg-[#5865f2]/20 rounded px-1 py-0.5 font-medium">
@@ -51,6 +76,8 @@ const patterns: Pattern[] = [
     ),
   },
   {
+    // Markdown links: [text](url) -> clickable link
+    // Matches: [any text](any text)
     regex: /\[(.*?)\]\((.*?)\)/g,
     render: (args: string[]) => {
       const [linkText, url] = args;
@@ -67,6 +94,9 @@ const patterns: Pattern[] = [
     },
   },
   {
+    // Bold + Italic: ***text*** -> bold and italic
+    // Matches: *** followed by any text followed by ***
+    // Must be checked before ** and * patterns to avoid conflicts
     regex: /\*\*\*(.*?)\*\*\*/g,
     render: (args: string[]) => {
       const match = args[0];
@@ -78,6 +108,8 @@ const patterns: Pattern[] = [
     },
   },
   {
+    // Bold: **text** -> bold
+    // Matches: ** followed by any text followed by **
     regex: /\*\*(.*?)\*\*/g,
     render: (args: string[]) => {
       const match = args[0];
@@ -85,6 +117,8 @@ const patterns: Pattern[] = [
     },
   },
   {
+    // Italic: *text* or _text_ -> italic
+    // Matches: * followed by any text followed by *
     regex: /\*(.*?)\*/g,
     render: (args: string[]) => {
       const match = args[0];
@@ -92,6 +126,8 @@ const patterns: Pattern[] = [
     },
   },
   {
+    // Underline: __text__ -> underlined
+    // Matches: __ followed by any text followed by __
     regex: /__(.*?)__/g,
     render: (args: string[]) => {
       const match = args[0];
@@ -99,6 +135,8 @@ const patterns: Pattern[] = [
     },
   },
   {
+    // Strikethrough: ~~text~~ -> strikethrough
+    // Matches: ~~ followed by any text followed by ~~
     regex: /~~(.*?)~~/g,
     render: (args: string[]) => {
       const match = args[0];
@@ -106,6 +144,8 @@ const patterns: Pattern[] = [
     },
   },
   {
+    // Inline code: `code` -> monospace code
+    // Matches: ` followed by any text followed by `
     regex: /`(.*?)`/g,
     render: (args: string[]) => {
       const match = args[0];
@@ -117,6 +157,8 @@ const patterns: Pattern[] = [
     },
   },
   {
+    // Spoiler: ||text|| -> hidden text (click to reveal)
+    // Matches: || followed by any text followed by ||
     regex: /\|\|(.*?)\|\|/g,
     render: (args: string[]) => {
       const match = args[0];
@@ -132,17 +174,32 @@ const patterns: Pattern[] = [
   },
 ];
 
+/**
+ * Main parsing function that converts Discord markdown text to React elements
+ *
+ * @param text - The raw text containing Discord markdown
+ * @param userMap - Map of user IDs to usernames for rendering mentions
+ * @returns Array of React nodes representing the parsed content
+ *
+ * Processing order:
+ * 1. Multi-line code blocks (```code```) - processed first to avoid conflicts
+ * 2. Lists (- item or * item)
+ * 3. Inline markdown (bold, italic, mentions, etc.)
+ */
 export function parseDiscordMarkdown(
   text: string,
   userMap: Map<string, string>
 ): ReactNode[] {
   if (!text) return [];
 
-  // Handle multi-line code blocks first (```code```)
+  // Multi-line code blocks: ```language\ncode\n``` or ```code```
+  // Matches: ``` followed by optional language, optional newline, any content, then ```
+  // Uses [\s\S]*? to match any character including newlines (non-greedy)
   const codeBlockRegex = /```(\w+)?\n?([\s\S]*?)```/g;
   const codeBlocks: { start: number; end: number; element: ReactNode }[] = [];
   let match;
 
+  // Find all code blocks in the text
   while ((match = codeBlockRegex.exec(text)) !== null) {
     const code = match[2] || '';
     codeBlocks.push({
@@ -158,13 +215,13 @@ export function parseDiscordMarkdown(
     });
   }
 
-  // If there are code blocks, split text around them
+  // If there are code blocks, split text around them and process separately
   if (codeBlocks.length > 0) {
     const result: ReactNode[] = [];
     let lastIndex = 0;
 
     codeBlocks.forEach((block, index) => {
-      // Process text before code block
+      // Process text before this code block
       if (block.start > lastIndex) {
         const textBefore = text.slice(lastIndex, block.start);
         result.push(
@@ -173,14 +230,14 @@ export function parseDiscordMarkdown(
           </React.Fragment>
         );
       }
-      // Add code block
+      // Add the code block element
       result.push(
         <React.Fragment key={`code-${index}`}>{block.element}</React.Fragment>
       );
       lastIndex = block.end;
     });
 
-    // Process remaining text
+    // Process any remaining text after the last code block
     if (lastIndex < text.length) {
       const textAfter = text.slice(lastIndex);
       result.push(
@@ -193,10 +250,18 @@ export function parseDiscordMarkdown(
     return result;
   }
 
-  // No code blocks, process normally
+  // No code blocks found, process the entire text normally
   return parseTextWithoutCodeBlocks(text, userMap);
 }
 
+/**
+ * Parses text that doesn't contain multi-line code blocks
+ * Handles lists and inline markdown formatting
+ *
+ * @param text - Text without code blocks
+ * @param userMap - Map of user IDs to usernames
+ * @returns Array of React nodes
+ */
 function parseTextWithoutCodeBlocks(
   text: string,
   userMap: Map<string, string>
@@ -208,30 +273,34 @@ function parseTextWithoutCodeBlocks(
   const result: ReactNode[] = [];
 
   lines.forEach((line, lineIndex) => {
-    // Check if line is a list item (starts with - or * followed by space)
+    // List item pattern: optional whitespace, then - or *, then space, then content
+    // Matches: "- item", "* item", "  - nested item", etc.
+    // Groups: (whitespace)(- or *)(content)
     const listMatch = line.match(/^(\s*)([-*])\s+(.+)$/);
 
     if (listMatch) {
-      const indent = listMatch[1] || '';
-      const content = listMatch[3] || '';
+      // This is a list item
+      const indent = listMatch[1] || ''; // Leading whitespace for nested lists
+      const content = listMatch[3] || ''; // The actual list item text
       const parsedContent = parseLineMarkdown(content, userMap);
 
       result.push(
         <div
           key={`line-${lineIndex}`}
-          style={{ paddingLeft: `${indent.length * 8}px` }}
+          style={{ paddingLeft: `${indent.length * 8}px` }} // 8px per space for indentation
         >
           <span className="mr-2">•</span>
           {parsedContent}
         </div>
       );
     } else {
-      // Regular line - parse markdown
+      // Regular line - parse inline markdown
       const parsedLine = parseLineMarkdown(line, userMap);
       result.push(
         <React.Fragment key={`line-${lineIndex}`}>
           {parsedLine}
-          {lineIndex < lines.length - 1 && '\n'}
+          {lineIndex < lines.length - 1 && '\n'}{' '}
+          {/* Add newline between lines */}
         </React.Fragment>
       );
     }
@@ -240,6 +309,20 @@ function parseTextWithoutCodeBlocks(
   return result;
 }
 
+/**
+ * Parses inline markdown within a single line of text
+ * Handles all inline formatting like bold, italic, mentions, etc.
+ *
+ * @param text - A single line of text to parse
+ * @param userMap - Map of user IDs to usernames
+ * @returns Array of React nodes with formatted elements
+ *
+ * Algorithm:
+ * 1. Find all pattern matches in the text
+ * 2. Sort matches by position
+ * 3. Remove overlapping matches (first match wins)
+ * 4. Build result by interleaving plain text and formatted elements
+ */
 function parseLineMarkdown(
   text: string,
   userMap: Map<string, string>
@@ -248,12 +331,15 @@ function parseLineMarkdown(
 
   const replacements: { start: number; end: number; element: ReactNode }[] = [];
 
-  // Find all matches
+  // Find all pattern matches in the text
   patterns.forEach(pattern => {
+    // Create a new regex instance to reset the lastIndex
     const regex = new RegExp(pattern.regex.source, pattern.regex.flags);
     let match;
 
+    // Find all matches for this pattern
     while ((match = regex.exec(text)) !== null) {
+      // Extract captured groups (everything except the full match)
       const args = match.slice(1) as string[];
       replacements.push({
         start: match.index,
@@ -263,13 +349,16 @@ function parseLineMarkdown(
     }
   });
 
-  // Early return if no matches found
+  // Early return if no markdown found
   if (replacements.length === 0) {
     return [text];
   }
 
-  // Sort by position and remove overlapping matches
+  // Sort replacements by their position in the text
   replacements.sort((a, b) => a.start - b.start);
+
+  // Remove overlapping matches - if two patterns match the same text,
+  // keep the first one (by position) and discard overlapping ones
   const validReplacements = [];
   let lastEnd = 0;
 
@@ -280,21 +369,21 @@ function parseLineMarkdown(
     }
   }
 
-  // Build the result
+  // Build the final result by combining plain text and formatted elements
   const parts: ReactNode[] = [];
   let textIndex = 0;
 
   validReplacements.forEach((replacement, index) => {
-    // Add text before the replacement
+    // Add any plain text before this replacement
     if (replacement.start > textIndex) {
       parts.push(text.slice(textIndex, replacement.start));
     }
-    // Add the replacement element
+    // Add the formatted element
     parts.push(<span key={index}>{replacement.element}</span>);
     textIndex = replacement.end;
   });
 
-  // Add remaining text
+  // Add any remaining plain text after the last replacement
   if (textIndex < text.length) {
     parts.push(text.slice(textIndex));
   }
