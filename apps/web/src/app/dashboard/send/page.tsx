@@ -1,7 +1,6 @@
 'use client';
 
-import React from 'react';
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useSearchParams, useRouter, usePathname } from 'next/navigation';
 import {
   Select,
@@ -71,55 +70,51 @@ export default function SendMessagePage() {
   const [mentionSearchQuery, setMentionSearchQuery] = useState('');
 
   const handleClearMessage = () => {
-    setMessage({
-      content: '',
-      avatarRefID: '',
-      tts: false,
-      threadName: '',
-      embeds: [],
-      message_replace_url: '',
-    });
-    setSelectedAvatar(undefined);
-    setSelectedTemplateId('');
-    setHideSelectTemplate(false);
+    // Hard refresh to clear everything
+    window.location.href = pathname;
   };
 
-  const handleTemplateSelect = (
-    templateId: string,
-    skipAvatarOverride = false
-  ) => {
-    setSelectedTemplateId(templateId);
-    const selectedTemplate = templates.find(t => t._id === templateId);
-    if (selectedTemplate) {
-      // Use avatar from query param if available, otherwise use template's avatar
-      const avatarRefToUse =
-        skipAvatarOverride && initialAvatarId
-          ? initialAvatarId
-          : selectedTemplate.avatar_ref || '';
+  const handleTemplateSelect = useCallback(
+    (templateId: string, skipAvatarOverride = false) => {
+      setSelectedTemplateId(templateId);
+      const selectedTemplate = templates.find(t => t._id === templateId);
+      if (selectedTemplate) {
+        // Use avatar from query param if available, otherwise use template's avatar
+        const avatarRefToUse =
+          skipAvatarOverride && initialAvatarId
+            ? initialAvatarId
+            : selectedTemplate.avatar_ref || '';
 
-      setMessage({
-        content: selectedTemplate.content || '',
-        avatarRefID: avatarRefToUse,
-        tts: false,
-        threadName: '',
-        embeds: selectedTemplate.embeds || [],
-        message_replace_url: '',
-      });
+        setMessage({
+          content: selectedTemplate.content || '',
+          avatarRefID: avatarRefToUse,
+          tts: false,
+          threadName: '',
+          embeds: selectedTemplate.embeds || [],
+          message_replace_url: '',
+        });
 
-      // Only set avatar from template if no query param avatar exists
-      if (!skipAvatarOverride || !initialAvatarId) {
-        if (selectedTemplate.avatar_ref) {
-          const avatar = avatars.find(
-            a => a.id === selectedTemplate.avatar_ref
-          );
-          setSelectedAvatar(avatar);
-        } else {
-          setSelectedAvatar(undefined);
+        // Only set avatar from template if no query param avatar exists
+        if (!skipAvatarOverride || !initialAvatarId) {
+          if (selectedTemplate.avatar_ref) {
+            const avatar = avatars.find(
+              a => a.id === selectedTemplate.avatar_ref
+            );
+            setSelectedAvatar(avatar);
+          } else {
+            setSelectedAvatar(undefined);
+          }
         }
       }
+      setHideSelectTemplate(true);
+
+      // Update URL with template query param and remove avatarId if it exists
+      const newSearchParams = new URLSearchParams(searchParams.toString());
+      newSearchParams.set('template', templateId);
+      newSearchParams.delete('avatarId');
+      router.replace(`${pathname}?${newSearchParams.toString()}`);
     }
-    setHideSelectTemplate(true);
-  };
+  );
 
   const { data: webhooks = [], isLoading: isLoadingWebhooks } = useQuery({
     queryKey: ['webhooks', { isActive: true }],
@@ -160,6 +155,10 @@ export default function SendMessagePage() {
     if (initialTemplateId && templates.length > 0 && !selectedTemplateId) {
       // Pass true to skip avatar override if avatarId is in query
       handleTemplateSelect(initialTemplateId, !!initialAvatarId);
+    } else if (!initialTemplateId && selectedTemplateId) {
+      // Clear template if query param is removed
+      setSelectedTemplateId('');
+      setHideSelectTemplate(false);
     }
   }, [
     handleTemplateSelect,
