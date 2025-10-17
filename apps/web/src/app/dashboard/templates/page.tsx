@@ -8,6 +8,11 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import {
+  Avatar as AvatarComponent,
+  AvatarImage,
+  AvatarFallback,
+} from '@/components/ui/avatar';
+import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
@@ -25,7 +30,8 @@ import {
 } from '@/components/ui/alert-dialog';
 import { useAuth } from '@/contexts/auth-context';
 import { templateQueries } from '@/lib/api/queries/message-template';
-import type { MessageTemplate } from '@repo/shared-types';
+import { getAllAvatars } from '@/lib/api/queries/avatar';
+import type { MessageTemplate, Avatar } from '@repo/shared-types';
 import {
   Search,
   FileText,
@@ -51,6 +57,17 @@ export default function TemplatesPage() {
     queryFn: templateQueries.getAllTemplates,
     enabled: !!user,
   });
+
+  const { data: avatars = [] } = useQuery<Avatar[]>({
+    queryKey: ['avatars'],
+    queryFn: getAllAvatars,
+    enabled: !!user,
+  });
+
+  const getAvatarById = (avatarId?: string) => {
+    if (!avatarId) return null;
+    return avatars.find(avatar => avatar.id === avatarId);
+  };
 
   const deleteMutation = useMutation({
     mutationFn: templateQueries.deleteTemplate,
@@ -189,6 +206,27 @@ export default function TemplatesPage() {
                         : template.content || 'No content'}
                     </div>
                   </div>
+
+                  {template.avatar_ref &&
+                    (() => {
+                      const avatar = getAvatarById(template.avatar_ref);
+                      return avatar ? (
+                        <div className="flex items-center gap-2">
+                          <AvatarComponent className="size-8">
+                            <AvatarImage
+                              src={avatar.avatar_url || ''}
+                              alt={avatar.username}
+                            />
+                            <AvatarFallback className="bg-purple-500/20 text-purple-200 text-sm">
+                              {avatar.username.charAt(0).toUpperCase()}
+                            </AvatarFallback>
+                          </AvatarComponent>
+                          <span className="text-sm text-gray-300 font-medium">
+                            {avatar.username}
+                          </span>
+                        </div>
+                      ) : null;
+                    })()}
 
                   <div className="flex items-center justify-between">
                     {template.embeds && template.embeds.length > 0 && (
