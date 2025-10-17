@@ -286,17 +286,32 @@ export default function SendMessagePage() {
       setMentionStartIndex(cursorPos - 1);
       setShowMentionDropdown(true);
     } else if (showMentionDropdown) {
-      // Check if cursor moved away from @
+      // Check if we should close the dropdown
       if (mentionStartIndex !== -1) {
+        // Check if @ was deleted
+        const charAtMentionStart = newContent[mentionStartIndex];
+        if (charAtMentionStart !== '@') {
+          setShowMentionDropdown(false);
+          setMentionStartIndex(-1);
+          return;
+        }
+
+        // Check if cursor moved away from @ or user typed something after @
         const textAfterMention = newContent.substring(
           mentionStartIndex,
           cursorPos
         );
-        // Close dropdown if user typed space or moved cursor away
+
+        // Close dropdown if:
+        // - User typed space after @
+        // - User typed any character after @ (length > 1 means @ + something)
+        // - Cursor moved before the @
+        // - Cursor moved too far away
         if (
           textAfterMention.includes(' ') ||
+          textAfterMention.length > 1 ||
           cursorPos < mentionStartIndex ||
-          cursorPos > mentionStartIndex + 20
+          cursorPos > mentionStartIndex + 1
         ) {
           setShowMentionDropdown(false);
           setMentionStartIndex(-1);
