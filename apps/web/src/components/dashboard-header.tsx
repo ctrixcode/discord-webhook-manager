@@ -109,7 +109,7 @@ export function DashboardHeader() {
       <div className="flex h-16 items-center justify-between px-6">
         <div
           className="flex items-center gap-3 cursor-pointer"
-          onClick={() => router.push('/dashboard/webhooks')}
+          onClick={() => router.push('/dashboard')}
         >
           <Image
             width={40}

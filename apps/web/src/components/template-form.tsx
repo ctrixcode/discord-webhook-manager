@@ -21,6 +21,9 @@ import { Avatar } from '@repo/shared-types';
 import { EmbedBuilder } from '@/components/embed-builder';
 import { useQuery } from '@tanstack/react-query';
 import { api } from '@/lib/api';
+import { MarkdownToolbar } from '@/components/message-composer/markdown-toolbar';
+import { MentionAutocomplete } from '@/components/message-composer/mention-autocomplete';
+import { insertMarkdown, markdownFormats } from '@/lib/utils/markdown';
 
 interface TemplateFormProps {
   initialData?: MessageTemplate | null;
@@ -54,6 +57,144 @@ export const TemplateForm = React.forwardRef(function TemplateForm(
     queryKey: ['avatars'],
     queryFn: api.avatar.getAllAvatars,
   });
+
+  // Mention autocomplete state
+  const [showMentionDropdown, setShowMentionDropdown] = useState(false);
+  const [mentionPosition, setMentionPosition] = useState({ top: 0, left: 0 });
+  const [mentionStartIndex, setMentionStartIndex] = useState(-1);
+  const [mentionSearchQuery, setMentionSearchQuery] = useState('');
+  const textareaRef = React.useRef<HTMLTextAreaElement>(null);
+
+  // Markdown formatting handlers
+  const applyMarkdown = (formatKey: keyof typeof markdownFormats) => {
+    const textarea = textareaRef.current;
+    if (!textarea) return;
+
+    const format = markdownFormats[formatKey];
+    const result = insertMarkdown({
+      content: content,
+      selectionStart: textarea.selectionStart,
+      selectionEnd: textarea.selectionEnd,
+      before: format.before,
+      after: format.after,
+      placeholder: format.placeholder,
+    });
+
+    setContent(result.newContent);
+
+    setTimeout(() => {
+      textarea.focus();
+      textarea.setSelectionRange(
+        result.newCursorPosition,
+        result.newCursorPosition
+      );
+    }, 0);
+  };
+
+  const handleBold = () => applyMarkdown('bold');
+  const handleItalic = () => applyMarkdown('italic');
+  const handleCode = () => applyMarkdown('code');
+  const handleCodeBlock = () => applyMarkdown('codeBlock');
+  const handleStrikethrough = () => applyMarkdown('strikethrough');
+  const handleUnderline = () => applyMarkdown('underline');
+  const handleSpoiler = () => applyMarkdown('spoiler');
+
+  const handleEmojiSelect = (emoji: string) => {
+    const textarea = textareaRef.current;
+    if (!textarea) return;
+
+    const start = textarea.selectionStart;
+    const end = textarea.selectionEnd;
+
+    const newContent =
+      content.substring(0, start) + emoji + content.substring(end);
+
+    setContent(newContent);
+
+    setTimeout(() => {
+      textarea.focus();
+      const newCursorPos = start + emoji.length;
+      textarea.setSelectionRange(newCursorPos, newCursorPos);
+    }, 0);
+  };
+
+  const handleMentionSelect = (value: string) => {
+    const textarea = textareaRef.current;
+    if (!textarea || mentionStartIndex === -1) return;
+
+    const cursorPos = textarea.selectionStart;
+    const newContent =
+      content.substring(0, mentionStartIndex) +
+      value +
+      content.substring(cursorPos);
+
+    setContent(newContent);
+    setShowMentionDropdown(false);
+    setMentionStartIndex(-1);
+    setMentionSearchQuery('');
+
+    setTimeout(() => {
+      textarea.focus();
+      let newCursorPos;
+      if (value === '@everyone') {
+        newCursorPos = mentionStartIndex + value.length;
+      } else {
+        newCursorPos = mentionStartIndex + value.length - 1;
+      }
+      textarea.setSelectionRange(newCursorPos, newCursorPos);
+    }, 0);
+  };
+
+  const handleTextareaChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    const newContent = e.target.value;
+    const cursorPos = e.target.selectionStart;
+
+    setContent(newContent);
+
+    if (cursorPos > 0 && newContent[cursorPos - 1] === '@') {
+      const textarea = textareaRef.current;
+      if (!textarea) return;
+
+      const rect = textarea.getBoundingClientRect();
+      const lineHeight = 24;
+      const lines = newContent.substring(0, cursorPos).split('\n').length;
+
+      setMentionPosition({
+        top: rect.top + lines * lineHeight + 30,
+        left: rect.left + 20,
+      });
+      setMentionStartIndex(cursorPos - 1);
+      setMentionSearchQuery('');
+      setShowMentionDropdown(true);
+    } else if (showMentionDropdown) {
+      if (mentionStartIndex !== -1) {
+        const charAtMentionStart = newContent[mentionStartIndex];
+        if (charAtMentionStart !== '@') {
+          setShowMentionDropdown(false);
+          setMentionStartIndex(-1);
+          setMentionSearchQuery('');
+          return;
+        }
+
+        const textAfterMention = newContent.substring(
+          mentionStartIndex + 1,
+          cursorPos
+        );
+
+        if (
+          textAfterMention.includes(' ') ||
+          cursorPos < mentionStartIndex ||
+          textAfterMention.length > 20
+        ) {
+          setShowMentionDropdown(false);
+          setMentionStartIndex(-1);
+          setMentionSearchQuery('');
+        } else {
+          setMentionSearchQuery(textAfterMention);
+        }
+      }
+    }
+  };
 
   React.useImperativeHandle(ref, () => ({
     submit: () => {
@@ -93,10 +234,21 @@ export const TemplateForm = React.forwardRef(function TemplateForm(
       setContent('');
       setEmbeds([]);
     }
-  }, [initialData]);
+  }, [initialData, avatars]);
 
   return (
-    <div className="flex-1 flex">
+    <div className="flex-1 flex relative">
+      <MentionAutocomplete
+        isOpen={showMentionDropdown}
+        position={mentionPosition}
+        onSelect={handleMentionSelect}
+        onClose={() => {
+          setShowMentionDropdown(false);
+          setMentionStartIndex(-1);
+          setMentionSearchQuery('');
+        }}
+        searchQuery={mentionSearchQuery}
+      />
       {/* Left Side - Editor */}
       <div className="w-1/2 border-r border-slate-700/50 flex flex-col">
         <Tabs defaultValue="info" className="flex-1 flex flex-col">
@@ -172,13 +324,38 @@ export const TemplateForm = React.forwardRef(function TemplateForm(
                     Message Content
                   </h3>
                   <div className="space-y-2">
-                    <Label htmlFor="content" className="text-slate-200">
-                      Message Text
-                    </Label>
+                    <div className="flex items-center justify-between">
+                      <Label htmlFor="content" className="text-slate-200">
+                        Message Text
+                      </Label>
+                      <MarkdownToolbar
+                        onBold={handleBold}
+                        onItalic={handleItalic}
+                        onCode={handleCode}
+                        onCodeBlock={handleCodeBlock}
+                        onStrikethrough={handleStrikethrough}
+                        onUnderline={handleUnderline}
+                        onSpoiler={handleSpoiler}
+                        onEmojiSelect={handleEmojiSelect}
+                      />
+                    </div>
                     <Textarea
+                      ref={textareaRef}
                       id="content"
                       value={content}
-                      onChange={e => setContent(e.target.value)}
+                      onChange={handleTextareaChange}
+                      onKeyDown={e => {
+                        if (showMentionDropdown) {
+                          if (
+                            e.key === 'ArrowDown' ||
+                            e.key === 'ArrowUp' ||
+                            e.key === 'Enter' ||
+                            e.key === 'Escape'
+                          ) {
+                            e.preventDefault();
+                          }
+                        }
+                      }}
                       placeholder="Enter your message content here... (Max 2000 characters)"
                       rows={8}
                       maxLength={2000}
