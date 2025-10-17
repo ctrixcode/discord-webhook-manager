@@ -211,7 +211,13 @@ const webhookRoutes = async (server: FastifyInstance) => {
         description: 'Deletes a specific webhook by its ID.',
         tags: ['webhook'],
         response: {
-          204: { description: 'Webhook deleted successfully.', type: 'null' },
+          204: {
+            description: 'Webhook deleted successfully.',
+            type: 'object',
+            properties: {
+              success: { type: 'boolean' },
+            },
+          },
           401: responseSchemas[401],
           404: responseSchemas[404]('Webhook not found'),
           500: responseSchemas[500]('Error deleting webhook'),
@@ -239,12 +245,10 @@ const webhookRoutes = async (server: FastifyInstance) => {
             properties: {
               success: { type: 'boolean' },
               message: { type: 'string' },
-              data: { type: 'object', properties: {} },
             },
             example: {
               success: true,
-              message: 'Test message sent successfully',
-              data: {},
+              message: 'Webhook tested successfully',
             },
           },
           401: responseSchemas[401],
@@ -274,12 +278,28 @@ const webhookRoutes = async (server: FastifyInstance) => {
             properties: {
               success: { type: 'boolean' },
               message: { type: 'string' },
-              data: { type: 'object', properties: {} },
+              data: {
+                type: 'array',
+                items: {
+                  type: 'object',
+                  properties: {
+                    webhookId: { type: 'string' },
+                    status: { type: 'string', enum: ['success', 'failed'] },
+                    error: { type: 'string', nullable: true },
+                  },
+                },
+              },
             },
             example: {
               success: true,
-              message: 'Messages sent successfully to 1 webhook(s).',
-              data: {},
+              message: 'Message sent successfully',
+              data: [
+                {
+                  webhookId: '68ecb174e142f8399b831df5',
+                  status: 'success',
+                  error: null,
+                },
+              ],
             },
           },
           400: responseSchemas[400](),

@@ -213,7 +213,10 @@ const messageTemplateRoutes = async (server: FastifyInstance) => {
         response: {
           204: {
             description: 'Message template deleted successfully.',
-            type: 'null',
+            type: 'object',
+            properties: {
+              success: { type: 'boolean' },
+            },
           },
           401: responseSchemas[401],
           404: responseSchemas[404]('Message template not found'),
