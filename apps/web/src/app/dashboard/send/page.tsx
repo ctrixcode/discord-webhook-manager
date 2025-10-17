@@ -1,7 +1,6 @@
 'use client';
 
-import React from 'react';
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { useSearchParams, useRouter, usePathname } from 'next/navigation';
 import {
   Select,
@@ -42,6 +41,7 @@ export default function SendMessagePage() {
   const pathname = usePathname();
   const initialAvatarId = searchParams.get('avatarId');
   const initialWebhookId = searchParams.get('webhookId');
+  const initialTemplateId = searchParams.get('template');
 
   const [selectedWebhooks, setSelectedWebhooks] = useState<string[]>(
     initialWebhookId ? [initialWebhookId] : []
@@ -62,6 +62,7 @@ export default function SendMessagePage() {
   const [selectedAvatar, setSelectedAvatar] = useState<Avatar | undefined>();
   const [hideSelectTemplate, setHideSelectTemplate] = useState(false);
   const textareaRef = React.useRef<HTMLTextAreaElement>(null);
+  const isClearingRef = useRef(false);
 
   // Mention autocomplete state
   const [showMentionDropdown, setShowMentionDropdown] = useState(false);
@@ -70,6 +71,8 @@ export default function SendMessagePage() {
   const [mentionSearchQuery, setMentionSearchQuery] = useState('');
 
   const handleClearMessage = () => {
+    isClearingRef.current = true;
+    // Clear all message state
     setMessage({
       content: '',
       avatarRefID: '',
@@ -79,30 +82,11 @@ export default function SendMessagePage() {
       message_replace_url: '',
     });
     setSelectedAvatar(undefined);
-    setSelectedTemplateId('');
+    setSelectedTemplateId(undefined);
     setHideSelectTemplate(false);
-  };
 
-  const handleTemplateSelect = (templateId: string) => {
-    setSelectedTemplateId(templateId);
-    const selectedTemplate = templates.find(t => t._id === templateId);
-    if (selectedTemplate) {
-      setMessage({
-        content: selectedTemplate.content || '',
-        avatarRefID: selectedTemplate.avatar_ref || '',
-        tts: false,
-        threadName: '',
-        embeds: selectedTemplate.embeds || [],
-        message_replace_url: '',
-      });
-      if (selectedTemplate.avatar_ref) {
-        const avatar = avatars.find(a => a.id === selectedTemplate.avatar_ref);
-        setSelectedAvatar(avatar);
-      } else {
-        setSelectedAvatar(undefined);
-      }
-    }
-    setHideSelectTemplate(true);
+    // Clear all query params - use replace to avoid adding to history
+    router.replace('/dashboard/send');
   };
 
   const { data: webhooks = [], isLoading: isLoadingWebhooks } = useQuery({
@@ -120,6 +104,49 @@ export default function SendMessagePage() {
     queryKey: ['messageTemplates'],
     queryFn: () => api.template.getAllTemplates(),
   });
+
+  const handleTemplateSelect = useCallback(
+    (templateId: string, skipAvatarOverride = false) => {
+      setSelectedTemplateId(templateId);
+      const selectedTemplate = templates.find(t => t._id === templateId);
+      if (selectedTemplate) {
+        // Use avatar from query param if available, otherwise use template's avatar
+        const avatarRefToUse =
+          skipAvatarOverride && initialAvatarId
+            ? initialAvatarId
+            : selectedTemplate.avatar_ref || '';
+
+        setMessage({
+          content: selectedTemplate.content || '',
+          avatarRefID: avatarRefToUse,
+          tts: false,
+          threadName: '',
+          embeds: selectedTemplate.embeds || [],
+          message_replace_url: '',
+        });
+
+        // Only set avatar from template if no query param avatar exists
+        if (!skipAvatarOverride || !initialAvatarId) {
+          if (selectedTemplate.avatar_ref) {
+            const avatar = avatars.find(
+              a => a.id === selectedTemplate.avatar_ref
+            );
+            setSelectedAvatar(avatar);
+          } else {
+            setSelectedAvatar(undefined);
+          }
+        }
+      }
+      setHideSelectTemplate(true);
+
+      // Update URL with template query param and remove avatarId if it exists
+      const newSearchParams = new URLSearchParams(searchParams.toString());
+      newSearchParams.set('template', templateId);
+      newSearchParams.delete('avatarId');
+      router.replace(`${pathname}?${newSearchParams.toString()}`);
+    },
+    [templates, initialAvatarId, avatars, searchParams, router, pathname]
+  );
 
   useEffect(() => {
     if (initialAvatarId && avatars.length > 0) {
@@ -139,6 +166,48 @@ export default function SendMessagePage() {
       setSelectedWebhooks([initialWebhookId]);
     }
   }, [initialWebhookId]);
+
+  useEffect(() => {
+    // Don't load template if we're in the process of clearing
+    if (isClearingRef.current) {
+      isClearingRef.current = false;
+      return;
+    }
+
+    if (
+      initialTemplateId &&
+      templates.length > 0 &&
+      selectedTemplateId === undefined
+    ) {
+      // Pass true to skip avatar override if avatarId is in query
+      handleTemplateSelect(initialTemplateId, !!initialAvatarId);
+    } else if (
+      !initialTemplateId &&
+      selectedTemplateId &&
+      selectedTemplateId !== undefined
+    ) {
+      // Clear template if query param is removed
+      setSelectedTemplateId(undefined);
+      setHideSelectTemplate(false);
+    }
+  }, [
+    handleTemplateSelect,
+    initialAvatarId,
+    initialTemplateId,
+    selectedTemplateId,
+    templates,
+  ]);
+
+  // Apply avatar from query param after template is loaded
+  useEffect(() => {
+    if (initialAvatarId && avatars.length > 0 && selectedTemplateId) {
+      const avatar = avatars.find(a => a.id === initialAvatarId);
+      if (avatar) {
+        setSelectedAvatar(avatar);
+        setMessage(prev => ({ ...prev, avatarRefID: avatar.id }));
+      }
+    }
+  }, [initialAvatarId, avatars, selectedTemplateId]);
 
   useEffect(() => {
     const newSearchParams = new URLSearchParams(searchParams.toString());
@@ -438,7 +507,9 @@ export default function SendMessagePage() {
             </p>
           </div>
           <div className="flex items-center gap-2">
-            {(message.content.trim() || message.embeds.length > 0) && (
+            {(message.content.trim() ||
+              message.embeds.length > 0 ||
+              selectedAvatar) && (
               <Button
                 variant="outline"
                 size="sm"
