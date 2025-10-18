@@ -133,7 +133,8 @@ const patterns: Pattern[] = [
   {
     // Bold: **text** -> bold
     // Matches: ** followed by any text followed by **
-    regex: /\*\*(.*?)\*\*/g,
+    // Uses negative lookahead/lookbehind to avoid matching *** (bold+italic)
+    regex: /\*\*(?!\*)(.*?)(?<!\*)\*\*(?!\*)/g,
     render: (args: string[]) => {
       const match = args[0];
       return <strong>{match}</strong>;
@@ -142,8 +143,8 @@ const patterns: Pattern[] = [
   {
     // Italic (asterisk): *text* -> italic
     // Matches: * followed by at least one character followed by *
-    // Requires at least one character to avoid empty matches
-    regex: /\*(.+?)\*/g,
+    // Uses negative lookahead/lookbehind to avoid matching ** (bold) or *** (bold+italic)
+    regex: /(?<!\*)\*(?!\*)(.+?)(?<!\*)\*(?!\*)/g,
     render: (args: string[]) => {
       const match = args[0];
       return <em>{match}</em>;
@@ -153,7 +154,7 @@ const patterns: Pattern[] = [
     // Underline: __text__ -> underlined
     // Matches: __ followed by any text followed by __
     // Must be checked before _ italic pattern to avoid conflicts
-    regex: /__(.*?)__/g,
+    regex: /__(?!_)(.*?)(?<!_)__(?!_)/g,
     render: (args: string[]) => {
       const match = args[0];
       return <u>{match}</u>;
@@ -163,8 +164,8 @@ const patterns: Pattern[] = [
     // Italic (underscore): _text_ -> italic
     // Matches: _ followed by at least one character followed by _
     // Placed after underline to avoid conflicting with __text__
-    // Requires at least one character to avoid empty matches
-    regex: /_(.+?)_/g,
+    // Uses negative lookahead/lookbehind to avoid matching __ (underline)
+    regex: /(?<!_)_(?!_)(.+?)(?<!_)_(?!_)/g,
     render: (args: string[]) => {
       const match = args[0];
       return <em>{match}</em>;
