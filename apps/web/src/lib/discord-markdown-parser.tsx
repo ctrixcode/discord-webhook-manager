@@ -118,9 +118,10 @@ const patterns: Pattern[] = [
   },
   {
     // Bold + Italic: ***text*** -> bold and italic
-    // Matches: *** followed by any text followed by ***
+    // Matches: *** followed by any text (non-greedy) followed by ***
     // Must be checked before ** and * patterns to avoid conflicts
-    regex: /\*\*\*(.*?)\*\*\*/g,
+    // Uses .+? to require at least one character
+    regex: /\*\*\*(.+?)\*\*\*/g,
     render: (args: string[]) => {
       const match = args[0];
       return (
@@ -132,9 +133,9 @@ const patterns: Pattern[] = [
   },
   {
     // Bold: **text** -> bold
-    // Matches: ** followed by any text followed by **
-    // Uses negative lookahead/lookbehind to avoid matching *** (bold+italic)
-    regex: /\*\*(?!\*)(.*?)(?<!\*)\*\*(?!\*)/g,
+    // Matches: ** followed by one or more non-asterisk characters followed by **
+    // This prevents matching across formatting boundaries
+    regex: /\*\*([^*]+?)\*\*/g,
     render: (args: string[]) => {
       const match = args[0];
       return <strong>{match}</strong>;
@@ -144,7 +145,7 @@ const patterns: Pattern[] = [
     // Italic (asterisk): *text* -> italic
     // Matches: * followed by at least one character followed by *
     // Uses negative lookahead/lookbehind to avoid matching ** (bold) or *** (bold+italic)
-    regex: /(?<!\*)\*(?!\*)(.+?)(?<!\*)\*(?!\*)/g,
+    regex: /(?<!\*)\*(?!\*)(.+?)\*(?!\*)/g,
     render: (args: string[]) => {
       const match = args[0];
       return <em>{match}</em>;
