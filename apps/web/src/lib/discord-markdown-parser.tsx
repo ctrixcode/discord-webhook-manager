@@ -15,7 +15,11 @@ import { sanitizeUrl } from '@/lib/utils';
  */
 interface Pattern {
   regex: RegExp;
-  render: (args: string[], userMap: Map<string, string>) => ReactNode;
+  render: (
+    args: string[],
+    userMap: Map<string, string>,
+    parseNested?: (text: string, userMap: Map<string, string>) => ReactNode[]
+  ) => ReactNode;
 }
 
 /**
@@ -123,7 +127,8 @@ const patterns: Pattern[] = [
     // Uses .+? to require at least one character
     regex: /\*\*\*(.+?)\*\*\*/g,
     render: (args: string[]) => {
-      const match = args[0];
+      const match = args[0] || '';
+      // Don't parse nested formatting inside bold+italic to avoid conflicts
       return (
         <strong>
           <em>{match}</em>
@@ -133,12 +138,15 @@ const patterns: Pattern[] = [
   },
   {
     // Bold: **text** -> bold
-    // Matches: ** followed by one or more non-asterisk characters followed by **
-    // This prevents matching across formatting boundaries
-    regex: /\*\*([^*]+?)\*\*/g,
-    render: (args: string[]) => {
-      const match = args[0];
-      return <strong>{match}</strong>;
+    // Matches: ** followed by content followed by **
+    // Uses (.+?) to allow nested formatting (like *italic* inside bold)
+    // Pattern ordering ensures *** is matched first, preventing conflicts
+    regex: /\*\*(.+?)\*\*/g,
+    render: (args: string[], userMap, parseNested) => {
+      const match = args[0] || '';
+      // Recursively parse nested formatting (like *italic* inside bold)
+      const nested = parseNested ? parseNested(match, userMap) : match;
+      return <strong>{nested}</strong>;
     },
   },
   {
@@ -146,9 +154,11 @@ const patterns: Pattern[] = [
     // Matches: * followed by at least one character followed by *
     // Uses negative lookahead/lookbehind to avoid matching ** (bold) or *** (bold+italic)
     regex: /(?<!\*)\*(?!\*)(.+?)\*(?!\*)/g,
-    render: (args: string[]) => {
-      const match = args[0];
-      return <em>{match}</em>;
+    render: (args: string[], userMap, parseNested) => {
+      const match = args[0] || '';
+      // Recursively parse nested formatting (like **bold** inside italic)
+      const nested = parseNested ? parseNested(match, userMap) : match;
+      return <em>{nested}</em>;
     },
   },
   {
@@ -156,9 +166,10 @@ const patterns: Pattern[] = [
     // Matches: __ followed by any text followed by __
     // Must be checked before _ italic pattern to avoid conflicts
     regex: /__(?!_)(.*?)(?<!_)__(?!_)/g,
-    render: (args: string[]) => {
-      const match = args[0];
-      return <u>{match}</u>;
+    render: (args: string[], userMap, parseNested) => {
+      const match = args[0] || '';
+      const nested = parseNested ? parseNested(match, userMap) : match;
+      return <u>{nested}</u>;
     },
   },
   {
@@ -167,9 +178,10 @@ const patterns: Pattern[] = [
     // Placed after underline to avoid conflicting with __text__
     // Uses negative lookahead/lookbehind to avoid matching __ (underline)
     regex: /(?<!_)_(?!_)(.+?)(?<!_)_(?!_)/g,
-    render: (args: string[]) => {
-      const match = args[0];
-      return <em>{match}</em>;
+    render: (args: string[], userMap, parseNested) => {
+      const match = args[0] || '';
+      const nested = parseNested ? parseNested(match, userMap) : match;
+      return <em>{nested}</em>;
     },
   },
   {
@@ -382,7 +394,7 @@ function parseLineMarkdown(
       replacements.push({
         start: match.index,
         end: match.index + match[0].length,
-        element: pattern.render(args, userMap),
+        element: pattern.render(args, userMap, parseLineMarkdown),
       });
     }
   });
