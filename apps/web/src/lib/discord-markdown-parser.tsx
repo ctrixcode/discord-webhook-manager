@@ -15,7 +15,11 @@ import { sanitizeUrl } from '@/lib/utils';
  */
 interface Pattern {
   regex: RegExp;
-  render: (args: string[], userMap: Map<string, string>) => ReactNode;
+  render: (
+    args: string[],
+    userMap: Map<string, string>,
+    parseNested?: (text: string, userMap: Map<string, string>) => ReactNode[]
+  ) => ReactNode;
 }
 
 /**
@@ -118,11 +122,13 @@ const patterns: Pattern[] = [
   },
   {
     // Bold + Italic: ***text*** -> bold and italic
-    // Matches: *** followed by any text followed by ***
+    // Matches: *** followed by any text (non-greedy) followed by ***
     // Must be checked before ** and * patterns to avoid conflicts
-    regex: /\*\*\*(.*?)\*\*\*/g,
+    // Uses .+? to require at least one character
+    regex: /\*\*\*(.+?)\*\*\*/g,
     render: (args: string[]) => {
-      const match = args[0];
+      const match = args[0] || '';
+      // Don't parse nested formatting inside bold+italic to avoid conflicts
       return (
         <strong>
           <em>{match}</em>
@@ -132,42 +138,50 @@ const patterns: Pattern[] = [
   },
   {
     // Bold: **text** -> bold
-    // Matches: ** followed by any text followed by **
-    regex: /\*\*(.*?)\*\*/g,
-    render: (args: string[]) => {
-      const match = args[0];
-      return <strong>{match}</strong>;
+    // Matches: ** followed by content followed by **
+    // Uses (.+?) to allow nested formatting (like *italic* inside bold)
+    // Pattern ordering ensures *** is matched first, preventing conflicts
+    regex: /\*\*(.+?)\*\*/g,
+    render: (args: string[], userMap, parseNested) => {
+      const match = args[0] || '';
+      // Recursively parse nested formatting (like *italic* inside bold)
+      const nested = parseNested ? parseNested(match, userMap) : match;
+      return <strong>{nested}</strong>;
     },
   },
   {
     // Italic (asterisk): *text* -> italic
     // Matches: * followed by at least one character followed by *
-    // Requires at least one character to avoid empty matches
-    regex: /\*(.+?)\*/g,
-    render: (args: string[]) => {
-      const match = args[0];
-      return <em>{match}</em>;
+    // Uses negative lookahead/lookbehind to avoid matching ** (bold) or *** (bold+italic)
+    regex: /(?<!\*)\*(?!\*)(.+?)\*(?!\*)/g,
+    render: (args: string[], userMap, parseNested) => {
+      const match = args[0] || '';
+      // Recursively parse nested formatting (like **bold** inside italic)
+      const nested = parseNested ? parseNested(match, userMap) : match;
+      return <em>{nested}</em>;
     },
   },
   {
     // Underline: __text__ -> underlined
     // Matches: __ followed by any text followed by __
     // Must be checked before _ italic pattern to avoid conflicts
-    regex: /__(.*?)__/g,
-    render: (args: string[]) => {
-      const match = args[0];
-      return <u>{match}</u>;
+    regex: /__(?!_)(.*?)(?<!_)__(?!_)/g,
+    render: (args: string[], userMap, parseNested) => {
+      const match = args[0] || '';
+      const nested = parseNested ? parseNested(match, userMap) : match;
+      return <u>{nested}</u>;
     },
   },
   {
     // Italic (underscore): _text_ -> italic
     // Matches: _ followed by at least one character followed by _
     // Placed after underline to avoid conflicting with __text__
-    // Requires at least one character to avoid empty matches
-    regex: /_(.+?)_/g,
-    render: (args: string[]) => {
-      const match = args[0];
-      return <em>{match}</em>;
+    // Uses negative lookahead/lookbehind to avoid matching __ (underline)
+    regex: /(?<!_)_(?!_)(.+?)(?<!_)_(?!_)/g,
+    render: (args: string[], userMap, parseNested) => {
+      const match = args[0] || '';
+      const nested = parseNested ? parseNested(match, userMap) : match;
+      return <em>{nested}</em>;
     },
   },
   {
@@ -380,7 +394,7 @@ function parseLineMarkdown(
       replacements.push({
         start: match.index,
         end: match.index + match[0].length,
-        element: pattern.render(args, userMap),
+        element: pattern.render(args, userMap, parseLineMarkdown),
       });
     }
   });

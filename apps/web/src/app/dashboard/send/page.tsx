@@ -69,6 +69,7 @@ export default function SendMessagePage() {
   const [mentionPosition, setMentionPosition] = useState({ top: 0, left: 0 });
   const [mentionStartIndex, setMentionStartIndex] = useState(-1);
   const [mentionSearchQuery, setMentionSearchQuery] = useState('');
+  const webhookTabTriggerRef = useRef<HTMLButtonElement>(null);
 
   const handleClearMessage = () => {
     isClearingRef.current = true;
@@ -247,6 +248,29 @@ export default function SendMessagePage() {
     newSearchParams.set('avatarId', avatar.id);
     router.replace(`${pathname}?${newSearchParams.toString()}`);
   };
+
+  // Keyboard shortcuts
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      // Ctrl+K or Cmd+K to open webhook selector
+      if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
+        e.preventDefault();
+        webhookTabTriggerRef.current?.click();
+      }
+
+      // Esc to clear form (only if not in an input/textarea)
+      if (e.key === 'Escape') {
+        const target = e.target as HTMLElement;
+        if (target.tagName !== 'INPUT' && target.tagName !== 'TEXTAREA') {
+          e.preventDefault();
+          handleClearMessage();
+        }
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, []);
 
   const applyMarkdown = (formatKey: keyof typeof markdownFormats) => {
     const textarea = textareaRef.current;
@@ -503,7 +527,13 @@ export default function SendMessagePage() {
             <h1 className="text-2xl font-bold text-white">Send Message</h1>
             <p className="text-slate-400 text-sm">
               Send to {selectedWebhooks.length} webhook
-              {selectedWebhooks.length !== 1 ? 's' : ''}
+              {selectedWebhooks.length !== 1 ? 's' : ''} •{' '}
+              <span className="text-slate-500">
+                <kbd className="px-1 py-0.5 text-[10px] font-mono bg-slate-700/50 border border-slate-600 rounded">
+                  ⌘K
+                </kbd>{' '}
+                webhooks
+              </span>
             </p>
           </div>
           <div className="flex items-center gap-2">
@@ -515,9 +545,13 @@ export default function SendMessagePage() {
                 size="sm"
                 onClick={handleClearMessage}
                 className="border-red-600 text-red-400 hover:bg-red-600 hover:text-white bg-transparent"
+                title="Press Esc to clear"
               >
                 <XCircle className="w-4 h-4 mr-1" />
                 Clear
+                <kbd className="hidden sm:inline-block ml-1.5 px-1 py-0.5 text-[10px] font-mono bg-slate-700 border border-slate-600 rounded">
+                  Esc
+                </kbd>
               </Button>
             )}
             <Button
@@ -584,10 +618,14 @@ export default function SendMessagePage() {
                       Embeds
                     </TabsTrigger>
                     <TabsTrigger
+                      ref={webhookTabTriggerRef}
                       value="webhooks"
                       className="data-[state=active]:bg-purple-600 text-xs"
+                      title="Ctrl+K to open"
                     >
-                      Webhooks
+                      <span className="flex items-center gap-1.5">
+                        Webhooks
+                      </span>
                     </TabsTrigger>
                   </TabsList>
 
