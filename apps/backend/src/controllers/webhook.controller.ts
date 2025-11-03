@@ -110,7 +110,12 @@ export const updateWebhookHandler = async (
       ErrorMessages.Webhook.NOT_FOUND_ERROR.code
     );
   }
-  reply.send(toWebhookDto(webhook));
+  sendSuccessResponse(
+    reply,
+    HttpStatusCode.OK,
+    'Webhook updated successfully',
+    toWebhookDto(webhook)
+  );
 };
 
 export const deleteWebhookHandler = async (

@@ -5,10 +5,12 @@ We welcome contributions to the Discord Webhook Manager project! By contributing
 Please take a moment to review this document to make the contribution process as smooth as possible.
 
 ## Why Contribute?
+
 Your contributions are invaluable to the Discord Webhook Manager project! By contributing, you help us:
-*   **Improve and Expand:** Add new features, fix bugs, and enhance existing functionality.
-*   **Learn and Grow:** Collaborate with other developers and learn new skills.
-*   **Make an Impact:** Help create a better tool for Discord server administrators and users.
+
+- **Improve and Expand:** Add new features, fix bugs, and enhance existing functionality.
+- **Learn and Grow:** Collaborate with other developers and learn new skills.
+- **Make an Impact:** Help create a better tool for Discord server administrators and users.
 
 We appreciate your time and effort, and we're excited to have you as part of our community!
 
@@ -22,11 +24,11 @@ Please note that this project is released with a Contributor Code of Conduct. By
 
 If you find a bug, please open an issue on GitHub. When reporting a bug, please include:
 
-*   A clear and concise description of the bug.
-*   Steps to reproduce the behavior.
-*   Expected behavior.
-*   Screenshots or error messages if applicable.
-*   Your environment details (OS, Node.js version, browser, etc.).
+- A clear and concise description of the bug.
+- Steps to reproduce the behavior.
+- Expected behavior.
+- Screenshots or error messages if applicable.
+- Your environment details (OS, Node.js version, browser, etc.).
 
 ### Suggesting Enhancements
 
@@ -39,26 +41,28 @@ If you're looking for a good place to start contributing, check out our [Good Fi
 ## Technical Stack
 
 ### Frontend Technologies
-*   Next.js
-*   React
-*   TypeScript
-*   TanStack Query
-*   Radix UI
-*   Tailwind CSS
+
+- Next.js
+- React
+- TypeScript
+- TanStack Query
+- Radix UI
+- Tailwind CSS
 
 ### Backend Technologies
+
 The backend is built with a modern and scalable technology stack:
 
--   **Framework**: Fastify
--   **Language**: TypeScript
--   **Database**: MongoDB
--   **ODM**: Mongoose
--   **Authentication**: JWT (JSON Web Tokens)
--   **File Storage**: Cloudinary
--   **Logging**: Winston
--   **Environment Variables**: Dotenv
--   **Discord Webhook Library**: We maintain our own in-house library for handling Discord webhook interactions. If you need to add a feature that requires changes to the webhook functionality, you may need to contribute to this library as well. You can find the repository here: [discord-webhook-library](https://github.com/ctrixcode/discord-webhook-library).
-    *   **Workflow for Library Changes:** If your contribution requires changes to the `discord-webhook-library`, please open a Pull Request in that repository first. Once those changes are merged and a new version is released, you can then update the dependency in this project and proceed with your contribution here.
+- **Framework**: Fastify
+- **Language**: TypeScript
+- **Database**: MongoDB
+- **ODM**: Mongoose
+- **Authentication**: JWT (JSON Web Tokens)
+- **File Storage**: Cloudinary
+- **Logging**: Winston
+- **Environment Variables**: Dotenv
+- **Discord Webhook Library**: We maintain our own in-house library for handling Discord webhook interactions. If you need to add a feature that requires changes to the webhook functionality, you may need to contribute to this library as well. You can find the repository here: [discord-webhook-library](https://github.com/ctrixcode/discord-webhook-library).
+  - **Workflow for Library Changes:** If your contribution requires changes to the `discord-webhook-library`, please open a Pull Request in that repository first. Once those changes are merged and a new version is released, you can then update the dependency in this project and proceed with your contribution here.
 
 ## Development Environment Setup
 
@@ -100,15 +104,22 @@ The backend is built with a modern and scalable technology stack:
 
     ```env
     PORT=4000
-    MONGODB_URL=mongodb://localhost:27017/discord-webhook-manager
+    FRONTEND_URL=http://localhost:3000
+    SALT_ROUNDS=10
     NODE_ENV=development
+    MONGO_URL=mongodb://localhost:27017/discord-webhook-manager
     JWT_SECRET=your-super-secret-jwt-key
     DISCORD_CLIENT_ID=your_discord_client_id
-    DISCORD_CLIENT_SECRET=your_discord_client_SECRET
-    DISCORD_REDIRECT_URI=http://localhost:3000/auth/callback # Frontend callback URL
+    DISCORD_CLIENT_SECRET=your_discord_client_secret
+    DISCORD_REDIRECT_URI=http://localhost:4000/api/auth/discord/callback # Frontend callback URL
     CLOUDINARY_CLOUD_NAME=your_cloudinary_cloud_name
     CLOUDINARY_API_KEY=your_cloudinary_api_key
     CLOUDINARY_API_SECRET=your_cloudinary_api_secret
+    GOOGLE_CLIENT_ID=your_google_client_id
+    GOOGLE_CLIENT_SECRET=your_google_client_secret
+    GOOGLE_OAUTH_REDIRECT_URI=http://localhost:4000/api/auth/google/callback
+    GMAIL_REFRESH_TOKEN=your_gmail_refresh_token
+    FROM_EMAIL=your_email@gmail.com
     ```
 
 4.  **Set up environment variables for the frontend**
@@ -120,9 +131,9 @@ The backend is built with a modern and scalable technology stack:
     Edit the `.env` file with your configuration. Essential variables include:
     ```env
     NODE_ENV=development
-    NEXT_PUBLIC_API_URL=http://localhost:4000 # Or your deployed backend URL
+    NEXT_PUBLIC_API_URL=http://localhost:4000/api # Or your deployed backend URL
     ```
-    `NEXT_PUBLIC_API_URL` should point to your backend API. During local development, this will typically be `http://localhost:4000`.
+    `NEXT_PUBLIC_API_URL` should point to your backend API. During local development, this will typically be `http://localhost:4000/api`.
 
 4.  **Start MongoDB** (if using local installation)
     *   **Recommendation for Windows Users:** For a simpler setup, especially on Windows, consider using **MongoDB Atlas** (MongoDB's cloud service). You can create a free-tier cluster and obtain a connection string. Update your `MONGODB_URL` in `apps/backend/.env` with this connection string.
@@ -169,6 +180,25 @@ pnpm dev
 ```bash
 pnpm build
 ```
+
+#### DOCUMENTATIONS
+
+
+### Backend Documentation
+ run
+ ```bash
+ pnpm dev
+ ```
+ The swaggerUI will be available on `http://localhost:{PORT}/docs`
+
+### Frontend Documentation
+
+```bash
+npx typedoc --out docs/ --entryPointStrategy expand --exclude "**/*.test.ts" --exclude "**/*.test.tsx" --exclude ".next/**/*" src/
+```
+Static HTML Files will be available in `web/docs` directory
+
+
 
 ## Code Contributions
 

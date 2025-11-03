@@ -1,3 +1,18 @@
+/**
+ * Discord Message Preview Component
+ *
+ * Renders a preview of how a Discord message will appear, including:
+ * - Message content with markdown formatting
+ * - User avatar and username
+ * - Rich embeds with fields, images, and footers
+ * - User mentions (displayed as @user)
+ *
+ * Performance optimizations:
+ * - Memoizes parsed content to avoid re-parsing on every render
+ * - Pre-parses all embed content once and caches it
+ * - Only re-parses when content actually changes
+ */
+
 'use client';
 import {
   Avatar as AvatarComponent,
@@ -7,11 +22,10 @@ import {
 import { Avatar } from '@repo/shared-types';
 import { type DiscordEmbed } from '@repo/shared-types';
 import { discordColorToHex } from '@/lib/discord-utils';
-import React, { useEffect, useState } from 'react';
+import React, { useMemo } from 'react';
 import Image from 'next/image';
-import { useQueries } from '@tanstack/react-query';
-import { userQueries } from '@/lib/api/queries/user';
 import { parseDiscordMarkdown } from '@/lib/discord-markdown-parser';
+import { sanitizeUrl } from '@/lib/utils';
 
 interface DiscordMessagePreviewProps {
   content: string;
@@ -31,90 +45,61 @@ export function DiscordMessagePreview({
     user_id: 'predefined-user-id',
   },
 }: DiscordMessagePreviewProps) {
-  const clonedEmbeds = embeds ? JSON.parse(JSON.stringify(embeds)) : [];
-  const [userIds, setUserIds] = useState<string[]>([]);
-  const [userMap, setUserMap] = useState<Map<string, string>>(new Map());
+  // Empty user map - all mentions will display as @user
+  const userMap = useMemo(() => new Map<string, string>(), []);
 
-  useEffect(() => {
-    const extractUserIds = (text: string) => {
-      const ids: string[] = [];
-      const userMentionRegex = /<@(\d+)>/g;
-      let match;
-      while ((match = userMentionRegex.exec(text)) !== null) {
-        ids.push(match[1] as string);
-      }
-      return ids;
-    };
+  /**
+   * Memoize parsed message content
+   * Only re-parse when content changes
+   * This prevents expensive markdown parsing on every render
+   */
+  const parsedContent = useMemo(
+    () => (content ? parseDiscordMarkdown(content, userMap) : null),
+    [content, userMap]
+  );
 
-    let allUserIds: string[] = [];
-    if (content) {
-      allUserIds = allUserIds.concat(extractUserIds(content));
-    }
+  /**
+   * Memoize parsed embeds
+   * Pre-parse all embed content (description, fields, footer) once
+   * Only re-parse when embeds change
+   * This is a major performance optimization for messages with multiple embeds
+   */
+  const parsedEmbeds = useMemo(() => {
+    if (!embeds || embeds.length === 0) return [];
 
-    if (embeds) {
-      embeds.forEach(embed => {
-        if (embed.description) {
-          allUserIds = allUserIds.concat(extractUserIds(embed.description));
-        }
-        if (embed.fields) {
-          embed.fields.forEach(field => {
-            allUserIds = allUserIds.concat(extractUserIds(field.name));
-            allUserIds = allUserIds.concat(extractUserIds(field.value));
-          });
-        }
-        if (embed.footer?.text) {
-          allUserIds = allUserIds.concat(extractUserIds(embed.footer.text));
-        }
-      });
-    }
+    return embeds.map((embed: DiscordEmbed) => {
+      // Parse embed description
+      const parsedDescription = embed.description
+        ? parseDiscordMarkdown(embed.description, userMap)
+        : null;
 
-    const uniqueUserIds = Array.from(new Set(allUserIds));
+      // Parse all embed fields (name and value)
+      const parsedFields = embed.fields?.map(
+        (field: { name: string; value: string; inline?: boolean }) => ({
+          ...field,
+          parsedName: parseDiscordMarkdown(field.name, userMap),
+          parsedValue: parseDiscordMarkdown(field.value, userMap),
+        })
+      );
 
-    // Only update if the userIds have actually changed to prevent infinite loops
-    if (
-      uniqueUserIds.length !== userIds.length ||
-      uniqueUserIds.some((id, index) => id !== userIds[index])
-    ) {
-      setUserIds(uniqueUserIds);
-    }
-  }, [content, embeds]);
+      // Parse embed footer text
+      const parsedFooter = embed.footer?.text
+        ? parseDiscordMarkdown(embed.footer.text, userMap)
+        : null;
 
-  const userQueriesResults = useQueries({
-    queries: userIds.map(id => ({
-      queryKey: ['user', id],
-      queryFn: () => userQueries.getCurrentUser(),
-      staleTime: Infinity,
-      enabled: !!id,
-    })),
-  });
-
-  useEffect(() => {
-    const newUserMap = new Map<string, string>();
-    userQueriesResults.forEach((result, index) => {
-      if (result.isSuccess && result.data) {
-        newUserMap.set(userIds[index] as string, result.data.username);
-      }
+      return {
+        ...embed,
+        parsedDescription,
+        parsedFields,
+        parsedFooter,
+      };
     });
-
-    // Deep compare maps before setting state to prevent infinite loops
-    let mapsEqual = userMap.size === newUserMap.size;
-    if (mapsEqual) {
-      for (const [key, value] of userMap.entries()) {
-        if (newUserMap.get(key) !== value) {
-          mapsEqual = false;
-          break;
-        }
-      }
-    }
-
-    if (!mapsEqual) {
-      setUserMap(newUserMap);
-    }
-  }, [userQueriesResults, userIds, userMap]);
+  }, [embeds, userMap]);
 
   return (
     <div className="bg-[#313338] text-white p-4 rounded-lg font-sans text-[15px] leading-[1.375]">
       <div className="flex items-start gap-4">
+        {/* User Avatar */}
         <AvatarComponent className="w-10 h-10 mt-0.5 flex-shrink-0">
           <AvatarImage src={avatar.avatar_url || '/placeholder.svg'} />
           <AvatarFallback className="bg-[#5865f2] text-white text-sm font-medium">
@@ -123,6 +108,7 @@ export function DiscordMessagePreview({
         </AvatarComponent>
 
         <div className="flex-1 min-w-0">
+          {/* Message Header: Username and Timestamp */}
           <div className="flex items-baseline gap-2 mb-0.5">
             <span className="font-medium text-[#f2f3f5] text-base hover:underline cursor-pointer">
               {avatar.username}
@@ -136,16 +122,32 @@ export function DiscordMessagePreview({
             </span>
           </div>
 
-          {content && (
+          {/* Message Content with parsed markdown */}
+          {parsedContent && (
             <div className="text-[#dbdee1] mb-2 whitespace-pre-wrap break-words leading-[1.375]">
-              {parseDiscordMarkdown(content, userMap)}
+              {parsedContent}
             </div>
           )}
 
-          {clonedEmbeds &&
-            clonedEmbeds.map((embed: DiscordEmbed, index: number) => (
+          {/* Rich Embeds - render each embed with all its components */}
+          {parsedEmbeds.map(
+            (
+              embed: DiscordEmbed & {
+                parsedDescription: React.ReactNode[] | null;
+                parsedFields?: Array<{
+                  name: string;
+                  value: string;
+                  inline?: boolean;
+                  parsedName: React.ReactNode[];
+                  parsedValue: React.ReactNode[];
+                }>;
+                parsedFooter: React.ReactNode[] | null;
+              },
+              index: number
+            ) => (
               <div key={index} className="max-w-lg mt-2">
                 <div className="flex">
+                  {/* Embed container with colored left border */}
                   <div
                     className="bg-[#2b2d31] rounded-r-md rounded-l-sm p-4 flex-1 border-l-4"
                     style={{
@@ -154,6 +156,7 @@ export function DiscordMessagePreview({
                         : 'transparent',
                     }}
                   >
+                    {/* Embed Author (optional) */}
                     {embed.author && (
                       <div className="flex items-center gap-2 mb-2">
                         {embed.author.icon_url && (
@@ -168,7 +171,7 @@ export function DiscordMessagePreview({
                         <span className="text-sm font-medium text-[#f2f3f5]">
                           {embed.author.url ? (
                             <a
-                              href={embed.author.url}
+                              href={sanitizeUrl(embed.author.url)}
                               className="text-[#00aff4] hover:underline"
                             >
                               {embed.author.name}
@@ -180,10 +183,14 @@ export function DiscordMessagePreview({
                       </div>
                     )}
 
+                    {/* Embed Title (optional) */}
                     {embed.title && (
                       <div className="text-[#00aff4] font-semibold mb-2 text-base leading-[1.375]">
                         {embed.url ? (
-                          <a href={embed.url} className="hover:underline">
+                          <a
+                            href={sanitizeUrl(embed.url)}
+                            className="hover:underline"
+                          >
                             {embed.title}
                           </a>
                         ) : (
@@ -194,40 +201,59 @@ export function DiscordMessagePreview({
 
                     <div className="flex">
                       <div className="flex-1 mr-4">
-                        {embed.description && (
+                        {/* Embed Description (optional) */}
+                        {embed.parsedDescription && (
                           <div className="text-[#dbdee1] mb-3 whitespace-pre-wrap text-sm leading-[1.375]">
-                            {parseDiscordMarkdown(embed.description, userMap)}
+                            {embed.parsedDescription}
                           </div>
                         )}
 
-                        {embed.fields && embed.fields.length > 0 && (
-                          <div
-                            className="grid gap-2 mb-3"
-                            style={{
-                              gridTemplateColumns: embed.fields.some(
-                                f => f.inline
-                              )
-                                ? 'repeat(3, 1fr)'
-                                : '1fr',
-                            }}
-                          >
-                            {embed.fields.map((field, fieldIndex) => (
-                              <div
-                                key={fieldIndex}
-                                className={field.inline ? '' : 'col-span-full'}
-                              >
-                                <div className="text-white font-semibold text-sm mb-1">
-                                  {parseDiscordMarkdown(field.name, userMap)}
-                                </div>
-                                <div className="text-[#dbdee1] text-sm whitespace-pre-wrap">
-                                  {parseDiscordMarkdown(field.value, userMap)}
-                                </div>
-                              </div>
-                            ))}
-                          </div>
-                        )}
+                        {/* Embed Fields (optional) - can be inline or full-width */}
+                        {embed.parsedFields &&
+                          embed.parsedFields.length > 0 && (
+                            <div
+                              className="grid gap-2 mb-3"
+                              style={{
+                                // Use 3-column grid if any field is inline, otherwise single column
+                                gridTemplateColumns: embed.parsedFields.some(
+                                  (f: { inline?: boolean }) => f.inline
+                                )
+                                  ? 'repeat(3, 1fr)'
+                                  : '1fr',
+                              }}
+                            >
+                              {embed.parsedFields.map(
+                                (
+                                  field: {
+                                    name: string;
+                                    value: string;
+                                    inline?: boolean;
+                                    parsedName: React.ReactNode[];
+                                    parsedValue: React.ReactNode[];
+                                  },
+                                  fieldIndex: number
+                                ) => (
+                                  <div
+                                    key={fieldIndex}
+                                    className={
+                                      // Non-inline fields span all columns
+                                      field.inline ? '' : 'col-span-full'
+                                    }
+                                  >
+                                    <div className="text-white font-semibold text-sm mb-1">
+                                      {field.parsedName}
+                                    </div>
+                                    <div className="text-[#dbdee1] text-sm whitespace-pre-wrap">
+                                      {field.parsedValue}
+                                    </div>
+                                  </div>
+                                )
+                              )}
+                            </div>
+                          )}
                       </div>
 
+                      {/* Embed Thumbnail (optional) - appears on the right */}
                       {embed.thumbnail && (
                         <div className="flex-shrink-0">
                           <Image
@@ -241,6 +267,7 @@ export function DiscordMessagePreview({
                       )}
                     </div>
 
+                    {/* Embed Image (optional) - large image below content */}
                     {embed.image && (
                       <div className="mb-3 w-2/3 h-48 relative">
                         <Image
@@ -252,6 +279,7 @@ export function DiscordMessagePreview({
                       </div>
                     )}
 
+                    {/* Embed Footer (optional) - appears at bottom with timestamp */}
                     {embed.footer && (
                       <div className="flex items-center gap-2 mt-3 pt-0">
                         {embed.footer.icon_url && (
@@ -264,7 +292,7 @@ export function DiscordMessagePreview({
                           />
                         )}
                         <span className="text-xs text-[#949ba4] font-medium">
-                          {parseDiscordMarkdown(embed.footer.text, userMap)}
+                          {embed.parsedFooter}
                           {embed.timestamp && (
                             <>
                               {' '}
@@ -277,7 +305,8 @@ export function DiscordMessagePreview({
                   </div>
                 </div>
               </div>
-            ))}
+            )
+          )}
         </div>
       </div>
     </div>

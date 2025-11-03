@@ -4,6 +4,7 @@ import AuthSessionTokenModel from '../models/AuthSessionToken';
 import { Types } from 'mongoose';
 import { AuthenticationError } from './errors';
 import { ErrorMessages } from './errorMessages';
+import { logger } from './logger';
 
 const JWT_SECRET = process.env.JWT_SECRET || 'supersecretjwtkey'; // Should be a strong, unique secret
 const JWT_ACCESS_TOKEN_EXPIRES_IN: string | number =
@@ -84,9 +85,10 @@ export const generateRefreshToken = (
     isUsed: false,
     userAgent: userAgent,
   });
-  authSessionToken
-    .save()
-    .catch(err => console.error('Error saving AuthSessionToken:', err)); // Log error, but don't block
+  authSessionToken.save().catch(err => {
+    logger.error('Error saving AuthSessionToken:', err);
+    // Don't block token generation even if DB save fails
+  });
 
   return { refreshToken, jti };
 };

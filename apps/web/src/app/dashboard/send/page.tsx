@@ -1,7 +1,6 @@
 'use client';
 
-import React from 'react';
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { useSearchParams, useRouter, usePathname } from 'next/navigation';
 import {
   Select,
@@ -31,6 +30,9 @@ import { DISCORD_MAX_MESSAGE_LENGTH } from '@/constants/discord';
 import Link from 'next/link';
 import { EmbedBuilder } from '../../../components/embed-builder';
 import { ApiError } from '@/lib/error';
+import { MarkdownToolbar } from '@/components/message-composer/markdown-toolbar';
+import { insertMarkdown, markdownFormats } from '@/lib/utils/markdown';
+import { MentionAutocomplete } from '@/components/message-composer/mention-autocomplete';
 
 export default function SendMessagePage() {
   const { toast } = useToast();
@@ -39,6 +41,7 @@ export default function SendMessagePage() {
   const pathname = usePathname();
   const initialAvatarId = searchParams.get('avatarId');
   const initialWebhookId = searchParams.get('webhookId');
+  const initialTemplateId = searchParams.get('template');
 
   const [selectedWebhooks, setSelectedWebhooks] = useState<string[]>(
     initialWebhookId ? [initialWebhookId] : []
@@ -58,8 +61,19 @@ export default function SendMessagePage() {
   >(undefined);
   const [selectedAvatar, setSelectedAvatar] = useState<Avatar | undefined>();
   const [hideSelectTemplate, setHideSelectTemplate] = useState(false);
+  const textareaRef = React.useRef<HTMLTextAreaElement>(null);
+  const isClearingRef = useRef(false);
+
+  // Mention autocomplete state
+  const [showMentionDropdown, setShowMentionDropdown] = useState(false);
+  const [mentionPosition, setMentionPosition] = useState({ top: 0, left: 0 });
+  const [mentionStartIndex, setMentionStartIndex] = useState(-1);
+  const [mentionSearchQuery, setMentionSearchQuery] = useState('');
+  const webhookTabTriggerRef = useRef<HTMLButtonElement>(null);
 
   const handleClearMessage = () => {
+    isClearingRef.current = true;
+    // Clear all message state
     setMessage({
       content: '',
       avatarRefID: '',
@@ -69,30 +83,11 @@ export default function SendMessagePage() {
       message_replace_url: '',
     });
     setSelectedAvatar(undefined);
-    setSelectedTemplateId('');
+    setSelectedTemplateId(undefined);
     setHideSelectTemplate(false);
-  };
 
-  const handleTemplateSelect = (templateId: string) => {
-    setSelectedTemplateId(templateId);
-    const selectedTemplate = templates.find(t => t._id === templateId);
-    if (selectedTemplate) {
-      setMessage({
-        content: selectedTemplate.content || '',
-        avatarRefID: selectedTemplate.avatar_ref || '',
-        tts: false,
-        threadName: '',
-        embeds: selectedTemplate.embeds || [],
-        message_replace_url: '',
-      });
-      if (selectedTemplate.avatar_ref) {
-        const avatar = avatars.find(a => a.id === selectedTemplate.avatar_ref);
-        setSelectedAvatar(avatar);
-      } else {
-        setSelectedAvatar(undefined);
-      }
-    }
-    setHideSelectTemplate(true);
+    // Clear all query params - use replace to avoid adding to history
+    router.replace('/dashboard/send');
   };
 
   const { data: webhooks = [], isLoading: isLoadingWebhooks } = useQuery({
@@ -110,6 +105,49 @@ export default function SendMessagePage() {
     queryKey: ['messageTemplates'],
     queryFn: () => api.template.getAllTemplates(),
   });
+
+  const handleTemplateSelect = useCallback(
+    (templateId: string, skipAvatarOverride = false) => {
+      setSelectedTemplateId(templateId);
+      const selectedTemplate = templates.find(t => t._id === templateId);
+      if (selectedTemplate) {
+        // Use avatar from query param if available, otherwise use template's avatar
+        const avatarRefToUse =
+          skipAvatarOverride && initialAvatarId
+            ? initialAvatarId
+            : selectedTemplate.avatar_ref || '';
+
+        setMessage({
+          content: selectedTemplate.content || '',
+          avatarRefID: avatarRefToUse,
+          tts: false,
+          threadName: '',
+          embeds: selectedTemplate.embeds || [],
+          message_replace_url: '',
+        });
+
+        // Only set avatar from template if no query param avatar exists
+        if (!skipAvatarOverride || !initialAvatarId) {
+          if (selectedTemplate.avatar_ref) {
+            const avatar = avatars.find(
+              a => a.id === selectedTemplate.avatar_ref
+            );
+            setSelectedAvatar(avatar);
+          } else {
+            setSelectedAvatar(undefined);
+          }
+        }
+      }
+      setHideSelectTemplate(true);
+
+      // Update URL with template query param and remove avatarId if it exists
+      const newSearchParams = new URLSearchParams(searchParams.toString());
+      newSearchParams.set('template', templateId);
+      newSearchParams.delete('avatarId');
+      router.replace(`${pathname}?${newSearchParams.toString()}`);
+    },
+    [templates, initialAvatarId, avatars, searchParams, router, pathname]
+  );
 
   useEffect(() => {
     if (initialAvatarId && avatars.length > 0) {
@@ -129,6 +167,48 @@ export default function SendMessagePage() {
       setSelectedWebhooks([initialWebhookId]);
     }
   }, [initialWebhookId]);
+
+  useEffect(() => {
+    // Don't load template if we're in the process of clearing
+    if (isClearingRef.current) {
+      isClearingRef.current = false;
+      return;
+    }
+
+    if (
+      initialTemplateId &&
+      templates.length > 0 &&
+      selectedTemplateId === undefined
+    ) {
+      // Pass true to skip avatar override if avatarId is in query
+      handleTemplateSelect(initialTemplateId, !!initialAvatarId);
+    } else if (
+      !initialTemplateId &&
+      selectedTemplateId &&
+      selectedTemplateId !== undefined
+    ) {
+      // Clear template if query param is removed
+      setSelectedTemplateId(undefined);
+      setHideSelectTemplate(false);
+    }
+  }, [
+    handleTemplateSelect,
+    initialAvatarId,
+    initialTemplateId,
+    selectedTemplateId,
+    templates,
+  ]);
+
+  // Apply avatar from query param after template is loaded
+  useEffect(() => {
+    if (initialAvatarId && avatars.length > 0 && selectedTemplateId) {
+      const avatar = avatars.find(a => a.id === initialAvatarId);
+      if (avatar) {
+        setSelectedAvatar(avatar);
+        setMessage(prev => ({ ...prev, avatarRefID: avatar.id }));
+      }
+    }
+  }, [initialAvatarId, avatars, selectedTemplateId]);
 
   useEffect(() => {
     const newSearchParams = new URLSearchParams(searchParams.toString());
@@ -167,6 +247,175 @@ export default function SendMessagePage() {
     const newSearchParams = new URLSearchParams(searchParams.toString());
     newSearchParams.set('avatarId', avatar.id);
     router.replace(`${pathname}?${newSearchParams.toString()}`);
+  };
+
+  // Keyboard shortcuts
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      // Ctrl+K or Cmd+K to open webhook selector
+      if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
+        e.preventDefault();
+        webhookTabTriggerRef.current?.click();
+      }
+
+      // Esc to clear form (only if not in an input/textarea)
+      if (e.key === 'Escape') {
+        const target = e.target as HTMLElement;
+        if (target.tagName !== 'INPUT' && target.tagName !== 'TEXTAREA') {
+          e.preventDefault();
+          handleClearMessage();
+        }
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, []);
+
+  const applyMarkdown = (formatKey: keyof typeof markdownFormats) => {
+    const textarea = textareaRef.current;
+    if (!textarea) return;
+
+    const format = markdownFormats[formatKey];
+    const result = insertMarkdown({
+      content: message.content,
+      selectionStart: textarea.selectionStart,
+      selectionEnd: textarea.selectionEnd,
+      before: format.before,
+      after: format.after,
+      placeholder: format.placeholder,
+    });
+
+    setMessage(prev => ({ ...prev, content: result.newContent }));
+
+    // Set cursor position after insertion
+    setTimeout(() => {
+      textarea.focus();
+      textarea.setSelectionRange(
+        result.newCursorPosition,
+        result.newCursorPosition
+      );
+    }, 0);
+  };
+
+  const handleBold = () => applyMarkdown('bold');
+  const handleItalic = () => applyMarkdown('italic');
+  const handleCode = () => applyMarkdown('code');
+  const handleCodeBlock = () => applyMarkdown('codeBlock');
+  const handleStrikethrough = () => applyMarkdown('strikethrough');
+  const handleUnderline = () => applyMarkdown('underline');
+  const handleSpoiler = () => applyMarkdown('spoiler');
+
+  const handleEmojiSelect = (emoji: string) => {
+    const textarea = textareaRef.current;
+    if (!textarea) return;
+
+    const start = textarea.selectionStart;
+    const end = textarea.selectionEnd;
+
+    const newContent =
+      message.content.substring(0, start) +
+      emoji +
+      message.content.substring(end);
+
+    setMessage(prev => ({ ...prev, content: newContent }));
+
+    // Set cursor position after emoji
+    setTimeout(() => {
+      textarea.focus();
+      const newCursorPos = start + emoji.length;
+      textarea.setSelectionRange(newCursorPos, newCursorPos);
+    }, 0);
+  };
+
+  const handleMentionSelect = (value: string) => {
+    const textarea = textareaRef.current;
+    if (!textarea || mentionStartIndex === -1) return;
+
+    const cursorPos = textarea.selectionStart;
+    const newContent =
+      message.content.substring(0, mentionStartIndex) +
+      value +
+      message.content.substring(cursorPos);
+
+    setMessage(prev => ({ ...prev, content: newContent }));
+    setShowMentionDropdown(false);
+    setMentionStartIndex(-1);
+
+    // Set cursor position before the closing > so user can type ID
+    // For @everyone, position after the text
+    setTimeout(() => {
+      textarea.focus();
+      let newCursorPos;
+      if (value === '@everyone') {
+        newCursorPos = mentionStartIndex + value.length;
+      } else {
+        // Position before the closing >
+        newCursorPos = mentionStartIndex + value.length - 1;
+      }
+      textarea.setSelectionRange(newCursorPos, newCursorPos);
+    }, 0);
+  };
+
+  const handleTextareaChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    const newContent = e.target.value;
+    const cursorPos = e.target.selectionStart;
+
+    setMessage(prev => ({ ...prev, content: newContent }));
+
+    // Check if @ was just typed
+    if (cursorPos > 0 && newContent[cursorPos - 1] === '@') {
+      const textarea = textareaRef.current;
+      if (!textarea) return;
+
+      // Calculate dropdown position
+      const rect = textarea.getBoundingClientRect();
+      const lineHeight = 24; // Approximate line height
+      const lines = newContent.substring(0, cursorPos).split('\n').length;
+
+      setMentionPosition({
+        top: rect.top + lines * lineHeight + 30,
+        left: rect.left + 20,
+      });
+      setMentionStartIndex(cursorPos - 1);
+      setMentionSearchQuery('');
+      setShowMentionDropdown(true);
+    } else if (showMentionDropdown) {
+      // Check if we should close the dropdown or update search query
+      if (mentionStartIndex !== -1) {
+        // Check if @ was deleted
+        const charAtMentionStart = newContent[mentionStartIndex];
+        if (charAtMentionStart !== '@') {
+          setShowMentionDropdown(false);
+          setMentionStartIndex(-1);
+          setMentionSearchQuery('');
+          return;
+        }
+
+        // Get text after @ for search query
+        const textAfterMention = newContent.substring(
+          mentionStartIndex + 1,
+          cursorPos
+        );
+
+        // Close dropdown if:
+        // - User typed space after @
+        // - Cursor moved before the @
+        // - Cursor moved too far away (more than 20 chars after @)
+        if (
+          textAfterMention.includes(' ') ||
+          cursorPos < mentionStartIndex ||
+          textAfterMention.length > 20
+        ) {
+          setShowMentionDropdown(false);
+          setMentionStartIndex(-1);
+          setMentionSearchQuery('');
+        } else {
+          // Update search query with text after @
+          setMentionSearchQuery(textAfterMention);
+        }
+      }
+    }
   };
 
   const handleSendMessage = async () => {
@@ -259,129 +508,170 @@ export default function SendMessagePage() {
   };
 
   return (
-    <div className="min-h-screen p-6">
-      <div className="max-w-7xl mx-auto space-y-6">
-        {/* Header */}
-        <div className="flex items-center justify-between">
+    <div className="h-screen flex flex-col p-4 overflow-hidden">
+      <MentionAutocomplete
+        isOpen={showMentionDropdown}
+        position={mentionPosition}
+        onSelect={handleMentionSelect}
+        onClose={() => {
+          setShowMentionDropdown(false);
+          setMentionStartIndex(-1);
+          setMentionSearchQuery('');
+        }}
+        searchQuery={mentionSearchQuery}
+      />
+      <div className="max-w-7xl mx-auto w-full flex flex-col h-full gap-4">
+        {/* Compact Header */}
+        <div className="flex items-center justify-between flex-shrink-0">
           <div>
-            <h1 className="text-3xl font-bold text-white">Send Message</h1>
-            <p className="text-slate-300 mt-1">
-              Send messages immediately to one or multiple webhooks
+            <h1 className="text-2xl font-bold text-white">Send Message</h1>
+            <p className="text-slate-400 text-sm">
+              Send to {selectedWebhooks.length} webhook
+              {selectedWebhooks.length !== 1 ? 's' : ''} •{' '}
+              <span className="text-slate-500">
+                <kbd className="px-1 py-0.5 text-[10px] font-mono bg-slate-700/50 border border-slate-600 rounded">
+                  ⌘K
+                </kbd>{' '}
+                webhooks
+              </span>
             </p>
           </div>
-          <Button
-            onClick={handleSendMessage}
-            disabled={isSending || selectedWebhooks.length === 0}
-            className="bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-600 hover:to-blue-700 text-white px-6"
-          >
-            <Send className="w-4 h-4 mr-2" />
-            {isSending
-              ? 'Sending...'
-              : `Send to ${selectedWebhooks.length} webhook${selectedWebhooks.length !== 1 ? 's' : ''}`}
-          </Button>
+          <div className="flex items-center gap-2">
+            {(message.content.trim() ||
+              message.embeds.length > 0 ||
+              selectedAvatar) && (
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={handleClearMessage}
+                className="border-red-600 text-red-400 hover:bg-red-600 hover:text-white bg-transparent"
+                title="Press Esc to clear"
+              >
+                <XCircle className="w-4 h-4 mr-1" />
+                Clear
+                <kbd className="hidden sm:inline-block ml-1.5 px-1 py-0.5 text-[10px] font-mono bg-slate-700 border border-slate-600 rounded">
+                  Esc
+                </kbd>
+              </Button>
+            )}
+            <Button
+              onClick={handleSendMessage}
+              disabled={isSending || selectedWebhooks.length === 0}
+              className="bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-600 hover:to-blue-700 text-white"
+            >
+              <Send className="w-4 h-4 mr-2" />
+              {isSending ? 'Sending...' : 'Send Message'}
+            </Button>
+          </div>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {/* Main Content - Two Column Layout */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 flex-1 overflow-hidden">
           {/* Left Side - Message Composer */}
-          <div className="space-y-6">
-            {/* Message Composer */}
-            <Card className="bg-slate-800/50 backdrop-blur-sm border-slate-700/50 text-white">
-              <CardHeader>
-                <CardTitle>Compose Message</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="flex items-center justify-between mb-4">
-                  <div className="flex-1 mr-4">
-                    {!hideSelectTemplate && (
-                      <>
-                        <Label
-                          htmlFor="template-select"
-                          className="text-slate-200"
-                        >
-                          Load Template
-                        </Label>
-                        <Select
-                          onValueChange={handleTemplateSelect}
-                          value={selectedTemplateId}
-                          disabled={
-                            isLoadingTemplates || templates.length === 0
-                          }
-                        >
-                          <SelectTrigger
-                            id="template-select"
-                            className="mt-1 bg-slate-700/50 border-slate-600 text-white placeholder:text-slate-400"
-                          >
-                            <SelectValue placeholder="Select a template" />
-                          </SelectTrigger>
-                          <SelectContent className="bg-slate-800 border-slate-700 text-white">
-                            {templates.map(template => (
-                              <SelectItem
-                                key={template._id}
-                                value={template._id}
-                                className="flex items-center gap-2"
-                              >
-                                {template.name}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                      </>
-                    )}
-                  </div>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={handleClearMessage}
-                    className="mt-auto border-red-600 text-red-400 hover:bg-red-600 hover:text-white bg-transparent"
-                  >
-                    <XCircle className="w-4 h-4 mr-2" />
-                    Clear
-                  </Button>
+          <div className="flex flex-col overflow-hidden">
+            <Card className="bg-slate-800/50 backdrop-blur-sm border-slate-700/50 text-white flex flex-col h-full overflow-hidden">
+              <CardHeader className="pb-3 flex-shrink-0">
+                <div className="flex items-center justify-between">
+                  <CardTitle className="text-lg">Compose Message</CardTitle>
+                  {!hideSelectTemplate && templates.length > 0 && (
+                    <Select
+                      onValueChange={handleTemplateSelect}
+                      value={selectedTemplateId}
+                      disabled={isLoadingTemplates}
+                    >
+                      <SelectTrigger className="w-[180px] h-8 bg-slate-700/50 border-slate-600 text-white text-xs">
+                        <SelectValue placeholder="Load template" />
+                      </SelectTrigger>
+                      <SelectContent className="bg-slate-800 border-slate-700 text-white">
+                        {templates.map(template => (
+                          <SelectItem key={template._id} value={template._id}>
+                            {template.name}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  )}
                 </div>
-                <Tabs defaultValue="content" className="w-full">
-                  <TabsList className="grid w-full grid-cols-4 bg-slate-700/50">
+              </CardHeader>
+              <CardContent className="flex-1 overflow-hidden flex flex-col">
+                <Tabs
+                  defaultValue="content"
+                  className="w-full flex flex-col h-full overflow-hidden"
+                >
+                  <TabsList className="grid w-full grid-cols-4 bg-slate-700/50 flex-shrink-0">
                     <TabsTrigger
                       value="content"
-                      className="data-[state=active]:bg-purple-600"
+                      className="data-[state=active]:bg-purple-600 text-xs"
                     >
                       Content
                     </TabsTrigger>
                     <TabsTrigger
                       value="settings"
-                      className="data-[state=active]:bg-purple-600"
+                      className="data-[state=active]:bg-purple-600 text-xs"
                     >
                       Settings
                     </TabsTrigger>
                     <TabsTrigger
                       value="embeds"
-                      className="data-[state=active]:bg-purple-600"
+                      className="data-[state=active]:bg-purple-600 text-xs"
                     >
                       Embeds
                     </TabsTrigger>
                     <TabsTrigger
+                      ref={webhookTabTriggerRef}
                       value="webhooks"
-                      className="data-[state=active]:bg-purple-600"
+                      className="data-[state=active]:bg-purple-600 text-xs"
+                      title="Ctrl+K to open"
                     >
-                      Webhooks
+                      <span className="flex items-center gap-1.5">
+                        Webhooks
+                      </span>
                     </TabsTrigger>
                   </TabsList>
 
-                  <TabsContent value="content" className="space-y-4 mt-4">
+                  <TabsContent
+                    value="content"
+                    className="flex-1 overflow-y-auto mt-3 space-y-3"
+                  >
                     <div>
-                      <Label htmlFor="content" className="text-slate-200">
-                        Message Text
-                      </Label>
+                      <div className="flex items-center justify-between mb-2">
+                        <Label
+                          htmlFor="content"
+                          className="text-slate-200 text-sm"
+                        >
+                          Message Text
+                        </Label>
+                        <MarkdownToolbar
+                          onBold={handleBold}
+                          onItalic={handleItalic}
+                          onCode={handleCode}
+                          onCodeBlock={handleCodeBlock}
+                          onStrikethrough={handleStrikethrough}
+                          onUnderline={handleUnderline}
+                          onSpoiler={handleSpoiler}
+                          onEmojiSelect={handleEmojiSelect}
+                        />
+                      </div>
                       <Textarea
+                        ref={textareaRef}
                         id="content"
                         placeholder="Enter your message content..."
                         value={message.content}
-                        onChange={e =>
-                          setMessage(prev => ({
-                            ...prev,
-                            content: e.target.value,
-                          }))
-                        }
-                        className="mt-1 bg-slate-700/50 border-slate-600 text-white placeholder:text-slate-400 focus:border-purple-500 min-h-[120px]"
+                        onChange={handleTextareaChange}
+                        onKeyDown={e => {
+                          // Prevent default behavior for arrow keys and Enter when dropdown is open
+                          if (showMentionDropdown) {
+                            if (
+                              e.key === 'ArrowDown' ||
+                              e.key === 'ArrowUp' ||
+                              e.key === 'Enter' ||
+                              e.key === 'Escape'
+                            ) {
+                              e.preventDefault();
+                            }
+                          }
+                        }}
+                        className="mt-1 bg-slate-700/50 border-slate-600 text-white placeholder:text-slate-400 focus:border-purple-500 min-h-[200px] max-h-[500px] resize-y"
                       />
                       <p className="text-xs text-slate-400 mt-1">
                         {message.content.length}/{DISCORD_MAX_MESSAGE_LENGTH}{' '}
@@ -390,107 +680,98 @@ export default function SendMessagePage() {
                     </div>
                   </TabsContent>
 
-                  <TabsContent value="settings" className="space-y-4 mt-4">
-                    <div className="space-y-4">
-                      <div>
-                        <Label className="text-slate-200">
-                          Message Appearance
-                        </Label>
-                        <p className="text-sm text-slate-400">
-                          Choose how the webhook message will appear in Discord
+                  <TabsContent
+                    value="settings"
+                    className="flex-1 overflow-y-auto mt-3 space-y-3"
+                  >
+                    <div className="flex items-center justify-between p-3 rounded-lg bg-slate-700/30 border border-slate-600/50">
+                      <div className="flex-1">
+                        <p className="text-slate-200 font-medium text-sm">
+                          Avatar
+                        </p>
+                        <p className="text-xs text-slate-400">
+                          Choose from saved profiles
                         </p>
                       </div>
-
-                      {/* Predefined Avatar Selection */}
-                      <div className="flex items-center justify-between p-4 rounded-lg bg-slate-700/30 border border-slate-600/50">
-                        <div>
-                          <p className="text-slate-200 font-medium">
-                            Select Predefined Avatar
-                          </p>
-                          <p className="text-sm text-slate-400">
-                            Choose from your saved avatar profiles
-                          </p>
-                        </div>
-                        <AvatarSelector onSelect={handleAvatarSelect}>
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            className="bg-slate-700 border-slate-600 text-white hover:bg-slate-600"
-                          >
-                            Select Avatar
-                          </Button>
-                        </AvatarSelector>
-                      </div>
+                      <AvatarSelector onSelect={handleAvatarSelect}>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          className="bg-slate-700 border-slate-600 text-white hover:bg-slate-600 text-xs h-8"
+                        >
+                          Select
+                        </Button>
+                      </AvatarSelector>
                     </div>
 
-                    <div className="space-y-4">
-                      <div className="flex items-center justify-between p-4 rounded-lg bg-slate-700/30 border border-slate-600/50">
-                        <div>
-                          <Label className="text-slate-200 font-medium">
-                            Text-to-Speech
-                          </Label>
-                          <p className="text-sm text-slate-400">
-                            Enable TTS for this message
-                          </p>
-                        </div>
-                        <Checkbox
-                          checked={message.tts}
-                          onCheckedChange={checked =>
-                            setMessage(prev => ({ ...prev, tts: !!checked }))
-                          }
-                          className="border-slate-500"
-                        />
-                      </div>
-
+                    <div className="flex items-center justify-between p-3 rounded-lg bg-slate-700/30 border border-slate-600/50">
                       <div>
-                        <Label htmlFor="thread-name" className="text-slate-200">
-                          Thread Name (Optional)
+                        <Label className="text-slate-200 font-medium text-sm">
+                          Text-to-Speech
                         </Label>
-                        <input
-                          id="thread-name"
-                          type="text"
-                          placeholder="Create a new thread with this name"
-                          value={message.threadName || ''}
-                          onChange={e =>
-                            setMessage(prev => ({
-                              ...prev,
-                              threadName: e.target.value,
-                            }))
-                          }
-                          className="mt-1 w-full px-3 py-2 bg-slate-600/50 border border-slate-500 rounded-md text-white placeholder:text-slate-400 focus:border-purple-500 focus:outline-none"
-                        />
-                        <p className="text-xs text-slate-400 mt-1">
-                          If specified, the message will be sent to a new thread
-                        </p>
+                        <p className="text-xs text-slate-400">Enable TTS</p>
                       </div>
+                      <Checkbox
+                        checked={message.tts}
+                        onCheckedChange={checked =>
+                          setMessage(prev => ({ ...prev, tts: !!checked }))
+                        }
+                        className="border-slate-500"
+                      />
+                    </div>
 
-                      <div>
-                        <Label htmlFor="message-url" className="text-slate-200">
-                          Discord Message URL (Optional)
-                        </Label>
-                        <input
-                          id="message-url"
-                          type="url"
-                          placeholder="e.g., https://discord.com/channels/guild_id/channel_id/message_id"
-                          value={message.message_replace_url || ''}
-                          onChange={e => {
-                            const url = e.target.value;
-                            setMessage(prev => ({
-                              ...prev,
-                              message_replace_url: url,
-                            }));
-                          }}
-                          className="mt-1 w-full px-3 py-2 bg-slate-600/50 border border-slate-500 rounded-md text-white placeholder:text-slate-400 focus:border-purple-500 focus:outline-none"
-                        />
-                        <p className="text-xs text-slate-400 mt-1">
-                          If provided, the message will replace the existing
-                          Discord message at this URL.
-                        </p>
-                      </div>
+                    <div>
+                      <Label
+                        htmlFor="thread-name"
+                        className="text-slate-200 text-sm"
+                      >
+                        Thread Name (Optional)
+                      </Label>
+                      <input
+                        id="thread-name"
+                        type="text"
+                        placeholder="Create a new thread"
+                        value={message.threadName || ''}
+                        onChange={e =>
+                          setMessage(prev => ({
+                            ...prev,
+                            threadName: e.target.value,
+                          }))
+                        }
+                        className="mt-1 w-full px-3 py-2 text-sm bg-slate-600/50 border border-slate-500 rounded-md text-white placeholder:text-slate-400 focus:border-purple-500 focus:outline-none"
+                      />
+                    </div>
+
+                    <div>
+                      <Label
+                        htmlFor="message-url"
+                        className="text-slate-200 text-sm"
+                      >
+                        Discord Message URL (Optional)
+                      </Label>
+                      <input
+                        id="message-url"
+                        type="url"
+                        placeholder="https://discord.com/channels/..."
+                        value={message.message_replace_url || ''}
+                        onChange={e => {
+                          setMessage(prev => ({
+                            ...prev,
+                            message_replace_url: e.target.value,
+                          }));
+                        }}
+                        className="mt-1 w-full px-3 py-2 text-sm bg-slate-600/50 border border-slate-500 rounded-md text-white placeholder:text-slate-400 focus:border-purple-500 focus:outline-none"
+                      />
+                      <p className="text-xs text-slate-400 mt-1">
+                        Replace an existing message
+                      </p>
                     </div>
                   </TabsContent>
 
-                  <TabsContent value="embeds" className="space-y-4 mt-4">
+                  <TabsContent
+                    value="embeds"
+                    className="flex-1 overflow-y-auto mt-3"
+                  >
                     <EmbedBuilder
                       embeds={message.embeds}
                       onEmbedsChange={newEmbeds =>
@@ -499,38 +780,43 @@ export default function SendMessagePage() {
                     />
                   </TabsContent>
 
-                  <TabsContent value="webhooks" className="space-y-4 mt-4">
-                    <CardHeader className="px-0 pt-0">
-                      <CardTitle className="flex items-center gap-2">
-                        <Webhook className="w-5 h-5 text-cyan-400" />
-                        Select Webhooks ({selectedWebhooks.length}/
-                        {webhooks.length})
-                      </CardTitle>
+                  <TabsContent
+                    value="webhooks"
+                    className="flex-1 overflow-y-auto mt-3"
+                  >
+                    <div className="flex items-center justify-between mb-3">
+                      <div className="flex items-center gap-2">
+                        <Webhook className="w-4 h-4 text-cyan-400" />
+                        <span className="text-sm font-medium text-white">
+                          {selectedWebhooks.length}/{webhooks.length} Selected
+                        </span>
+                      </div>
                       <Button
                         variant="outline"
                         size="sm"
                         onClick={handleSelectAll}
-                        className="w-fit border-slate-600 text-slate-300 hover:bg-slate-700 bg-transparent"
+                        className="border-slate-600 text-slate-300 hover:bg-slate-700 bg-transparent text-xs h-7"
                       >
                         {selectedWebhooks.length === webhooks.length
                           ? 'Deselect All'
                           : 'Select All'}
                       </Button>
-                    </CardHeader>
-                    <CardContent className="space-y-3 px-0 pb-0">
+                    </div>
+                    <div className="space-y-2">
                       {isLoadingWebhooks ? (
-                        <p className="text-slate-400 text-center py-4">
-                          Loading webhooks...
+                        <p className="text-slate-400 text-center py-4 text-sm">
+                          Loading...
                         </p>
                       ) : webhooks.length === 0 ? (
-                        <p className="text-slate-400 text-center py-4">
-                          No webhooks available. Add some webhooks first.
+                        <p className="text-slate-400 text-center py-4 text-sm">
+                          No webhooks available
                         </p>
                       ) : (
                         webhooks.map(webhook => (
                           <div
                             key={webhook.id}
-                            className="flex items-center space-x-3 p-3 rounded-lg bg-slate-700/30 hover:bg-slate-700/50 transition-colors"
+                            className="flex items-center space-x-3 p-2.5 rounded-lg bg-slate-700/30 hover:bg-slate-700/50 transition-colors cursor-pointer"
+                            onClick={() => handleWebhookToggle(webhook.id)}
                           >
                             <Checkbox
                               checked={selectedWebhooks.includes(webhook.id)}
@@ -541,26 +827,28 @@ export default function SendMessagePage() {
                             />
                             <div className="flex-1 min-w-0">
                               <div className="flex items-center gap-2">
-                                <span className="font-medium text-white">
+                                <span className="font-medium text-white text-sm">
                                   {webhook.name}
                                 </span>
                                 <Badge
                                   variant={
                                     webhook.is_active ? 'default' : 'secondary'
                                   }
-                                  className="text-xs"
+                                  className="text-xs h-4"
                                 >
                                   {webhook.is_active ? 'Active' : 'Inactive'}
                                 </Badge>
                               </div>
-                              <p className="text-sm text-slate-400 truncate">
-                                {webhook.description}
-                              </p>
+                              {webhook.description && (
+                                <p className="text-xs text-slate-400 truncate">
+                                  {webhook.description}
+                                </p>
+                              )}
                             </div>
                           </div>
                         ))
                       )}
-                    </CardContent>
+                    </div>
                   </TabsContent>
                 </Tabs>
               </CardContent>
@@ -568,12 +856,14 @@ export default function SendMessagePage() {
           </div>
 
           {/* Right Side - Message Preview */}
-          <div className="space-y-6">
-            <DiscordMessagePreview
-              content={message.content}
-              embeds={message.embeds}
-              avatar={selectedAvatar}
-            />
+          <div className="flex flex-col overflow-hidden">
+            <div className="flex-1 overflow-y-auto">
+              <DiscordMessagePreview
+                content={message.content}
+                embeds={message.embeds}
+                avatar={selectedAvatar}
+              />
+            </div>
           </div>
         </div>
       </div>

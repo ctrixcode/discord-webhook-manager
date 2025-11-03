@@ -52,11 +52,13 @@ This project is licensed under the GNU General Public License v3.0.
 ## 🆘 Support
 
 If you encounter any issues or have questions:
-1.  Join our Discord server for community support: [https://discord.gg/YbtyTRAFv2](https://discord.gg/YbtyTRAFv2)
+1.  Join our Discord server for community support: [Discord Link](https://discord.gg/QANpvn78qh)
 2.  Check the existing issues
 3.  Create a new issue with detailed information
 4.  Provide steps to reproduce the problem
 
 ---
+
+If you find this project useful, please consider giving it a ⭐ on GitHub! Your support helps us grow and improve.
 
 **Happy Coding! 🎉**
