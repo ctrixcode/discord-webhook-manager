@@ -131,7 +131,7 @@ export default function HomePage() {
         {/* Features Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
           <Link href="/webhooks">
-            <Card className="p-6 bg-gradient-to-br from-discord to-discord-dark text-white border-0 hover:shadow-lg hover:shadow-discord/20 transition-all duration-300 cursor-pointer group h-full">
+            <Card className="p-6 bg-gradient-to-br from-discord to-discord-dark dark:from-indigo-900 dark:to-indigo-950 text-white border-0 hover:shadow-lg hover:shadow-discord/20 transition-all duration-300 cursor-pointer group h-full">
               <div className="flex items-start justify-between mb-4">
                 <div className="p-3 bg-white/10 rounded-xl group-hover:bg-white/20 transition-colors">
                   <Webhook className="size-6" />
@@ -147,7 +147,7 @@ export default function HomePage() {
           </Link>
 
           <Link href="/templates">
-            <Card className="p-6 bg-gradient-to-br from-purple-600 to-purple-700 text-white border-0 hover:shadow-lg hover:shadow-purple-500/20 transition-all duration-300 cursor-pointer group h-full">
+            <Card className="p-6 bg-gradient-to-br from-purple-600 to-purple-700 dark:from-purple-900 dark:to-purple-950 text-white border-0 hover:shadow-lg hover:shadow-purple-500/20 transition-all duration-300 cursor-pointer group h-full">
               <div className="flex items-start justify-between mb-4">
                 <div className="p-3 bg-white/10 rounded-xl group-hover:bg-white/20 transition-colors">
                   <MessageSquare className="size-6" />
@@ -162,7 +162,7 @@ export default function HomePage() {
           </Link>
 
           <Link href="/avatars">
-            <Card className="p-6 bg-gradient-to-br from-green-600 to-green-700 text-white border-0 hover:shadow-lg hover:shadow-green-500/20 transition-all duration-300 cursor-pointer group h-full">
+            <Card className="p-6 bg-gradient-to-br from-green-600 to-green-700 dark:from-green-900 dark:to-green-950 text-white border-0 hover:shadow-lg hover:shadow-green-500/20 transition-all duration-300 cursor-pointer group h-full">
               <div className="flex items-start justify-between mb-4">
                 <div className="p-3 bg-white/10 rounded-xl group-hover:bg-white/20 transition-colors">
                   <User className="size-6" />
@@ -177,7 +177,7 @@ export default function HomePage() {
           </Link>
 
           <Link href="/send">
-            <Card className="p-6 bg-gradient-to-br from-orange-600 to-orange-700 text-white border-0 hover:shadow-lg hover:shadow-orange-500/20 transition-all duration-300 cursor-pointer group h-full">
+            <Card className="p-6 bg-gradient-to-br from-orange-600 to-orange-700 dark:from-orange-900 dark:to-orange-950 text-white border-0 hover:shadow-lg hover:shadow-orange-500/20 transition-all duration-300 cursor-pointer group h-full">
               <div className="flex items-start justify-between mb-4">
                 <div className="p-3 bg-white/10 rounded-xl group-hover:bg-white/20 transition-colors">
                   <Send className="size-6" />
@@ -191,7 +191,7 @@ export default function HomePage() {
             </Card>
           </Link>
 
-          <Card className="p-6 bg-gradient-to-br from-blue-600 to-blue-700 text-white border-0 hover:shadow-lg hover:shadow-blue-500/20 transition-all duration-300 cursor-pointer group h-full">
+          <Card className="p-6 bg-gradient-to-br from-blue-600 to-blue-700 dark:from-blue-900 dark:to-blue-950 text-white border-0 hover:shadow-lg hover:shadow-blue-500/20 transition-all duration-300 cursor-pointer group h-full">
             <div className="flex items-start justify-between mb-4">
               <div className="p-3 bg-white/10 rounded-xl group-hover:bg-white/20 transition-colors">
                 <Shield className="size-6" />
@@ -204,7 +204,7 @@ export default function HomePage() {
             </p>
           </Card>
 
-          <Card className="p-6 bg-gradient-to-br from-pink-600 to-pink-700 text-white border-0 hover:shadow-lg hover:shadow-pink-500/20 transition-all duration-300 cursor-pointer group h-full">
+          <Card className="p-6 bg-gradient-to-br from-pink-600 to-pink-700 dark:from-pink-900 dark:to-pink-950 text-white border-0 hover:shadow-lg hover:shadow-pink-500/20 transition-all duration-300 cursor-pointer group h-full">
             <div className="flex items-start justify-between mb-4">
               <div className="p-3 bg-white/10 rounded-xl group-hover:bg-white/20 transition-colors">
                 <Zap className="size-6" />
@@ -265,7 +265,7 @@ export default function HomePage() {
           </Card>
 
           {/* Contact Us */}
-          <Card className="p-6 bg-gradient-to-br from-indigo-600 to-indigo-700 text-white border-0 flex flex-col justify-between">
+          <Card className="p-6 bg-gradient-to-br from-indigo-600 to-indigo-700 dark:from-indigo-900 dark:to-indigo-950 text-white border-0 flex flex-col justify-between">
             <div>
               <div className="flex items-center gap-3 mb-4">
                 <div className="p-3 bg-white/10 rounded-xl">
