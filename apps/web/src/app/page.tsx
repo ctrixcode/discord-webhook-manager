@@ -13,6 +13,7 @@ import {
   Sparkles,
 } from 'lucide-react';
 import { Navigation } from '@/components/navigation';
+import { Footer } from '@/components/footer';
 
 export default function HomePage() {
   return (
@@ -294,6 +295,7 @@ export default function HomePage() {
           </Card>
         </div>
       </main>
+      <Footer />
     </div>
   );
 }
