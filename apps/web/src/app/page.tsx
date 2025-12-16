@@ -219,43 +219,80 @@ export default function HomePage() {
         </div>
 
         {/* Recent Activity */}
-        <Card className="p-6 bg-gradient-to-br from-card to-card/50 border-border/50 backdrop-blur-sm">
-          <div className="flex items-center justify-between mb-6">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          {/* Recent Activity */}
+          <Card className="p-6 bg-gradient-to-br from-card to-card/50 border-border/50 backdrop-blur-sm lg:col-span-2">
+            <div className="flex items-center justify-between mb-6">
+              <div>
+                <h2 className="text-lg font-semibold text-foreground">
+                  Recent Activity
+                </h2>
+                <p className="text-sm text-muted-foreground">
+                  Messages sent in the last 7 days
+                </p>
+              </div>
+              <Button
+                variant="outline"
+                size="sm"
+                className="rounded-xl border-border/50 bg-transparent"
+              >
+                View All
+              </Button>
+            </div>
+
+            <div className="flex items-end justify-between h-48 gap-3">
+              {[40, 65, 45, 80, 55, 90, 75].map((height, i) => (
+                <div
+                  key={i}
+                  className="flex-1 flex flex-col items-center gap-2 h-full justify-end"
+                >
+                  <div className="w-full max-w-20 h-full bg-muted/20 rounded-xl relative group cursor-pointer">
+                    <div
+                      className="absolute bottom-0 w-full bg-gradient-to-t from-discord to-discord/80 rounded-xl transition-all duration-300 group-hover:to-discord"
+                      style={{ height: `${height}%` }}
+                    >
+                      <div className="absolute -top-8 left-1/2 -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-opacity bg-foreground text-background px-2 py-1 rounded text-xs font-medium whitespace-nowrap z-10">
+                        {Math.floor(height * 2.5)} messages
+                      </div>
+                    </div>
+                  </div>
+                  <span className="text-xs text-muted-foreground font-medium">
+                    {['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'][i]}
+                  </span>
+                </div>
+              ))}
+            </div>
+          </Card>
+
+          {/* Contact Us */}
+          <Card className="p-6 bg-gradient-to-br from-indigo-600 to-indigo-700 text-white border-0 flex flex-col justify-between">
             <div>
-              <h2 className="text-lg font-semibold text-foreground">
-                Recent Activity
-              </h2>
-              <p className="text-sm text-muted-foreground">
-                Messages sent in the last 7 days
+              <div className="flex items-center gap-3 mb-4">
+                <div className="p-3 bg-white/10 rounded-xl">
+                  <MessageSquare className="size-6" />
+                </div>
+                <h2 className="text-lg font-semibold">Need Help?</h2>
+              </div>
+              <p className="text-white/80 mb-6">
+                Join our Discord community for support, feature requests, and to
+                connect with other users.
               </p>
             </div>
-            <Button
-              variant="outline"
-              size="sm"
-              className="rounded-xl border-border/50 bg-transparent"
-            >
-              View All
-            </Button>
-          </div>
 
-          <div className="flex items-end justify-between h-48 gap-3">
-            {[40, 65, 45, 80, 55, 90, 75].map((height, i) => (
-              <div key={i} className="flex-1 flex flex-col items-center gap-2">
-                <div
-                  className="w-full bg-gradient-to-t from-discord to-discord/40 rounded-t-xl hover:from-discord hover:to-discord/60 transition-all cursor-pointer relative group"
-                  style={{ height: `${height}%` }}
-                >
-                  <div className="absolute -top-8 left-1/2 -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-opacity bg-foreground text-background px-2 py-1 rounded text-xs font-medium whitespace-nowrap">
-                    {Math.floor(height * 2.5)} messages
-                  </div>
-                </div>
-                <span className="text-xs text-muted-foreground">
-                  {['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'][i]}
-                </span>
-              </div>
-            ))}
-          </div>
-        </Card>
+            <div className="space-y-3">
+              <Button className="w-full bg-white text-indigo-600 hover:bg-white/90 rounded-xl font-semibold">
+                <Webhook className="size-4 mr-2" />
+                Join Discord Server
+              </Button>
+              <Button
+                variant="outline"
+                className="w-full border-white/20 hover:bg-white/10 text-white hover:text-white rounded-xl bg-transparent"
+              >
+                Contact Support
+              </Button>
+            </div>
+          </Card>
+        </div>
       </main>
     </div>
   );
