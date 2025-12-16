@@ -130,7 +130,7 @@ export default function HomePage() {
 
         {/* Features Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
-          <Link href="/webhooks">
+          <Link href="/dashboard/webhooks">
             <Card className="p-6 bg-gradient-to-br from-discord to-discord-dark dark:from-indigo-900 dark:to-indigo-950 text-white border-0 hover:shadow-lg hover:shadow-discord/20 transition-all duration-300 cursor-pointer group h-full">
               <div className="flex items-start justify-between mb-4">
                 <div className="p-3 bg-white/10 rounded-xl group-hover:bg-white/20 transition-colors">
@@ -146,7 +146,7 @@ export default function HomePage() {
             </Card>
           </Link>
 
-          <Link href="/templates">
+          <Link href="/dashboard/templates">
             <Card className="p-6 bg-gradient-to-br from-purple-600 to-purple-700 dark:from-purple-900 dark:to-purple-950 text-white border-0 hover:shadow-lg hover:shadow-purple-500/20 transition-all duration-300 cursor-pointer group h-full">
               <div className="flex items-start justify-between mb-4">
                 <div className="p-3 bg-white/10 rounded-xl group-hover:bg-white/20 transition-colors">
@@ -161,7 +161,7 @@ export default function HomePage() {
             </Card>
           </Link>
 
-          <Link href="/avatars">
+          <Link href="/dashboard/avatars">
             <Card className="p-6 bg-gradient-to-br from-green-600 to-green-700 dark:from-green-900 dark:to-green-950 text-white border-0 hover:shadow-lg hover:shadow-green-500/20 transition-all duration-300 cursor-pointer group h-full">
               <div className="flex items-start justify-between mb-4">
                 <div className="p-3 bg-white/10 rounded-xl group-hover:bg-white/20 transition-colors">
@@ -176,7 +176,7 @@ export default function HomePage() {
             </Card>
           </Link>
 
-          <Link href="/send">
+          <Link href="/dashboard/send">
             <Card className="p-6 bg-gradient-to-br from-orange-600 to-orange-700 dark:from-orange-900 dark:to-orange-950 text-white border-0 hover:shadow-lg hover:shadow-orange-500/20 transition-all duration-300 cursor-pointer group h-full">
               <div className="flex items-start justify-between mb-4">
                 <div className="p-3 bg-white/10 rounded-xl group-hover:bg-white/20 transition-colors">
