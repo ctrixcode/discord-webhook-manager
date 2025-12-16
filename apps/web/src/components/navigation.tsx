@@ -18,7 +18,11 @@ import { Button } from '@/components/ui/button';
 import { useTheme } from 'next-themes';
 import { useEffect, useState } from 'react';
 
-export function Navigation() {
+interface NavigationProps {
+  userProfile?: string | null;
+}
+
+export function Navigation({ userProfile }: NavigationProps) {
   const pathname = usePathname();
   const { theme, setTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
@@ -90,13 +94,15 @@ export function Navigation() {
                   <Moon className="size-5" />
                 ))}
             </Button>
-            <div className="size-10 rounded-xl bg-gradient-to-br from-discord to-discord-dark overflow-hidden border-2 border-discord/20">
-              <img
-                src="/diverse-user-avatars.png"
-                alt="User"
-                className="size-full object-cover"
-              />
-            </div>
+            {userProfile && (
+              <div className="size-10 rounded-xl bg-gradient-to-br from-discord to-discord-dark overflow-hidden border-2 border-discord/20">
+                <img
+                  src={userProfile}
+                  alt="User"
+                  className="size-full object-cover"
+                />
+              </div>
+            )}
           </div>
         </div>
       </div>
