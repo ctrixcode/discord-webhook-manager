@@ -1,206 +1,264 @@
-import React from 'react';
-import { cookies } from 'next/headers';
-import type { Metadata } from 'next';
+'use client';
 
-export const generateMetadata = async (): Promise<Metadata> => {
-  return {
-    title: 'Discord Webhook Manager - Supercharge Your Discord Communication',
-    description:
-      'Effortlessly manage, automate, and send rich messages to your Discord channels. Streamline announcements, updates, and interactions with our intuitive Webhook Manager.',
-    keywords: [
-      'Discord',
-      'Webhook',
-      'Manager',
-      'Automation',
-      'Messages',
-      'Bots',
-      'Communication',
-      'Tools',
-    ],
-  };
-};
+import Link from 'next/link';
+import { Button } from '@/components/ui/button';
+import { Card } from '@/components/ui/card';
+import {
+  Webhook,
+  Send,
+  MessageSquare,
+  User,
+  Zap,
+  ArrowRight,
+  Star,
+  Shield,
+  Sparkles,
+} from 'lucide-react';
+import { Navigation } from '@/components/navigation';
 
-export default async function HomePage() {
-  const cookieStore = await cookies();
-  const refreshToken = cookieStore.get('refreshToken');
-  const isLoggedIn = !!refreshToken;
-
+export default function HomePage() {
   return (
-    <div className="min-h-scree text-white">
-      {/* Hero Section */}
-      <section className="relative flex flex-col items-center justify-center min-h-screen p-4 md:p-24 text-center">
-        <h1 className="text-5xl md:text-7xl font-extrabold mb-6 drop-shadow-lg leading-tight">
-          Supercharge Your Discord Communication
-        </h1>
-        <p className="text-xl md:text-2xl mb-10 max-w-4xl leading-relaxed opacity-90">
-          Eliminate manual work, costly bots, and complex custom solutions.
-          Effortlessly manage, automate, and send rich messages to your Discord
-          channels, streamlining announcements and interactions with our
-          intuitive Webhook Manager.
-        </p>
-        <a
-          href={isLoggedIn ? '/dashboard' : '/login'}
-          className="inline-flex items-center justify-center px-10 py-4 border border-transparent text-lg font-semibold rounded-full text-white bg-indigo-600 hover:bg-indigo-700 transition duration-300 ease-in-out shadow-xl transform hover:scale-105"
-        >
-          {isLoggedIn ? 'Go to Dashboard' : 'Get Started for Free'}
-        </a>
-      </section>
+    <div className="min-h-screen bg-gradient-to-br from-background via-background to-accent/5 transition-colors">
+      <Navigation />
 
-      {/* About Us / What We Do Section */}
-      <section className="py-20 px-4 md:px-24 bg-slate-800 bg-opacity-50 backdrop-blur-sm">
-        <div className="max-w-6xl mx-auto">
-          <h2 className="text-4xl md:text-5xl font-bold text-center mb-12 drop-shadow-md">
-            What We Do
-          </h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
-            {/* Feature 1 */}
-            <div className="bg-slate-700 bg-opacity-70 p-8 rounded-lg shadow-lg transform hover:scale-105 transition duration-300 ease-in-out">
-              <h3 className="text-2xl font-semibold mb-4">
-                Centralized Webhook Management
-              </h3>
-              <p className="text-lg opacity-80">
-                Keep all your Discord webhooks organized in one place. Easily
-                add, edit, and delete webhooks, eliminating the hassle of
-                juggling multiple Discord servers or manual configurations.
-              </p>
-            </div>
-            {/* Feature 2 */}
-            <div className="bg-slate-700 bg-opacity-70 p-8 rounded-lg shadow-lg transform hover:scale-105 transition duration-300 ease-in-out">
-              <h3 className="text-2xl font-semibold mb-4">
-                Rich Message Composition
-              </h3>
-              <p className="text-lg opacity-80">
-                Craft stunning Discord messages with full support for embeds,
-                custom avatars, and usernames. Make your announcements stand out
-                without the need for custom bots or tedious manual work.
-              </p>
-            </div>
-            {/* Feature 3 - Scheduled Messaging (Temporarily commented out) */}
-            {/*
-            <div className="bg-slate-700 bg-opacity-70 p-8 rounded-lg shadow-lg transform hover:scale-105 transition duration-300 ease-in-out">
-              <h3 className="text-2xl font-semibold mb-4">Scheduled Messaging</h3>
-              <p className="text-lg opacity-80">
-                Plan your messages in advance. Schedule announcements, reminders, or daily updates to be sent automatically at your desired time.
-              </p>
-            </div>
-            */}
-            {/* Feature 4 */}
-            <div className="bg-slate-700 bg-opacity-70 p-8 rounded-lg shadow-lg transform hover:scale-105 transition duration-300 ease-in-out">
-              <h3 className="text-2xl font-semibold mb-4">
-                Custom Avatars & Identities
-              </h3>
-              <p className="text-lg opacity-80">
-                Define and reuse custom avatars and usernames for your webhook
-                messages, allowing for dynamic and engaging announcements
-                tailored to different requirements.
-              </p>
-            </div>
-            {/* Feature 5 */}
-            <div className="bg-slate-700 bg-opacity-70 p-8 rounded-lg shadow-lg transform hover:scale-105 transition duration-300 ease-in-out">
-              <h3 className="text-2xl font-semibold mb-4">
-                Intuitive User Interface
-              </h3>
-              <p className="text-lg opacity-80">
-                Our clean and user-friendly dashboard makes managing your
-                Discord webhooks a breeze, even for beginners.
-              </p>
-            </div>
-            {/* Feature 6 */}
-            <div className="bg-slate-700 bg-opacity-70 p-8 rounded-lg shadow-lg transform hover:scale-105 transition duration-300 ease-in-out">
-              <h3 className="text-2xl font-semibold mb-4">Secure & Reliable</h3>
-              <p className="text-lg opacity-80">
-                Built with security in mind, ensuring your webhook data and
-                Discord interactions are safe and dependable.
-              </p>
-            </div>
+      <main className="container mx-auto px-6 py-8">
+        {/* Hero Section */}
+        <div className="text-center mb-16 mt-8">
+          <div className="inline-flex items-center gap-2 px-4 py-2 bg-discord/10 rounded-full text-discord text-sm font-medium mb-6">
+            <Sparkles className="size-4" />
+            Welcome to Discord Webhook Manager
           </div>
-        </div>
-      </section>
-
-      {/* Contact Us Section */}
-      <section className="py-20 px-4 md:px-24 bg-slate-900 bg-opacity-70 backdrop-blur-sm">
-        <div className="max-w-4xl mx-auto text-center">
-          <h2 className="text-4xl md:text-5xl font-bold mb-8 drop-shadow-md">
-            Get in Touch
-          </h2>
-          <p className="text-lg md:text-xl mb-8 opacity-90">
-            Have questions, feedback, or just want to say hello? Feel free to
-            reach out!
+          <h1 className="text-5xl md:text-6xl font-bold text-foreground mb-4 text-balance">
+            Streamline Your Discord
+            <br />
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-discord to-purple-500">
+              Announcements
+            </span>
+          </h1>
+          <p className="text-xl text-muted-foreground mb-8 max-w-2xl mx-auto text-pretty">
+            Manage webhooks, custom avatars, and message templates without
+            writing a single line of code
           </p>
-          <div className="flex flex-col items-center space-y-4">
-            <a
-              href="mailto:coderck@proton.me"
-              className="inline-flex items-center text-lg md:text-xl text-indigo-400 hover:text-indigo-300 transition duration-300 ease-in-out"
-            >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                className="h-6 w-6 mr-2"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-                strokeWidth={2}
+          <div className="flex items-center justify-center gap-4">
+            <Link href="/dashboard/webhooks">
+              <Button
+                size="lg"
+                className="bg-discord hover:bg-discord-dark rounded-xl text-base"
               >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8m-18 4v7a2 2 0 002 2h14a2 2 0 002-2v-7m-18 0h18"
-                />
-              </svg>
-              coderck@proton.me
-            </a>
-            <a
-              href="https://github.com/ctrixcode"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center text-lg md:text-xl text-indigo-400 hover:text-indigo-300 transition duration-300 ease-in-out"
-            >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                className="h-6 w-6 mr-2"
-                fill="currentColor"
-                viewBox="0 0 24 24"
+                Get Started
+                <ArrowRight className="size-5 ml-2" />
+              </Button>
+            </Link>
+            <Link href="/dashboard/send">
+              <Button
+                size="lg"
+                variant="outline"
+                className="rounded-xl text-base bg-transparent"
               >
-                <path
-                  fillRule="evenodd"
-                  d="M12 0C5.373 0 0 5.373 0 12c0 5.302 3.438 9.799 8.205 11.387.6.11.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.725-4.042-1.61-4.042-1.61-.546-1.387-1.333-1.757-1.333-1.757-1.087-.744.082-.729.082-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.49.998.108-.775.419-1.305.762-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.382 1.235-3.22-.12-.3-.535-1.52.117-3.176 0 0 1-.322 3.295 1.23.957-.266 1.983-.4 3.003-.404 1.02.004 2.046.138 3.003.404 2.295-1.552 3.295-1.23 3.295-1.23.652 1.656.237 2.876.117 3.176.77.838 1.235 1.91 1.235 3.22 0 4.61-2.805 5.625-5.475 5.92.43.37.823 1.102.823 2.222 0 1.606-.015 2.89-.015 3.283 0 .32.217.69.825.577C20.562 21.799 24 17.302 24 12c0-6.627-5.373-12-12-12z"
-                  clipRule="evenodd"
-                />
-              </svg>
-              ctrixcode
-            </a>
-            <a
-              href="https://ctrix.pro"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center text-lg md:text-xl text-indigo-400 hover:text-indigo-300 transition duration-300 ease-in-out"
-            >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                className="h-6 w-6 mr-2"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-                strokeWidth={2}
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
-                />
-              </svg>
-              My Portfolio
-            </a>
+                Send Message
+              </Button>
+            </Link>
           </div>
         </div>
-      </section>
 
-      {/* Copyright Section */}
-      <footer className="py-8 px-4 md:px-24 bg-slate-900 bg-opacity-90 text-center text-sm opacity-70">
-        <p>
-          &copy; {new Date().getFullYear()} Discord Webhook Manager. All rights
-          reserved.
-        </p>
-      </footer>
+        {/* Stats Overview */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
+          <Card className="p-6 bg-gradient-to-br from-card to-card/50 border-border/50 backdrop-blur-sm hover:shadow-lg hover:shadow-discord/5 transition-all duration-300">
+            <div className="flex items-start justify-between mb-4">
+              <div className="p-3 bg-discord/10 rounded-xl">
+                <Webhook className="size-6 text-discord" />
+              </div>
+              <span className="text-xs font-medium text-success px-2.5 py-1 bg-success/10 rounded-full">
+                +12%
+              </span>
+            </div>
+            <div>
+              <p className="text-sm text-muted-foreground mb-1">
+                Active Webhooks
+              </p>
+              <p className="text-3xl font-bold text-foreground">24</p>
+            </div>
+          </Card>
+
+          <Card className="p-6 bg-gradient-to-br from-card to-card/50 border-border/50 backdrop-blur-sm hover:shadow-lg hover:shadow-purple-500/5 transition-all duration-300">
+            <div className="flex items-start justify-between mb-4">
+              <div className="p-3 bg-purple-500/10 rounded-xl">
+                <Send className="size-6 text-purple-500" />
+              </div>
+              <span className="text-xs font-medium text-success px-2.5 py-1 bg-success/10 rounded-full">
+                +28%
+              </span>
+            </div>
+            <div>
+              <p className="text-sm text-muted-foreground mb-1">
+                Messages Sent
+              </p>
+              <p className="text-3xl font-bold text-foreground">1,248</p>
+            </div>
+          </Card>
+
+          <Card className="p-6 bg-gradient-to-br from-card to-card/50 border-border/50 backdrop-blur-sm hover:shadow-lg hover:shadow-green-500/5 transition-all duration-300">
+            <div className="flex items-start justify-between mb-4">
+              <div className="p-3 bg-green-500/10 rounded-xl">
+                <MessageSquare className="size-6 text-green-500" />
+              </div>
+              <span className="text-xs font-medium text-muted-foreground px-2.5 py-1 bg-muted/50 rounded-full">
+                --
+              </span>
+            </div>
+            <div>
+              <p className="text-sm text-muted-foreground mb-1">Templates</p>
+              <p className="text-3xl font-bold text-foreground">18</p>
+            </div>
+          </Card>
+
+          <Card className="p-6 bg-gradient-to-br from-card to-card/50 border-border/50 backdrop-blur-sm hover:shadow-lg hover:shadow-orange-500/5 transition-all duration-300">
+            <div className="flex items-start justify-between mb-4">
+              <div className="p-3 bg-orange-500/10 rounded-xl">
+                <User className="size-6 text-orange-500" />
+              </div>
+              <span className="text-xs font-medium text-success px-2.5 py-1 bg-success/10 rounded-full">
+                +8%
+              </span>
+            </div>
+            <div>
+              <p className="text-sm text-muted-foreground mb-1">
+                Custom Avatars
+              </p>
+              <p className="text-3xl font-bold text-foreground">32</p>
+            </div>
+          </Card>
+        </div>
+
+        {/* Features Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
+          <Link href="/webhooks">
+            <Card className="p-6 bg-gradient-to-br from-discord to-discord-dark text-white border-0 hover:shadow-lg hover:shadow-discord/20 transition-all duration-300 cursor-pointer group h-full">
+              <div className="flex items-start justify-between mb-4">
+                <div className="p-3 bg-white/10 rounded-xl group-hover:bg-white/20 transition-colors">
+                  <Webhook className="size-6" />
+                </div>
+                <ArrowRight className="size-5 opacity-60 group-hover:translate-x-1 transition-transform" />
+              </div>
+              <h3 className="text-lg font-semibold mb-2">Manage Webhooks</h3>
+              <p className="text-sm text-white/70">
+                Create, edit, and organize all your Discord webhooks in one
+                place
+              </p>
+            </Card>
+          </Link>
+
+          <Link href="/templates">
+            <Card className="p-6 bg-gradient-to-br from-purple-600 to-purple-700 text-white border-0 hover:shadow-lg hover:shadow-purple-500/20 transition-all duration-300 cursor-pointer group h-full">
+              <div className="flex items-start justify-between mb-4">
+                <div className="p-3 bg-white/10 rounded-xl group-hover:bg-white/20 transition-colors">
+                  <MessageSquare className="size-6" />
+                </div>
+                <ArrowRight className="size-5 opacity-60 group-hover:translate-x-1 transition-transform" />
+              </div>
+              <h3 className="text-lg font-semibold mb-2">Message Templates</h3>
+              <p className="text-sm text-white/70">
+                Design reusable message templates with rich embeds
+              </p>
+            </Card>
+          </Link>
+
+          <Link href="/avatars">
+            <Card className="p-6 bg-gradient-to-br from-green-600 to-green-700 text-white border-0 hover:shadow-lg hover:shadow-green-500/20 transition-all duration-300 cursor-pointer group h-full">
+              <div className="flex items-start justify-between mb-4">
+                <div className="p-3 bg-white/10 rounded-xl group-hover:bg-white/20 transition-colors">
+                  <User className="size-6" />
+                </div>
+                <ArrowRight className="size-5 opacity-60 group-hover:translate-x-1 transition-transform" />
+              </div>
+              <h3 className="text-lg font-semibold mb-2">Custom Avatars</h3>
+              <p className="text-sm text-white/70">
+                Create and manage reusable avatar profiles for webhooks
+              </p>
+            </Card>
+          </Link>
+
+          <Link href="/send">
+            <Card className="p-6 bg-gradient-to-br from-orange-600 to-orange-700 text-white border-0 hover:shadow-lg hover:shadow-orange-500/20 transition-all duration-300 cursor-pointer group h-full">
+              <div className="flex items-start justify-between mb-4">
+                <div className="p-3 bg-white/10 rounded-xl group-hover:bg-white/20 transition-colors">
+                  <Send className="size-6" />
+                </div>
+                <ArrowRight className="size-5 opacity-60 group-hover:translate-x-1 transition-transform" />
+              </div>
+              <h3 className="text-lg font-semibold mb-2">Send Messages</h3>
+              <p className="text-sm text-white/70">
+                Compose and send messages with rich formatting options
+              </p>
+            </Card>
+          </Link>
+
+          <Card className="p-6 bg-gradient-to-br from-blue-600 to-blue-700 text-white border-0 hover:shadow-lg hover:shadow-blue-500/20 transition-all duration-300 cursor-pointer group h-full">
+            <div className="flex items-start justify-between mb-4">
+              <div className="p-3 bg-white/10 rounded-xl group-hover:bg-white/20 transition-colors">
+                <Shield className="size-6" />
+              </div>
+              <Star className="size-5 opacity-60" />
+            </div>
+            <h3 className="text-lg font-semibold mb-2">Secure & Reliable</h3>
+            <p className="text-sm text-white/70">
+              Enterprise-grade security with 98.5% success rate
+            </p>
+          </Card>
+
+          <Card className="p-6 bg-gradient-to-br from-pink-600 to-pink-700 text-white border-0 hover:shadow-lg hover:shadow-pink-500/20 transition-all duration-300 cursor-pointer group h-full">
+            <div className="flex items-start justify-between mb-4">
+              <div className="p-3 bg-white/10 rounded-xl group-hover:bg-white/20 transition-colors">
+                <Zap className="size-6" />
+              </div>
+              <Sparkles className="size-5 opacity-60" />
+            </div>
+            <h3 className="text-lg font-semibold mb-2">Lightning Fast</h3>
+            <p className="text-sm text-white/70">
+              Send messages instantly with real-time preview
+            </p>
+          </Card>
+        </div>
+
+        {/* Recent Activity */}
+        <Card className="p-6 bg-gradient-to-br from-card to-card/50 border-border/50 backdrop-blur-sm">
+          <div className="flex items-center justify-between mb-6">
+            <div>
+              <h2 className="text-lg font-semibold text-foreground">
+                Recent Activity
+              </h2>
+              <p className="text-sm text-muted-foreground">
+                Messages sent in the last 7 days
+              </p>
+            </div>
+            <Button
+              variant="outline"
+              size="sm"
+              className="rounded-xl border-border/50 bg-transparent"
+            >
+              View All
+            </Button>
+          </div>
+
+          <div className="flex items-end justify-between h-48 gap-3">
+            {[40, 65, 45, 80, 55, 90, 75].map((height, i) => (
+              <div key={i} className="flex-1 flex flex-col items-center gap-2">
+                <div
+                  className="w-full bg-gradient-to-t from-discord to-discord/40 rounded-t-xl hover:from-discord hover:to-discord/60 transition-all cursor-pointer relative group"
+                  style={{ height: `${height}%` }}
+                >
+                  <div className="absolute -top-8 left-1/2 -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-opacity bg-foreground text-background px-2 py-1 rounded text-xs font-medium whitespace-nowrap">
+                    {Math.floor(height * 2.5)} messages
+                  </div>
+                </div>
+                <span className="text-xs text-muted-foreground">
+                  {['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'][i]}
+                </span>
+              </div>
+            ))}
+          </div>
+        </Card>
+      </main>
     </div>
   );
 }
