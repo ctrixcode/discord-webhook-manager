@@ -137,10 +137,12 @@ export default function HomePage() {
                 <div className="p-3 bg-white/10 rounded-xl group-hover:bg-white/20 transition-colors">
                   <Webhook className="size-6" />
                 </div>
-                <ArrowRight className="size-5 opacity-60 group-hover:translate-x-1 transition-transform" />
+                <ArrowRight className="size-5 opacity-80 group-hover:translate-x-1 transition-transform" />
               </div>
-              <h3 className="text-lg font-semibold mb-2">Manage Webhooks</h3>
-              <p className="text-sm text-white/70">
+              <h3 className="text-lg font-semibold mb-2 text-white">
+                Manage Webhooks
+              </h3>
+              <p className="text-sm text-white/90">
                 Create, edit, and organize all your Discord webhooks in one
                 place
               </p>
@@ -153,10 +155,12 @@ export default function HomePage() {
                 <div className="p-3 bg-white/10 rounded-xl group-hover:bg-white/20 transition-colors">
                   <MessageSquare className="size-6" />
                 </div>
-                <ArrowRight className="size-5 opacity-60 group-hover:translate-x-1 transition-transform" />
+                <ArrowRight className="size-5 opacity-80 group-hover:translate-x-1 transition-transform" />
               </div>
-              <h3 className="text-lg font-semibold mb-2">Message Templates</h3>
-              <p className="text-sm text-white/70">
+              <h3 className="text-lg font-semibold mb-2 text-white">
+                Message Templates
+              </h3>
+              <p className="text-sm text-white/90">
                 Design reusable message templates with rich embeds
               </p>
             </Card>
@@ -168,10 +172,12 @@ export default function HomePage() {
                 <div className="p-3 bg-white/10 rounded-xl group-hover:bg-white/20 transition-colors">
                   <User className="size-6" />
                 </div>
-                <ArrowRight className="size-5 opacity-60 group-hover:translate-x-1 transition-transform" />
+                <ArrowRight className="size-5 opacity-80 group-hover:translate-x-1 transition-transform" />
               </div>
-              <h3 className="text-lg font-semibold mb-2">Custom Avatars</h3>
-              <p className="text-sm text-white/70">
+              <h3 className="text-lg font-semibold mb-2 text-white">
+                Custom Avatars
+              </h3>
+              <p className="text-sm text-white/90">
                 Create and manage reusable avatar profiles for webhooks
               </p>
             </Card>
@@ -183,10 +189,12 @@ export default function HomePage() {
                 <div className="p-3 bg-white/10 rounded-xl group-hover:bg-white/20 transition-colors">
                   <Send className="size-6" />
                 </div>
-                <ArrowRight className="size-5 opacity-60 group-hover:translate-x-1 transition-transform" />
+                <ArrowRight className="size-5 opacity-80 group-hover:translate-x-1 transition-transform" />
               </div>
-              <h3 className="text-lg font-semibold mb-2">Send Messages</h3>
-              <p className="text-sm text-white/70">
+              <h3 className="text-lg font-semibold mb-2 text-white">
+                Send Messages
+              </h3>
+              <p className="text-sm text-white/90">
                 Compose and send messages with rich formatting options
               </p>
             </Card>
@@ -197,10 +205,12 @@ export default function HomePage() {
               <div className="p-3 bg-white/10 rounded-xl group-hover:bg-white/20 transition-colors">
                 <Shield className="size-6" />
               </div>
-              <Star className="size-5 opacity-60" />
+              <Star className="size-5 opacity-80" />
             </div>
-            <h3 className="text-lg font-semibold mb-2">Secure & Reliable</h3>
-            <p className="text-sm text-white/70">
+            <h3 className="text-lg font-semibold mb-2 text-white">
+              Secure & Reliable
+            </h3>
+            <p className="text-sm text-white/90">
               Enterprise-grade security with 98.5% success rate
             </p>
           </Card>
@@ -210,10 +220,12 @@ export default function HomePage() {
               <div className="p-3 bg-white/10 rounded-xl group-hover:bg-white/20 transition-colors">
                 <Zap className="size-6" />
               </div>
-              <Sparkles className="size-5 opacity-60" />
+              <Sparkles className="size-5 opacity-80" />
             </div>
-            <h3 className="text-lg font-semibold mb-2">Lightning Fast</h3>
-            <p className="text-sm text-white/70">
+            <h3 className="text-lg font-semibold mb-2 text-white">
+              Lightning Fast
+            </h3>
+            <p className="text-sm text-white/90">
               Send messages instantly with real-time preview
             </p>
           </Card>
