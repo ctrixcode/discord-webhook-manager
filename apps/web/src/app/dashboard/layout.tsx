@@ -2,8 +2,8 @@
 
 import React, { useEffect } from 'react';
 import { ProtectedRoute } from '@/components/protected-route';
-import { DashboardHeader } from '@/components/dashboard-header';
-import { FloatingNavigation } from '@/components/floating-navigation';
+import { DashboardNavbar } from '@/components/dashboard-navbar';
+// import { FloatingNavigation } from '@/components/floating-navigation';
 import { AuthProvider } from '@/contexts/auth-context';
 import { useQueryClient } from '@tanstack/react-query';
 import { api } from '@/lib/api';
@@ -46,9 +46,9 @@ export default function DashboardLayout({
     <AuthProvider>
       <ProtectedRoute>
         <div className="min-h-screen">
-          <DashboardHeader />
+          <DashboardNavbar />
           <main className="p-6 pb-24">{children}</main>
-          <FloatingNavigation />
+          {/* <FloatingNavigation /> */}
         </div>
       </ProtectedRoute>
     </AuthProvider>
