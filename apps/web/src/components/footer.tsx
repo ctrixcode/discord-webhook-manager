@@ -59,7 +59,7 @@ export function Footer() {
               </li>
               <li>
                 <Link
-                  href="/pricing"
+                  href="/plans"
                   className="hover:text-foreground transition-colors"
                 >
                   Pricing

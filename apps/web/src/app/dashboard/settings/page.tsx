@@ -250,8 +250,8 @@ export default function SettingsPage() {
         description="View details about different subscription tiers and their benefits"
         icon={<Gem className="h-5 w-5" />}
       >
-        <Link href="/dashboard/plans">
-          <Button className="bg-purple-600 hover:bg-purple-700 text-white">
+        <Link href="/plans">
+          <Button className="bg-primary hover:bg-primary/90 text-primary-foreground">
             View Plans
           </Button>
         </Link>
