@@ -524,8 +524,8 @@ export default function SendMessagePage() {
         {/* Compact Header */}
         <div className="flex items-center justify-between flex-shrink-0">
           <div>
-            <h1 className="text-2xl font-bold text-white">Send Message</h1>
-            <p className="text-slate-400 text-sm">
+            <h1 className="text-2xl font-bold text-foreground">Send Message</h1>
+            <p className="text-muted-foreground text-sm">
               Send to {selectedWebhooks.length} webhook
               {selectedWebhooks.length !== 1 ? 's' : ''} •{' '}
               <span className="text-muted-foreground/80">

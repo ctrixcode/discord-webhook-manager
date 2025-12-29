@@ -250,27 +250,27 @@ export const TemplateForm = React.forwardRef(function TemplateForm(
         searchQuery={mentionSearchQuery}
       />
       {/* Left Side - Editor */}
-      <div className="w-1/2 border-r border-slate-700/50 flex flex-col">
+      <div className="w-1/2 border-r border-border/50 flex flex-col">
         <Tabs defaultValue="info" className="flex-1 flex flex-col">
-          <div className="border-b border-slate-700/50 px-4 py-2 bg-slate-800/30">
-            <TabsList className="grid w-full grid-cols-3 bg-slate-800/50 border-slate-600">
+          <div className="border-b border-border/50 px-4 py-2 bg-muted/30">
+            <TabsList className="grid w-full grid-cols-3 bg-muted/50 border-border">
               <TabsTrigger
                 value="info"
-                className="text-slate-300 data-[state=active]:bg-purple-600 data-[state=active]:text-white"
+                className="text-muted-foreground data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-sm"
               >
                 <FileText className="w-4 h-4 mr-2" />
                 Template Info
               </TabsTrigger>
               <TabsTrigger
                 value="message"
-                className="text-slate-300 data-[state=active]:bg-purple-600 data-[state=active]:text-white"
+                className="text-muted-foreground data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-sm"
               >
                 <MessageSquare className="w-4 h-4 mr-2" />
                 Message
               </TabsTrigger>
               <TabsTrigger
                 value="embeds"
-                className="text-slate-300 data-[state=active]:bg-purple-600 data-[state=active]:text-white"
+                className="text-muted-foreground data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-sm"
               >
                 <Layers className="w-4 h-4 mr-2" />
                 Embeds
@@ -281,12 +281,12 @@ export const TemplateForm = React.forwardRef(function TemplateForm(
           <TabsContent value="info" className="flex-1 p-4">
             <div className="space-y-6">
               <div className="space-y-4">
-                <h3 className="text-lg font-semibold text-white">
+                <h3 className="text-lg font-semibold text-foreground">
                   Template Information
                 </h3>
 
                 <div className="space-y-2">
-                  <Label htmlFor="name" className="text-slate-200">
+                  <Label htmlFor="name" className="text-foreground">
                     Template Name
                   </Label>
                   <Input
@@ -295,12 +295,12 @@ export const TemplateForm = React.forwardRef(function TemplateForm(
                     onChange={e => setName(e.target.value)}
                     placeholder="My Awesome Template"
                     required
-                    className="bg-slate-800/50 border-slate-600 text-white placeholder:text-slate-400 focus:border-purple-500"
+                    className="bg-background/50 border-input text-foreground placeholder:text-muted-foreground focus:border-ring"
                   />
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="description" className="text-slate-200">
+                  <Label htmlFor="description" className="text-foreground">
                     Description (Optional)
                   </Label>
                   <Textarea
@@ -309,7 +309,7 @@ export const TemplateForm = React.forwardRef(function TemplateForm(
                     onChange={e => setDescription(e.target.value)}
                     placeholder="What is this template for? Describe its purpose..."
                     rows={4}
-                    className="resize-none bg-slate-800/50 border-slate-600 text-white placeholder:text-slate-400 focus:border-purple-500"
+                    className="resize-none bg-background/50 border-input text-foreground placeholder:text-muted-foreground focus:border-ring"
                   />
                 </div>
               </div>
@@ -320,12 +320,12 @@ export const TemplateForm = React.forwardRef(function TemplateForm(
             <ScrollArea className="h-full">
               <div className="space-y-6">
                 <div className="space-y-4">
-                  <h3 className="text-lg font-semibold text-white">
+                  <h3 className="text-lg font-semibold text-foreground">
                     Message Content
                   </h3>
                   <div className="space-y-2">
                     <div className="flex items-center justify-between">
-                      <Label htmlFor="content" className="text-slate-200">
+                      <Label htmlFor="content" className="text-foreground">
                         Message Text
                       </Label>
                       <MarkdownToolbar
@@ -359,9 +359,9 @@ export const TemplateForm = React.forwardRef(function TemplateForm(
                       placeholder="Enter your message content here... (Max 2000 characters)"
                       rows={8}
                       maxLength={2000}
-                      className="bg-slate-800/50 border-slate-600 text-white placeholder:text-slate-400 focus:border-purple-500"
+                      className="bg-background/50 border-input text-foreground placeholder:text-muted-foreground focus:border-ring"
                     />
-                    <div className="text-xs text-slate-400">
+                    <div className="text-xs text-muted-foreground">
                       {content.length}/2000 characters
                     </div>
                   </div>
@@ -369,7 +369,7 @@ export const TemplateForm = React.forwardRef(function TemplateForm(
 
                 <div className="space-y-4">
                   <div className="flex items-center justify-between">
-                    <h3 className="text-lg font-semibold text-white">
+                    <h3 className="text-lg font-semibold text-foreground">
                       Message Avatar
                     </h3>
                     <AvatarSelector
@@ -380,7 +380,7 @@ export const TemplateForm = React.forwardRef(function TemplateForm(
                       <Button
                         variant="outline"
                         size="sm"
-                        className="bg-slate-700 border-slate-600 text-white hover:bg-slate-600"
+                        className="bg-background/50 border-input text-foreground hover:bg-muted"
                       >
                         <Users className="w-4 h-4 mr-2" />
                         Select Avatar
