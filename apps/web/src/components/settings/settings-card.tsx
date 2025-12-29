@@ -28,22 +28,22 @@ export function SettingsCard({
   return (
     <Card
       className={cn(
-        'bg-slate-900/20 backdrop-blur-xl border-slate-700/50 shadow-xl',
-        variant === 'danger' && 'border-red-500/50',
+        'bg-card/50 backdrop-blur-xl border-border shadow-xl',
+        variant === 'danger' && 'border-destructive/50',
         className
       )}
     >
       <CardHeader>
         <CardTitle
           className={cn(
-            'flex items-center gap-2 text-white',
-            variant === 'danger' && 'text-red-400'
+            'flex items-center gap-2 text-foreground',
+            variant === 'danger' && 'text-destructive'
           )}
         >
           {icon}
           {title}
         </CardTitle>
-        <CardDescription className="text-slate-300">
+        <CardDescription className="text-muted-foreground">
           {description}
         </CardDescription>
       </CardHeader>
