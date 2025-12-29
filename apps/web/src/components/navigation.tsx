@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import Image from 'next/image';
 import { usePathname } from 'next/navigation';
 import {
   Webhook,
@@ -55,8 +56,14 @@ export function Navigation({
         <div className="flex items-center justify-between relative">
           <div className="flex items-center gap-8">
             <Link href="/" className="flex items-center gap-3">
-              <div className="size-10 rounded-xl bg-discord flex items-center justify-center">
-                <Webhook className="size-6 text-white" />
+              <div className="size-10 flex items-center justify-center">
+                <Image
+                  src="/favicon.png"
+                  alt="Discord Webhook Manager"
+                  width={40}
+                  height={40}
+                  className="size-10"
+                />
               </div>
               <div>
                 <h1 className="text-xl font-bold text-foreground">

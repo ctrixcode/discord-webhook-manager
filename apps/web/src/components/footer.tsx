@@ -1,6 +1,7 @@
 import Link from 'next/link';
-import { Webhook, Github, Twitter } from 'lucide-react';
+import { Github, Twitter } from 'lucide-react';
 import { SOCIAL_LINKS, DEVELOPER } from '@/lib/constants';
+import Image from 'next/image';
 
 // Discord SVG Icon Component
 const DiscordIcon = ({ className }: { className?: string }) => (
@@ -22,8 +23,14 @@ export function Footer() {
           {/* Brand Column */}
           <div className="space-y-4">
             <Link href="/" className="flex items-center gap-3">
-              <div className="size-10 rounded-xl bg-discord flex items-center justify-center">
-                <Webhook className="size-6 text-white" />
+              <div className="size-10 flex items-center justify-center">
+                <Image
+                  src="/favicon.png"
+                  alt="Discord Webhook Manager"
+                  width={40}
+                  height={40}
+                  className="size-10"
+                />
               </div>
               <span className="text-xl font-bold text-foreground">
                 Discord Webhook Manager
