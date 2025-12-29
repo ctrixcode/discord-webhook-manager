@@ -44,6 +44,7 @@ export function Footer() {
               <Link
                 href={SOCIAL_LINKS.GITHUB}
                 target="_blank"
+                rel="noopener noreferrer"
                 className="text-muted-foreground hover:text-foreground transition-colors"
               >
                 <Github className="size-5" />
@@ -51,6 +52,7 @@ export function Footer() {
               <Link
                 href={SOCIAL_LINKS.TWITTER}
                 target="_blank"
+                rel="noopener noreferrer"
                 className="text-muted-foreground hover:text-foreground transition-colors"
               >
                 <Twitter className="size-5" />
@@ -58,6 +60,7 @@ export function Footer() {
               <Link
                 href={SOCIAL_LINKS.DISCORD}
                 target="_blank"
+                rel="noopener noreferrer"
                 className="text-muted-foreground hover:text-foreground transition-colors"
               >
                 <DiscordIcon className="size-5" />
@@ -144,7 +147,9 @@ export function Footer() {
           <p className="text-sm text-muted-foreground flex items-center gap-1">
             Made with <span className="text-red-500">❤️</span> by{' '}
             <Link
-              href={SOCIAL_LINKS.GITHUB}
+              href={DEVELOPER.GITHUB_URL}
+              target="_blank"
+              rel="noopener noreferrer"
               className="hover:text-foreground transition-colors font-medium"
             >
               {DEVELOPER.NAME}

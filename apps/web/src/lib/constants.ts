@@ -8,7 +8,7 @@ export const CONTACT = {
 
 // Social Media Links
 export const SOCIAL_LINKS = {
-  GITHUB: 'https://github.com/ctrixcode',
+  GITHUB: 'https://github.com/ctrixcode/discord-webhook-manager',
   TWITTER: 'https://x.com/Ctrix_Dev',
   DISCORD: 'https://discord.gg/QANpvn78qh',
 } as const;
@@ -17,6 +17,7 @@ export const SOCIAL_LINKS = {
 export const DEVELOPER = {
   NAME: 'Ctrix',
   GITHUB_USERNAME: 'ctrixcode',
+  GITHUB_URL: 'https://github.com/ctrixcode',
   TWITTER_HANDLE: '@Ctrix_Dev',
 } as const;
 

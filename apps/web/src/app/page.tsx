@@ -14,6 +14,7 @@ import {
 } from 'lucide-react';
 import { Navigation } from '@/components/navigation';
 import { Footer } from '@/components/footer';
+import { CONTACT, SOCIAL_LINKS } from '@/lib/constants';
 
 export default function HomePage() {
   return (
@@ -286,16 +287,24 @@ export default function HomePage() {
             </div>
 
             <div className="space-y-3">
-              <Button className="w-full bg-white text-indigo-600 hover:bg-white/90 rounded-xl font-semibold">
-                <Webhook className="size-4 mr-2" />
-                Join Discord Server
-              </Button>
-              <Button
-                variant="outline"
-                className="w-full border-white/20 hover:bg-white/10 text-white hover:text-white rounded-xl bg-transparent"
+              <Link
+                href={SOCIAL_LINKS.DISCORD}
+                target="_blank"
+                rel="noopener noreferrer"
               >
-                Contact Support
-              </Button>
+                <Button className="w-full bg-white text-indigo-600 hover:bg-white/90 rounded-xl font-semibold">
+                  <Webhook className="size-4 mr-2" />
+                  Join Discord Server
+                </Button>
+              </Link>
+              <a href={`mailto:${CONTACT.SUPPORT_EMAIL}`}>
+                <Button
+                  variant="outline"
+                  className="w-full border-white/20 hover:bg-white/10 text-white hover:text-white rounded-xl bg-transparent"
+                >
+                  Contact Support
+                </Button>
+              </a>
             </div>
           </Card>
         </div>
