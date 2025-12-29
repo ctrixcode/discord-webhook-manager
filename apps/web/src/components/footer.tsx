@@ -6,7 +6,7 @@ export function Footer() {
   return (
     <footer className="border-t border-border/40 bg-card/30 backdrop-blur-xl mt-20">
       <div className="container mx-auto px-6 py-12">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 mb-12">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12 mb-12">
           {/* Brand Column */}
           <div className="space-y-4">
             <Link href="/" className="flex items-center gap-3">
@@ -80,45 +80,6 @@ export function Footer() {
                   className="hover:text-foreground transition-colors"
                 >
                   Roadmap
-                </Link>
-              </li>
-            </ul>
-          </div>
-
-          {/* Resources Column */}
-          <div>
-            <h3 className="font-semibold text-foreground mb-4">Resources</h3>
-            <ul className="space-y-3 text-sm text-muted-foreground">
-              <li>
-                <Link
-                  href="/docs"
-                  className="hover:text-foreground transition-colors"
-                >
-                  Documentation
-                </Link>
-              </li>
-              <li>
-                <Link
-                  href="/api"
-                  className="hover:text-foreground transition-colors"
-                >
-                  API Reference
-                </Link>
-              </li>
-              <li>
-                <Link
-                  href="/blog"
-                  className="hover:text-foreground transition-colors"
-                >
-                  Blog
-                </Link>
-              </li>
-              <li>
-                <Link
-                  href="/community"
-                  className="hover:text-foreground transition-colors"
-                >
-                  Community
                 </Link>
               </li>
             </ul>
