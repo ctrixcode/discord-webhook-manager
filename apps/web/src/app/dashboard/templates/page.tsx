@@ -105,10 +105,10 @@ export default function TemplatesPage() {
     <div className="min-h-screen p-6 space-y-8">
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-3xl font-bold tracking-tight text-white">
+          <h2 className="text-3xl font-bold tracking-tight text-foreground">
             Message Templates
           </h2>
-          <p className="text-gray-300">
+          <p className="text-muted-foreground">
             Create and manage reusable message templates
           </p>
         </div>
@@ -124,12 +124,12 @@ export default function TemplatesPage() {
       {/* Search */}
       <div className="flex items-center space-x-2">
         <div className="relative flex-1 max-w-sm">
-          <Search className="absolute left-2 top-2.5 h-4 w-4 text-gray-400" />
+          <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
           <Input
             placeholder="Search templates..."
             value={searchQuery}
             onChange={e => setSearchQuery(e.target.value)}
-            className="pl-8 bg-white/10 backdrop-blur-md border-white/20 text-white placeholder:text-gray-400 focus:border-purple-500/50 focus:ring-purple-500/20"
+            className="pl-8 bg-background border-input text-foreground placeholder:text-muted-foreground focus:border-ring"
           />
         </div>
       </div>
@@ -144,13 +144,13 @@ export default function TemplatesPage() {
           {filteredTemplates.map(template => (
             <Card
               key={template._id}
-              className="bg-white/10 backdrop-blur-md border-white/20 hover:bg-white/15 transition-all duration-200 hover:shadow-lg hover:shadow-purple-500/10 cursor-pointer"
+              className="bg-card/50 backdrop-blur-xl border-border hover:bg-card/80 transition-all duration-200 hover:shadow-lg cursor-pointer"
               onClick={() =>
                 router.push(`/dashboard/send?template=${template._id}`)
               }
             >
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-base font-medium text-white">
+                <CardTitle className="text-base font-medium text-foreground">
                   {template.name}
                 </CardTitle>
                 <div className="flex items-center gap-2">
@@ -164,7 +164,7 @@ export default function TemplatesPage() {
                     <DropdownMenuTrigger asChild>
                       <Button
                         variant="ghost"
-                        className="h-8 w-8 p-0 text-gray-300 hover:text-white hover:bg-white/10"
+                        className="h-8 w-8 p-0 text-muted-foreground hover:text-foreground hover:bg-muted"
                         onClick={e => e.stopPropagation()}
                       >
                         <MoreHorizontal className="h-4 w-4" />
@@ -172,14 +172,14 @@ export default function TemplatesPage() {
                     </DropdownMenuTrigger>
                     <DropdownMenuContent
                       align="end"
-                      className="bg-slate-800/95 backdrop-blur-md border-white/20 text-white"
+                      className="bg-popover border-border text-popover-foreground"
                     >
                       <DropdownMenuItem
                         onClick={e => {
                           e.stopPropagation();
                           handleEditTemplate(template._id);
                         }}
-                        className="hover:bg-white/10 focus:bg-white/10"
+                        className="hover:bg-accent focus:bg-accent"
                       >
                         <Edit className="mr-2 h-4 w-4" />
                         Edit
@@ -189,7 +189,7 @@ export default function TemplatesPage() {
                           e.stopPropagation();
                           setDeleteDialogTemplate(template);
                         }}
-                        className="text-red-400 hover:bg-red-500/10 focus:bg-red-500/10"
+                        className="text-destructive hover:bg-destructive/10 focus:bg-destructive/10"
                       >
                         <Trash2 className="mr-2 h-4 w-4" />
                         Delete
@@ -201,16 +201,16 @@ export default function TemplatesPage() {
               <CardContent>
                 <div className="space-y-3">
                   {template.description && (
-                    <p className="text-sm text-gray-300">
+                    <p className="text-sm text-muted-foreground">
                       {template.description}
                     </p>
                   )}
 
                   <div className="text-sm">
-                    <div className="font-medium mb-2 text-white">
+                    <div className="font-medium mb-2 text-foreground">
                       Content Preview:
                     </div>
-                    <div className="text-gray-300 bg-black/20 border border-white/10 p-3 rounded text-xs font-mono">
+                    <div className="text-muted-foreground bg-muted/30 border border-border p-3 rounded text-xs font-mono">
                       {template.content.length > 120
                         ? `${template.content.substring(0, 120)}...`
                         : template.content || 'No content'}
@@ -227,11 +227,11 @@ export default function TemplatesPage() {
                               src={avatar.avatar_url || ''}
                               alt={avatar.username}
                             />
-                            <AvatarFallback className="bg-purple-500/20 text-purple-200 text-sm">
+                            <AvatarFallback className="bg-primary/20 text-primary text-sm">
                               {avatar.username.charAt(0).toUpperCase()}
                             </AvatarFallback>
                           </AvatarComponent>
-                          <span className="text-sm text-gray-300 font-medium">
+                          <span className="text-sm text-muted-foreground font-medium">
                             {avatar.username}
                           </span>
                         </div>
@@ -242,13 +242,13 @@ export default function TemplatesPage() {
                     {template.embeds && template.embeds.length > 0 && (
                       <Badge
                         variant="outline"
-                        className="text-xs bg-blue-500/20 text-blue-200 border-blue-500/30"
+                        className="text-xs bg-primary/20 text-primary border-primary/30"
                       >
                         {template.embeds.length} embed
                         {template.embeds.length > 1 ? 's' : ''}
                       </Badge>
                     )}
-                    <div className="text-xs text-gray-400">
+                    <div className="text-xs text-muted-foreground">
                       {new Date(template.updatedAt).toLocaleDateString()}
                     </div>
                   </div>
@@ -258,13 +258,13 @@ export default function TemplatesPage() {
           ))}
         </div>
       ) : templates.length === 0 ? (
-        <Card className="bg-white/10 backdrop-blur-md border-white/20">
+        <Card className="bg-card/50 backdrop-blur-xl border-border">
           <CardContent className="flex flex-col items-center justify-center py-16">
-            <FileText className="h-12 w-12 text-purple-400 mb-4" />
-            <h3 className="text-lg font-semibold mb-2 text-white">
+            <FileText className="h-12 w-12 text-primary mb-4" />
+            <h3 className="text-lg font-semibold mb-2 text-foreground">
               No templates yet
             </h3>
-            <p className="text-gray-300 text-center mb-4">
+            <p className="text-muted-foreground text-center mb-4">
               Create your first message template to get started
             </p>
             <Button
@@ -277,13 +277,13 @@ export default function TemplatesPage() {
           </CardContent>
         </Card>
       ) : (
-        <Card className="bg-white/10 backdrop-blur-md border-white/20">
+        <Card className="bg-card/50 backdrop-blur-xl border-border">
           <CardContent className="flex flex-col items-center justify-center py-16">
-            <Search className="h-12 w-12 text-purple-400 mb-4" />
-            <h3 className="text-lg font-semibold mb-2 text-white">
+            <Search className="h-12 w-12 text-primary mb-4" />
+            <h3 className="text-lg font-semibold mb-2 text-foreground">
               No templates found
             </h3>
-            <p className="text-gray-300 text-center">
+            <p className="text-muted-foreground text-center">
               Try adjusting your search query
             </p>
           </CardContent>
@@ -294,19 +294,19 @@ export default function TemplatesPage() {
         open={!!deleteDialogTemplate}
         onOpenChange={() => setDeleteDialogTemplate(null)}
       >
-        <AlertDialogContent className="bg-slate-800/95 backdrop-blur-md border-white/20 text-white">
+        <AlertDialogContent className="bg-popover border-border text-popover-foreground">
           <AlertDialogHeader>
-            <AlertDialogTitle className="text-white">
+            <AlertDialogTitle className="text-foreground">
               Delete template?
             </AlertDialogTitle>
-            <AlertDialogDescription className="text-gray-300">
+            <AlertDialogDescription className="text-muted-foreground">
               This action cannot be undone. This will permanently delete the
               template &quot;{deleteDialogTemplate?.name}&quot; from your
               account.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel className="bg-white/10 text-white border-white/20 hover:bg-white/20">
+            <AlertDialogCancel className="bg-muted text-foreground border-border hover:bg-accent">
               Cancel
             </AlertDialogCancel>
             <AlertDialogAction
@@ -314,7 +314,7 @@ export default function TemplatesPage() {
                 deleteDialogTemplate &&
                 deleteMutation.mutate(deleteDialogTemplate._id)
               }
-              className="bg-red-600 text-white hover:bg-red-700"
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
             >
               Delete
             </AlertDialogAction>

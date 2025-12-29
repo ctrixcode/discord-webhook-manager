@@ -4,25 +4,25 @@
 @custom-variant dark (&:is(.dark *));
 
 :root {
-  /* Light Mode - Clean and Modern */
-  --background: oklch(0.99 0.002 264);
-  --foreground: oklch(0.15 0.01 264);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.15 0.01 264);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.15 0.01 264);
+  /* Light Mode - Soft and Comfortable */
+  --background: oklch(0.96 0.01 80); /* Soft warm beige instead of harsh white */
+  --foreground: oklch(0.2 0.02 264); /* Slightly softer black */
+  --card: oklch(0.98 0.008 80); /* Warm off-white for cards */
+  --card-foreground: oklch(0.2 0.02 264);
+  --popover: oklch(0.98 0.008 80);
+  --popover-foreground: oklch(0.2 0.02 264);
   --primary: oklch(0.15 0.01 264);
-  --primary-foreground: oklch(0.99 0.002 264);
-  --secondary: oklch(0.96 0.005 264);
-  --secondary-foreground: oklch(0.15 0.01 264);
-  --muted: oklch(0.96 0.005 264);
-  --muted-foreground: oklch(0.55 0.015 264);
-  --accent: oklch(0.96 0.005 264);
-  --accent-foreground: oklch(0.15 0.01 264);
+  --primary-foreground: oklch(0.98 0.008 80);
+  --secondary: oklch(0.92 0.01 80); /* Softer secondary */
+  --secondary-foreground: oklch(0.2 0.02 264);
+  --muted: oklch(0.93 0.01 80); /* Warm muted tone */
+  --muted-foreground: oklch(0.5 0.02 264);
+  --accent: oklch(0.93 0.01 80);
+  --accent-foreground: oklch(0.2 0.02 264);
   --destructive: oklch(0.577 0.245 27.325);
-  --destructive-foreground: oklch(0.99 0.002 264);
-  --border: oklch(0.92 0.005 264);
-  --input: oklch(0.92 0.005 264);
+  --destructive-foreground: oklch(0.98 0.008 80);
+  --border: oklch(0.88 0.01 80); /* Softer borders */
+  --input: oklch(0.9 0.01 80); /* Softer input backgrounds */
   --ring: oklch(0.61 0.18 264);
   --chart-1: oklch(0.61 0.18 264);
   --chart-2: oklch(0.55 0.2 295);
@@ -30,13 +30,13 @@
   --chart-4: oklch(0.7 0.2 35);
   --chart-5: oklch(0.5 0.18 220);
   --radius: 1rem;
-  --sidebar: oklch(0.985 0 0);
-  --sidebar-foreground: oklch(0.145 0 0);
-  --sidebar-primary: oklch(0.205 0 0);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.97 0 0);
-  --sidebar-accent-foreground: oklch(0.205 0 0);
-  --sidebar-border: oklch(0.922 0 0);
+  --sidebar: oklch(0.97 0.008 80); /* Warm sidebar */
+  --sidebar-foreground: oklch(0.2 0.02 264);
+  --sidebar-primary: oklch(0.25 0.02 264);
+  --sidebar-primary-foreground: oklch(0.97 0.008 80);
+  --sidebar-accent: oklch(0.94 0.01 80);
+  --sidebar-accent-foreground: oklch(0.25 0.02 264);
+  --sidebar-border: oklch(0.88 0.01 80);
   --sidebar-ring: oklch(0.708 0 0);
 
   /* Discord Brand Colors */

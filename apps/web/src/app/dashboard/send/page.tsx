@@ -684,12 +684,12 @@ export default function SendMessagePage() {
                     value="settings"
                     className="flex-1 overflow-y-auto mt-3 space-y-3"
                   >
-                    <div className="flex items-center justify-between p-3 rounded-lg bg-slate-700/30 border border-slate-600/50">
+                    <div className="flex items-center justify-between p-3 rounded-lg bg-muted/30 border border-border">
                       <div className="flex-1">
-                        <p className="text-slate-200 font-medium text-sm">
+                        <p className="text-foreground font-medium text-sm">
                           Avatar
                         </p>
-                        <p className="text-xs text-slate-400">
+                        <p className="text-xs text-muted-foreground">
                           Choose from saved profiles
                         </p>
                       </div>
@@ -697,33 +697,35 @@ export default function SendMessagePage() {
                         <Button
                           variant="outline"
                           size="sm"
-                          className="bg-slate-700 border-slate-600 text-white hover:bg-slate-600 text-xs h-8"
+                          className="bg-background border-input text-foreground hover:bg-muted text-xs h-8"
                         >
                           Select
                         </Button>
                       </AvatarSelector>
                     </div>
 
-                    <div className="flex items-center justify-between p-3 rounded-lg bg-slate-700/30 border border-slate-600/50">
+                    <div className="flex items-center justify-between p-3 rounded-lg bg-muted/30 border border-border">
                       <div>
-                        <Label className="text-slate-200 font-medium text-sm">
+                        <Label className="text-foreground font-medium text-sm">
                           Text-to-Speech
                         </Label>
-                        <p className="text-xs text-slate-400">Enable TTS</p>
+                        <p className="text-xs text-muted-foreground">
+                          Enable TTS
+                        </p>
                       </div>
                       <Checkbox
                         checked={message.tts}
                         onCheckedChange={checked =>
                           setMessage(prev => ({ ...prev, tts: !!checked }))
                         }
-                        className="border-slate-500"
+                        className="border-input"
                       />
                     </div>
 
                     <div>
                       <Label
                         htmlFor="thread-name"
-                        className="text-slate-200 text-sm"
+                        className="text-foreground text-sm"
                       >
                         Thread Name (Optional)
                       </Label>
@@ -738,14 +740,14 @@ export default function SendMessagePage() {
                             threadName: e.target.value,
                           }))
                         }
-                        className="mt-1 w-full px-3 py-2 text-sm bg-slate-600/50 border border-slate-500 rounded-md text-white placeholder:text-slate-400 focus:border-purple-500 focus:outline-none"
+                        className="mt-1 w-full px-3 py-2 text-sm bg-background border border-input rounded-md text-foreground placeholder:text-muted-foreground focus:border-ring focus:outline-none"
                       />
                     </div>
 
                     <div>
                       <Label
                         htmlFor="message-url"
-                        className="text-slate-200 text-sm"
+                        className="text-foreground text-sm"
                       >
                         Discord Message URL (Optional)
                       </Label>
@@ -760,9 +762,9 @@ export default function SendMessagePage() {
                             message_replace_url: e.target.value,
                           }));
                         }}
-                        className="mt-1 w-full px-3 py-2 text-sm bg-slate-600/50 border border-slate-500 rounded-md text-white placeholder:text-slate-400 focus:border-purple-500 focus:outline-none"
+                        className="mt-1 w-full px-3 py-2 text-sm bg-background border border-input rounded-md text-foreground placeholder:text-muted-foreground focus:border-ring focus:outline-none"
                       />
-                      <p className="text-xs text-slate-400 mt-1">
+                      <p className="text-xs text-muted-foreground mt-1">
                         Replace an existing message
                       </p>
                     </div>
@@ -786,8 +788,8 @@ export default function SendMessagePage() {
                   >
                     <div className="flex items-center justify-between mb-3">
                       <div className="flex items-center gap-2">
-                        <Webhook className="w-4 h-4 text-cyan-400" />
-                        <span className="text-sm font-medium text-white">
+                        <Webhook className="w-4 h-4 text-primary" />
+                        <span className="text-sm font-medium text-foreground">
                           {selectedWebhooks.length}/{webhooks.length} Selected
                         </span>
                       </div>
@@ -795,7 +797,7 @@ export default function SendMessagePage() {
                         variant="outline"
                         size="sm"
                         onClick={handleSelectAll}
-                        className="border-slate-600 text-slate-300 hover:bg-slate-700 bg-transparent text-xs h-7"
+                        className="border-input text-muted-foreground hover:bg-muted bg-transparent text-xs h-7"
                       >
                         {selectedWebhooks.length === webhooks.length
                           ? 'Deselect All'
@@ -804,18 +806,18 @@ export default function SendMessagePage() {
                     </div>
                     <div className="space-y-2">
                       {isLoadingWebhooks ? (
-                        <p className="text-slate-400 text-center py-4 text-sm">
+                        <p className="text-muted-foreground text-center py-4 text-sm">
                           Loading...
                         </p>
                       ) : webhooks.length === 0 ? (
-                        <p className="text-slate-400 text-center py-4 text-sm">
+                        <p className="text-muted-foreground text-center py-4 text-sm">
                           No webhooks available
                         </p>
                       ) : (
                         webhooks.map(webhook => (
                           <div
                             key={webhook.id}
-                            className="flex items-center space-x-3 p-2.5 rounded-lg bg-slate-700/30 hover:bg-slate-700/50 transition-colors cursor-pointer"
+                            className="flex items-center space-x-3 p-2.5 rounded-lg bg-muted/30 hover:bg-muted/50 transition-colors cursor-pointer"
                             onClick={() => handleWebhookToggle(webhook.id)}
                           >
                             <Checkbox
@@ -823,11 +825,11 @@ export default function SendMessagePage() {
                               onCheckedChange={() =>
                                 handleWebhookToggle(webhook.id)
                               }
-                              className="border-slate-500"
+                              className="border-input"
                             />
                             <div className="flex-1 min-w-0">
                               <div className="flex items-center gap-2">
-                                <span className="font-medium text-white text-sm">
+                                <span className="font-medium text-foreground text-sm">
                                   {webhook.name}
                                 </span>
                                 <Badge
@@ -840,7 +842,7 @@ export default function SendMessagePage() {
                                 </Badge>
                               </div>
                               {webhook.description && (
-                                <p className="text-xs text-slate-400 truncate">
+                                <p className="text-xs text-muted-foreground truncate">
                                   {webhook.description}
                                 </p>
                               )}
