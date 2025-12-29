@@ -47,45 +47,45 @@
 }
 
 .dark {
-  /* Dark Mode - Discord-inspired with depth */
-  --background: oklch(0.13 0.01 264);
-  --foreground: oklch(0.98 0.002 264);
-  --card: oklch(0.18 0.01 264);
-  --card-foreground: oklch(0.98 0.002 264);
-  --popover: oklch(0.18 0.01 264);
-  --popover-foreground: oklch(0.98 0.002 264);
-  --primary: oklch(0.98 0.002 264);
-  --primary-foreground: oklch(0.15 0.01 264);
-  --secondary: oklch(0.22 0.01 264);
-  --secondary-foreground: oklch(0.98 0.002 264);
-  --muted: oklch(0.22 0.01 264);
-  --muted-foreground: oklch(0.65 0.015 264);
-  --accent: oklch(0.22 0.01 264);
-  --accent-foreground: oklch(0.98 0.002 264);
-  --destructive: oklch(0.5 0.2 27.325);
-  --destructive-foreground: oklch(0.98 0.002 264);
-  --border: oklch(0.25 0.01 264);
-  --input: oklch(0.25 0.01 264);
-  --ring: oklch(0.61 0.18 264);
-  --chart-1: oklch(0.61 0.18 264);
-  --chart-2: oklch(0.6 0.2 295);
-  --chart-3: oklch(0.65 0.18 145);
-  --chart-4: oklch(0.7 0.2 35);
-  --chart-5: oklch(0.55 0.18 220);
-  --sidebar: oklch(0.205 0 0);
-  --sidebar-foreground: oklch(0.985 0 0);
-  --sidebar-primary: oklch(0.488 0.243 264.376);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.269 0 0);
-  --sidebar-accent-foreground: oklch(0.985 0 0);
-  --sidebar-border: oklch(0.269 0 0);
-  --sidebar-ring: oklch(0.439 0 0);
+  /* Dark Mode - Synthwave / Anime Aesthetic (Midnight Tokyo) */
+  --background: oklch(0.12 0.06 280); /* Deep Violet */
+  --foreground: oklch(0.95 0.02 320); /* Soft Pinkish White */
+  --card: oklch(0.17 0.06 280); /* Lighter Violet */
+  --card-foreground: oklch(0.95 0.02 320);
+  --popover: oklch(0.17 0.06 280);
+  --popover-foreground: oklch(0.95 0.02 320);
+  --primary: oklch(0.65 0.25 340); /* Neon Sakura Pink */
+  --primary-foreground: oklch(0.98 0.01 320);
+  --secondary: oklch(0.7 0.15 220); /* Cyber Cyan */
+  --secondary-foreground: oklch(0.1 0.05 280);
+  --muted: oklch(0.25 0.08 280);
+  --muted-foreground: oklch(0.7 0.1 280);
+  --accent: oklch(0.25 0.08 280);
+  --accent-foreground: oklch(0.95 0.02 320);
+  --destructive: oklch(0.6 0.25 20); /* Neon Red */
+  --destructive-foreground: oklch(0.98 0.01 320);
+  --border: oklch(0.3 0.1 280); /* Purple Border */
+  --input: oklch(0.25 0.08 280);
+  --ring: oklch(0.65 0.25 340); /* Pink Glow */
+  --chart-1: oklch(0.65 0.25 340); /* Pink */
+  --chart-2: oklch(0.7 0.15 220); /* Cyan */
+  --chart-3: oklch(0.6 0.2 280); /* Purple */
+  --chart-4: oklch(0.8 0.15 80); /* Yellow */
+  --chart-5: oklch(0.6 0.2 20); /* Red */
+  --sidebar: oklch(0.1 0.05 280);
+  --sidebar-foreground: oklch(0.95 0.02 320);
+  --sidebar-primary: oklch(0.65 0.25 340);
+  --sidebar-primary-foreground: oklch(0.98 0.01 320);
+  --sidebar-accent: oklch(0.2 0.06 280);
+  --sidebar-accent-foreground: oklch(0.95 0.02 320);
+  --sidebar-border: oklch(0.3 0.1 280);
+  --sidebar-ring: oklch(0.65 0.25 340);
 
-  /* Discord Brand Colors - adjusted for dark mode */
-  --discord: oklch(0.61 0.18 264);
-  --discord-dark: oklch(0.5 0.2 264);
-  --success: oklch(0.65 0.18 145);
-  --warning: oklch(0.7 0.2 85);
+  /* Discord Brand Colors - Shifted slightly to fit the vibe */
+  --discord: oklch(0.6 0.2 280); /* Purple-ish Blurple */
+  --discord-dark: oklch(0.5 0.2 280);
+  --success: oklch(0.7 0.2 140); /* Neon Green */
+  --warning: oklch(0.8 0.15 80); /* Neon Yellow */
 }
 
 @theme inline {
@@ -140,5 +140,16 @@
   }
   body {
     @apply bg-background text-foreground;
+    /* Anime Tech Grid Background */
+    background-image: 
+      /* Vertical Grid Lines (Cyan) */
+      linear-gradient(to right, oklch(0.7 0.15 220 / 0.05) 1px, transparent 1px),
+      /* Horizontal Grid Lines (Cyan) */
+      linear-gradient(to bottom, oklch(0.7 0.15 220 / 0.05) 1px, transparent 1px),
+      /* Central Glow (Pink) */
+      radial-gradient(circle at center, oklch(0.65 0.25 340 / 0.15) 0%, transparent 70%);
+    background-size: 40px 40px, 40px 40px, 100% 100%;
+    background-position: center top;
+    background-attachment: fixed;
   }
 }
