@@ -78,14 +78,14 @@ export function Footer() {
                   Pricing
                 </Link>
               </li>
-              <li>
+              {/* <li>
                 <Link
                   href="/changelog"
                   className="hover:text-foreground transition-colors"
                 >
                   Changelog
                 </Link>
-              </li>
+              </li> */}
               <li>
                 <Link
                   href="/roadmap"
