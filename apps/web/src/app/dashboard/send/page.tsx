@@ -810,9 +810,19 @@ export default function SendMessagePage() {
                           Loading...
                         </p>
                       ) : webhooks.length === 0 ? (
-                        <p className="text-muted-foreground text-center py-4 text-sm">
-                          No webhooks available
-                        </p>
+                        <div className="text-center py-8 space-y-3">
+                          <p className="text-muted-foreground text-sm">
+                            No webhooks available
+                          </p>
+                          <Link href="/dashboard/webhooks">
+                            <Button
+                              size="sm"
+                              className="bg-primary hover:bg-primary/90 text-primary-foreground"
+                            >
+                              Create Your First Webhook
+                            </Button>
+                          </Link>
+                        </div>
                       ) : (
                         webhooks.map(webhook => (
                           <div
