@@ -66,10 +66,10 @@ export default function AvatarsPage() {
         {/* Header */}
         <div className="flex items-center justify-between mb-8">
           <div>
-            <h1 className="text-3xl font-bold text-white mb-2">
+            <h1 className="text-3xl font-bold text-foreground mb-2">
               Predefined Avatars
             </h1>
-            <p className="text-slate-400">
+            <p className="text-muted-foreground">
               Create and manage reusable avatar profiles for your webhooks
             </p>
           </div>
@@ -84,12 +84,12 @@ export default function AvatarsPage() {
 
         {/* Search */}
         <div className="relative mb-6">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400 w-4 h-4" />
+          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
           <Input
             placeholder="Search avatars..."
             value={searchQuery}
             onChange={e => setSearchQuery(e.target.value)}
-            className="pl-10 bg-slate-800/50 border-slate-700 text-white placeholder:text-slate-400 focus:border-purple-500"
+            className="pl-10 bg-background border-input text-foreground placeholder:text-muted-foreground focus:border-ring"
           />
         </div>
 
@@ -100,12 +100,12 @@ export default function AvatarsPage() {
           </div>
         ) : filteredAvatars.length === 0 ? (
           <div className="text-center py-12">
-            <div className="bg-slate-800/50 backdrop-blur-sm border border-slate-700/50 rounded-lg p-8 max-w-md mx-auto">
-              <Users className="w-12 h-12 text-slate-400 mx-auto mb-4" />
-              <h3 className="text-lg font-semibold text-white mb-2">
+            <div className="bg-card/50 backdrop-blur-xl border border-border rounded-lg p-8 max-w-md mx-auto">
+              <Users className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
+              <h3 className="text-lg font-semibold text-foreground mb-2">
                 {searchQuery ? 'No avatars found' : 'No avatars yet'}
               </h3>
-              <p className="text-slate-400 mb-4">
+              <p className="text-muted-foreground mb-4">
                 {searchQuery
                   ? 'Try adjusting your search terms'
                   : 'Create your first predefined avatar to get started'}

@@ -84,7 +84,7 @@ export function CreateAvatarDialog({
               <Link
                 href="/dashboard/settings"
                 onClick={() => toastResponse.dismiss()}
-                className="text-blue-400 hover:underline"
+                className="text-primary hover:underline"
               >
                 Check your usage in settings.
               </Link>
@@ -204,7 +204,7 @@ export function CreateAvatarDialog({
 
   return (
     <Dialog open={open} onOpenChange={handleClose}>
-      <DialogContent className="bg-slate-800 border-slate-700 text-white">
+      <DialogContent className="bg-popover border-border text-popover-foreground">
         <DialogHeader>
           <DialogTitle className="text-xl font-semibold">
             {editingAvatar ? 'Edit Avatar' : 'Create New Avatar'}
@@ -219,7 +219,7 @@ export function CreateAvatarDialog({
               onClick={handleBrowseClick}
             >
               <AvatarImage src={previewUrl} alt={username} />
-              <AvatarFallback className="bg-purple-500/20 text-purple-300 text-lg">
+              <AvatarFallback className="bg-primary/20 text-primary text-lg">
                 {username.slice(0, 2).toUpperCase() || '??'}
               </AvatarFallback>
             </UIAvatar>
@@ -228,7 +228,7 @@ export function CreateAvatarDialog({
           {/* Form */}
           <div className="space-y-4">
             <div>
-              <Label htmlFor="username" className="text-slate-300">
+              <Label htmlFor="username" className="text-foreground">
                 Username
               </Label>
               <Input
@@ -236,12 +236,12 @@ export function CreateAvatarDialog({
                 value={username}
                 onChange={e => setUsername(e.target.value)}
                 placeholder="e.g., BotHelper, Announcer"
-                className="bg-slate-700/50 border-slate-600 text-white placeholder:text-slate-400 focus:border-purple-500"
+                className="bg-background border-input text-foreground placeholder:text-muted-foreground focus:border-ring"
               />
             </div>
 
             <div>
-              <Label htmlFor="avatar_url" className="text-slate-300">
+              <Label htmlFor="avatar_url" className="text-foreground">
                 Avatar Icon
               </Label>
               <div className="flex items-center space-x-2">
@@ -257,13 +257,13 @@ export function CreateAvatarDialog({
                       ? selectedFile.name
                       : 'https://example.com/avatar.png'
                   }
-                  className="bg-slate-700/50 border-slate-600 text-white placeholder:text-slate-400 focus:border-purple-500"
+                  className="bg-background border-input text-foreground placeholder:text-muted-foreground focus:border-ring"
                 />
                 <Button
                   type="button"
                   variant="outline"
                   onClick={handleBrowseClick}
-                  className="shrink-0 border-slate-600 text-slate-300 hover:bg-slate-700 bg-transparent"
+                  className="shrink-0 border-input text-muted-foreground hover:bg-muted bg-transparent"
                 >
                   <ImageIcon className="h-4 w-4 mr-2" /> Browse
                 </Button>
@@ -283,7 +283,7 @@ export function CreateAvatarDialog({
             <Button
               variant="outline"
               onClick={handleClose}
-              className="flex-1 border-slate-600 text-slate-300 hover:bg-slate-700 bg-transparent"
+              className="flex-1 border-input text-muted-foreground hover:bg-muted bg-transparent"
             >
               Cancel
             </Button>

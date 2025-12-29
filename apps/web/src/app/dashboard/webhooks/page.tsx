@@ -61,51 +61,55 @@ export default function WebhooksPage() {
     <div className="min-h-screen p-6 space-y-8">
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-3xl font-bold tracking-tight text-white">
+          <h2 className="text-3xl font-bold tracking-tight text-foreground">
             Webhooks
           </h2>
-          <p className="text-slate-300">Manage your Discord webhooks</p>
+          <p className="text-muted-foreground">Manage your Discord webhooks</p>
         </div>
         <AddWebhookDialog />
       </div>
 
       {/* Stats */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <Card className="bg-slate-900/50 backdrop-blur-xl border-slate-700/50 hover:bg-slate-800/50 transition-all duration-300">
+        <Card className="bg-card/50 backdrop-blur-xl border-border hover:bg-card/80 transition-all duration-300">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium text-slate-200">
+            <CardTitle className="text-sm font-medium text-foreground">
               Total Webhooks
             </CardTitle>
-            <WebhookIcon className="h-4 w-4 text-purple-400" />
+            <WebhookIcon className="h-4 w-4 text-primary" />
           </CardHeader>
           <CardContent>
             {isLoading ? (
               <Spinner size={24} className="text-primary" />
             ) : (
-              <div className="text-2xl font-bold text-white">
+              <div className="text-2xl font-bold text-foreground">
                 {webhooks.length}
               </div>
             )}
-            <p className="text-xs text-slate-400">{activeWebhooks} active</p>
+            <p className="text-xs text-muted-foreground">
+              {activeWebhooks} active
+            </p>
           </CardContent>
         </Card>
 
-        <Card className="bg-slate-900/50 backdrop-blur-xl border-slate-700/50 hover:bg-slate-800/50 transition-all duration-300">
+        <Card className="bg-card/50 backdrop-blur-xl border-border hover:bg-card/80 transition-all duration-300">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium text-slate-200">
+            <CardTitle className="text-sm font-medium text-foreground">
               Active Webhooks
             </CardTitle>
-            <WebhookIcon className="h-4 w-4 text-green-400" />
+            <WebhookIcon className="h-4 w-4 text-success" />
           </CardHeader>
           <CardContent>
             {isLoading ? (
               <Spinner size={24} className="text-primary" />
             ) : (
-              <div className="text-2xl font-bold text-white">
+              <div className="text-2xl font-bold text-foreground">
                 {activeWebhooks}
               </div>
             )}
-            <p className="text-xs text-slate-400">Ready to send messages</p>
+            <p className="text-xs text-muted-foreground">
+              Ready to send messages
+            </p>
           </CardContent>
         </Card>
       </div>
@@ -113,12 +117,12 @@ export default function WebhooksPage() {
       {/* Search and Filters */}
       <div className="flex flex-col md:flex-row items-center gap-4">
         <div className="relative flex-1 w-full md:max-w-sm">
-          <Search className="absolute left-2 top-2.5 h-4 w-4 text-slate-400" />
+          <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
           <Input
             placeholder="Search webhooks..."
             value={searchQuery}
             onChange={e => setSearchQuery(e.target.value)}
-            className="pl-8 bg-slate-900/50 backdrop-blur-xl border-slate-700/50 text-white placeholder:text-slate-400 focus:border-purple-500/50"
+            className="pl-8 bg-background border-input text-foreground placeholder:text-muted-foreground focus:border-ring"
           />
         </div>
         <div className="flex gap-2">
@@ -127,8 +131,8 @@ export default function WebhooksPage() {
             onClick={() => setFilterStatus('all')}
             className={
               filterStatus === 'all'
-                ? 'bg-purple-600 hover:bg-purple-700 text-white'
-                : 'border-slate-600 text-slate-300 hover:bg-slate-700 bg-transparent'
+                ? 'bg-primary hover:bg-primary/90 text-primary-foreground'
+                : 'border-input text-muted-foreground hover:bg-muted bg-transparent'
             }
           >
             All
@@ -138,8 +142,8 @@ export default function WebhooksPage() {
             onClick={() => setFilterStatus('active')}
             className={
               filterStatus === 'active'
-                ? 'bg-green-600 hover:bg-green-700 text-white'
-                : 'border-slate-600 text-slate-300 hover:bg-slate-700 bg-transparent'
+                ? 'bg-success hover:bg-success/90 text-white'
+                : 'border-input text-muted-foreground hover:bg-muted bg-transparent'
             }
           >
             Active
@@ -149,8 +153,8 @@ export default function WebhooksPage() {
             onClick={() => setFilterStatus('inactive')}
             className={
               filterStatus === 'inactive'
-                ? 'bg-red-600 hover:bg-red-700 text-white'
-                : 'border-slate-600 text-slate-300 hover:bg-slate-700 bg-transparent'
+                ? 'bg-destructive hover:bg-destructive/90 text-destructive-foreground'
+                : 'border-input text-muted-foreground hover:bg-muted bg-transparent'
             }
           >
             Inactive
@@ -189,25 +193,25 @@ export default function WebhooksPage() {
           ))}
         </div>
       ) : (
-        <Card className="bg-slate-900/50 backdrop-blur-xl border-slate-700/50">
+        <Card className="bg-card/50 backdrop-blur-xl border-border">
           <CardContent className="flex flex-col items-center justify-center py-16">
             {searchQuery || filterStatus !== 'all' ? (
               <>
-                <Search className="h-12 w-12 text-slate-400 mb-4" />
-                <h3 className="text-lg font-semibold mb-2 text-white">
+                <Search className="h-12 w-12 text-muted-foreground mb-4" />
+                <h3 className="text-lg font-semibold mb-2 text-foreground">
                   No webhooks found
                 </h3>
-                <p className="text-slate-300 text-center">
+                <p className="text-muted-foreground text-center">
                   Try adjusting your search query or filters
                 </p>
               </>
             ) : (
               <>
-                <WebhookIcon className="h-12 w-12 text-slate-400 mb-4" />
-                <h3 className="text-lg font-semibold mb-2 text-white">
+                <WebhookIcon className="h-12 w-12 text-muted-foreground mb-4" />
+                <h3 className="text-lg font-semibold mb-2 text-foreground">
                   No webhooks yet
                 </h3>
-                <p className="text-slate-300 text-center mb-4">
+                <p className="text-muted-foreground text-center mb-4">
                   Get started by adding your first Discord webhook
                 </p>
                 <AddWebhookDialog />

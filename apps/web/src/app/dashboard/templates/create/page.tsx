@@ -73,22 +73,22 @@ export default function CreateTemplatePage() {
   return (
     <div className="h-screen flex flex-col">
       {/* Header */}
-      <div className="flex justify-between items-center p-4 border-b border-slate-700/50 bg-slate-900/50 backdrop-blur-sm">
+      <div className="flex justify-between items-center p-4 border-b border-border bg-card/50 backdrop-blur-xl">
         <div className="flex justify-center items-center p-4 gap-4">
           <Button
             variant="ghost"
             size="sm"
             onClick={() => router.back()}
-            className="text-white hover:bg-slate-700"
+            className="text-foreground hover:bg-muted"
           >
             <ArrowLeft className="w-4 h-4 mr-2" />
             Back
           </Button>
           <div>
-            <h1 className="text-xl font-semibold text-white">
+            <h1 className="text-xl font-semibold text-foreground">
               {templateId ? 'Edit Template' : 'Create Template'}
             </h1>
-            <p className="text-sm text-slate-300">
+            <p className="text-sm text-muted-foreground">
               Design your Discord message with live preview
             </p>
           </div>
