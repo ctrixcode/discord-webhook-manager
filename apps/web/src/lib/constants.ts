@@ -10,7 +10,7 @@ export const CONTACT = {
 export const SOCIAL_LINKS = {
   GITHUB: 'https://github.com/ctrixcode',
   TWITTER: 'https://x.com/Ctrix_Dev',
-  DISCORD: 'https://discord.gg/your-server',
+  DISCORD: 'https://discord.gg/QANpvn78qh',
 } as const;
 
 // Developer Information
