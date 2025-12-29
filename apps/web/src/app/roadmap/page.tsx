@@ -25,17 +25,19 @@ export default function RoadmapPage() {
         'Upload and attach images',
         'Sign in with Discord',
         'Track your usage and limits',
+        'Enhanced light and dark themes',
       ],
     },
     {
       status: 'in-progress',
       title: 'Current Development',
-      items: ['View webhook statistics', 'Enhanced light and dark themes'],
+      items: [],
     },
     {
       status: 'planned',
       title: 'Q1 2026',
       items: [
+        'View webhook statistics',
         'Dynamic message variables',
         'Organize webhooks in folders',
         'Collaborate with team members',
