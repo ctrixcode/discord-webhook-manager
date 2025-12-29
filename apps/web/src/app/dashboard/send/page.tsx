@@ -528,8 +528,8 @@ export default function SendMessagePage() {
             <p className="text-slate-400 text-sm">
               Send to {selectedWebhooks.length} webhook
               {selectedWebhooks.length !== 1 ? 's' : ''} •{' '}
-              <span className="text-slate-500">
-                <kbd className="px-1 py-0.5 text-[10px] font-mono bg-slate-700/50 border border-slate-600 rounded">
+              <span className="text-muted-foreground/80">
+                <kbd className="px-1 py-0.5 text-[10px] font-mono bg-muted border border-border rounded">
                   ⌘K
                 </kbd>{' '}
                 webhooks
@@ -544,12 +544,12 @@ export default function SendMessagePage() {
                 variant="outline"
                 size="sm"
                 onClick={handleClearMessage}
-                className="border-red-600 text-red-400 hover:bg-red-600 hover:text-white bg-transparent"
+                className="border-destructive/50 text-destructive hover:bg-destructive hover:text-destructive-foreground bg-transparent"
                 title="Press Esc to clear"
               >
                 <XCircle className="w-4 h-4 mr-1" />
                 Clear
-                <kbd className="hidden sm:inline-block ml-1.5 px-1 py-0.5 text-[10px] font-mono bg-slate-700 border border-slate-600 rounded">
+                <kbd className="hidden sm:inline-block ml-1.5 px-1 py-0.5 text-[10px] font-mono bg-muted border border-border rounded text-muted-foreground">
                   Esc
                 </kbd>
               </Button>
@@ -557,7 +557,7 @@ export default function SendMessagePage() {
             <Button
               onClick={handleSendMessage}
               disabled={isSending || selectedWebhooks.length === 0}
-              className="bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-600 hover:to-blue-700 text-white"
+              className="bg-discord hover:bg-discord/90 text-white shadow-lg shadow-discord/20"
             >
               <Send className="w-4 h-4 mr-2" />
               {isSending ? 'Sending...' : 'Send Message'}
@@ -569,7 +569,7 @@ export default function SendMessagePage() {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 flex-1 overflow-hidden">
           {/* Left Side - Message Composer */}
           <div className="flex flex-col overflow-hidden">
-            <Card className="bg-slate-800/50 backdrop-blur-sm border-slate-700/50 text-white flex flex-col h-full overflow-hidden">
+            <Card className="bg-card/50 backdrop-blur-xl border-border/50 text-card-foreground flex flex-col h-full overflow-hidden">
               <CardHeader className="pb-3 flex-shrink-0">
                 <div className="flex items-center justify-between">
                   <CardTitle className="text-lg">Compose Message</CardTitle>
@@ -579,10 +579,10 @@ export default function SendMessagePage() {
                       value={selectedTemplateId}
                       disabled={isLoadingTemplates}
                     >
-                      <SelectTrigger className="w-[180px] h-8 bg-slate-700/50 border-slate-600 text-white text-xs">
+                      <SelectTrigger className="w-[180px] h-8 bg-background/50 border-input text-xs">
                         <SelectValue placeholder="Load template" />
                       </SelectTrigger>
-                      <SelectContent className="bg-slate-800 border-slate-700 text-white">
+                      <SelectContent>
                         {templates.map(template => (
                           <SelectItem key={template._id} value={template._id}>
                             {template.name}
@@ -598,29 +598,29 @@ export default function SendMessagePage() {
                   defaultValue="content"
                   className="w-full flex flex-col h-full overflow-hidden"
                 >
-                  <TabsList className="grid w-full grid-cols-4 bg-slate-700/50 flex-shrink-0">
+                  <TabsList className="grid w-full grid-cols-4 bg-muted/50 flex-shrink-0 p-1">
                     <TabsTrigger
                       value="content"
-                      className="data-[state=active]:bg-purple-600 text-xs"
+                      className="text-xs data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-sm transition-all"
                     >
                       Content
                     </TabsTrigger>
                     <TabsTrigger
                       value="settings"
-                      className="data-[state=active]:bg-purple-600 text-xs"
+                      className="text-xs data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-sm transition-all"
                     >
                       Settings
                     </TabsTrigger>
                     <TabsTrigger
                       value="embeds"
-                      className="data-[state=active]:bg-purple-600 text-xs"
+                      className="text-xs data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-sm transition-all"
                     >
                       Embeds
                     </TabsTrigger>
                     <TabsTrigger
                       ref={webhookTabTriggerRef}
                       value="webhooks"
-                      className="data-[state=active]:bg-purple-600 text-xs"
+                      className="text-xs data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-sm transition-all"
                       title="Ctrl+K to open"
                     >
                       <span className="flex items-center gap-1.5">
@@ -637,7 +637,7 @@ export default function SendMessagePage() {
                       <div className="flex items-center justify-between mb-2">
                         <Label
                           htmlFor="content"
-                          className="text-slate-200 text-sm"
+                          className="text-foreground text-sm"
                         >
                           Message Text
                         </Label>
@@ -671,9 +671,9 @@ export default function SendMessagePage() {
                             }
                           }
                         }}
-                        className="mt-1 bg-slate-700/50 border-slate-600 text-white placeholder:text-slate-400 focus:border-purple-500 min-h-[200px] max-h-[500px] resize-y"
+                        className="mt-1 bg-background/50 border-input text-foreground placeholder:text-muted-foreground focus:border-ring min-h-[200px] max-h-[500px] resize-y"
                       />
-                      <p className="text-xs text-slate-400 mt-1">
+                      <p className="text-xs text-muted-foreground mt-1">
                         {message.content.length}/{DISCORD_MAX_MESSAGE_LENGTH}{' '}
                         characters
                       </p>
