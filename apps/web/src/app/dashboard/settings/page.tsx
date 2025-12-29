@@ -265,7 +265,7 @@ export default function SettingsPage() {
         <div className="space-y-4">
           <p className="text-muted-foreground">
             If you enjoy using Discord Webhook Manager and want to support its
-            development, consider sharing it on X (formerly Twitter)!
+            development, consider sharing it on X!
           </p>
           <a
             href="https://twitter.com/intent/tweet?text=I%27m%20loving%20Discord%20Webhook%20Manager!%20%40ctrix%2C%20this%20app%20is%20amazing%20for%20managing%20my%20Discord%20webhooks.%20Highly%20recommend!%20%23Discord%20%23Webhooks%20%23DiscordBot&url=https%3A%2F%2Fwebhook.ctrix.pro"
@@ -273,7 +273,7 @@ export default function SettingsPage() {
             rel="noopener noreferrer"
           >
             <Button className="bg-primary hover:bg-primary/90 text-primary-foreground">
-              Share on X (Twitter)
+              Share on X
             </Button>
           </a>
           <p className="text-muted-foreground pt-2">

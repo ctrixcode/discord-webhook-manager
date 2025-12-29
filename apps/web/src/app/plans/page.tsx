@@ -182,7 +182,7 @@ export default function PlansPage() {
                 href="https://twitter.com"
                 className="text-primary hover:underline"
               >
-                Twitter
+                X
               </a>
               .
             </p>

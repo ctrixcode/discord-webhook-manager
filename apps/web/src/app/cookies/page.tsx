@@ -227,7 +227,7 @@ export default function CookiePolicyPage() {
                   </a>
                 </li>
                 <li>
-                  Twitter:{' '}
+                  X:{' '}
                   <a
                     href={SOCIAL_LINKS.TWITTER}
                     className="text-primary hover:underline"

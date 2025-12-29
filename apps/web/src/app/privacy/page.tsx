@@ -147,7 +147,7 @@ export default function PrivacyPolicyPage() {
                   </a>
                 </li>
                 <li>
-                  Twitter:{' '}
+                  X:{' '}
                   <a
                     href={SOCIAL_LINKS.TWITTER}
                     className="text-primary hover:underline"
