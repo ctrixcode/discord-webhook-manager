@@ -1,6 +1,7 @@
 import { Navigation } from '@/components/navigation';
 import { Footer } from '@/components/footer';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { CONTACT, SOCIAL_LINKS, DEVELOPER } from '@/lib/constants';
 
 export default function CookiePolicyPage() {
   return (
@@ -219,19 +220,19 @@ export default function CookiePolicyPage() {
                 <li>
                   Email:{' '}
                   <a
-                    href="mailto:privacy@example.com"
+                    href={`mailto:${CONTACT.PRIVACY_EMAIL}`}
                     className="text-primary hover:underline"
                   >
-                    privacy@example.com
+                    {CONTACT.PRIVACY_EMAIL}
                   </a>
                 </li>
                 <li>
                   Twitter:{' '}
                   <a
-                    href="https://twitter.com"
+                    href={SOCIAL_LINKS.TWITTER}
                     className="text-primary hover:underline"
                   >
-                    @DiscordWebhookMgr
+                    {DEVELOPER.TWITTER_HANDLE}
                   </a>
                 </li>
               </ul>

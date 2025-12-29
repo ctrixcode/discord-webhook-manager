@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { Webhook, Github, Twitter, Disc } from 'lucide-react';
+import { SOCIAL_LINKS, DEVELOPER } from '@/lib/constants';
 
 export function Footer() {
   return (
@@ -22,21 +23,21 @@ export function Footer() {
             </p>
             <div className="flex items-center gap-4 pt-2">
               <Link
-                href="https://github.com"
+                href={SOCIAL_LINKS.GITHUB}
                 target="_blank"
                 className="text-muted-foreground hover:text-foreground transition-colors"
               >
                 <Github className="size-5" />
               </Link>
               <Link
-                href="https://twitter.com"
+                href={SOCIAL_LINKS.TWITTER}
                 target="_blank"
                 className="text-muted-foreground hover:text-foreground transition-colors"
               >
                 <Twitter className="size-5" />
               </Link>
               <Link
-                href="https://discord.com"
+                href={SOCIAL_LINKS.DISCORD}
                 target="_blank"
                 className="text-muted-foreground hover:text-foreground transition-colors"
               >
@@ -163,10 +164,10 @@ export function Footer() {
           <p className="text-sm text-muted-foreground flex items-center gap-1">
             Made with <span className="text-red-500">❤️</span> by{' '}
             <Link
-              href="https://github.com/ctrixcode"
+              href={SOCIAL_LINKS.GITHUB}
               className="hover:text-foreground transition-colors font-medium"
             >
-              CandyKisu
+              {DEVELOPER.NAME}
             </Link>
           </p>
         </div>

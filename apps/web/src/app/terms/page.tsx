@@ -1,6 +1,7 @@
 import { Navigation } from '@/components/navigation';
 import { Footer } from '@/components/footer';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { CONTACT, SOCIAL_LINKS, DEVELOPER } from '@/lib/constants';
 
 export default function TermsOfServicePage() {
   return (
@@ -193,19 +194,19 @@ export default function TermsOfServicePage() {
                 <li>
                   Email:{' '}
                   <a
-                    href="mailto:legal@example.com"
+                    href={`mailto:${CONTACT.LEGAL_EMAIL}`}
                     className="text-primary hover:underline"
                   >
-                    legal@example.com
+                    {CONTACT.LEGAL_EMAIL}
                   </a>
                 </li>
                 <li>
                   Twitter:{' '}
                   <a
-                    href="https://twitter.com"
+                    href={SOCIAL_LINKS.TWITTER}
                     className="text-primary hover:underline"
                   >
-                    @DiscordWebhookMgr
+                    {DEVELOPER.TWITTER_HANDLE}
                   </a>
                 </li>
               </ul>
