@@ -2,9 +2,21 @@
 
 import { useAuth } from '@/contexts/auth-context';
 import { Navigation } from '@/components/navigation';
+import {
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+} from '@/components/ui/dropdown-menu';
+import { Settings, LogOut } from 'lucide-react';
+import { useRouter } from 'next/navigation';
 
 export function DashboardNavbar() {
-  const { user } = useAuth();
+  const { user, logout } = useAuth();
+  const router = useRouter();
+
+  const handleLogout = () => {
+    logout();
+    router.push('/');
+  };
 
   const getAvatar = () => {
     if (user?.discord_avatar) {
@@ -15,5 +27,27 @@ export function DashboardNavbar() {
     return undefined;
   };
 
-  return <Navigation userProfile={getAvatar()} />;
+  const userMenu = (
+    <>
+      <DropdownMenuItem
+        onClick={() => router.push('/dashboard/settings')}
+        className="cursor-pointer"
+      >
+        <Settings className="mr-2 h-4 w-4" />
+        <span>Settings</span>
+      </DropdownMenuItem>
+      <DropdownMenuSeparator />
+      <DropdownMenuItem
+        onClick={handleLogout}
+        className="text-red-500 hover:text-red-600 cursor-pointer"
+      >
+        <LogOut className="mr-2 h-4 w-4" />
+        <span>Log out</span>
+      </DropdownMenuItem>
+    </>
+  );
+
+  return (
+    <Navigation userProfile={getAvatar()} userDropdownContent={userMenu} />
+  );
 }

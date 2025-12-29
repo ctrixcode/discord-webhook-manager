@@ -18,11 +18,21 @@ import { Button } from '@/components/ui/button';
 import { useTheme } from 'next-themes';
 import { useEffect, useState } from 'react';
 
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
+
 interface NavigationProps {
   userProfile?: string | null;
+  userDropdownContent?: React.ReactNode;
 }
 
-export function Navigation({ userProfile }: NavigationProps) {
+export function Navigation({
+  userProfile,
+  userDropdownContent,
+}: NavigationProps) {
   const pathname = usePathname();
   const { theme, setTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
@@ -94,15 +104,34 @@ export function Navigation({ userProfile }: NavigationProps) {
                   <Moon className="size-5" />
                 ))}
             </Button>
-            {userProfile && (
-              <div className="size-10 rounded-xl bg-gradient-to-br from-discord to-discord-dark overflow-hidden border-2 border-discord/20">
-                <img
-                  src={userProfile}
-                  alt="User"
-                  className="size-full object-cover"
-                />
-              </div>
-            )}
+            {userProfile &&
+              (userDropdownContent ? (
+                <DropdownMenu>
+                  <DropdownMenuTrigger className="focus:outline-none">
+                    <div className="size-10 rounded-xl bg-gradient-to-br from-discord to-discord-dark overflow-hidden border-2 border-discord/20 cursor-pointer hover:opacity-80 transition-opacity">
+                      <img
+                        src={userProfile}
+                        alt="User"
+                        className="size-full object-cover"
+                      />
+                    </div>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent
+                    align="end"
+                    className="w-56 bg-card border-border/50 backdrop-blur-xl"
+                  >
+                    {userDropdownContent}
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              ) : (
+                <div className="size-10 rounded-xl bg-gradient-to-br from-discord to-discord-dark overflow-hidden border-2 border-discord/20">
+                  <img
+                    src={userProfile}
+                    alt="User"
+                    className="size-full object-cover"
+                  />
+                </div>
+              ))}
           </div>
         </div>
       </div>
