@@ -232,13 +232,6 @@ export default function HomePage() {
                   Messages sent in the last 7 days
                 </p>
               </div>
-              <Button
-                variant="outline"
-                size="sm"
-                className="rounded-xl border-border/50 bg-transparent"
-              >
-                View All
-              </Button>
             </div>
 
             <div className="flex items-end justify-between h-48 gap-3">
