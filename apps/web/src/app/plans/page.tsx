@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Navigation } from '@/components/navigation';
 import { Footer } from '@/components/footer';
 import Link from 'next/link';
+import { SOCIAL_LINKS } from '@/lib/constants';
 
 interface PlanFeatureProps {
   text: string;
@@ -172,14 +173,14 @@ export default function PlansPage() {
             <p>
               Have questions? Contact us on{' '}
               <a
-                href="https://discord.com"
+                href={SOCIAL_LINKS.DISCORD}
                 className="text-primary hover:underline"
               >
                 Discord
               </a>{' '}
               or{' '}
               <a
-                href="https://twitter.com"
+                href={SOCIAL_LINKS.TWITTER}
                 className="text-primary hover:underline"
               >
                 X
