@@ -133,9 +133,9 @@ export default function PlansPage() {
                   </div>
 
                   <ul className="space-y-3 flex-grow mb-6">
-                    {plan.features.map((feature, index) => (
+                    {plan.features.map(feature => (
                       <PlanFeature
-                        key={index}
+                        key={feature.text}
                         text={feature.text}
                         available={feature.available}
                       />
