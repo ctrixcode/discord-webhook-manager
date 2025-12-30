@@ -59,7 +59,7 @@ export function AvatarSelector({ onSelect, children }: AvatarSelectorProps) {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>{children}</DialogTrigger>
-      <DialogContent className="bg-slate-800 border-slate-700 text-white max-w-2xl">
+      <DialogContent className="bg-card border-border text-card-foreground max-w-2xl">
         <DialogHeader>
           <DialogTitle className="text-xl font-semibold">
             Select Predefined Avatar
@@ -70,19 +70,19 @@ export function AvatarSelector({ onSelect, children }: AvatarSelectorProps) {
           {/* Search and Add Button */}
           <div className="flex items-center gap-2">
             <div className="relative flex-grow">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400 w-4 h-4" />
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
               <Input
                 placeholder="Search avatars..."
                 value={searchQuery}
                 onChange={e => setSearchQuery(e.target.value)}
-                className="pl-10 bg-slate-700/50 border-slate-600 text-white placeholder:text-slate-400 focus:border-purple-500"
+                className="pl-10 bg-background/50 border-input text-foreground placeholder:text-muted-foreground focus:border-ring"
               />
             </div>
             <Button
               variant="outline"
               size="sm"
               onClick={() => setShowCreateDialog(true)}
-              className="text-white border-slate-600 hover:bg-slate-700/50"
+              className="text-foreground border-input hover:bg-muted"
             >
               <Plus className="w-4 h-4" />
             </Button>
@@ -92,8 +92,8 @@ export function AvatarSelector({ onSelect, children }: AvatarSelectorProps) {
           <div className="max-h-96 overflow-y-auto">
             {filteredAvatars.length === 0 ? (
               <div className="text-center py-8">
-                <Users className="w-12 h-12 text-slate-400 mx-auto mb-4" />
-                <p className="text-slate-400">
+                <Users className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
+                <p className="text-muted-foreground">
                   {searchQuery
                     ? 'No avatars found'
                     : 'No predefined avatars yet'}
@@ -106,22 +106,22 @@ export function AvatarSelector({ onSelect, children }: AvatarSelectorProps) {
                     key={avatar.id}
                     variant="ghost"
                     onClick={() => handleSelect(avatar)}
-                    className="flex items-center gap-3 p-3 h-auto justify-start hover:bg-slate-700/50"
+                    className="flex items-center gap-3 p-3 h-auto justify-start hover:bg-muted/50"
                   >
-                    <AvatarComponent className="w-10 h-10 ring-2 ring-purple-500/20">
+                    <AvatarComponent className="w-10 h-10 ring-2 ring-border/50">
                       <AvatarImage
                         src={avatar.avatar_url || '/placeholder.svg'}
                         alt={avatar.username}
                       />
-                      <AvatarFallback className="bg-purple-500/20 text-purple-300">
+                      <AvatarFallback className="bg-muted text-muted-foreground">
                         {avatar.username.slice(0, 2).toUpperCase()}
                       </AvatarFallback>
                     </AvatarComponent>
                     <div className="text-left">
-                      <div className="font-medium text-white">
+                      <div className="font-medium text-foreground">
                         {avatar.username}
                       </div>
-                      <div className="text-sm text-slate-400">
+                      <div className="text-sm text-muted-foreground">
                         @{avatar.username}
                       </div>
                     </div>

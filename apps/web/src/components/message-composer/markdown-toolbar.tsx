@@ -37,13 +37,13 @@ export function MarkdownToolbar({
   return (
     <div className="flex items-center gap-1">
       <EmojiPicker onEmojiSelect={onEmojiSelect} />
-      <div className="w-px h-4 bg-slate-600 mx-0.5" />
+      <div className="w-px h-4 bg-border mx-0.5" />
       <Button
         type="button"
         variant="ghost"
         size="sm"
         onClick={onBold}
-        className="h-7 w-7 p-0 hover:bg-slate-700 text-slate-300"
+        className="h-7 w-7 p-0 hover:bg-muted text-muted-foreground hover:text-foreground"
         title="Bold"
       >
         <Bold className="w-3.5 h-3.5" />
@@ -53,7 +53,7 @@ export function MarkdownToolbar({
         variant="ghost"
         size="sm"
         onClick={onItalic}
-        className="h-7 w-7 p-0 hover:bg-slate-700 text-slate-300"
+        className="h-7 w-7 p-0 hover:bg-muted text-muted-foreground hover:text-foreground"
         title="Italic"
       >
         <Italic className="w-3.5 h-3.5" />
@@ -63,7 +63,7 @@ export function MarkdownToolbar({
         variant="ghost"
         size="sm"
         onClick={onUnderline}
-        className="h-7 w-7 p-0 hover:bg-slate-700 text-slate-300"
+        className="h-7 w-7 p-0 hover:bg-muted text-muted-foreground hover:text-foreground"
         title="Underline"
       >
         <Underline className="w-3.5 h-3.5" />
@@ -73,18 +73,18 @@ export function MarkdownToolbar({
         variant="ghost"
         size="sm"
         onClick={onStrikethrough}
-        className="h-7 w-7 p-0 hover:bg-slate-700 text-slate-300"
+        className="h-7 w-7 p-0 hover:bg-muted text-muted-foreground hover:text-foreground"
         title="Strikethrough"
       >
         <Strikethrough className="w-3.5 h-3.5" />
       </Button>
-      <div className="w-px h-4 bg-slate-600 mx-0.5" />
+      <div className="w-px h-4 bg-border mx-0.5" />
       <Button
         type="button"
         variant="ghost"
         size="sm"
         onClick={onCode}
-        className="h-7 w-7 p-0 hover:bg-slate-700 text-slate-300"
+        className="h-7 w-7 p-0 hover:bg-muted text-muted-foreground hover:text-foreground"
         title="Inline Code"
       >
         <Code className="w-3.5 h-3.5" />
@@ -94,18 +94,18 @@ export function MarkdownToolbar({
         variant="ghost"
         size="sm"
         onClick={onCodeBlock}
-        className="h-7 w-7 p-0 hover:bg-slate-700 text-slate-300"
+        className="h-7 w-7 p-0 hover:bg-muted text-muted-foreground hover:text-foreground"
         title="Code Block"
       >
         <FileCode className="w-3.5 h-3.5" />
       </Button>
-      <div className="w-px h-4 bg-slate-600 mx-0.5" />
+      <div className="w-px h-4 bg-border mx-0.5" />
       <Button
         type="button"
         variant="ghost"
         size="sm"
         onClick={onSpoiler}
-        className="h-7 w-7 p-0 hover:bg-slate-700 text-slate-300"
+        className="h-7 w-7 p-0 hover:bg-muted text-muted-foreground hover:text-foreground"
         title="Spoiler"
       >
         <EyeOff className="w-3.5 h-3.5" />

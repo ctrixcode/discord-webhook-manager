@@ -97,12 +97,12 @@ export function DiscordMessagePreview({
   }, [embeds, userMap]);
 
   return (
-    <div className="bg-[#313338] text-white p-4 rounded-lg font-sans text-[15px] leading-[1.375]">
+    <div className="bg-card/50 backdrop-blur-xl border border-border/50 text-card-foreground p-4 rounded-lg font-sans text-[15px] leading-[1.375]">
       <div className="flex items-start gap-4">
         {/* User Avatar */}
-        <AvatarComponent className="w-10 h-10 mt-0.5 flex-shrink-0">
+        <AvatarComponent className="w-10 h-10 mt-0.5 flex-shrink-0 ring-2 ring-border/50">
           <AvatarImage src={avatar.avatar_url || '/placeholder.svg'} />
-          <AvatarFallback className="bg-[#5865f2] text-white text-sm font-medium">
+          <AvatarFallback className="bg-discord text-white text-sm font-medium">
             {avatar.username.charAt(0).toUpperCase()}
           </AvatarFallback>
         </AvatarComponent>
@@ -110,10 +110,10 @@ export function DiscordMessagePreview({
         <div className="flex-1 min-w-0">
           {/* Message Header: Username and Timestamp */}
           <div className="flex items-baseline gap-2 mb-0.5">
-            <span className="font-medium text-[#f2f3f5] text-base hover:underline cursor-pointer">
+            <span className="font-medium text-foreground text-base hover:underline cursor-pointer">
               {avatar.username}
             </span>
-            <span className="text-xs text-[#949ba4] font-medium">
+            <span className="text-xs text-muted-foreground font-medium">
               Today at{' '}
               {new Date().toLocaleTimeString([], {
                 hour: '2-digit',
@@ -124,7 +124,7 @@ export function DiscordMessagePreview({
 
           {/* Message Content with parsed markdown */}
           {parsedContent && (
-            <div className="text-[#dbdee1] mb-2 whitespace-pre-wrap break-words leading-[1.375]">
+            <div className="text-foreground/90 mb-2 whitespace-pre-wrap break-words leading-[1.375]">
               {parsedContent}
             </div>
           )}
@@ -149,7 +149,7 @@ export function DiscordMessagePreview({
                 <div className="flex">
                   {/* Embed container with colored left border */}
                   <div
-                    className="bg-[#2b2d31] rounded-r-md rounded-l-sm p-4 flex-1 border-l-4"
+                    className="bg-muted/50 rounded-r-md rounded-l-sm p-4 flex-1 border-l-4 border-border/50"
                     style={{
                       borderLeftColor: embed.color
                         ? discordColorToHex(embed.color)
@@ -168,11 +168,11 @@ export function DiscordMessagePreview({
                             className="rounded-full"
                           />
                         )}
-                        <span className="text-sm font-medium text-[#f2f3f5]">
+                        <span className="text-sm font-medium text-foreground">
                           {embed.author.url ? (
                             <a
                               href={sanitizeUrl(embed.author.url)}
-                              className="text-[#00aff4] hover:underline"
+                              className="text-primary hover:underline"
                             >
                               {embed.author.name}
                             </a>
@@ -185,7 +185,7 @@ export function DiscordMessagePreview({
 
                     {/* Embed Title (optional) */}
                     {embed.title && (
-                      <div className="text-[#00aff4] font-semibold mb-2 text-base leading-[1.375]">
+                      <div className="text-primary font-semibold mb-2 text-base leading-[1.375]">
                         {embed.url ? (
                           <a
                             href={sanitizeUrl(embed.url)}
@@ -203,7 +203,7 @@ export function DiscordMessagePreview({
                       <div className="flex-1 mr-4">
                         {/* Embed Description (optional) */}
                         {embed.parsedDescription && (
-                          <div className="text-[#dbdee1] mb-3 whitespace-pre-wrap text-sm leading-[1.375]">
+                          <div className="text-muted-foreground mb-3 whitespace-pre-wrap text-sm leading-[1.375]">
                             {embed.parsedDescription}
                           </div>
                         )}
@@ -240,10 +240,10 @@ export function DiscordMessagePreview({
                                       field.inline ? '' : 'col-span-full'
                                     }
                                   >
-                                    <div className="text-white font-semibold text-sm mb-1">
+                                    <div className="text-foreground font-semibold text-sm mb-1">
                                       {field.parsedName}
                                     </div>
-                                    <div className="text-[#dbdee1] text-sm whitespace-pre-wrap">
+                                    <div className="text-muted-foreground text-sm whitespace-pre-wrap">
                                       {field.parsedValue}
                                     </div>
                                   </div>
@@ -274,7 +274,7 @@ export function DiscordMessagePreview({
                           src={embed.image.url || '/placeholder.svg'}
                           alt="embed image"
                           fill
-                          className=""
+                          className="rounded-md object-cover"
                         />
                       </div>
                     )}
@@ -291,7 +291,7 @@ export function DiscordMessagePreview({
                             className="rounded-full"
                           />
                         )}
-                        <span className="text-xs text-[#949ba4] font-medium">
+                        <span className="text-xs text-muted-foreground font-medium">
                           {embed.parsedFooter}
                           {embed.timestamp && (
                             <>

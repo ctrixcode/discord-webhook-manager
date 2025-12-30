@@ -86,7 +86,7 @@ export function AvatarCard({
   return (
     <>
       <Card
-        className="bg-slate-900/50 backdrop-blur-sm border-slate-700/50 hover:bg-slate-800/50 transition-all duration-200 cursor-pointer"
+        className="bg-card/50 backdrop-blur-xl border-border hover:bg-card/80 transition-all duration-200 cursor-pointer"
         onClick={e => {
           // Check if the click originated from within the dropdown menu
           if (
@@ -101,18 +101,22 @@ export function AvatarCard({
         <CardContent className="p-4">
           <div className="flex items-start justify-between mb-3">
             <div className="flex items-center gap-3">
-              <AvatarComponent className="w-12 h-12 ring-2 ring-purple-500/20">
+              <AvatarComponent className="w-12 h-12 ring-2 ring-primary/20">
                 <AvatarImage
                   src={avatar.avatar_url || '/placeholder.svg'}
                   alt={avatar.username}
                 />
-                <AvatarFallback className="bg-purple-500/20 text-purple-300">
+                <AvatarFallback className="bg-primary/20 text-primary">
                   {avatar.username.slice(0, 2).toUpperCase()}
                 </AvatarFallback>
               </AvatarComponent>
               <div>
-                <h3 className="font-semibold text-white">{avatar.username}</h3>
-                <p className="text-sm text-slate-400">@{avatar.username}</p>
+                <h3 className="font-semibold text-foreground">
+                  {avatar.username}
+                </h3>
+                <p className="text-sm text-muted-foreground">
+                  @{avatar.username}
+                </p>
               </div>
             </div>
 
@@ -124,19 +128,19 @@ export function AvatarCard({
                   <Button
                     variant="ghost"
                     size="sm"
-                    className="text-slate-400 hover:text-white"
+                    className="text-muted-foreground hover:text-foreground"
                     onClick={e => e.stopPropagation()} // Add stopPropagation here
                   >
                     <MoreHorizontal className="w-4 h-4" />
                   </Button>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent className="bg-slate-800 border-slate-700">
+                <DropdownMenuContent className="bg-popover border-border">
                   <DropdownMenuItem
                     onClick={e => {
                       e.stopPropagation();
                       onEdit(avatar);
                     }}
-                    className="text-slate-300 hover:text-white hover:bg-slate-700"
+                    className="text-foreground hover:bg-accent"
                   >
                     <Edit className="w-4 h-4 mr-2" />
                     Edit
@@ -146,7 +150,7 @@ export function AvatarCard({
                       e.stopPropagation();
                       handleCopyUrl();
                     }}
-                    className="text-slate-300 hover:text-white hover:bg-slate-700"
+                    className="text-foreground hover:bg-accent"
                   >
                     <Copy className="w-4 h-4 mr-2" />
                     Copy Avatar URL
@@ -156,7 +160,7 @@ export function AvatarCard({
                       e.stopPropagation();
                       setShowDeleteDialog(true);
                     }}
-                    className="text-red-400 hover:text-red-300 hover:bg-red-900/20"
+                    className="text-destructive hover:bg-destructive/10"
                   >
                     <Trash2 className="w-4 h-4 mr-2" />
                     Delete
@@ -166,7 +170,7 @@ export function AvatarCard({
             </div>
           </div>
 
-          <div className="text-xs text-slate-500 mb-3">
+          <div className="text-xs text-muted-foreground mb-3">
             Created: {new Date(avatar.createdAt).toLocaleDateString()}
           </div>
 
@@ -182,23 +186,23 @@ export function AvatarCard({
       </Card>
 
       <AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
-        <AlertDialogContent className="bg-slate-800 border-slate-700">
+        <AlertDialogContent className="bg-popover border-border">
           <AlertDialogHeader>
-            <AlertDialogTitle className="text-white">
+            <AlertDialogTitle className="text-foreground">
               Delete Avatar
             </AlertDialogTitle>
-            <AlertDialogDescription className="text-slate-400">
+            <AlertDialogDescription className="text-muted-foreground">
               Are you sure you want to delete &quot;{avatar.username}&quot;?
               This action cannot be undone.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel className="bg-slate-700 text-slate-300 hover:bg-slate-600">
+            <AlertDialogCancel className="bg-muted text-foreground hover:bg-accent">
               Cancel
             </AlertDialogCancel>
             <AlertDialogAction
               onClick={handleDelete}
-              className="bg-red-600 hover:bg-red-700 text-white"
+              className="bg-destructive hover:bg-destructive/90 text-destructive-foreground"
             >
               Delete
             </AlertDialogAction>

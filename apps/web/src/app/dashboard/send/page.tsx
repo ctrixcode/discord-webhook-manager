@@ -524,12 +524,12 @@ export default function SendMessagePage() {
         {/* Compact Header */}
         <div className="flex items-center justify-between flex-shrink-0">
           <div>
-            <h1 className="text-2xl font-bold text-white">Send Message</h1>
-            <p className="text-slate-400 text-sm">
+            <h1 className="text-2xl font-bold text-foreground">Send Message</h1>
+            <p className="text-muted-foreground text-sm">
               Send to {selectedWebhooks.length} webhook
               {selectedWebhooks.length !== 1 ? 's' : ''} •{' '}
-              <span className="text-slate-500">
-                <kbd className="px-1 py-0.5 text-[10px] font-mono bg-slate-700/50 border border-slate-600 rounded">
+              <span className="text-muted-foreground/80">
+                <kbd className="px-1 py-0.5 text-[10px] font-mono bg-muted border border-border rounded">
                   ⌘K
                 </kbd>{' '}
                 webhooks
@@ -544,12 +544,12 @@ export default function SendMessagePage() {
                 variant="outline"
                 size="sm"
                 onClick={handleClearMessage}
-                className="border-red-600 text-red-400 hover:bg-red-600 hover:text-white bg-transparent"
+                className="border-destructive/50 text-destructive hover:bg-destructive hover:text-destructive-foreground bg-transparent"
                 title="Press Esc to clear"
               >
                 <XCircle className="w-4 h-4 mr-1" />
                 Clear
-                <kbd className="hidden sm:inline-block ml-1.5 px-1 py-0.5 text-[10px] font-mono bg-slate-700 border border-slate-600 rounded">
+                <kbd className="hidden sm:inline-block ml-1.5 px-1 py-0.5 text-[10px] font-mono bg-muted border border-border rounded text-muted-foreground">
                   Esc
                 </kbd>
               </Button>
@@ -557,7 +557,7 @@ export default function SendMessagePage() {
             <Button
               onClick={handleSendMessage}
               disabled={isSending || selectedWebhooks.length === 0}
-              className="bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-600 hover:to-blue-700 text-white"
+              className="bg-discord hover:bg-discord/90 text-white shadow-lg shadow-discord/20"
             >
               <Send className="w-4 h-4 mr-2" />
               {isSending ? 'Sending...' : 'Send Message'}
@@ -569,7 +569,7 @@ export default function SendMessagePage() {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 flex-1 overflow-hidden">
           {/* Left Side - Message Composer */}
           <div className="flex flex-col overflow-hidden">
-            <Card className="bg-slate-800/50 backdrop-blur-sm border-slate-700/50 text-white flex flex-col h-full overflow-hidden">
+            <Card className="bg-card/50 backdrop-blur-xl border-border/50 text-card-foreground flex flex-col h-full overflow-hidden">
               <CardHeader className="pb-3 flex-shrink-0">
                 <div className="flex items-center justify-between">
                   <CardTitle className="text-lg">Compose Message</CardTitle>
@@ -579,10 +579,10 @@ export default function SendMessagePage() {
                       value={selectedTemplateId}
                       disabled={isLoadingTemplates}
                     >
-                      <SelectTrigger className="w-[180px] h-8 bg-slate-700/50 border-slate-600 text-white text-xs">
+                      <SelectTrigger className="w-[180px] h-8 bg-background/50 border-input text-xs">
                         <SelectValue placeholder="Load template" />
                       </SelectTrigger>
-                      <SelectContent className="bg-slate-800 border-slate-700 text-white">
+                      <SelectContent>
                         {templates.map(template => (
                           <SelectItem key={template._id} value={template._id}>
                             {template.name}
@@ -598,29 +598,29 @@ export default function SendMessagePage() {
                   defaultValue="content"
                   className="w-full flex flex-col h-full overflow-hidden"
                 >
-                  <TabsList className="grid w-full grid-cols-4 bg-slate-700/50 flex-shrink-0">
+                  <TabsList className="grid w-full grid-cols-4 bg-muted/50 flex-shrink-0 p-1">
                     <TabsTrigger
                       value="content"
-                      className="data-[state=active]:bg-purple-600 text-xs"
+                      className="text-xs data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-sm transition-all"
                     >
                       Content
                     </TabsTrigger>
                     <TabsTrigger
                       value="settings"
-                      className="data-[state=active]:bg-purple-600 text-xs"
+                      className="text-xs data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-sm transition-all"
                     >
                       Settings
                     </TabsTrigger>
                     <TabsTrigger
                       value="embeds"
-                      className="data-[state=active]:bg-purple-600 text-xs"
+                      className="text-xs data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-sm transition-all"
                     >
                       Embeds
                     </TabsTrigger>
                     <TabsTrigger
                       ref={webhookTabTriggerRef}
                       value="webhooks"
-                      className="data-[state=active]:bg-purple-600 text-xs"
+                      className="text-xs data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-sm transition-all"
                       title="Ctrl+K to open"
                     >
                       <span className="flex items-center gap-1.5">
@@ -637,7 +637,7 @@ export default function SendMessagePage() {
                       <div className="flex items-center justify-between mb-2">
                         <Label
                           htmlFor="content"
-                          className="text-slate-200 text-sm"
+                          className="text-foreground text-sm"
                         >
                           Message Text
                         </Label>
@@ -671,9 +671,9 @@ export default function SendMessagePage() {
                             }
                           }
                         }}
-                        className="mt-1 bg-slate-700/50 border-slate-600 text-white placeholder:text-slate-400 focus:border-purple-500 min-h-[200px] max-h-[500px] resize-y"
+                        className="mt-1 bg-background/50 border-input text-foreground placeholder:text-muted-foreground focus:border-ring min-h-[200px] max-h-[500px] resize-y"
                       />
-                      <p className="text-xs text-slate-400 mt-1">
+                      <p className="text-xs text-muted-foreground mt-1">
                         {message.content.length}/{DISCORD_MAX_MESSAGE_LENGTH}{' '}
                         characters
                       </p>
@@ -684,12 +684,12 @@ export default function SendMessagePage() {
                     value="settings"
                     className="flex-1 overflow-y-auto mt-3 space-y-3"
                   >
-                    <div className="flex items-center justify-between p-3 rounded-lg bg-slate-700/30 border border-slate-600/50">
+                    <div className="flex items-center justify-between p-3 rounded-lg bg-muted/30 border border-border">
                       <div className="flex-1">
-                        <p className="text-slate-200 font-medium text-sm">
+                        <p className="text-foreground font-medium text-sm">
                           Avatar
                         </p>
-                        <p className="text-xs text-slate-400">
+                        <p className="text-xs text-muted-foreground">
                           Choose from saved profiles
                         </p>
                       </div>
@@ -697,33 +697,35 @@ export default function SendMessagePage() {
                         <Button
                           variant="outline"
                           size="sm"
-                          className="bg-slate-700 border-slate-600 text-white hover:bg-slate-600 text-xs h-8"
+                          className="bg-background border-input text-foreground hover:bg-muted text-xs h-8"
                         >
                           Select
                         </Button>
                       </AvatarSelector>
                     </div>
 
-                    <div className="flex items-center justify-between p-3 rounded-lg bg-slate-700/30 border border-slate-600/50">
+                    <div className="flex items-center justify-between p-3 rounded-lg bg-muted/30 border border-border">
                       <div>
-                        <Label className="text-slate-200 font-medium text-sm">
+                        <Label className="text-foreground font-medium text-sm">
                           Text-to-Speech
                         </Label>
-                        <p className="text-xs text-slate-400">Enable TTS</p>
+                        <p className="text-xs text-muted-foreground">
+                          Enable TTS
+                        </p>
                       </div>
                       <Checkbox
                         checked={message.tts}
                         onCheckedChange={checked =>
                           setMessage(prev => ({ ...prev, tts: !!checked }))
                         }
-                        className="border-slate-500"
+                        className="border-input"
                       />
                     </div>
 
                     <div>
                       <Label
                         htmlFor="thread-name"
-                        className="text-slate-200 text-sm"
+                        className="text-foreground text-sm"
                       >
                         Thread Name (Optional)
                       </Label>
@@ -738,14 +740,14 @@ export default function SendMessagePage() {
                             threadName: e.target.value,
                           }))
                         }
-                        className="mt-1 w-full px-3 py-2 text-sm bg-slate-600/50 border border-slate-500 rounded-md text-white placeholder:text-slate-400 focus:border-purple-500 focus:outline-none"
+                        className="mt-1 w-full px-3 py-2 text-sm bg-background border border-input rounded-md text-foreground placeholder:text-muted-foreground focus:border-ring focus:outline-none"
                       />
                     </div>
 
                     <div>
                       <Label
                         htmlFor="message-url"
-                        className="text-slate-200 text-sm"
+                        className="text-foreground text-sm"
                       >
                         Discord Message URL (Optional)
                       </Label>
@@ -760,9 +762,9 @@ export default function SendMessagePage() {
                             message_replace_url: e.target.value,
                           }));
                         }}
-                        className="mt-1 w-full px-3 py-2 text-sm bg-slate-600/50 border border-slate-500 rounded-md text-white placeholder:text-slate-400 focus:border-purple-500 focus:outline-none"
+                        className="mt-1 w-full px-3 py-2 text-sm bg-background border border-input rounded-md text-foreground placeholder:text-muted-foreground focus:border-ring focus:outline-none"
                       />
-                      <p className="text-xs text-slate-400 mt-1">
+                      <p className="text-xs text-muted-foreground mt-1">
                         Replace an existing message
                       </p>
                     </div>
@@ -786,8 +788,8 @@ export default function SendMessagePage() {
                   >
                     <div className="flex items-center justify-between mb-3">
                       <div className="flex items-center gap-2">
-                        <Webhook className="w-4 h-4 text-cyan-400" />
-                        <span className="text-sm font-medium text-white">
+                        <Webhook className="w-4 h-4 text-primary" />
+                        <span className="text-sm font-medium text-foreground">
                           {selectedWebhooks.length}/{webhooks.length} Selected
                         </span>
                       </div>
@@ -795,7 +797,7 @@ export default function SendMessagePage() {
                         variant="outline"
                         size="sm"
                         onClick={handleSelectAll}
-                        className="border-slate-600 text-slate-300 hover:bg-slate-700 bg-transparent text-xs h-7"
+                        className="border-input text-muted-foreground hover:bg-muted bg-transparent text-xs h-7"
                       >
                         {selectedWebhooks.length === webhooks.length
                           ? 'Deselect All'
@@ -804,18 +806,28 @@ export default function SendMessagePage() {
                     </div>
                     <div className="space-y-2">
                       {isLoadingWebhooks ? (
-                        <p className="text-slate-400 text-center py-4 text-sm">
+                        <p className="text-muted-foreground text-center py-4 text-sm">
                           Loading...
                         </p>
                       ) : webhooks.length === 0 ? (
-                        <p className="text-slate-400 text-center py-4 text-sm">
-                          No webhooks available
-                        </p>
+                        <div className="text-center py-8 space-y-3">
+                          <p className="text-muted-foreground text-sm">
+                            No webhooks available
+                          </p>
+                          <Link href="/dashboard/webhooks">
+                            <Button
+                              size="sm"
+                              className="bg-primary hover:bg-primary/90 text-primary-foreground"
+                            >
+                              Create Your First Webhook
+                            </Button>
+                          </Link>
+                        </div>
                       ) : (
                         webhooks.map(webhook => (
                           <div
                             key={webhook.id}
-                            className="flex items-center space-x-3 p-2.5 rounded-lg bg-slate-700/30 hover:bg-slate-700/50 transition-colors cursor-pointer"
+                            className="flex items-center space-x-3 p-2.5 rounded-lg bg-muted/30 hover:bg-muted/50 transition-colors cursor-pointer"
                             onClick={() => handleWebhookToggle(webhook.id)}
                           >
                             <Checkbox
@@ -823,11 +835,11 @@ export default function SendMessagePage() {
                               onCheckedChange={() =>
                                 handleWebhookToggle(webhook.id)
                               }
-                              className="border-slate-500"
+                              className="border-input"
                             />
                             <div className="flex-1 min-w-0">
                               <div className="flex items-center gap-2">
-                                <span className="font-medium text-white text-sm">
+                                <span className="font-medium text-foreground text-sm">
                                   {webhook.name}
                                 </span>
                                 <Badge
@@ -840,7 +852,7 @@ export default function SendMessagePage() {
                                 </Badge>
                               </div>
                               {webhook.description && (
-                                <p className="text-xs text-slate-400 truncate">
+                                <p className="text-xs text-muted-foreground truncate">
                                   {webhook.description}
                                 </p>
                               )}

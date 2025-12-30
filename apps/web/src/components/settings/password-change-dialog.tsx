@@ -107,12 +107,12 @@ export function PasswordChangeDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="bg-slate-800 border-slate-700 text-white sm:max-w-md">
+      <DialogContent className="bg-popover border-border text-popover-foreground sm:max-w-md">
         <DialogHeader>
-          <DialogTitle className="text-xl font-bold text-white">
+          <DialogTitle className="text-xl font-bold text-foreground">
             {hasPassword ? 'Change Password' : 'Create Password'}
           </DialogTitle>
-          <DialogDescription className="text-slate-400">
+          <DialogDescription className="text-muted-foreground">
             {hasPassword
               ? 'Enter your current password and choose a new one.'
               : 'Create a password to enable email login for your account.'}
@@ -124,7 +124,7 @@ export function PasswordChangeDialog({
             <div className="space-y-2">
               <label
                 htmlFor="currentPassword"
-                className="text-sm font-medium text-slate-300"
+                className="text-sm font-medium text-foreground"
               >
                 Current Password
               </label>
@@ -134,14 +134,14 @@ export function PasswordChangeDialog({
                   type={showCurrentPassword ? 'text' : 'password'}
                   value={currentPassword}
                   onChange={e => setCurrentPassword(e.target.value)}
-                  className="bg-slate-700 border-slate-600 text-white pr-10"
+                  className="bg-background border-input text-foreground pr-10"
                   placeholder="Enter current password"
                   disabled={changePasswordMutation.isPending}
                 />
                 <button
                   type="button"
                   onClick={() => setShowCurrentPassword(!showCurrentPassword)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-300"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
                 >
                   {showCurrentPassword ? (
                     <EyeOff className="h-4 w-4" />
@@ -156,7 +156,7 @@ export function PasswordChangeDialog({
           <div className="space-y-2">
             <label
               htmlFor="newPassword"
-              className="text-sm font-medium text-slate-300"
+              className="text-sm font-medium text-foreground"
             >
               New Password
             </label>
@@ -166,14 +166,14 @@ export function PasswordChangeDialog({
                 type={showNewPassword ? 'text' : 'password'}
                 value={newPassword}
                 onChange={e => setNewPassword(e.target.value)}
-                className="bg-slate-700 border-slate-600 text-white pr-10"
+                className="bg-background border-input text-foreground pr-10"
                 placeholder="Enter new password (min 8 characters)"
                 disabled={changePasswordMutation.isPending}
               />
               <button
                 type="button"
                 onClick={() => setShowNewPassword(!showNewPassword)}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-300"
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
               >
                 {showNewPassword ? (
                   <EyeOff className="h-4 w-4" />
@@ -187,7 +187,7 @@ export function PasswordChangeDialog({
           <div className="space-y-2">
             <label
               htmlFor="confirmPassword"
-              className="text-sm font-medium text-slate-300"
+              className="text-sm font-medium text-foreground"
             >
               Confirm New Password
             </label>
@@ -197,14 +197,14 @@ export function PasswordChangeDialog({
                 type={showConfirmPassword ? 'text' : 'password'}
                 value={confirmPassword}
                 onChange={e => setConfirmPassword(e.target.value)}
-                className="bg-slate-700 border-slate-600 text-white pr-10"
+                className="bg-background border-input text-foreground pr-10"
                 placeholder="Confirm new password"
                 disabled={changePasswordMutation.isPending}
               />
               <button
                 type="button"
                 onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-300"
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
               >
                 {showConfirmPassword ? (
                   <EyeOff className="h-4 w-4" />
@@ -216,14 +216,14 @@ export function PasswordChangeDialog({
           </div>
 
           {error && (
-            <div className="p-3 rounded-md bg-red-500/10 border border-red-500/30">
-              <p className="text-sm text-red-400">{error}</p>
+            <div className="p-3 rounded-md bg-destructive/10 border border-destructive/30">
+              <p className="text-sm text-destructive">{error}</p>
             </div>
           )}
 
           {success && (
-            <div className="p-3 rounded-md bg-green-500/10 border border-green-500/30">
-              <p className="text-sm text-green-400">{success}</p>
+            <div className="p-3 rounded-md bg-success/10 border border-success/30">
+              <p className="text-sm text-success">{success}</p>
             </div>
           )}
 
@@ -236,14 +236,14 @@ export function PasswordChangeDialog({
                 resetForm();
               }}
               disabled={changePasswordMutation.isPending}
-              className="bg-slate-700 border-slate-600 text-white hover:bg-slate-600"
+              className="bg-muted border-input text-foreground hover:bg-accent"
             >
               Cancel
             </Button>
             <Button
               type="submit"
               disabled={changePasswordMutation.isPending}
-              className="bg-blue-600 hover:bg-blue-700 text-white"
+              className="bg-primary hover:bg-primary/90 text-primary-foreground"
             >
               {changePasswordMutation.isPending ? (
                 <>

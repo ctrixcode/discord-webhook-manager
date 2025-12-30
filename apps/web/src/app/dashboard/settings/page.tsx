@@ -86,10 +86,10 @@ export default function SettingsPage() {
   return (
     <div className="min-h-screen p-6">
       <div>
-        <h2 className="text-3xl font-bold tracking-tight text-white">
+        <h2 className="text-3xl font-bold tracking-tight text-foreground">
           Settings
         </h2>
-        <p className="text-slate-300">
+        <p className="text-muted-foreground">
           Manage your account and application preferences
         </p>
       </div>
@@ -100,7 +100,7 @@ export default function SettingsPage() {
         icon={<Gem className="h-5 w-5" />}
       >
         {isLoadingUser ? (
-          <div className="h-8 bg-slate-700/50 rounded-md animate-pulse" />
+          <div className="h-8 bg-muted/50 rounded-md animate-pulse" />
         ) : user ? (
           <div className="flex items-center gap-2">
             <Badge
@@ -111,12 +111,12 @@ export default function SettingsPage() {
             >
               {(user.accountType || 'free').toUpperCase()}
             </Badge>
-            <p className="text-slate-400 text-sm mt-2">
+            <p className="text-muted-foreground text-sm mt-2">
               {getAccountTypeQuote(user.accountType || 'free')}
             </p>
           </div>
         ) : (
-          <p className="text-slate-400">Could not load account type.</p>
+          <p className="text-muted-foreground">Could not load account type.</p>
         )}
       </SettingsCard>
 
@@ -130,11 +130,11 @@ export default function SettingsPage() {
         icon={<Lock className="h-5 w-5" />}
       >
         {isLoadingUser || isLoadingPasswordStatus ? (
-          <div className="h-10 bg-slate-700/50 rounded-md animate-pulse w-40" />
+          <div className="h-10 bg-muted/50 rounded-md animate-pulse w-40" />
         ) : (
           <Button
             onClick={() => setShowPasswordDialog(true)}
-            className="bg-slate-700 hover:bg-slate-600 text-white"
+            className="bg-muted hover:bg-accent text-foreground"
           >
             {!passwordStatus?.hasPassword
               ? 'Create Password'
@@ -153,21 +153,21 @@ export default function SettingsPage() {
         icon={<LinkIcon className="h-5 w-5" />}
       >
         {isLoadingUser ? (
-          <div className="h-10 bg-slate-700/50 rounded-md animate-pulse w-40" />
+          <div className="h-10 bg-muted/50 rounded-md animate-pulse w-40" />
         ) : user?.discord_id ? (
           <div className="flex items-center gap-3">
-            <Avatar className="h-12 w-12 ring-2 ring-purple-500/30">
+            <Avatar className="h-12 w-12 ring-2 ring-primary/30">
               <AvatarImage src={getAvatar()} />
-              <AvatarFallback className="bg-purple-600 text-white">
+              <AvatarFallback className="bg-primary text-primary-foreground">
                 {user?.display_name?.charAt(0).toUpperCase()}
               </AvatarFallback>
             </Avatar>
             <div className="flex flex-col">
-              <span className="text-slate-300 font-medium">Connected</span>
-              <span className="text-slate-500 text-sm">
+              <span className="text-foreground font-medium">Connected</span>
+              <span className="text-muted-foreground text-sm">
                 Discord ID: {user.discord_id}
               </span>
-              <span className="text-slate-500 text-sm">
+              <span className="text-muted-foreground text-sm">
                 Discord Username: {user.username}
               </span>
             </div>
@@ -192,17 +192,17 @@ export default function SettingsPage() {
       >
         {isLoadingUsage ? (
           <div className="space-y-4">
-            <div className="h-8 bg-slate-700/50 rounded-md animate-pulse" />
-            <div className="h-8 bg-slate-700/50 rounded-md animate-pulse" />
+            <div className="h-8 bg-muted/50 rounded-md animate-pulse" />
+            <div className="h-8 bg-muted/50 rounded-md animate-pulse" />
           </div>
         ) : usage ? (
           <div className="space-y-4">
             <div>
               <div className="flex justify-between mb-1">
-                <span className="text-sm font-medium text-slate-300">
+                <span className="text-sm font-medium text-foreground">
                   Daily Webhook Messages
                 </span>
-                <span className="text-sm font-medium text-slate-400">
+                <span className="text-sm font-medium text-muted-foreground">
                   {usage.webhookMessagesSentToday} /{' '}
                   {usage.dailyWebhookMessageLimit === null
                     ? '∞'
@@ -217,15 +217,15 @@ export default function SettingsPage() {
                       : usage.dailyWebhookMessageLimit)) *
                   100
                 }
-                className="bg-slate-700/50"
+                className="bg-muted/50"
               />
             </div>
             <div>
               <div className="flex justify-between mb-1">
-                <span className="text-sm font-medium text-slate-300">
+                <span className="text-sm font-medium text-foreground">
                   Media Storage
                 </span>
-                <span className="text-sm font-medium text-slate-400">
+                <span className="text-sm font-medium text-muted-foreground">
                   {formatBytes(usage.totalMediaStorageUsed)} /{' '}
                   {formatBytes(usage.overallMediaStorageLimit)}
                 </span>
@@ -236,12 +236,12 @@ export default function SettingsPage() {
                     usage.overallMediaStorageLimit) *
                   100
                 }
-                className="bg-slate-700/50"
+                className="bg-muted/50"
               />
             </div>
           </div>
         ) : (
-          <p className="text-slate-400">Could not load usage data.</p>
+          <p className="text-muted-foreground">Could not load usage data.</p>
         )}
       </SettingsCard>
 
@@ -250,8 +250,8 @@ export default function SettingsPage() {
         description="View details about different subscription tiers and their benefits"
         icon={<Gem className="h-5 w-5" />}
       >
-        <Link href="/dashboard/plans">
-          <Button className="bg-purple-600 hover:bg-purple-700 text-white">
+        <Link href="/plans">
+          <Button className="bg-primary hover:bg-primary/90 text-primary-foreground">
             View Plans
           </Button>
         </Link>
@@ -263,20 +263,20 @@ export default function SettingsPage() {
         icon={<BarChart2 className="h-5 w-5" />}
       >
         <div className="space-y-4">
-          <p className="text-slate-300">
+          <p className="text-muted-foreground">
             If you enjoy using Discord Webhook Manager and want to support its
-            development, consider sharing it on X (formerly Twitter)!
+            development, consider sharing it on X!
           </p>
           <a
             href="https://twitter.com/intent/tweet?text=I%27m%20loving%20Discord%20Webhook%20Manager!%20%40ctrix%2C%20this%20app%20is%20amazing%20for%20managing%20my%20Discord%20webhooks.%20Highly%20recommend!%20%23Discord%20%23Webhooks%20%23DiscordBot&url=https%3A%2F%2Fwebhook.ctrix.pro"
             target="_blank"
             rel="noopener noreferrer"
           >
-            <Button className="bg-blue-500 hover:bg-blue-600 text-white">
-              Share on X (Twitter)
+            <Button className="bg-primary hover:bg-primary/90 text-primary-foreground">
+              Share on X
             </Button>
           </a>
-          <p className="text-slate-300 pt-2">
+          <p className="text-muted-foreground pt-2">
             DM me on X, if you want to get paid subscriptions.
           </p>
         </div>

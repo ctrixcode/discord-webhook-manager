@@ -492,27 +492,27 @@ export function EmojiPicker({ onEmojiSelect }: EmojiPickerProps) {
           type="button"
           variant="ghost"
           size="sm"
-          className="h-7 w-7 p-0 hover:bg-slate-700 text-slate-300"
+          className="h-7 w-7 p-0 hover:bg-muted text-muted-foreground hover:text-foreground"
           title="Insert Emoji"
         >
           <Smile className="w-3.5 h-3.5" />
         </Button>
       </PopoverTrigger>
       <PopoverContent
-        className="w-[420px] p-0 bg-slate-800 border-slate-700"
+        className="w-[420px] p-0 bg-popover border-border"
         align="end"
       >
         <div className="flex flex-col h-[400px]">
           {/* Category Tabs */}
-          <div className="flex gap-1 p-2 border-b border-slate-700 overflow-x-auto scrollbar-thin">
+          <div className="flex gap-1 p-2 border-b border-border overflow-x-auto scrollbar-thin">
             {Object.keys(EMOJI_CATEGORIES).map(category => (
               <button
                 key={category}
                 onClick={() => setSelectedCategory(category)}
                 className={`px-2 py-1 text-[10px] rounded whitespace-nowrap transition-colors flex-shrink-0 ${
                   selectedCategory === category
-                    ? 'bg-purple-600 text-white'
-                    : 'bg-slate-700/50 text-slate-300 hover:bg-slate-700'
+                    ? 'bg-primary text-primary-foreground'
+                    : 'bg-muted text-muted-foreground hover:bg-accent'
                 }`}
               >
                 {category.split(' ')[0]}
@@ -529,7 +529,7 @@ export function EmojiPicker({ onEmojiSelect }: EmojiPickerProps) {
                 <button
                   key={index}
                   onClick={() => onEmojiSelect(emoji)}
-                  className="text-xl p-1.5 hover:bg-slate-700/70 rounded transition-colors aspect-square flex items-center justify-center"
+                  className="text-xl p-1.5 hover:bg-accent rounded transition-colors aspect-square flex items-center justify-center"
                   title={emoji}
                 >
                   {emoji}

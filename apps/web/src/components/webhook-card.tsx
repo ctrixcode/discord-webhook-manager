@@ -112,7 +112,7 @@ export function WebhookCard({
   return (
     <>
       <Card
-        className="bg-slate-900/20 backdrop-blur-sm border-slate-700/50 text-white cursor-pointer"
+        className="bg-card/50 backdrop-blur-xl border-border/50 text-card-foreground cursor-pointer hover:shadow-md transition-all"
         onClick={e => {
           // Check if the click originated from within the dropdown menu
           if (
@@ -125,7 +125,7 @@ export function WebhookCard({
         }}
       >
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle className="text-base font-medium text-white">
+          <CardTitle className="text-base font-medium text-foreground">
             {webhook.name}
           </CardTitle>
           <div className="flex items-center gap-2">
@@ -133,8 +133,8 @@ export function WebhookCard({
               variant={webhook.is_active ? 'default' : 'secondary'}
               className={
                 webhook.is_active
-                  ? 'bg-green-500/20 text-green-400 border-green-500/30'
-                  : 'bg-slate-500/20 text-slate-400 border-slate-500/30'
+                  ? 'bg-success/20 text-success border-success/30'
+                  : 'bg-muted text-muted-foreground border-border'
               }
             >
               {webhook.is_active ? (
@@ -156,7 +156,7 @@ export function WebhookCard({
                 <DropdownMenuTrigger asChild>
                   <Button
                     variant="ghost"
-                    className="h-8 w-8 p-0 text-slate-400 hover:text-white hover:bg-slate-700/50"
+                    className="h-8 w-8 p-0 text-muted-foreground hover:text-foreground hover:bg-muted/50"
                     onClick={e => e.stopPropagation()} // Add stopPropagation here
                   >
                     <MoreHorizontal className="h-4 w-4" />
@@ -164,7 +164,7 @@ export function WebhookCard({
                 </DropdownMenuTrigger>
                 <DropdownMenuContent
                   align="end"
-                  className="bg-slate-800/95 backdrop-blur-sm border-slate-700/50 text-white"
+                  className="bg-card border-border text-card-foreground"
                 >
                   <DropdownMenuItem
                     onClick={e => {
@@ -172,7 +172,7 @@ export function WebhookCard({
                       handleTestWebhook();
                     }}
                     disabled={isTestingWebhook}
-                    className="hover:bg-slate-700/50 focus:bg-slate-700/50"
+                    className="hover:bg-muted/50 focus:bg-muted/50 cursor-pointer"
                   >
                     <Send className="mr-2 h-4 w-4" />
                     {isTestingWebhook ? 'Testing...' : 'Test Webhook'}
@@ -182,7 +182,7 @@ export function WebhookCard({
                       e.stopPropagation();
                       toggleActive();
                     }}
-                    className="hover:bg-slate-700/50 focus:bg-slate-700/50"
+                    className="hover:bg-muted/50 focus:bg-muted/50 cursor-pointer"
                   >
                     {webhook.is_active ? (
                       <XCircle className="mr-2 h-4 w-4" />
@@ -196,7 +196,7 @@ export function WebhookCard({
                       e.stopPropagation();
                       setShowDeleteDialog(true);
                     }}
-                    className="text-red-400 hover:bg-red-500/20 focus:bg-red-500/20"
+                    className="text-destructive hover:bg-destructive/10 focus:bg-destructive/10 cursor-pointer"
                   >
                     <Trash2 className="mr-2 h-4 w-4" />
                     Delete
@@ -208,20 +208,20 @@ export function WebhookCard({
         </CardHeader>
         <CardContent>
           <div className="space-y-2">
-            <div className="text-sm text-slate-300">
-              <span className="font-medium">Description:</span>
-              <div className="mt-1 p-2 bg-slate-800/50 rounded border border-slate-700/50 font-mono text-xs break-all">
+            <div className="text-sm text-muted-foreground">
+              <span className="font-medium text-foreground">Description:</span>
+              <div className="mt-1 p-2 bg-muted/50 rounded border border-border font-mono text-xs break-all text-muted-foreground">
                 {webhook.description}
               </div>
             </div>
-            <div className="flex items-center justify-between text-sm text-slate-400">
+            <div className="flex items-center justify-between text-sm text-muted-foreground">
               <span>Messages sent: TODO</span>
               <span>
                 Created: {new Date(webhook.createdAt).toLocaleDateString()}
               </span>
             </div>
             {webhook.last_used && (
-              <div className="text-sm text-slate-400">
+              <div className="text-sm text-muted-foreground">
                 Last used: {new Date(webhook.last_used).toLocaleString()}
               </div>
             )}
