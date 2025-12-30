@@ -10,6 +10,7 @@ import {
   Zap,
   Target,
 } from 'lucide-react';
+import { SOCIAL_LINKS } from '@/lib/constants';
 
 export default function RoadmapPage() {
   const roadmapItems = [
@@ -182,7 +183,7 @@ export default function RoadmapPage() {
                 Submit on GitHub →
               </a>
               <a
-                href="https://discord.gg/your-server"
+                href={SOCIAL_LINKS.DISCORD}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-primary hover:underline font-medium"

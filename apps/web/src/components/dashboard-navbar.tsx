@@ -13,9 +13,8 @@ export function DashboardNavbar() {
   const { user, logout } = useAuth();
   const router = useRouter();
 
-  const handleLogout = () => {
-    logout();
-    router.push('/');
+  const handleLogout = async () => {
+    await logout();
   };
 
   const getAvatar = () => {
