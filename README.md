@@ -1,3 +1,5 @@
+> **Archive Note (2025):** This was my first full-stack side project, built in ~1.5 months while employed full-time at ~6 months of professional experience. The goal was simple: prove I could take an idea from zero to shipped without hand-holding. MongoDB was chosen intentionally for prototyping velocity. The code reflects where I was then, not where I am now. See my latest projects for current architecture and production systems work.
+
 # Discord Webhook Manager
 
 [![License](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
